@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="no">
+<head>
+    <title data-th-text="${selftest.application} + ' Selftest'">name Selftest</title>
+    <meta charset="UTF-8"/>
+
+    <link data-th-href="@{/webjars/bootstrap/__${bootstrapVersion}__/css/bootstrap.min.css}" rel="stylesheet"/>
+</head>
+
+<body>
+<div style="margin:1%;">
+    <h1>Selftest</h1>
+
+    <div class="row">
+        <div class="col-xs-5">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th scope="row">Name</th>
+                    <td data-th-text="${selftest.application}">name</td>
+                </tr>
+                <tr>
+                    <th scope="row">Version</th>
+                    <td data-th-text="${selftest.version}">ver</td>
+                </tr>
+                <tr>
+                    <th scope="row">Node</th>
+                    <td data-th-text="${selftest.node}">node</td>
+                </tr>
+                <tr>
+                    <th scope="row">Timestamp</th>
+                    <td data-th-text="${selftest.timestamp}">time</td>
+                </tr>
+                <tr>
+                    <th scope="row">Aggregate Response Time</th>
+                    <td data-th-text="${selftest.aggregateResponseTime}">total time</td>
+                </tr>
+                <tr>
+                    <th scope="row">Aggregate Result</th>
+                    <td data-th-text="${selftest.aggregateResult}" data-th-classappend="${selftest.aggregateResult.cssClass}">
+                        result
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Navn</th>
+            <th>Address</th>
+            <th>Beskrivelse</th>
+            <th>Responstid (ms)</th>
+            <th data-th-if="${selftest.aggregateResultVal} != 0">Feilmelding</th>
+            <th data-th-if="${selftest.aggregateResultVal} != 0">Stacktrace</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-th-each="selftestResult : ${selftest.checks}">
+            <td data-th-text="${selftestResult.result}" data-th-classappend="${selftestResult.result.cssClass}"></td>
+            <td data-th-text="${selftestResult.type}"></td>
+            <td data-th-text="${selftestResult.endpoint}"></td>
+            <td data-th-text="${selftestResult.address}"></td>
+            <td data-th-text="${selftestResult.description}"></td>
+            <td data-th-text="${selftestResult.responseTime}"></td>
+            <td data-th-if="${selftestResult.errorMessage}" data-th-text="${selftestResult.errorMessage}"></td>
+            <td data-th-if="${selftestResult.stackTrace}">
+                <pre data-th-text="${selftestResult.stackTrace}"></pre>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
