@@ -16,3 +16,6 @@ healthcheck:
 resources:
   limits:
     cpu: 1000m
+prometheus:
+  enabled: true
+  path: /prometheus

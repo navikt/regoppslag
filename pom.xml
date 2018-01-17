@@ -52,6 +52,7 @@
 		<bootstrap.version>3.3.6</bootstrap.version>
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<brevbestilling.version>1.0.0</brevbestilling.version>
+		<prometheus.version>0.0.26</prometheus.version>
 	</properties>
 
 	<dependencyManagement>
