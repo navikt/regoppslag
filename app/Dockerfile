@@ -1,12 +1,6 @@
-FROM openjdk:8-jre-alpine
-MAINTAINER Ketill Fenne <ketill.fenne@visma.no>
+FROM navikt/java:8
 
-ADD "target/brevbestilling.jar" brevbestilling.jar
+COPY target/app.jar /app/app.jar
 
-EXPOSE 8080
-
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS \
-  -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
-  -Djava.security.egd=file:/dev/./urandom \
-  -Dspring.profiles.active=remote \
-  -jar /brevbestilling.jar"]
+ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom \
+               -Dspring.profiles.active=nais"

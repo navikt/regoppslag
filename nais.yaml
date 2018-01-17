@@ -1,17 +1,18 @@
 name: brevbestilling
 image: "docker.adeo.no:5000/dok/brevbestilling"
 replicas:
-  min: 2
-  max: 4
-  cpuThresholdPercentage: 80
+  min: 1
+  max: 2
+  cpuThresholdPercentage: 50
 port: 8080
 healthcheck:
   liveness:
     path: /isAlive
-    initialDelay: 120
+    initialDelay: 30
+    failureThreshold: 10
   readiness:
     path: /isReady
-    initialDelay: 120
-prometheus:
-  enabled: false
-  path: /prometheus
+    initialDelay: 30
+resources:
+  limits:
+    cpu: 1000m
