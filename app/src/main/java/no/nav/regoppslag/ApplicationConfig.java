@@ -1,4 +1,4 @@
-package no.nav.brevbestilling;
+package no.nav.regoppslag;
 
 import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
 import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;

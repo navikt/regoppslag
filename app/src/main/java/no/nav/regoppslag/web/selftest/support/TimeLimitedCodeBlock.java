@@ -1,7 +1,7 @@
-package no.nav.brevbestilling.web.selftest.support;
+package no.nav.regoppslag.web.selftest.support;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.brevbestilling.exceptions.SelftestTimeoutException;
+import no.nav.regoppslag.exceptions.SelftestTimeoutException;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

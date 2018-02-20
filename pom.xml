@@ -2,20 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>no.nav.brevbestilling</groupId>
-	<artifactId>brevbestilling</artifactId>
+	<groupId>no.nav.regoppslag</groupId>
+	<artifactId>regoppslag</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>brevbestilling</name>
+	<name>regoppslag</name>
 
 	<prerequisites>
 		<maven>3.3.9</maven>
 	</prerequisites>
 
 	<scm>
-		<connection>scm:git:http://stash.devillo.no/scm/boaf/brevbestilling.git</connection>
-		<developerConnection>scm:git:http://stash.devillo.no/scm/boaf/brevbestilling.git</developerConnection>
-		<url>http://stash.devillo.no/projects/BOAF/repos/brevbestilling</url>
+		<connection>scm:git:http://stash.devillo.no/scm/boaf/regoppslag.git</connection>
+		<developerConnection>scm:git:http://stash.devillo.no/scm/boaf/regoppslag.git</developerConnection>
+		<url>http://stash.devillo.no/projects/BOAF/repos/regoppslag</url>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -51,7 +51,7 @@
 		<lombok.version>1.16.18</lombok.version>
 		<bootstrap.version>3.3.6</bootstrap.version>
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-		<brevbestilling.version>1.0.0</brevbestilling.version>
+		<regoppslag.version>1.0.0</regoppslag.version>
 		<prometheus.version>0.0.26</prometheus.version>
 	</properties>
 
@@ -137,7 +137,7 @@
 									<repositoryId>m2snapshot</repositoryId>
 									<url>dav:http://maven.adeo.no/nexus/content/repositories/m2snapshot</url>
 									<groupId>nais</groupId>
-									<artifactId>brevbestilling</artifactId>
+									<artifactId>regoppslag</artifactId>
 									<version>${project.version}</version>
 									<file>${project.basedir}/nais.yaml</file>
 									<generatePom>false</generatePom>
@@ -165,7 +165,7 @@
 									<repositoryId>m2internal</repositoryId>
 									<url>dav:http://maven.adeo.no/nexus/content/repositories/m2internal</url>
 									<groupId>nais</groupId>
-									<artifactId>brevbestilling</artifactId>
+									<artifactId>regoppslag</artifactId>
 									<version>${project.version}</version>
 									<file>${project.basedir}/nais.yaml</file>
 									<generatePom>false</generatePom>
@@ -213,7 +213,7 @@
 					<groupId>no.nav.maven.plugins</groupId>
 					<artifactId>aura-maven-plugin</artifactId>
 					<configuration>
-						<apps>brevbestilling:${project.version}</apps>
+						<apps>regoppslag:${project.version}</apps>
 					</configuration>
 				</plugin>
 				<plugin>

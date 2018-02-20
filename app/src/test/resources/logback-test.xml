@@ -13,6 +13,6 @@
 		<!--<appender-ref ref="CONSOLE"/>-->
 	</root>
 
-	<logger name="no.nav.brevbestilling" level="INFO"/>
+	<logger name="no.nav.regoppslag" level="INFO"/>
 
 </configuration>

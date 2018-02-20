@@ -1,4 +1,4 @@
-package no.nav.brevbestilling.web.selftest.support;
+package no.nav.regoppslag.web.selftest.support;
 
 import org.springframework.util.StopWatch;
 
