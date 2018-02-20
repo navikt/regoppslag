@@ -1,4 +1,4 @@
-package no.nav.brevbestilling.web.selftest.support;
+package no.nav.regoppslag.web.selftest.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

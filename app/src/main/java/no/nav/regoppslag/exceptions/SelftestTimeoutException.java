@@ -1,4 +1,4 @@
-package no.nav.brevbestilling.exceptions;
+package no.nav.regoppslag.exceptions;
 
 /**
  * Created by T133804 on 15.08.2017.
