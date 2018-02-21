@@ -111,6 +111,18 @@
 			<artifactId>organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon</artifactId>
 			<version>${organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon.version}</version>
 		</dependency>
+		<!-- test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
