@@ -1,4 +1,4 @@
-package no.nav.regoppslag.fasit;
+package no.nav.regoppslag.config.fasit;
 
 import static no.nav.modig.security.ws.AbstractSAMLOutInterceptor.SYSTEM_PROPERTY_APPCERT_ALIAS;
 import static no.nav.modig.security.ws.AbstractSAMLOutInterceptor.SYSTEM_PROPERTY_APPCERT_FILE;

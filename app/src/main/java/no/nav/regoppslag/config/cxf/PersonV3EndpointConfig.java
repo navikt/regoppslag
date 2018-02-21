@@ -1,8 +1,8 @@
 package no.nav.regoppslag.config.cxf;
 
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
-import no.nav.regoppslag.fasit.NavAppCertAlias;
-import no.nav.regoppslag.fasit.PersonV3Alias;
+import no.nav.regoppslag.config.fasit.NavAppCertAlias;
+import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;

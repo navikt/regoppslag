@@ -1,4 +1,4 @@
-package no.nav.regoppslag.fasit;
+package no.nav.regoppslag.config.fasit;
 
 import lombok.Getter;
 import lombok.Setter;

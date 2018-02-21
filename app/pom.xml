@@ -102,6 +102,15 @@
 			<version>${nav-fim-organisasjon-v4-tjenestespesifikasjon.version}</version>
 			<classifier>jaxws</classifier>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.ldap</groupId>
+			<artifactId>spring-ldap-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.sbl.dialogarena</groupId>
+			<artifactId>organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon</artifactId>
+			<version>${organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

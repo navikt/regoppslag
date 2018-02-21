@@ -1,4 +1,4 @@
-package no.nav.regoppslag.web.selftest.support;
+package no.nav.regoppslag.nais.selftest.support;
 
 import org.springframework.util.StopWatch;
 

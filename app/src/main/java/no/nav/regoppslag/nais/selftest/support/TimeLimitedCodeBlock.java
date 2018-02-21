@@ -1,4 +1,4 @@
-package no.nav.regoppslag.web.selftest.support;
+package no.nav.regoppslag.nais.selftest.support;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.SelftestTimeoutException;
