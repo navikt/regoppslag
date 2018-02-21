@@ -67,6 +67,41 @@
 			<artifactId>simpleclient_spring_web</artifactId>
 			<version>${prometheus.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<!-- modig -->
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-log-common</artifactId>
+			<version>${modig-log-common.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-security-ws</artifactId>
+			<version>${modig-security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-security-loginmodule</artifactId>
+			<scope>runtime</scope>
+			<version>${modig-security.version}</version>
+		</dependency>
+		<!-- tjenester -->
+		<dependency>
+			<groupId>no.nav.tjenester</groupId>
+			<artifactId>nav-person-v3-tjenestespesifikasjon</artifactId>
+			<version>${nav-person-v3-tjenestespesifikasjon.version}</version>
+			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>nav-fim-organisasjon-v4-tjenestespesifikasjon</artifactId>
+			<version>${nav-fim-organisasjon-v4-tjenestespesifikasjon.version}</version>
+			<classifier>jaxws</classifier>
+		</dependency>
 	</dependencies>
 
 	<build>
