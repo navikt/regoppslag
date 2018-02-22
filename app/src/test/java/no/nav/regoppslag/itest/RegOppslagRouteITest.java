@@ -10,7 +10,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import no.nav.modig.core.test.FileUtils;
 import no.nav.modig.testcertificates.TestCertificates;
 import no.nav.regoppslag.Application;
-import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -76,4 +75,9 @@ public class RegOppslagRouteITest {
 		InputStream inputStream = new ClassPathResource(Path).getInputStream();
 		return IOUtils.toString(inputStream, UTF_8);
 	}
+
+//	private WebResponse postRequest(RegOppslagRequestTo requestTo) throws IOException, SAXException {
+//		return client.getResponse(new PostMethodWebRequest(REGOPPSLAG_BASE_URL,
+//				new ByteArrayInputStream(mapper.writeValueAsBytes(requestTo)), APPLICATION_JSON));
+//	}
 }

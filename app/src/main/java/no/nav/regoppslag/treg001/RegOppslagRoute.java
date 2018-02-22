@@ -1,4 +1,4 @@
-package no.nav.regoppslag;
+package no.nav.regoppslag.treg001;
 
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;

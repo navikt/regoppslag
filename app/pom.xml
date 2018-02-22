@@ -36,6 +36,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ws.rs</groupId>
+			<artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+			<version>1.0.1.Final</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Prometheus client -->
 		<dependency>
 			<groupId>io.prometheus</groupId>
@@ -133,6 +139,18 @@
 			<groupId>no.nav.modig</groupId>
 			<artifactId>modig-testcertificates</artifactId>
 			<version>${modig-testcertificates.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>httpunit</groupId>
+			<artifactId>httpunit</artifactId>
+			<version>1.7</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
