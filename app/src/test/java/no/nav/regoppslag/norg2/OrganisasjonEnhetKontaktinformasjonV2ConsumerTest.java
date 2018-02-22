@@ -1,12 +1,14 @@
 package no.nav.regoppslag.norg2;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.OrganisasjonEnhetKontaktinformasjonV2;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSFeiletEnhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.meldinger.WSHentKontaktinformasjonForEnhetBolkRequest;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.meldinger.WSHentKontaktinformasjonForEnhetBolkResponse;
@@ -23,9 +25,43 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 	public void shouldHentEnhetNavn() throws Exception {
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
 
-		String personnavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
 
-		assertThat(personnavn, is(ENHET_NAVN));
+		assertThat(enhetNavn, is(ENHET_NAVN));
+	}
+
+	@Test
+	public void shouldReturnNullWhenEmptyEnhetListe() throws Exception{
+		WSHentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
+		response.getEnhetListe().clear();
+		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+
+		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+
+		assertThat(enhetNavn, nullValue());
+	}
+
+	@Test
+	public void shouldReturnNullWhenNameNotInResponse() throws Exception{
+		WSHentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
+		response.getEnhetListe().get(0).setEnhetNavn(null);
+		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+
+		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+
+		assertThat(enhetNavn, nullValue());
+	}
+
+	@Test
+	public void shouldReturnNullWhenFeilEnhetListe() throws Exception{
+		WSHentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
+		response.getEnhetListe().clear();
+		response.getFeiletEnhetListe().add(0, new WSFeiletEnhet().withEnhetId(ENHET_NR).withFeilmelding("Fant ikke enheten"));
+		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+
+		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+
+		assertThat(enhetNavn, nullValue());
 	}
 
 	private WSHentKontaktinformasjonForEnhetBolkResponse defaultResponse() {
