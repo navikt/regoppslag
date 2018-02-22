@@ -1,6 +1,5 @@
 package no.nav.regoppslag;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;
 import org.apache.camel.impl.DefaultExchange;
@@ -39,7 +38,8 @@ public class RegOppslagRoute extends SpringRouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("file:C:\\brevdata?noop=true")
+//        from("file:C:\\brevdata?noop=true")
+        from("direct:start")
                 .log("Starting")
                 .setProperty(ORG_PAYLOAD, simple("${body}"))
                 .multicast()

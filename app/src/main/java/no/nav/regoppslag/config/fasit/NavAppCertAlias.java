@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 @Getter
 @Setter
 @ToString
-@ConfigurationProperties("SRVDOKMOTALTINN_CERT")
+@ConfigurationProperties("SRVREGOPPSLAG_CERT")
 @Validated
 public class NavAppCertAlias {
 	@NotEmpty
