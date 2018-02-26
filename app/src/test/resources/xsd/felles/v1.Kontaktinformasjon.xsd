@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+			  elementFormDefault="qualified"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
+			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
+			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"
+			  xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet">
+
+	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
+	<xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"/>
+
+
+	<xs:complexType name="Kontaktinformasjon">
+		<xs:annotation>
+			<xs:documentation>Informasjon om hvordan bruker kan kontakte NAV</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="telefonnummer" type="st:NonEmptyString">
+				<xs:annotation>
+					<xs:documentation>Telefonnummer bruker/mottaker skal benytte ved henvendelse</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nettsted" type="st:NonEmptyString">
+				<xs:annotation>
+					<xs:documentation>Nettsted bruker/mottaker kan benytte for å innhente generell informasjon om saken</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="postadresse" type="navEnhet:NavEnhet">
+				<xs:annotation>
+					<xs:documentation>Adressen skal benyttes dersom bruker/mottaker har behov for å kontakte NAV per post</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+
+</xs:schema>

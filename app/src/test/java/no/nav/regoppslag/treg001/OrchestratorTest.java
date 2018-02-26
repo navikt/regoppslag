@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -49,16 +50,19 @@ public class OrchestratorTest {
 
 		String expression1 = "//f:mottaker";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
-		xPath.setNamespaceContext(namespaceContext);
-		XPathExpression xPathExpression1 = xPath.compile(expression1);
+//		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
+//		xPath.setNamespaceContext(namespaceContext);
+		QName qname = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
+//		XPathExpression xPathExpression1 = xPath.compile(expression1);
 
-		registry.registerPlugin(xPathExpression1, MottakerPlugin1.class);
+		registry.registerPlugin(qname, MottakerPlugin1.class);
+
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document, namespaceContext);
+//		Document processed = orchestrator.process(document, namespaceContext);
+		Document processed = orchestrator.process(document);
 
 		writeXml(processed);
 
@@ -78,23 +82,25 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
 
-		String expression1 = "//f:mottaker";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
-		xPath.setNamespaceContext(namespaceContext);
-		XPathExpression xPathExpression1 = xPath.compile(expression1);
+//		String expression1 = "//f:mottaker";
+		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
+//		XPath xPath = XPathFactory.newInstance().newXPath();
+//		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
+//		xPath.setNamespaceContext(namespaceContext);
+//		XPathExpression xPathExpression1 = xPath.compile(expression1);
 
-		registry.registerPlugin(xPathExpression1, MottakerPlugin1.class);
+		registry.registerPlugin(qname1, MottakerPlugin1.class);
 
-		String expression2 = "//f:signerendeSaksbehandler";
-		XPathExpression xPathExpression2 = xPath.compile(expression2);
+//		String expression2 = "//f:signerendeSaksbehandler";
+		QName qname2 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "signerendeSaksbehandler");
+//		XPathExpression xPathExpression2 = xPath.compile(expression2);
 
-		registry.registerPlugin(xPathExpression2, SignerendeSaksbehandlerPlugin2.class);
+		registry.registerPlugin(qname2, SignerendeSaksbehandlerPlugin2.class);
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document, namespaceContext);
+		Document processed = orchestrator.process(document);
 
 		writeXml(processed);
 
@@ -118,18 +124,19 @@ public class OrchestratorTest {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
 
 
-		String expression1 = "//f:mottaker";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
-		xPath.setNamespaceContext(namespaceContext);
-		XPathExpression xPathExpression1 = xPath.compile(expression1);
+//		String expression1 = "//f:mottaker";
+		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
+//		XPath xPath = XPathFactory.newInstance().newXPath();
+//		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
+//		xPath.setNamespaceContext(namespaceContext);
+//		XPathExpression xPathExpression1 = xPath.compile(expression1);
 
-		registry.registerPlugin(xPathExpression1, FailingPlugin.class);
+		registry.registerPlugin(qname1, FailingPlugin.class);
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document, namespaceContext);
+		Document processed = orchestrator.process(document);
 
 		writeXml(processed);
 	}

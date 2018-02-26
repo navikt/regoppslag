@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+			  elementFormDefault="qualified"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
+			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
+			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes">
+
+	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
+
+	<xs:complexType abstract="true" name="Aktoer">
+		<xs:annotation>
+			<xs:documentation>Abstrakt type for sakspartType og mottakerType</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="st:Identifikator">
+				<xs:annotation>
+					<xs:documentation>Identifikasjon av bruker. Kan være fnr, TSS id, org nr.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typeKode" type="st:AktoerType">
+				<xs:annotation>
+					<xs:documentation>Kodeverdi. Identifiserer hva slags id det er snakk om - person, organisasjon, institusjon eller samhandler</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="navn" type="st:NonEmptyString">
+				<xs:annotation>
+					<xs:documentation>Hele navnet på aktør</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

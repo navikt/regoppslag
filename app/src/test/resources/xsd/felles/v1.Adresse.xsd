@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+			  elementFormDefault="qualified"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Adresse"
+			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Adresse">
+
+	<xs:import schemaLocation="v1.NorskPostadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"/>
+	<xs:import schemaLocation="v1.UtenlandskPostadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/UtenlandskPostadresse"/>
+
+	<xs:complexType abstract="true" name="Adresse"/>
+
+</xs:schema>

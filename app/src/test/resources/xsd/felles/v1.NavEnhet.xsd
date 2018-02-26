@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+			  elementFormDefault="qualified"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
+			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
+			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"
+			  xmlns:norskPostadresse="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse">
+
+	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
+	<xs:import schemaLocation="v1.NorskPostadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"/>
+
+
+	<xs:complexType name="NavEnhet">
+		<xs:annotation>
+			<xs:documentation>En komplett adresse til en NAV enhet</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="enhetsId" type="st:Identifikator">
+				<xs:annotation>
+					<xs:documentation>Identifikasjon av NAV enhet</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="enhetsNavn" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Navn på NAV enhet eller fellesmottak</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="adresse" type="norskPostadresse:NorskPostadresse">
+				<xs:annotation>
+					<xs:documentation>Gyldig adressefelt som representerer en norsk adresse</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+
+</xs:schema>

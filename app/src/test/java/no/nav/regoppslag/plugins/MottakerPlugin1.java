@@ -34,10 +34,11 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 	}
 
 	@Override
-	public Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
-		if (namespaceContext instanceof UniversalNamespaceCache) {
-			setNamespacePrefixMapper(new NamespacePrefixMapperHelper((UniversalNamespaceCache)namespaceContext));
-		}
+//	public Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+//		if (namespaceContext instanceof UniversalNamespaceCache) {
+//			setNamespacePrefixMapper(new NamespacePrefixMapperHelper((UniversalNamespaceCache)namespaceContext));
+//		}
 		validateElementType(content);
 		try {
 			Mottaker mottaker = unmarshal(content);

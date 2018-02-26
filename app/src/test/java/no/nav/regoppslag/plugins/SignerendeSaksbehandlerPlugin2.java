@@ -22,12 +22,11 @@ public class SignerendeSaksbehandlerPlugin2 implements ElementEnricherPlugin {
 
 
 	@Override
-	public Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
 		validateElementType(content);
 		Element element = (Element) content;
 //			Element clone = (Element) element.cloneNode(true);
-		String prefix = namespaceContext.getPrefix("http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler");
-		Node navn = element.getElementsByTagName(prefix + ":navn").item(0);
+		Node navn = element.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler","navn").item(0);
 		navn.getFirstChild().setNodeValue("Flittige Frida");
 
 		return element;

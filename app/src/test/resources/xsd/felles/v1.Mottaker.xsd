@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+			  elementFormDefault="qualified"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
+			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
+			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"
+			  xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
+			  xmlns:adresse="http://nav.no/dok/pesysbrev/felles/v1/Adresse">
+
+	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
+	<xs:import schemaLocation="v1.Aktoer.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"/>
+	<xs:import schemaLocation="v1.Adresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Adresse"/>
+
+
+	<xs:complexType name="Mottaker">
+		<xs:annotation>
+			<xs:documentation>Mottaker viser til personen/organisasjonen som vedtaket skal sendes til</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="aktoer:Aktoer">
+				<xs:sequence>
+					<xs:element name="kortNavn" type="st:NonEmptyString">
+						<xs:annotation>
+							<xs:documentation>Navn på mottaker som garantert skal få plass i adressefeltet</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="adresse" type="adresse:Adresse">
+						<xs:annotation>
+							<xs:documentation>Gyldig adressefelt</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

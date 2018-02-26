@@ -13,7 +13,7 @@ import javax.xml.namespace.NamespaceContext;
  */
 public class FailingPlugin implements ElementEnricherPlugin {
 	@Override
-	public Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
 		throw new RegistryServiceFunctionalException("something went wrong calling registryservice");
 	}
 }

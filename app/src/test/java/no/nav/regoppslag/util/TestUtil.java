@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,8 +36,8 @@ public class TestUtil {
 		return xmlDocument;
 	}
 
-	public static Node findSingleNode(XPathExpression xpathExpression, Node xmlDocument) throws XPathExpressionException {
-		Node node = (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+	public static Node findSingleNode(QName qname, Document xmlDocument) throws XPathExpressionException {
+		Node node = xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
 		return node;
 	}
 

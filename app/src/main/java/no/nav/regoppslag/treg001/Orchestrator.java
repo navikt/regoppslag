@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -36,9 +37,10 @@ public class Orchestrator {
 
 
 
-	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
+	private Node findSingleNode(QName qname, Document xmlDocument) throws XPathExpressionException {
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+//		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+		return xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
 	}
 
 
@@ -57,10 +59,11 @@ public class Orchestrator {
 		}
 	}
 
-	public Document process(Document document, NamespaceContext namespaceContext) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
+	public Document process(Document document) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
 		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
-		Set<XPathExpression> supportedElements = registry.getSupportedElements();
-		for (XPathExpression xpath : supportedElements) {
+//		Set<XPathExpression> supportedElements = registry.getSupportedElements();
+		Set<QName> supportedElements = registry.getSupportedElements();
+		for (QName xpath : supportedElements) {
 			Node node = findSingleNode(xpath, document);
 			if (node != null) {
 				processingList.add(new Tuple<>(node, registry.getOrCreateElementEnricherPlugin(xpath)));
@@ -72,7 +75,7 @@ public class Orchestrator {
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.computation())
-				.map(tuple -> tuple.plugin.processElement(tuple.element, namespaceContext))
+				.map(tuple -> tuple.plugin.processElement(tuple.element))
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
