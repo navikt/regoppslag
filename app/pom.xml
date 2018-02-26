@@ -78,6 +78,11 @@
 			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.reactivex.rxjava2</groupId>
+			<artifactId>rxjava</artifactId>
+			<version>${rxjava.version}</version>
+		</dependency>
 		<!-- modig -->
 		<dependency>
 			<groupId>no.nav.modig</groupId>
@@ -153,6 +158,12 @@
 			</exclusions>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dok.metaforcemal</groupId>
+			<artifactId>pesysbrev01</artifactId>
+			<version>1.0.44</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -196,6 +207,60 @@
 							<goal>build</goal>
 							<goal>push</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-jaxb-felles</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
+							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
+							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
+							<generateDirectory>${project.build.directory}/generated-test-sources/xjc-xsd/felles</generateDirectory>
+							<strict>false</strict>
+							<plugins>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics</artifactId>
+									<version>0.6.5</version>
+								</plugin>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics-annotate</artifactId>
+									<version>0.6.5</version>
+								</plugin>
+							</plugins>
+							<args>
+								<arg>-Xannotate</arg>
+							</args>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>add-test-sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-test-sources/xjc-xsd</source>
+							</sources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

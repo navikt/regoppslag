@@ -1,0 +1,107 @@
+package no.nav.regoppslag.treg001;
+
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
+import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
+import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
+import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * @author Hans Petter Simonsen - Miles
+ */
+public class Orchestrator {
+	private static final Logger LOG = LoggerFactory.getLogger(Orchestrator.class);
+
+	private ElementEnricherPluginRegistry registry;
+
+	public void setRegistry(ElementEnricherPluginRegistry registry) {
+		this.registry = registry;
+	}
+
+
+
+	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+	}
+
+
+	public static class Tuple<A,B> {
+		private A element;
+		private B plugin;
+		public Tuple(A element, B plugin) {
+			this.element = element;
+			this.plugin = plugin;
+		}
+		A getElement() {
+			return element;
+		}
+		B getPlugin() {
+			return plugin;
+		}
+	}
+
+	public Document process(Document document, NamespaceContext namespaceContext) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
+		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
+		Set<XPathExpression> supportedElements = registry.getSupportedElements();
+		for (XPathExpression xpath : supportedElements) {
+			Node node = findSingleNode(xpath, document);
+			if (node != null) {
+				processingList.add(new Tuple<>(node, registry.getOrCreateElementEnricherPlugin(xpath)));
+			}
+		}
+
+		final List<Throwable> unhandledErrors = new ArrayList<>();
+
+		Flowable.fromIterable(processingList)
+				.parallel()
+				.runOn(Schedulers.computation())
+				.map(tuple -> tuple.plugin.processElement(tuple.element, namespaceContext))
+				.sequential()
+				.blockingSubscribe(
+						onNextElement -> aggregate(document, onNextElement),
+						(Throwable onError) -> unhandledErrors.add(onError),
+						() -> LOG.debug("Processing completed successfully - context hopefully displayed in MDC")
+				)
+				;
+
+		if (!unhandledErrors.isEmpty()) {
+			MultiExceptionHolder errors = new MultiExceptionHolder("Errors in asynch prosessing");
+			errors.getUnhandledErrors().addAll(unhandledErrors);
+			throw errors;
+		}
+		return document;
+	}
+
+	private void aggregate(Document document, Node newElement) {
+		Element element = (Element) newElement;
+		// Find element in original XML, only one of each supported
+		Node orgElem = document.getElementsByTagName(newElement.getNodeName()).item(0);
+		// If plugin does in-place mutation, no aggregation is necessary.
+		if (newElement.isSameNode(orgElem)) {
+			return;
+		}
+		Node importNode = document.adoptNode(element);
+		// Replace original element with new element.
+		orgElem.getParentNode().insertBefore(importNode, orgElem);
+		orgElem.getParentNode().removeChild(orgElem);
+	}
+
+
+}
