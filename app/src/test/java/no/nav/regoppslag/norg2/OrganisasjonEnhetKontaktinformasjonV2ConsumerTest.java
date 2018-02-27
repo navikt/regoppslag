@@ -64,6 +64,21 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 		assertThat(enhetNavn, nullValue());
 	}
 
+	//TODO
+	//@Test
+	public void shouldCacheHentEnhetNavn() throws Exception {
+		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
+
+		organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+
+		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(createResponse("Denne enheten"));
+
+		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+
+		assertThat(enhetNavn, is(ENHET_NAVN));
+	}
+
+
 	private WSHentKontaktinformasjonForEnhetBolkResponse defaultResponse() {
 		return createResponse(ENHET_NAVN);
 	}

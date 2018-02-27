@@ -38,8 +38,6 @@ public class Orchestrator {
 
 
 	private Node findSingleNode(QName qname, Document xmlDocument) throws XPathExpressionException {
-		XPath xPath = XPathFactory.newInstance().newXPath();
-//		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 		return xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
 	}
 
@@ -61,7 +59,6 @@ public class Orchestrator {
 
 	public Document process(Document document) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
 		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
-//		Set<XPathExpression> supportedElements = registry.getSupportedElements();
 		Set<QName> supportedElements = registry.getSupportedElements();
 		for (QName xpath : supportedElements) {
 			Node node = findSingleNode(xpath, document);

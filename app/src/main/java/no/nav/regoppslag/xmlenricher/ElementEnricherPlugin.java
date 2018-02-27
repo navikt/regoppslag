@@ -6,8 +6,6 @@ import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalExcepti
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.NamespaceContext;
-
 /**
  * @author Hans Petter Simonsen - Miles
  * Enriches a specific {@link Element} with additional content.

@@ -9,16 +9,11 @@ import static org.hamcrest.Matchers.is;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
-import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.File;
 
 /**
@@ -31,25 +26,17 @@ public class MottakerPlugin1Test {
 	public void testPlugin1() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
-//		XPath xPath = XPathFactory.newInstance().newXPath();
-//		UniversalNamespaceCache namespaceContext = new UniversalNamespaceCache(document, false);
-//		xPath.setNamespaceContext(namespaceContext);
-//		String prefix = namespaceContext.getPrefix("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles");
-//		String expression = "//" + prefix + ":mottaker";
-//		XPathExpression xPathExpression = xPath.compile(expression);
-		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles","mottaker");
 
+		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles","mottaker");
 		Node node = findSingleNode(qName, document);
 
 		writeXml(node);
 
 		MottakerPlugin1 plugin1 = new MottakerPlugin1();
-
 		Node processed = plugin1.processElement(node);
 		writeXml(processed);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-//		mottakerJaxbHelper.setNamespacePrefixMapper(new NamespacePrefixMapperHelper(namespaceContext));
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(mottaker.getNavn(), is("Test Testesen"));

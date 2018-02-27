@@ -2,13 +2,11 @@ package no.nav.regoppslag.plugins;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
 import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
-import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -16,7 +14,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,11 +31,7 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 	}
 
 	@Override
-//	public Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
 	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
-//		if (namespaceContext instanceof UniversalNamespaceCache) {
-//			setNamespacePrefixMapper(new NamespacePrefixMapperHelper((UniversalNamespaceCache)namespaceContext));
-//		}
 		validateElementType(content);
 		try {
 			Mottaker mottaker = unmarshal(content);

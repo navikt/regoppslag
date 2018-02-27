@@ -45,7 +45,6 @@ public class LdapConfig {
 
 	}
 
-
 	@Bean
 	public CacheManager cacheManager() {
 		// configure and return an implementation of Spring's CacheManager SPI

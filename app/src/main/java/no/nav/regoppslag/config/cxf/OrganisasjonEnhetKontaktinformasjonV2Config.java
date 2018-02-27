@@ -1,20 +1,31 @@
 package no.nav.regoppslag.config.cxf;
 
+import static no.nav.regoppslag.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.norg2.OrganisasjonEnhetKontaktinformasjonV2Consumer.HENT_ENHET_NAVN;
+
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonKontaktinformasjonV2Alias;
-import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.binding.OrganisasjonEnhetKontaktinformasjonV2;
+import org.apache.cxf.Bus;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import javax.xml.namespace.QName;
+import java.util.Arrays;
 
 /**
  * Spring config for OrganisasjonEnhetKontaktinformasjonV2 CXF Endpoint
  *
  * @author Ketill Fenne, Visma Consulting
  */
+@Configuration
+@EnableCaching
 public class OrganisasjonEnhetKontaktinformasjonV2Config  extends AbstractCxfEndpointConfig {
 	private static final String NAMESPACE = "http://nav.no/tjeneste/virksomhet/organisasjonEnhetKontaktinformasjon/v2/Binding";
 
@@ -38,4 +49,11 @@ public class OrganisasjonEnhetKontaktinformasjonV2Config  extends AbstractCxfEnd
 		return createPort(OrganisasjonEnhetKontaktinformasjonV2.class);
 	}
 
+	@Bean
+	public CacheManager cacheManager() {
+		// configure and return an implementation of Spring's CacheManager SPI
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache(HENT_ENHET_NAVN)));
+		return cacheManager;
+	}
 }

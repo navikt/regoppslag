@@ -12,11 +12,8 @@ import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.personv3.PersonV3Consumer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @EnableConfigurationProperties({
 		OrganisasjonV4Alias.class,
