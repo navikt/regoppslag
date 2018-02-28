@@ -18,7 +18,7 @@ import javax.validation.constraints.Min;
 @ToString
 @ConfigurationProperties("VIRKSOMHET_ORGANISASJON_KONTAKTINFORMASJON_V2")
 @Validated
-public class OrganisasjonKontaktinformasjonV2Alias {
+public class OrganisasjonEnhetKontaktinformasjonV2Alias {
 	@NotEmpty
 	private String endpointurl;
 	private String description;

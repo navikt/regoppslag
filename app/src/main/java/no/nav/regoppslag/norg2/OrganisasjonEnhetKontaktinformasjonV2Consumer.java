@@ -6,7 +6,6 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.Organis
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSFeiletEnhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.meldinger.WSHentKontaktinformasjonForEnhetBolkRequest;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.meldinger.WSHentKontaktinformasjonForEnhetBolkResponse;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -18,8 +17,8 @@ import javax.inject.Inject;
 @Service
 public class OrganisasjonEnhetKontaktinformasjonV2Consumer {
 
-
 	private final OrganisasjonEnhetKontaktinformasjonV2 organisasjonEnhetKontaktinformasjonV2;
+
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
 
 	@Inject
@@ -27,7 +26,6 @@ public class OrganisasjonEnhetKontaktinformasjonV2Consumer {
 		this.organisasjonEnhetKontaktinformasjonV2 = organisasjonEnhetKontaktinformasjonV2;
 	}
 
-	@Cacheable(value = HENT_ENHET_NAVN)
 	public String hentEnhetNavn(String enhetNr) {
 		try {
 			WSHentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
