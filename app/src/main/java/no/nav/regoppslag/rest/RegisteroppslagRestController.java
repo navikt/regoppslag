@@ -30,8 +30,8 @@ public class RegisteroppslagRestController {
 	}
 	
 	@PostMapping(consumes = {"application/JSON"}, produces = {"application/JSON"})
-	@ExceptionHandler({MultiExceptionHolder.class,RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
-	public @ResponseBody RegOppslagResponseTo getKomplettBrevdata(@RequestBody RegOppslagRequestTo requestBody) throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder {
+	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
+	public @ResponseBody RegOppslagResponseTo getKomplettBrevdata(@RequestBody RegOppslagRequestTo requestBody) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		regOppslagService.hentBrevdataFraRegistre(requestBody);
 		return RegOppslagResponseTo.builder().brevdata(requestBody.getBrevdata()).build();
 	}

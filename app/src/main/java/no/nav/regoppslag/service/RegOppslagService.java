@@ -57,9 +57,9 @@ public class RegOppslagService {
 		return writer.toString();
 	}
 	
-	public RegOppslagResponseTo hentBrevdataFraRegistre(RegOppslagRequestTo requestTo) throws MultiExceptionHolder, RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public RegOppslagResponseTo hentBrevdataFraRegistre(RegOppslagRequestTo requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		String responseBrevdata;
+		String responseBrevdata = null;
 		try {
 			Document brevdata = stringToDocument(requestTo.getBrevdata());
 			Document brevdataUtfylt = orchestrator.process(brevdata);
@@ -70,8 +70,25 @@ public class RegOppslagService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.error(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
+		} catch (MultiExceptionHolder t) {
+			//TODO: lage MultiExceptionHolder.report og rapportere som enten functional eller teknisk feil
+			logExceptions(t);
+			if (t.hasFunctionExceptions()) {
+				throw new RegOppslagFunctionalException("Registeroppslag feilet. Vennligst fiks din request.\n\r"+t.report(),t.getCause());
+			} else {
+				throw new RegOppslagTechnicalException("Teknisk feil. Bedre lykke neste gang.\n\r"+t.report(), t.getCause());
+			}
 		}
 		return RegOppslagResponseTo.builder().brevdata(responseBrevdata).build();
 		
+	}
+	
+	private void logExceptions(MultiExceptionHolder t) {
+		t.getUnhandledErrors().stream().forEach(error -> {
+			if (error instanceof RegOppslagFunctionalException) {
+				log.warn(error.getMessage(),error);
+			} else {
+				log.error(error.getMessage(),error);
+			}   });
 	}
 }
