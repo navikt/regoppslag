@@ -11,8 +11,11 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.AktoerHarNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Feil;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkResponse;
 import org.junit.Test;
@@ -23,85 +26,71 @@ import org.junit.Test;
 public class PersonV3ConsumerTest {
 
 	private static final String FNR = "99999999999";
-	private static final String FORNAVN = " TOM";
-	private static final String MELLOMNAVN = " MARVOLO ";
-	private static final String ETTERNAVN = "RIDDLE ";
+	private static final String FORNAVN = "TOM";
+	private static final String MELLOMNAVN = "MARVOLO";
+	private static final String ETTERNAVN = "RIDDLE";
 
 	private PersonV3 personV3 = mock(PersonV3.class);
 	private PersonV3Consumer personV3Consumer = new PersonV3Consumer(personV3);
 
 	@Test
-	public void shouldHentPersonnavn() {
-		when(personV3.hentPersonnavnBolk(any(HentPersonnavnBolkRequest.class))).thenReturn(defaultResponse());
+	public void shouldHentPersonnavn() throws Exception{
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
 
-		String personnavn = personV3Consumer.hentPersonnavn(FNR);
+		Person person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(personnavn, is("TOM MARVOLO RIDDLE"));
+		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM MARVOLO RIDDLE"));
 	}
 
 	@Test
-	public void shouldHentPersonNavnWhenMissingMellomnavn() {
-		when(personV3.hentPersonnavnBolk(any(HentPersonnavnBolkRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
+	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
 
-		String personnavn = personV3Consumer.hentPersonnavn(FNR);
+		Person person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(personnavn, is("TOM RIDDLE"));
+		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM RIDDLE"));
 	}
 
 	@Test
-	public void shouldReturnNullWhenNavnInResponse() {
-		HentPersonnavnBolkResponse response = defaultResponse();
-		response.getAktoerHarNavnListe().clear();
-		when(personV3.hentPersonnavnBolk(any(HentPersonnavnBolkRequest.class))).thenReturn(response);
+	public void shouldReturnNullWhenNavnInResponse() throws Exception{
+		HentPersonResponse response = defaultResponse();
+		response.setPerson(null);
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 
-		String personnavn = personV3Consumer.hentPersonnavn(FNR);
+		Person person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(personnavn, nullValue());
+		assertThat(person, nullValue());
 	}
 
 	@Test
-	public void shouldReturnNullWhenFeilListeInResponse() {
-		HentPersonnavnBolkResponse response = defaultResponse();
-		response.getAktoerHarNavnListe().clear();
-		Feil feil = new Feil();
-		PersonIdent personIdent = new PersonIdent();
-		NorskIdent norskIdent = new NorskIdent();
-		norskIdent.setIdent(FNR);
-		personIdent.setIdent(norskIdent);
-		feil.setAktoer(personIdent);
-		feil.setFeilBeskrivelse("Brukeren finnes ikke");
-		response.getFeilListe().add(feil);
-		when(personV3.hentPersonnavnBolk(any(HentPersonnavnBolkRequest.class))).thenReturn(response);
+	public void shouldReturnNullWhenNameNotInResponse() throws Exception{
+		HentPersonResponse response = defaultResponse();
+		response.getPerson().setPersonnavn(null);
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 
-		String personnavn = personV3Consumer.hentPersonnavn(FNR);
+		Person person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(personnavn, nullValue());
+		assertThat(person.getPersonnavn(), nullValue());
 	}
 
-	@Test
-	public void shouldReturnNullWhenNameNotInResponse() {
-		HentPersonnavnBolkResponse response = defaultResponse();
-		response.getAktoerHarNavnListe().get(0).setPersonnavn(null);
-		when(personV3.hentPersonnavnBolk(any(HentPersonnavnBolkRequest.class))).thenReturn(response);
-
-		String personnavn = personV3Consumer.hentPersonnavn(FNR);
-
-		assertThat(personnavn, nullValue());
-	}
-
-	private HentPersonnavnBolkResponse defaultResponse() {
+	private HentPersonResponse defaultResponse() {
 		return createResponse(FORNAVN, MELLOMNAVN, ETTERNAVN);
 	}
 
-	private HentPersonnavnBolkResponse createResponse(String fornavn, String mellomnavn, String etternavn) {
-		HentPersonnavnBolkResponse response = new HentPersonnavnBolkResponse();
-		AktoerHarNavn aktoerHarNavn = new AktoerHarNavn();
-		Personnavn value = new Personnavn();
-		value.setFornavn(fornavn);
-		value.setMellomnavn(mellomnavn);
-		value.setEtternavn(etternavn);
-		aktoerHarNavn.setPersonnavn(value);
-		response.getAktoerHarNavnListe().add(aktoerHarNavn);
+	private HentPersonResponse createResponse(String fornavn, String mellomnavn, String etternavn) {
+		HentPersonResponse response = new HentPersonResponse();
+		Personnavn personnavn = new Personnavn();
+		personnavn.setFornavn(fornavn);
+		if (mellomnavn != null) {
+			personnavn.setMellomnavn(mellomnavn);
+			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
+		} else {
+			personnavn.setSammensattNavn(fornavn + " " + etternavn);
+		}
+		personnavn.setEtternavn(etternavn);
+		Person person = new Person();
+		person.setPersonnavn(personnavn);
+		response.setPerson(person);
 		return response;
 	}
 }

@@ -122,6 +122,12 @@
 			<artifactId>organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon</artifactId>
 			<version>${organisasjonenhetkontaktinformasjon-v2-tjenestespesifikasjon.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dok.metaforcemal</groupId>
+			<artifactId>pesysbrev01</artifactId>
+			<version>1.0.44</version>
+		</dependency>
+
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -156,12 +162,6 @@
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
 			</exclusions>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dok.metaforcemal</groupId>
-			<artifactId>pesysbrev01</artifactId>
-			<version>1.0.44</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -215,7 +215,7 @@
 				<artifactId>maven-jaxb2-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>generate-jaxb-felles</id>
+						<id>generate-jaxb-xsd-test.felles</id>
 						<phase>generate-test-sources</phase>
 						<goals>
 							<goal>generate</goal>
@@ -225,6 +225,35 @@
 							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
 							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
 							<generateDirectory>${project.build.directory}/generated-test-sources/xjc-xsd/felles</generateDirectory>
+							<strict>false</strict>
+							<plugins>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics</artifactId>
+									<version>0.6.5</version>
+								</plugin>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics-annotate</artifactId>
+									<version>0.6.5</version>
+								</plugin>
+							</plugins>
+							<args>
+								<arg>-Xannotate</arg>
+							</args>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-jaxb-xsd.felles</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
+							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
+							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc-xsd/felles</generateDirectory>
 							<strict>false</strict>
 							<plugins>
 								<plugin>
@@ -259,6 +288,18 @@
 						<configuration>
 							<sources>
 								<source>${project.build.directory}/generated-test-sources/xjc-xsd</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/xjc-xsd</source>
 							</sources>
 						</configuration>
 					</execution>

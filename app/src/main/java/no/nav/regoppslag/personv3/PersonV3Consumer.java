@@ -1,14 +1,17 @@
 package no.nav.regoppslag.personv3;
 
-import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.AktoerHarNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Feil;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkResponse;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -19,7 +22,6 @@ import javax.inject.Inject;
 @Slf4j
 @Service
 public class PersonV3Consumer {
-	private static final String SEPARATOR = " ";
 	private final PersonV3 personV3;
 
 	@Inject
@@ -27,51 +29,41 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 
-	public String hentPersonnavn(final String personidentifikator) {
-		HentPersonnavnBolkRequest request = mapHentPersonnavnBolkRequest(personidentifikator);
+	public Person hentPerson(final String personidentifikator) {
+		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
-		HentPersonnavnBolkResponse response = personV3.hentPersonnavnBolk(request);
-		if (response != null && response.getAktoerHarNavnListe().size() == 1) {
-			return getFullName(response.getAktoerHarNavnListe().get(0));
-		} else if (response != null && !response.getFeilListe().isEmpty()) {
-			logFeilmelding(response, personidentifikator);
+		HentPersonResponse response = null;
+		try {
+			response = personV3.hentPerson(request);
+		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
+			hentPersonPersonIkkeFunnet.printStackTrace();
+		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
+			hentPersonSikkerhetsbegrensning.printStackTrace();
+		}
+		if (response != null && response.getPerson()!= null) {
+			return response.getPerson();
 		}
 		return null;
 	}
 
-	private HentPersonnavnBolkRequest mapHentPersonnavnBolkRequest(String personidentifikator) {
-		HentPersonnavnBolkRequest request = new HentPersonnavnBolkRequest();
-		PersonIdent personIdent = new PersonIdent();
+	private HentPersonRequest mapHentPersonRequest(String personidentifikator) {
+		HentPersonRequest request = new HentPersonRequest();
+
+		Personidenter personidenter = new Personidenter();
+		if (StringUtils.startsWithAny(personidentifikator, "0", "1", "2", "3")) {
+			personidenter.setValue("FNR");
+		} else {
+			personidenter.setValue("DNR");
+		}
+
 		NorskIdent norskIdent = new NorskIdent();
+		norskIdent.setType(personidenter);
 		norskIdent.setIdent(personidentifikator);
+
+		PersonIdent personIdent = new PersonIdent();
 		personIdent.setIdent(norskIdent);
-		request.getAktoerListe().add(personIdent);
+		request.setAktoer(personIdent);
+		request.getInformasjonsbehov().add(Informasjonsbehov.ADRESSE);
 		return request;
-	}
-
-	private String getFullName(AktoerHarNavn navn) {
-		if (navn.getPersonnavn() != null) {
-			String fornavn = navn.getPersonnavn().getFornavn();
-			String mellomnavn = navn.getPersonnavn().getMellomnavn();
-			String etternavn = navn.getPersonnavn().getEtternavn();
-			return Joiner.on(SEPARATOR)
-					.skipNulls()
-					.join(fornavn == null ? null : fornavn.trim(),
-							mellomnavn == null ? null : mellomnavn.trim(),
-							etternavn == null ? null : etternavn.trim());
-		}
-		return null;
-	}
-
-	private void logFeilmelding(HentPersonnavnBolkResponse response, String personidentifikator) {
-		for (Feil feil : response.getFeilListe()) {
-			if (feil.getAktoer() instanceof PersonIdent) {
-				PersonIdent ident = (PersonIdent) feil.getAktoer();
-				if (ident.getIdent().getIdent().equals(personidentifikator)) {
-					log.info("Personen finnes ikke for personidentifikator={}, message={}",
-							personidentifikator, feil.getFeilBeskrivelse());
-				}
-			}
-		}
 	}
 }
