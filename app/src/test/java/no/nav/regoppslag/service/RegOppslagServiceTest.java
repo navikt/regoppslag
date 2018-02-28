@@ -1,0 +1,73 @@
+package no.nav.regoppslag.service;
+
+import static no.nav.regoppslag.util.TestUtil.stringToDocument;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.treg001.Orchestrator;
+import no.nav.regoppslag.treg001.RegOppslagRequestTo;
+import no.nav.regoppslag.treg001.RegOppslagResponseTo;
+import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+
+/**
+ * @author Jarl Øystein Samseth, Visma Consulting
+ */
+public class RegOppslagServiceTest {
+	private String brevdata = "<ole>brumm</ole>";
+	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
+	
+	private RegOppslagRequestTo request = RegOppslagRequestTo.builder().dokumentTypeId("123").brevdata(brevdata).build();
+	Orchestrator orchestrator = mock(Orchestrator.class);
+	private RegOppslagService regOppslagService = new RegOppslagService(orchestrator);
+	
+	ExpectedException exception = ExpectedException.none();
+	
+	/**HVIS request inneholder gyldige verdier, SÅ skal orchestrator kalles og metoden returnere ferdig utfylt brevdata.*/
+	@Test
+	public void shouldGetKomplettBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
+		when(orchestrator.process(any())).thenReturn(stringToDocument(brevdataUtfylt));
+		RegOppslagResponseTo actualResponse = regOppslagService.hentBrevdataFraRegistre(request);
+		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
+		Mockito.verify(orchestrator, Mockito.times(1)).process(any());
+	}
+	
+	/** HVIS Plugin mangler, SÅ skal teknisk feil kastes */
+	@Test
+	public void shouldHandleMissingPluginException() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
+		exception.expect(RegOppslagTechnicalException.class);
+		when(orchestrator.process(any())).thenThrow(MissingPluginException.class);
+		regOppslagService.hentBrevdataFraRegistre(request);
+	}
+	
+	/** HVIS XPathExpression feiler i behandling av brevdata, SÅ skal teknisk feil kastes */
+	@Test
+	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException {
+		exception.expect(RegOppslagTechnicalException.class);
+		when(orchestrator.process(any())).thenThrow(XPathExpressionException.class);
+		regOppslagService.hentBrevdataFraRegistre(request);
+	}
+	
+	/** HVIS parsing av brevdata fra xml- til streng-format feiler, SÅ skal funksjonell feil kastes */
+	@Test
+	public void shouldHandleTransformerException() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
+		exception.expect(RegOppslagTechnicalException.class);
+		Document document=null;
+		when(orchestrator.process(any())).thenReturn(document);
+		regOppslagService.hentBrevdataFraRegistre(request);
+	}
+}
+
