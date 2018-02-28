@@ -1,5 +1,6 @@
 package no.nav.regoppslag.exceptions;
 
+
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
