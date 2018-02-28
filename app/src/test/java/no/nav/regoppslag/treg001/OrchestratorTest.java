@@ -104,5 +104,4 @@ public class OrchestratorTest {
 
 		writeXml(processed);
 	}
-
 }
