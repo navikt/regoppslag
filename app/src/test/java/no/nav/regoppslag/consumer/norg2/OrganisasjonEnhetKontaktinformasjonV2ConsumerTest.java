@@ -25,9 +25,9 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 	public void shouldHentEnhetNavn() throws Exception {
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
 
-		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		WSOrganisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhetNavn, is(ENHET_NAVN));
+		assertThat(enhet.getEnhetNavn(), is(ENHET_NAVN));
 	}
 
 	@Test
@@ -36,9 +36,9 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 		response.getEnhetListe().clear();
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
 
-		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		WSOrganisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhetNavn, nullValue());
+		assertThat(enhet, nullValue());
 	}
 
 	@Test
@@ -47,9 +47,9 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 		response.getEnhetListe().get(0).setEnhetNavn(null);
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
 
-		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		WSOrganisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhetNavn, nullValue());
+		assertThat(enhet.getEnhetNavn(), nullValue());
 	}
 
 	@Test
@@ -59,9 +59,9 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 		response.getFeiletEnhetListe().add(0, new WSFeiletEnhet().withEnhetId(ENHET_NR).withFeilmelding("Fant ikke enheten"));
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
 
-		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		WSOrganisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhetNavn, nullValue());
+		assertThat(enhet, nullValue());
 	}
 
 	//TODO
@@ -69,13 +69,13 @@ public class OrganisasjonEnhetKontaktinformasjonV2ConsumerTest {
 	public void shouldCacheHentEnhetNavn() throws Exception {
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
 
-		organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
 		when(organisasjonEnhetKontaktinformasjonV2.hentKontaktinformasjonForEnhetBolk(any(WSHentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(createResponse("Denne enheten"));
 
-		String enhetNavn = organisasjonEnhetKontaktinformasjonV2Consumer.hentEnhetNavn(ENHET_NR);
+		WSOrganisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV2Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhetNavn, is(ENHET_NAVN));
+		assertThat(enhet.getEnhetNavn(), is(ENHET_NAVN));
 	}
 
 
