@@ -1,4 +1,4 @@
-package no.nav.regoppslag.plugins;
+package no.nav.regoppslag.pluginsPOC;
 
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.plugins;
+package no.nav.regoppslag.pluginsPOC;
 
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;

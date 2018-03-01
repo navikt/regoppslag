@@ -6,9 +6,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Felles;
-import no.nav.regoppslag.plugins.FailingPlugin;
-import no.nav.regoppslag.plugins.MottakerPlugin1;
-import no.nav.regoppslag.plugins.SignerendeSaksbehandlerPlugin;
+import no.nav.regoppslag.pluginsPOC.FailingPlugin;
+import no.nav.regoppslag.pluginsPOC.MottakerPlugin1;
+import no.nav.regoppslag.pluginsPOC.SignerendeSaksbehandlerPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;

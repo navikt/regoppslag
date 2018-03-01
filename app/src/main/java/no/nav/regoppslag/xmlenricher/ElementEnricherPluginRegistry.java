@@ -13,7 +13,7 @@ import java.util.Set;
  * Registry to hold supported {@link ElementEnricherPlugin} classes.
  * Registry also functions as a Factory class to instantiate {@link ElementEnricherPlugin} objects with the {@link #getOrCreateElementEnricherPlugin(XPathExpression)} method.
  *
- * ElementEnricherPluginRegistry implementation may scan classpath for all {@link ElementEnricherPlugin} classes to provide automatic registration of plugins,
+ * ElementEnricherPluginRegistry implementation may scan classpath for all {@link ElementEnricherPlugin} classes to provide automatic registration of pluginsPOC,
  * or the registry may be populated in a spring bean declaration.
  */
 public interface ElementEnricherPluginRegistry {

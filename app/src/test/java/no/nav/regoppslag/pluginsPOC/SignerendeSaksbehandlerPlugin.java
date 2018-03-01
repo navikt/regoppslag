@@ -1,6 +1,5 @@
-package no.nav.regoppslag.plugins;
+package no.nav.regoppslag.pluginsPOC;
 
-import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
@@ -9,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import javax.inject.Inject;
 
 /**
  * @author Hans Petter Simonsen - Miles

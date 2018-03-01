@@ -1,7 +1,6 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
-import no.nav.modig.core.util.LdapUtils;
 import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
@@ -55,7 +54,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 			Node node = marshal(saksbehandler, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
-			Node renameNode = newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "f:signerendeSaksbehandler");
+			Node renameNode = newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", content.getNodeName());
 
 			return renameNode;
 		} catch (JAXBException | ParserConfigurationException e) {

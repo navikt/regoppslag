@@ -1,4 +1,4 @@
-package no.nav.regoppslag.plugins;
+package no.nav.regoppslag.pluginsPOC;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;

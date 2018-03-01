@@ -50,13 +50,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			mottaker = personV3Mapper.map(person, mottaker);
 
-			mottaker.setNavn("Test Testesen");
-			NorskPostadresse addresse = new NorskPostadresse();
-			addresse.setAdresselinje1("Heimegata 2");
-			addresse.setPostnummer("1234");
-			addresse.setPoststed("Gokk");
-			mottaker.setAdresse(addresse);
-
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
 
