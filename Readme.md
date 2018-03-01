@@ -1,0 +1,2 @@
+VM options du må sette for å kjøre applikasjonen
+-DSRVDOKMOTALTINN_USERNAME=srvdokmotaltinn  -DSRVDOKMOTALTINN_PASSWORD=3dThjs0oSo18M1l  -DSRVREGOPPSLAG_CERT_KEYSTORE=C:/truststore/dokmotaltinn/srvdokmotaltinn_t.jks  -DSRVREGOPPSLAG_CERT_PASSWORD=2Ii0cX45wG  -Djavax.net.ssl.trustStore=C:/truststore/dokmotaltinn/truststore_t.jts -Djavax.net.ssl.trustStorePassword=e34jbsl01842 -Dspring.profiles.active=u1

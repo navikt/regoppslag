@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 @RestController
 public class RegisteroppslagRestController {
+	public static final String REGISTEROPPSLAG_URI_PATH = "/REST/registeroppslag";
 	
 	private RegOppslagService regOppslagService;
 	private Histogram.Timer requestTimer;
@@ -34,23 +35,9 @@ public class RegisteroppslagRestController {
 		this.regOppslagService = regOppslagService;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/kompletterBrevdata", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity validerOgKompletterBrevdata(@RequestBody RegOppslagRequestTo requestBody) {
-		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "TREG001", "ValiderOgKompletterBrevdata").startTimer();
-			return new ResponseEntity(regOppslagService.hentBrevdataFraRegistre(requestBody), HttpStatus.OK);
-		} catch (RegOppslagFunctionalException e) {
-			return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
-			
-		}catch (RegOppslagTechnicalException e) {
-			return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}finally {
-			requestTimer.observeDuration();
-		}
-	}
-	
-	@RequestMapping(method = RequestMethod.POST, value = "/hentMottakerOgAddresse", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RegOppslagResponseTo hentMottakerOgAddresse(@RequestBody RegOppslagRequestTo requestBody)
+	@PostMapping(value = REGISTEROPPSLAG_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
+	public @ResponseBody RegOppslagResponseTo getKomplettBrevdata(@RequestBody RegOppslagRequestTo requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		return regOppslagService.hentBrevdataFraRegistre(requestBody);
 	}

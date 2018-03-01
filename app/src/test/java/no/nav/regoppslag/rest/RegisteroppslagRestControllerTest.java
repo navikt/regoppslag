@@ -34,7 +34,7 @@ public class RegisteroppslagRestControllerTest {
 	ExpectedException exception = ExpectedException.none();
 
 	@Before
-	public void setUp() throws MultiExceptionHolder, RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		request = RegOppslagRequestTo.builder().dokumentTypeId("123").brevdata(brevdata).build();
 		response = RegOppslagResponseTo.builder().brevdata(brevdataUtfylt).build();
 		when(regOppslagService.hentBrevdataFraRegistre(request)).thenReturn(response);
