@@ -1,8 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
-import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
-import no.nav.regoppslag.ldap.support.SaksbehandlerMapper;
+import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;

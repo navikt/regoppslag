@@ -1,4 +1,4 @@
-package no.nav.regoppslag.ldap.support;
+package no.nav.regoppslag.consumer.ldap.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 

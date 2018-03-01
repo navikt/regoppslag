@@ -1,4 +1,4 @@
-package no.nav.regoppslag.norg2;
+package no.nav.regoppslag.consumer.norg2;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.HentKontaktinformasjonForEnhetBolkUgyldigInput;

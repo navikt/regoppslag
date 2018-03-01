@@ -1,4 +1,4 @@
-package no.nav.regoppslag.norg2;
+package no.nav.regoppslag.consumer.norg2;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

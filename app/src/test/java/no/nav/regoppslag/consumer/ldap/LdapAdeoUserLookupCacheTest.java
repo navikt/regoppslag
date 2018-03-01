@@ -1,4 +1,4 @@
-package no.nav.regoppslag.ldap;
+package no.nav.regoppslag.consumer.ldap;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

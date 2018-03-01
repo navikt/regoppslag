@@ -1,4 +1,4 @@
-package no.nav.regoppslag.organisasjonv4;
+package no.nav.regoppslag.consumer.organisasjonv4;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentNoekkelinfoOrganisasjonOrganisasjonIkkeFunnet;

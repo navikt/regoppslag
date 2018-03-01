@@ -1,4 +1,4 @@
-package no.nav.regoppslag.personv3;
+package no.nav.regoppslag.consumer.personv3;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -8,16 +8,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.AktoerHarNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Feil;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkResponse;
 import org.junit.Test;
 
 /**

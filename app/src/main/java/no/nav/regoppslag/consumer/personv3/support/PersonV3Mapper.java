@@ -1,4 +1,4 @@
-package no.nav.regoppslag.personv3.support;
+package no.nav.regoppslag.consumer.personv3.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;

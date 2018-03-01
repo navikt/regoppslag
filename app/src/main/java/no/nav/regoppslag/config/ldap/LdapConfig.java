@@ -1,8 +1,8 @@
 package no.nav.regoppslag.config.ldap;
 
-import static no.nav.regoppslag.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 
-import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;

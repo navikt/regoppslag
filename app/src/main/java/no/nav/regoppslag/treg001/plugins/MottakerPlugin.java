@@ -1,9 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.regoppslag.personv3.PersonV3Consumer;
-import no.nav.regoppslag.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
+import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;

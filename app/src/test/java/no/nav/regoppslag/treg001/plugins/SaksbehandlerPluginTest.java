@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.config.ldap.LdapConfig;
-import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
-import no.nav.regoppslag.ldap.support.SaksbehandlerMapper;
+import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.personv3;
+package no.nav.regoppslag.consumer.personv3;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;

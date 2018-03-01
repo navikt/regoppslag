@@ -1,4 +1,4 @@
-package no.nav.regoppslag.ldap;
+package no.nav.regoppslag.consumer.ldap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.ldap;
+package no.nav.regoppslag.consumer.ldap;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
