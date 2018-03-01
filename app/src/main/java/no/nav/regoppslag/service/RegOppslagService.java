@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.Orchestrator;
-import no.nav.regoppslag.treg001.RegOppslagRequestTo;
-import no.nav.regoppslag.treg001.RegOppslagResponseTo;
+import no.nav.regoppslag.treg001.RegOppslagRequest;
+import no.nav.regoppslag.treg001.RegOppslagResponse;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class RegOppslagService {
 		return writer.toString();
 	}
 	
-	public RegOppslagResponseTo hentBrevdataFraRegistre(RegOppslagRequestTo requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public RegOppslagResponse hentBrevdataFraRegistre(RegOppslagRequest requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		String responseBrevdata = null;
 		try {
@@ -79,7 +79,7 @@ public class RegOppslagService {
 				throw new RegOppslagTechnicalException(String.format("Technical exception: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
 			}
 		}
-		return RegOppslagResponseTo.builder().brevdata(responseBrevdata).build();
+		return RegOppslagResponse.builder().brevdata(responseBrevdata).build();
 		
 	}
 	

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.RegOppslagService;
-import no.nav.regoppslag.treg001.RegOppslagRequestTo;
-import no.nav.regoppslag.treg001.RegOppslagResponseTo;
+import no.nav.regoppslag.treg001.RegOppslagRequest;
+import no.nav.regoppslag.treg001.RegOppslagResponse;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.junit.Before;
@@ -17,7 +17,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -25,8 +24,8 @@ import javax.xml.xpath.XPathExpressionException;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class RegisteroppslagRestControllerTest {
-	private RegOppslagRequestTo request;
-	private RegOppslagResponseTo response;
+	private RegOppslagRequest request;
+	private RegOppslagResponse response;
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<ole>brumm</ole>";
 	RegOppslagService regOppslagService = mock(RegOppslagService.class);
@@ -35,15 +34,14 @@ public class RegisteroppslagRestControllerTest {
 
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		request = RegOppslagRequestTo.builder().dokumentTypeId("123").brevdata(brevdata).build();
-		response = RegOppslagResponseTo.builder().brevdata(brevdataUtfylt).build();
+		request = RegOppslagRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
+		response = RegOppslagResponse.builder().brevdata(brevdataUtfylt).build();
 		when(regOppslagService.hentBrevdataFraRegistre(request)).thenReturn(response);
 	}
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
-		ResponseEntity response = registeroppslagRestController.validerOgKompletterBrevdata(request);
-		RegOppslagResponseTo actualResponse= (RegOppslagResponseTo)response.getBody();
+		RegOppslagResponse actualResponse = registeroppslagRestController.getKomplettBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(regOppslagService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}
@@ -60,7 +58,7 @@ public class RegisteroppslagRestControllerTest {
 		MultiExceptionHolder exceptionHolder = new MultiExceptionHolder("registeroppslag feilet");
 		//TODO lag exceptions.
 		when(regOppslagService.hentBrevdataFraRegistre(any())).thenThrow(exceptionHolder);
-		registeroppslagRestController.validerOgKompletterBrevdata(request);
+		registeroppslagRestController.getKomplettBrevdata(request);
 	}
 	
 }

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.Orchestrator;
-import no.nav.regoppslag.treg001.RegOppslagRequestTo;
+import no.nav.regoppslag.treg001.RegOppslagRequest;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,7 +25,7 @@ public class ParseToXMLInService {
 	Orchestrator orchestrator = mock(Orchestrator.class);
 	
 	private String brevdata = "<ole>brumm</ole>";
-	private RegOppslagRequestTo request = RegOppslagRequestTo.builder().dokumentTypeId("123").brevdata(brevdata).build();
+	private RegOppslagRequest request = RegOppslagRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
 	private RegOppslagService regOppslagService = new RegOppslagService(orchestrator);
 	
 	@Parameterized.Parameter
@@ -42,7 +42,7 @@ public class ParseToXMLInService {
 	public void shouldHandleSaxParserException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder {
 		exception.expect(RegOppslagFunctionalException.class);
 		String brevdataFeilFormat = "<ole>brumm<ole>";
-		RegOppslagRequestTo.builder().dokumentTypeId("123").brevdata(brevdataFeilFormat).build();
+		RegOppslagRequest.builder().dokumentTypeId("123").brevdata(brevdataFeilFormat).build();
 		regOppslagService.hentBrevdataFraRegistre(request);
 	}
 }
