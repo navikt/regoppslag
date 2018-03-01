@@ -26,18 +26,25 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(MottakerPlugin.class);
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/xsd/felles/v1/PesysFelles";
+	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
 	public static final String ELEMENT_LOCALNAME = "mottaker";
+
+	private PersonV3Consumer personV3Consumer;
+
+	private PersonV3Mapper personV3Mapper;
+
 
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 
 	@Inject
-	PersonV3Consumer personV3Consumer;
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper) {
+		super(Mottaker.class);
+		this.personV3Consumer = personV3Consumer;
+		this.personV3Mapper = personV3Mapper;
+	}
 
-	@Inject
-	PersonV3Mapper personV3Mapper;
 
 	@Override
 	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
