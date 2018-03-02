@@ -6,7 +6,6 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostnummer;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSStedsadresseNorge;
 
 public class Norg2Mapper {
@@ -23,14 +22,15 @@ public class Norg2Mapper {
 					WSPostboksadresse postboksadresse = (WSPostboksadresse) wsEnhet.getKontaktinformasjon().getPostadresse();
 					postadresse.setAdresselinje1(postboksadresse.getPostboksnummer() + " " + postboksadresse.getPostboksanlegg());
 				}
-				WSPostnummer postnummer	= 	((WSStedsadresseNorge) wsEnhet.getKontaktinformasjon().getPostadresse()).getPoststed();
-				if (postnummer != null) {
-					postadresse.setPostnummer(postnummer.getValue());
-					postadresse.setPoststed(postnummer.getKodeverksRef());
+
+				if (wsEnhet.getKontaktinformasjon().getPostadresse() instanceof WSStedsadresseNorge) {
+					WSStedsadresseNorge stedAdresse	= 	(WSStedsadresseNorge) wsEnhet.getKontaktinformasjon().getPostadresse();
+					postadresse.setPostnummer(stedAdresse.getPoststed().getValue());
+					postadresse.setPoststed(stedAdresse.getPoststed().getKodeverksRef());
 				} else {
-					postnummer	= 	((WSPostboksadresseNorsk) wsEnhet.getKontaktinformasjon().getPostadresse()).getPoststed();
-					postadresse.setPostnummer(postnummer.getValue());
-					postadresse.setPoststed(postnummer.getKodeverksRef());
+					WSPostboksadresseNorsk postnummer	= 	(WSPostboksadresseNorsk) wsEnhet.getKontaktinformasjon().getPostadresse();
+					postadresse.setPostnummer(postnummer.getPoststed().getValue());
+					postadresse.setPoststed(postnummer.getPoststed().getKodeverksRef());
 				}
 				navEnhet.setAdresse(postadresse);
 			}
