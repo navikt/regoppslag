@@ -6,10 +6,11 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresseNorsk;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostnummer;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSStedsadresseNorge;
 
 public class Norg2Mapper {
-	public NavEnhet map (WSOrganisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+	public NavEnhet mapPostadresse (WSOrganisasjonsenhet wsEnhet, NavEnhet navEnhet) {
 		if (wsEnhet != null) {
 			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
 //TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
@@ -31,6 +32,26 @@ public class Norg2Mapper {
 					WSPostboksadresseNorsk postnummer	= 	(WSPostboksadresseNorsk) wsEnhet.getKontaktinformasjon().getPostadresse();
 					postadresse.setPostnummer(postnummer.getPoststed().getValue());
 					postadresse.setPoststed(postnummer.getPoststed().getKodeverksRef());
+				}
+				navEnhet.setAdresse(postadresse);
+			}
+		}
+		return navEnhet;
+	}
+	public NavEnhet mapBesokadresse (WSOrganisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+		if (wsEnhet != null) {
+			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
+			//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
+			NorskPostadresse postadresse = new NorskPostadresse();
+			WSGateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
+			if (gateadresse != null) {
+				postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+
+				WSPostnummer stedadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse().getPoststed();
+
+				if (stedadresse != null) {
+					postadresse.setPostnummer(stedadresse.getValue());
+					postadresse.setPoststed(stedadresse.getKodeverksRef());
 				}
 				navEnhet.setAdresse(postadresse);
 			}

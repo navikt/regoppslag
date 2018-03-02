@@ -28,15 +28,15 @@ public class Norg2MapperTest {
 	private static final String POSTBOKSNUMMER = "Boksnummer 1";
 
 	@Test
-	public void shouldMapSimpleEnhet() {
-		NavEnhet navEnhet = norg2Mapper.map(createSimpleWSEnhet(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+	public void shouldMapSimpleNavEnhet() {
+		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createSimpleWSEnhet(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsId(),is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(),is(NAV_ENHET_NAVN));
 	}
 
 	@Test
-	public void shouldMapStedadresseEnhet() {
-		NavEnhet navEnhet = norg2Mapper.map(createWSEnhetWithStedsadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+	public void shouldMapStedadresseNavEnhet() {
+		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createWSEnhetWithStedsadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -46,12 +46,23 @@ public class Norg2MapperTest {
 	}
 
 	@Test
-	public void shouldMapPostboksadresseEnhet() {
-		NavEnhet navEnhet = norg2Mapper.map(createWSEnhetWithPostbokssadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+	public void shouldMapPostboksadresseNavEnhet() {
+		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createWSEnhetWithPostbokssadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
 		assertThat(navEnhet.getAdresse().getAdresselinje1(), is(POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
+		assertThat(navEnhet.getAdresse().getPostnummer(), is(POSTNR));
+		assertThat(navEnhet.getAdresse().getPoststed(), is(POSTSTED));
+	}
+
+	@Test
+	public void shouldMapBesokAdresseNavEnhet() {
+		NavEnhet navEnhet = norg2Mapper.mapBesokadresse(createWSEnhetWithBesoksadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+
+		assertThat(navEnhet.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
 		assertThat(navEnhet.getAdresse().getPostnummer(), is(POSTNR));
 		assertThat(navEnhet.getAdresse().getPoststed(), is(POSTSTED));
 	}
@@ -114,4 +125,25 @@ public class Norg2MapperTest {
 		return wsEnhet;
 	}
 
+	private WSOrganisasjonsenhet createWSEnhetWithBesoksadresse (String enhetNavn) {
+		WSOrganisasjonsenhet wsEnhet = new WSOrganisasjonsenhet();
+
+		WSGateadresse gateadresse = new WSGateadresse();
+		gateadresse.setGatenavn(GATENAVN);
+		gateadresse.setHusnummer(HUSNR);
+		gateadresse.setHusbokstav(HUSBOKSTAV);
+
+		WSPostnummer postnummer = new WSPostnummer();
+		postnummer.setValue(POSTNR);
+		postnummer.setKodeverksRef(POSTSTED);
+
+		WSKontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new WSKontaktinformasjonForOrganisasjonsenhet();
+
+		gateadresse.setPoststed(postnummer);
+		kontaktinformasjon.setBesoeksadresse(gateadresse);
+
+		wsEnhet.setKontaktinformasjon(kontaktinformasjon);
+		wsEnhet.setEnhetNavn(enhetNavn);
+		return wsEnhet;
+	}
 }

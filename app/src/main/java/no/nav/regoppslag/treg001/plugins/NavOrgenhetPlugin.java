@@ -54,7 +54,9 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 
 			WSOrganisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
-			navEnhet = norg2Mapper.map(wsEnhet, navEnhet);
+			//TODO logikk for å sjekke hvilken mapper som skal kalles
+			//navEnhet = norg2Mapper.mapBesokadresse (wsEnhet, navEnhet);
+			navEnhet = norg2Mapper.mapPostadresse(wsEnhet, navEnhet);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
