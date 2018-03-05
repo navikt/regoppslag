@@ -9,12 +9,16 @@ import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentNoekkelinfoOrganisasjonOrganisasjonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.feil.OrganisasjonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SammensattNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentNoekkelinfoOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentNoekkelinfoOrganisasjonResponse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,65 +37,81 @@ public class OrganisasjonV4ConsumerTest {
 	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4);
 
 	@Test
-	public void shouldHentOrganisasjonsnavn() throws Exception {
-		when(organisasjonV4.hentNoekkelinfoOrganisasjon(any(HentNoekkelinfoOrganisasjonRequest.class))).thenReturn(defaultResponse());
+	public void shouldHentOrganisasjon() throws Exception {
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(defaultResponse());
 
-		String organisasjonsnavn = organisasjonV4Consumer.hentOrganisasjonsnavn(ORGNR);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjonsnavn, is(ORGNAVN));
+		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN));
 	}
 
 	@Test
-	public void shouldHentOrganisasjonsnavnWithMultipleNavnelinje() throws Exception {
-		when(organisasjonV4.hentNoekkelinfoOrganisasjon(any(HentNoekkelinfoOrganisasjonRequest.class))).thenReturn(createResponse(Arrays.asList(ORGNAVN, ORGNAVN_2)));
+	public void shouldHentOrganisasjonWithMultipleNavnelinje() throws Exception {
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(createResponse(Arrays.asList(ORGNAVN, ORGNAVN_2)));
 
-		String organisasjonsnavn = organisasjonV4Consumer.hentOrganisasjonsnavn(ORGNR);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjonsnavn, is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN + " " + ORGNAVN_2));
 	}
 
 	@Test
 	public void shouldReturnNullWhenOrganisasjonNotFound() throws Exception {
-		when(organisasjonV4.hentNoekkelinfoOrganisasjon(any(HentNoekkelinfoOrganisasjonRequest.class)))
-				.thenThrow(new HentNoekkelinfoOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
+				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
 
-		String organisasjonsnavn = organisasjonV4Consumer.hentOrganisasjonsnavn(ORGNR);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjonsnavn, nullValue());
+		assertThat(organisasjon, nullValue());
 	}
 
 	@Test
 	public void shouldReturnNullWhenNavnIsNull() throws Exception {
-		HentNoekkelinfoOrganisasjonResponse response = defaultResponse();
-		response.setNavn(null);
-		when(organisasjonV4.hentNoekkelinfoOrganisasjon(any(HentNoekkelinfoOrganisasjonRequest.class))).thenReturn(response);
+		HentOrganisasjonResponse response = defaultResponse();
+		response.setOrganisasjon(null);
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
 
-		String organisasjonsnavn = organisasjonV4Consumer.hentOrganisasjonsnavn(ORGNR);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjonsnavn, nullValue());
+		assertThat(organisasjon, nullValue());
 	}
 
 	@Test
 	public void shouldReturnNullWhenNavnWrongInstance() throws Exception {
-		HentNoekkelinfoOrganisasjonResponse response = defaultResponse();
-		response.setNavn(new SammensattNavn() {
+		HentOrganisasjonResponse response = defaultResponse();
+		Organisasjon org = new Organisasjon();
+		org.setNavn(new SammensattNavn() {
 		});
-		when(organisasjonV4.hentNoekkelinfoOrganisasjon(any(HentNoekkelinfoOrganisasjonRequest.class))).thenReturn(response);
+		response.setOrganisasjon(org);
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
 
-		String organisasjonsnavn = organisasjonV4Consumer.hentOrganisasjonsnavn(ORGNR);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjonsnavn, nullValue());
+		assertThat(sammensattNavn(organisasjon.getNavn()), nullValue());
 	}
 
-	private HentNoekkelinfoOrganisasjonResponse defaultResponse() {
+	private HentOrganisasjonResponse defaultResponse() {
 		return createResponse(Collections.singletonList(ORGNAVN));
 	}
 
-	private HentNoekkelinfoOrganisasjonResponse createResponse(List<String> lines) {
-		HentNoekkelinfoOrganisasjonResponse response = new HentNoekkelinfoOrganisasjonResponse();
+	private HentOrganisasjonResponse createResponse(List<String> lines) {
+		HentOrganisasjonResponse response = new HentOrganisasjonResponse();
+		Organisasjon organisasjon = new Organisasjon();
 		UstrukturertNavn ustrukturertNavn = new UstrukturertNavn();
 		ustrukturertNavn.getNavnelinje().addAll(lines);
-		response.setNavn(ustrukturertNavn);
+		organisasjon.setNavn(ustrukturertNavn);
+		response.setOrganisasjon(organisasjon);
 		return response;
 	}
+
+	public String sammensattNavn(SammensattNavn sammensattNavn) {
+		if (sammensattNavn instanceof UstrukturertNavn) {
+			UstrukturertNavn navn = (UstrukturertNavn) sammensattNavn;
+			StringBuilder sb = new StringBuilder();
+			navn.getNavnelinje().forEach(s -> sb.append(s.trim()).append(" "));
+			return sb.toString().trim();
+		} else {
+			return null;
+		}
+	}
+
 }
