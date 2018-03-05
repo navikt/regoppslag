@@ -9,10 +9,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV2Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,7 @@ public class NavOrgenhetPluginTest {
 
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
 
-	private OrganisasjonEnhetKontaktinformasjonV2Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV2Consumer.class);
+	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
 	private Norg2Mapper norg2Mapper = new Norg2Mapper();
 	private NavOrgenhetPlugin norgPlugin = new NavOrgenhetPlugin(norgConsumer, norg2Mapper);
 
@@ -57,8 +57,8 @@ public class NavOrgenhetPluginTest {
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
-	private WSOrganisasjonsenhet createEnhet(String navEnhetNavn) {
-		WSOrganisasjonsenhet enhet = new WSOrganisasjonsenhet();
+	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
+		Organisasjonsenhet enhet = new Organisasjonsenhet();
 		enhet.setEnhetNavn(navEnhetNavn);
 		return enhet;
 	}

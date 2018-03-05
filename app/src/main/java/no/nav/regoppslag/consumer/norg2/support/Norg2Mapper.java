@@ -2,52 +2,47 @@ package no.nav.regoppslag.consumer.norg2.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSGateadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostnummer;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSStedsadresseNorge;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
 
 public class Norg2Mapper {
-	public NavEnhet mapPostadresse (WSOrganisasjonsenhet wsEnhet, NavEnhet navEnhet) {
-		if (wsEnhet != null) {
-			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
-//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
-			if (wsEnhet.getKontaktinformasjon() != null && wsEnhet.getKontaktinformasjon().getPostadresse() != null) {
-				NorskPostadresse postadresse = new NorskPostadresse();
-				WSGateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
-				if (gateadresse != null) {
-					postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
-				} else {
-					WSPostboksadresse postboksadresse = (WSPostboksadresse) wsEnhet.getKontaktinformasjon().getPostadresse();
-					postadresse.setAdresselinje1(postboksadresse.getPostboksnummer() + " " + postboksadresse.getPostboksanlegg());
-				}
+	public NavEnhet mapPostadresse (Organisasjonsenhet enhet, NavEnhet navEnhet) {
+		if (enhet != null) {
+			navEnhet.setEnhetsNavn(enhet.getEnhetNavn());
 
-				if (wsEnhet.getKontaktinformasjon().getPostadresse() instanceof WSStedsadresseNorge) {
-					WSStedsadresseNorge stedAdresse	= 	(WSStedsadresseNorge) wsEnhet.getKontaktinformasjon().getPostadresse();
-					postadresse.setPostnummer(stedAdresse.getPoststed().getValue());
-					postadresse.setPoststed(stedAdresse.getPoststed().getKodeverksRef());
+//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
+			NorskPostadresse postadresse = new NorskPostadresse();
+			if (enhet.getKontaktinformasjon() != null && enhet.getKontaktinformasjon().getPostadresse() != null) {
+				if (enhet.getKontaktinformasjon().getPostadresse() instanceof Stedsadresse) {
+					Gateadresse gateadresse	= 	(Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
+
+					postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+					postadresse.setPostnummer(gateadresse.getPoststed().getValue());
+					postadresse.setPoststed(gateadresse.getPoststed().getKodeverksRef());
 				} else {
-					WSPostboksadresseNorsk postnummer	= 	(WSPostboksadresseNorsk) wsEnhet.getKontaktinformasjon().getPostadresse();
-					postadresse.setPostnummer(postnummer.getPoststed().getValue());
-					postadresse.setPoststed(postnummer.getPoststed().getKodeverksRef());
+					PostboksadresseNorsk postboksadresseNorsk	= 	(PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
+					postadresse.setAdresselinje1(postboksadresseNorsk.getPostboksnummer() + " " + postboksadresseNorsk.getPostboksanlegg());
+					postadresse.setPostnummer(postboksadresseNorsk.getPoststed().getValue());
+					postadresse.setPoststed(postboksadresseNorsk.getPoststed().getKodeverksRef());
 				}
 				navEnhet.setAdresse(postadresse);
 			}
 		}
 		return navEnhet;
 	}
-	public NavEnhet mapBesokadresse (WSOrganisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+	public NavEnhet mapBesokadresse (Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
 		if (wsEnhet != null) {
 			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
 			//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
 			NorskPostadresse postadresse = new NorskPostadresse();
-			WSGateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
+			Gateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
 			if (gateadresse != null) {
 				postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
 
-				WSPostnummer stedadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse().getPoststed();
+				Postnummer stedadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse().getPoststed();
 
 				if (stedadresse != null) {
 					postadresse.setPostnummer(stedadresse.getValue());

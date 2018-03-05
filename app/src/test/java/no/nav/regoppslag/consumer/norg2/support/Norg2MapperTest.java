@@ -4,14 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSGateadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSKontaktinformasjonForOrganisasjonsenhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSOrganisasjonsenhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSPostnummer;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSStedsadresse;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v2.informasjon.WSStedsadresseNorge;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.KontaktinformasjonForOrganisasjonsenhet;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
 import org.junit.Test;
 
 public class Norg2MapperTest {
@@ -29,14 +26,14 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapSimpleNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createSimpleWSEnhet(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createSimpleEnhet(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsId(),is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(),is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void shouldMapStedadresseNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createWSEnhetWithStedsadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createEnhetWithStedsadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -73,50 +70,47 @@ public class Norg2MapperTest {
 		return enhet;
 	}
 
-	private WSOrganisasjonsenhet createSimpleWSEnhet (String enhetNavn) {
-		WSOrganisasjonsenhet wsEnhet = new WSOrganisasjonsenhet();
+	private Organisasjonsenhet createSimpleEnhet (String enhetNavn) {
+		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
 		wsEnhet.setEnhetNavn(enhetNavn);
 		return wsEnhet;
 	}
 
-	private WSOrganisasjonsenhet createWSEnhetWithStedsadresse (String enhetNavn) {
-		WSOrganisasjonsenhet wsEnhet = new WSOrganisasjonsenhet();
+	private Organisasjonsenhet createEnhetWithStedsadresse (String enhetNavn) {
+		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
 
-		WSGateadresse gateadresse = new WSGateadresse();
+		Gateadresse gateadresse = new Gateadresse();
 		gateadresse.setGatenavn(GATENAVN);
 		gateadresse.setHusnummer(HUSNR);
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
-		WSPostnummer postnummer = new WSPostnummer();
+		Postnummer postnummer = new Postnummer();
 		postnummer.setValue(POSTNR);
 		postnummer.setKodeverksRef(POSTSTED);
+		gateadresse.setPoststed(postnummer);
 
-		WSStedsadresseNorge stedsadresseNorge = new WSStedsadresseNorge();
-		stedsadresseNorge.setPoststed(postnummer);
+		KontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new KontaktinformasjonForOrganisasjonsenhet();
 
-		WSKontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new WSKontaktinformasjonForOrganisasjonsenhet();
-
-		kontaktinformasjon.setPostadresse(stedsadresseNorge);
-		kontaktinformasjon.setBesoeksadresse(gateadresse);
+		kontaktinformasjon.setPostadresse(gateadresse);
 
 		wsEnhet.setKontaktinformasjon(kontaktinformasjon);
 		wsEnhet.setEnhetNavn(enhetNavn);
 		return wsEnhet;
 	}
 
-	private WSOrganisasjonsenhet createWSEnhetWithPostbokssadresse (String enhetNavn) {
-		WSOrganisasjonsenhet wsEnhet = new WSOrganisasjonsenhet();
+	private Organisasjonsenhet createWSEnhetWithPostbokssadresse (String enhetNavn) {
+		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
 
-		WSPostnummer postnummer = new WSPostnummer();
+		Postnummer postnummer = new Postnummer();
 		postnummer.setValue(POSTNR);
 		postnummer.setKodeverksRef(POSTSTED);
 
-		WSPostboksadresseNorsk postboksadresse = new WSPostboksadresseNorsk();
+		PostboksadresseNorsk postboksadresse = new PostboksadresseNorsk();
 		postboksadresse.setPoststed(postnummer);
 		postboksadresse.setPostboksanlegg(POSTBOKSANLEGG);
 		postboksadresse.setPostboksnummer (POSTBOKSNUMMER);
 
-		WSKontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new WSKontaktinformasjonForOrganisasjonsenhet();
+		KontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new KontaktinformasjonForOrganisasjonsenhet();
 
 		kontaktinformasjon.setPostadresse(postboksadresse);
 
@@ -125,19 +119,19 @@ public class Norg2MapperTest {
 		return wsEnhet;
 	}
 
-	private WSOrganisasjonsenhet createWSEnhetWithBesoksadresse (String enhetNavn) {
-		WSOrganisasjonsenhet wsEnhet = new WSOrganisasjonsenhet();
+	private Organisasjonsenhet createWSEnhetWithBesoksadresse (String enhetNavn) {
+		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
 
-		WSGateadresse gateadresse = new WSGateadresse();
+		Gateadresse gateadresse = new Gateadresse();
 		gateadresse.setGatenavn(GATENAVN);
 		gateadresse.setHusnummer(HUSNR);
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
-		WSPostnummer postnummer = new WSPostnummer();
+		Postnummer postnummer = new Postnummer();
 		postnummer.setValue(POSTNR);
 		postnummer.setKodeverksRef(POSTSTED);
 
-		WSKontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new WSKontaktinformasjonForOrganisasjonsenhet();
+		KontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new KontaktinformasjonForOrganisasjonsenhet();
 
 		gateadresse.setPoststed(postnummer);
 		kontaktinformasjon.setBesoeksadresse(gateadresse);
