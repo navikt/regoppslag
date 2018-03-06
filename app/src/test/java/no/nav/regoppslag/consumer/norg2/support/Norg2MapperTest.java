@@ -26,14 +26,16 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapSimpleNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createSimpleEnhet(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = createSimpleNavEnhet(NAV_ENHET_ID);
+		norg2Mapper.mapPostadresse(createSimpleEnhet(NAV_ENHET_NAVN), navEnhet);
 		assertThat(navEnhet.getEnhetsId(),is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(),is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void shouldMapStedadresseNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createEnhetWithStedsadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = createSimpleNavEnhet(NAV_ENHET_ID);
+		norg2Mapper.mapPostadresse(createEnhetWithStedsadresse(NAV_ENHET_NAVN), navEnhet);
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -44,7 +46,8 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapPostboksadresseNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapPostadresse(createWSEnhetWithPostbokssadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = createSimpleNavEnhet(NAV_ENHET_ID);
+		norg2Mapper.mapPostadresse(createWSEnhetWithPostbokssadresse(NAV_ENHET_NAVN), navEnhet);
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -55,7 +58,8 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapBesokAdresseNavEnhet() {
-		NavEnhet navEnhet = norg2Mapper.mapBesokadresse(createWSEnhetWithBesoksadresse(NAV_ENHET_NAVN), createSimpleNavEnhet(NAV_ENHET_ID));
+		NavEnhet navEnhet = createSimpleNavEnhet(NAV_ENHET_ID);
+		norg2Mapper.mapBesokadresse(createWSEnhetWithBesoksadresse(NAV_ENHET_NAVN), navEnhet);
 		assertThat(navEnhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 

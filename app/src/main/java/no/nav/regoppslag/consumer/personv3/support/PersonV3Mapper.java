@@ -4,12 +4,11 @@ import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 
 public class PersonV3Mapper {
-	public Mottaker map(Person person, Mottaker mottaker) {
+	public void map(Person person, Mottaker mottaker) {
 		//Spraakkode?
 		mottaker.setNavn(person.getPersonnavn().getSammensattNavn());
 
 //		Bruker bruker = (Bruker) person;
 
-		return mottaker;
 	}
 }

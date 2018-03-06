@@ -9,7 +9,7 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
 
 public class Norg2Mapper {
-	public NavEnhet mapPostadresse (Organisasjonsenhet enhet, NavEnhet navEnhet) {
+	public void mapPostadresse (Organisasjonsenhet enhet, NavEnhet navEnhet) {
 		if (enhet != null) {
 			navEnhet.setEnhetsNavn(enhet.getEnhetNavn());
 
@@ -31,9 +31,9 @@ public class Norg2Mapper {
 				navEnhet.setAdresse(postadresse);
 			}
 		}
-		return navEnhet;
 	}
-	public NavEnhet mapBesokadresse (Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+
+	public void mapBesokadresse (Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
 		if (wsEnhet != null) {
 			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
 			//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
@@ -51,6 +51,5 @@ public class Norg2Mapper {
 				navEnhet.setAdresse(postadresse);
 			}
 		}
-		return navEnhet;
 	}
 }
