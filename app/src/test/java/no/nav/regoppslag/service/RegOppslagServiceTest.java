@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -73,5 +74,16 @@ public class RegOppslagServiceTest {
 		when(orchestrator.process(any())).thenReturn(document);
 		regOppslagService.hentBrevdataFraRegistre(request);
 	}
+	
+	/** HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker */
+	@Test
+	public void shouldHandleMultiExceptionHolder() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException {
+		exception.expect(RegOppslagFunctionalException.class);
+		MultiExceptionHolder exceptionHolder = new MultiExceptionHolder("registeroppslag feilet");
+		exceptionHolder.setUnhandledErrors(Arrays.asList(new RegOppslagFunctionalException("feil 1"),new RegOppslagTechnicalException("feil 2")));
+		when(orchestrator.process(any())).thenThrow(exceptionHolder);
+		regOppslagService.hentBrevdataFraRegistre(request);
+	}
+	
 }
 

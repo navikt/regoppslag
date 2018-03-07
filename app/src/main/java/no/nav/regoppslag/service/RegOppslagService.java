@@ -71,7 +71,6 @@ public class RegOppslagService {
 			log.error(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
-			//TODO: lage MultiExceptionHolder.report og rapportere som enten functional eller teknisk feil
 			logExceptions(t);
 			if (t.hasFunctionExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", requestTo.getDokumentTypeId(), t.report()));
@@ -84,14 +83,11 @@ public class RegOppslagService {
 	}
 	
 	private void logExceptions(MultiExceptionHolder t) {
-		t.getUnhandledErrors().forEach(error -> {
-			String msg=String.format("Exception: %s - errorMsg=%s",error.getClass().getSimpleName(), error.getMessage());
+		t.getUnhandledErrors().stream().forEach(error -> {
 			if (error instanceof RegOppslagFunctionalException) {
-				log.warn(msg,error);
+				log.warn(error.getMessage(),error);
 			} else {
-				log.error(msg,error);
-			}
-		});
+				log.error(error.getMessage(),error);
+			}   });
 	}
-	
 }
