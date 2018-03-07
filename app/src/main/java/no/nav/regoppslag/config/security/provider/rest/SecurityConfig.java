@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	public static final String LDAP_CACHE = "ldapCache";
+	public static final String LDAP_CACHE_RS_LOGIN = "ldapCacheRestServiceLogin";
 	private final LdapAlias ldapAlias;
 	private final CacheManager cacheManager;
 	
@@ -42,8 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/isAlive","/isReady","/internal/**").permitAll();
 		http.authorizeRequests().antMatchers(REGISTEROPPSLAG_URI_PATH)
 				.fullyAuthenticated()
-				.and().httpBasic();
-		http.csrf().disable();//TODO: skal vi ha med denne? kan være kjekt å ha den enabled
+				.and().httpBasic()
+		;
+		http.csrf().disable(); //Innloggingen er stateless og uten cookies, så dette er trygt.
 	}
 	
 	
@@ -65,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private ObjectPostProcessor<LdapAuthenticationProvider> addCachingWrapper() {
 		return new ObjectPostProcessor<LdapAuthenticationProvider>() {
-			
+
 			@Override
 			public CachingLdapAuthenticationProvider postProcess(LdapAuthenticationProvider ldapAuthenticationProvider) {
 				Field authenticatorField = ReflectionUtils.findField(LdapAuthenticationProvider.class, "authenticator");

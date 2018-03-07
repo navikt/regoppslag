@@ -1,6 +1,6 @@
 package no.nav.regoppslag.config.security.provider.rest;
 
-import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE;
+import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE_RS_LOGIN;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import org.springframework.cache.Cache;
@@ -28,7 +28,7 @@ public class CachingLdapAuthenticationProvider extends LdapAuthenticationProvide
 	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		Cache ldapCache = cacheManager.getCache(LDAP_CACHE);
+		Cache ldapCache = cacheManager.getCache(LDAP_CACHE_RS_LOGIN);
 		String userName = authentication.getName();
 		Integer cachedAuthHash = ldapCache.get(userName, Integer.class);
 		if(cachedAuthHash == null) {

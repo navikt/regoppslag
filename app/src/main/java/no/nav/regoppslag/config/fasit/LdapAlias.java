@@ -18,7 +18,7 @@ import javax.validation.Valid;
 @ToString
 @Validated
 @Configuration
-@ConfigurationProperties("security")
+@ConfigurationProperties("ldap")
 public class LdapAlias {
 
 	@NotEmpty
