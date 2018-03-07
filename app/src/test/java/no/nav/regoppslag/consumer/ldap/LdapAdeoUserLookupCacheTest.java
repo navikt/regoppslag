@@ -54,19 +54,8 @@ public class LdapAdeoUserLookupCacheTest {
 	}
 	
 	@Test
-	public void shouldClearCacheAfterSomeTime() throws InterruptedException {
-		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
-			add(NAME1);
-		}});
-		ldapAdeoUserLookup.hentFulltNavn("Z999990");
-		Thread.sleep(10000);
-		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
-			add(NAME2);
-		}});
-		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
-		
-		assertEquals(fulltNavn, NAME2);
-		Thread.sleep(10000);
+	public void shouldCallMethodIfCacheThrowsException() {
+		//TODO Applikasjonen skal ikke kaste feilmelding selv om cache feiler, men kalle metoden.
 	}
 	
 	@Configuration

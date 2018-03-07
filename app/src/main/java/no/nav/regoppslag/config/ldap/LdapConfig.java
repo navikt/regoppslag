@@ -53,9 +53,12 @@ public class LdapConfig {
 	public CacheManager cacheManager() {
 		// configure and return an implementation of Spring's CacheManager SPI
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		//TODO BRUKER
+		//TODO ORGANISASJON
+		//TODO Virksomhetsadresse EREG
 		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
-				.expireAfterAccess(10, TimeUnit.SECONDS)
-				.maximumSize(333)
+				.expireAfterAccess(2, TimeUnit.DAYS)
+				.maximumSize(2000)
 				.build());
 		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
 				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN)));
