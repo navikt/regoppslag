@@ -3,10 +3,12 @@ package no.nav.regoppslag.config.ldap;
 import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE_RS_LOGIN;
 import static no.nav.regoppslag.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -50,8 +53,12 @@ public class LdapConfig {
 	public CacheManager cacheManager() {
 		// configure and return an implementation of Spring's CacheManager SPI
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache[]{new ConcurrentMapCache(HENT_FULLT_NAVN),
-				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN)}));
+		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+				.expireAfterAccess(10, TimeUnit.SECONDS)
+				.maximumSize(333)
+				.build());
+		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
+				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN)));
 		return cacheManager;
 	}
 	

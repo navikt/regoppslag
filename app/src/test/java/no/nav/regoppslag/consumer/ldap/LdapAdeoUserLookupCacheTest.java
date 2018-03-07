@@ -52,7 +52,23 @@ public class LdapAdeoUserLookupCacheTest {
 
 		assertEquals(fulltNavn, NAME1);
 	}
-
+	
+	@Test
+	public void shouldClearCacheAfterSomeTime() throws InterruptedException {
+		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
+			add(NAME1);
+		}});
+		ldapAdeoUserLookup.hentFulltNavn("Z999990");
+		Thread.sleep(10000);
+		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
+			add(NAME2);
+		}});
+		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
+		
+		assertEquals(fulltNavn, NAME2);
+		Thread.sleep(10000);
+	}
+	
 	@Configuration
 	static class Config {
 		@Bean
