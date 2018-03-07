@@ -16,7 +16,7 @@ import javax.validation.constraints.Min;
 @Getter
 @Setter
 @ToString
-@ConfigurationProperties("VIRKSOMHET_ORGANISASJON_KONTAKTINFORMASJON_V2")
+@ConfigurationProperties("VIRKSOMHET_ORGANISASJON_KONTAKTINFORMASJON_V1")
 @Validated
 public class OrganisasjonEnhetKontaktinformasjonV1Alias {
 	@NotEmpty

@@ -12,7 +12,6 @@ public class Norg2Mapper {
 	public void mapPostadresse (Organisasjonsenhet enhet, NavEnhet navEnhet) {
 		if (enhet != null) {
 			navEnhet.setEnhetsNavn(enhet.getEnhetNavn());
-
 //TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
 			NorskPostadresse postadresse = new NorskPostadresse();
 			if (enhet.getKontaktinformasjon() != null && enhet.getKontaktinformasjon().getPostadresse() != null) {
