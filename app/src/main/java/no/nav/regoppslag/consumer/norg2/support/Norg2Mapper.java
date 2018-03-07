@@ -20,13 +20,13 @@ public class Norg2Mapper {
 					Gateadresse gateadresse	= 	(Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
 
 					postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
-					postadresse.setPostnummer(gateadresse.getPoststed().getValue());
-					postadresse.setPoststed(gateadresse.getPoststed().getKodeverksRef());
+					postadresse.setPostnummer(gateadresse.getPoststed().getKodeverksRef());
+					postadresse.setPoststed(gateadresse.getPoststed().getValue());
 				} else {
 					PostboksadresseNorsk postboksadresseNorsk	= 	(PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
 					postadresse.setAdresselinje1(postboksadresseNorsk.getPostboksnummer() + " " + postboksadresseNorsk.getPostboksanlegg());
-					postadresse.setPostnummer(postboksadresseNorsk.getPoststed().getValue());
-					postadresse.setPoststed(postboksadresseNorsk.getPoststed().getKodeverksRef());
+					postadresse.setPostnummer(postboksadresseNorsk.getPoststed().getKodeverksRef());
+					postadresse.setPoststed(postboksadresseNorsk.getPoststed().getValue());
 				}
 				navEnhet.setAdresse(postadresse);
 			}
@@ -45,8 +45,8 @@ public class Norg2Mapper {
 				Postnummer stedadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse().getPoststed();
 
 				if (stedadresse != null) {
-					postadresse.setPostnummer(stedadresse.getValue());
-					postadresse.setPoststed(stedadresse.getKodeverksRef());
+					postadresse.setPostnummer(stedadresse.getKodeverksRef());
+					postadresse.setPoststed(stedadresse.getValue());
 				}
 				navEnhet.setAdresse(postadresse);
 			}

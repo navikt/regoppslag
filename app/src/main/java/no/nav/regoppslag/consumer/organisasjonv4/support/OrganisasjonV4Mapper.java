@@ -10,26 +10,29 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetal
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.util.StringUtils;
 
 public class OrganisasjonV4Mapper {
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		mottaker.setNavn(StringUtils.collectionToCommaDelimitedString(orgDet.getNavn()));
-		mottaker.setKortNavn(StringUtils.collectionToCommaDelimitedString(wsOrganisasjon.getOrganisasjonDetaljer().getNavn()));
+		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
+
+		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn)orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!orgDet.getPostadresse().isEmpty()) {
-			Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
 			if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
 				SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
 				settAdresseledd(adresse, norskPostadresse);
 			} else {
+				Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
 				norskPostadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
 				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
-					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getValue());
-					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getKodeverksRef());
+					//TODO Hente fra kodeverk + validere NO
+					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
+					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
 				}
 			}
 			GeografiskAdresse geografiskAdresse = orgDet.getPostadresse().get(0);
@@ -37,23 +40,26 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setLand(geografiskAdresse.getLandkode().getKodeverksRef());
 			}
 		} else if (!orgDet.getForretningsadresse().isEmpty()) {
-			Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
 			if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
 				SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
 				settAdresseledd(adresse, norskPostadresse);
 			} else {
+				Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
 				norskPostadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
 				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
-					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getValue());
-					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getKodeverksRef());
+					//TODO Hente fra kodeverk + validere NO
+					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
+					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
 				}
 			}
 			GeografiskAdresse geografiskAdresse = orgDet.getForretningsadresse().get(0);
 			if (geografiskAdresse.getLandkode() != null) {
+				//TODO Hente fra kodeverk
 				norskPostadresse.setLand(geografiskAdresse.getLandkode().getKodeverksRef());
 			}
 		}
+		mottaker.setAdresse(norskPostadresse);
 	}
 
 	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse)  {

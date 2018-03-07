@@ -89,8 +89,8 @@ public class Norg2MapperTest {
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
 		Postnummer postnummer = new Postnummer();
-		postnummer.setValue(POSTNR);
-		postnummer.setKodeverksRef(POSTSTED);
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setValue(POSTSTED);
 		gateadresse.setPoststed(postnummer);
 
 		KontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new KontaktinformasjonForOrganisasjonsenhet();
@@ -106,8 +106,8 @@ public class Norg2MapperTest {
 		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
 
 		Postnummer postnummer = new Postnummer();
-		postnummer.setValue(POSTNR);
-		postnummer.setKodeverksRef(POSTSTED);
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setValue(POSTSTED);
 
 		PostboksadresseNorsk postboksadresse = new PostboksadresseNorsk();
 		postboksadresse.setPoststed(postnummer);
@@ -132,8 +132,8 @@ public class Norg2MapperTest {
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
 		Postnummer postnummer = new Postnummer();
-		postnummer.setValue(POSTNR);
-		postnummer.setKodeverksRef(POSTSTED);
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setValue(POSTSTED);
 
 		KontaktinformasjonForOrganisasjonsenhet kontaktinformasjon = new KontaktinformasjonForOrganisasjonsenhet();
 

@@ -54,7 +54,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			Person person = personV3Consumer.hentPerson(mottaker.getId());
 
-			mottaker = personV3Mapper.map(person, mottaker);
+			personV3Mapper.map(person, mottaker);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
