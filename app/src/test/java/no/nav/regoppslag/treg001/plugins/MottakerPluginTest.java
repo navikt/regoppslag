@@ -14,6 +14,10 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
@@ -27,6 +31,8 @@ import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MottakerPluginTest {
@@ -35,6 +41,10 @@ public class MottakerPluginTest {
 	private static final String FORNAVN = "TOM";
 	private static final String MELLOMNAVN = "MARVOLO";
 	private static final String ETTERNAVN = "RIDDLE";
+	private static final String ORGNAVN = "Orgnavn 1";
+	private static final String ORGNAVN_2 = "Orgnavn_2";
+	private static final String ORGKORTNAVN = "OrgKortnavn 1";
+	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 
 	private PersonV3Consumer personV3Consumer = Mockito.mock(PersonV3Consumer.class);
 	private PersonV3Mapper personV3Mapper = new PersonV3Mapper();
@@ -45,7 +55,7 @@ public class MottakerPluginTest {
 	@Before
 	public void setUp() {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
-//		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}
 
 	@Test
@@ -80,5 +90,22 @@ public class MottakerPluginTest {
 		Bruker person = new Bruker();
 		person.setPersonnavn(personnavn);
 		return person;
+	}
+
+	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+		Organisasjon organisasjon = new Organisasjon();
+		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
+		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
+		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
+		organisasjon.setNavn(organisasjonKortnavn);
+
+		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
+		orgDetNavn.getNavnelinje().addAll(orgNavn);
+		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
+		organisasjonsnavn.setNavn(orgDetNavn);
+		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
+		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
+
+		return organisasjon;
 	}
 }
