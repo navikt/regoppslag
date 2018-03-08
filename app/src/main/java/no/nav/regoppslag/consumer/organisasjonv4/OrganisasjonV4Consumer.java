@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 /**
- * @author Joakim Bjørnstad, Jbit AS
+ * @author Ketill Fenne, Visma Consulting AS
  */
 @Slf4j
 @Service

@@ -1,6 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
+import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
@@ -8,6 +10,8 @@ import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
 import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +37,21 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	private PersonV3Mapper personV3Mapper;
 
+	private OrganisasjonV4Consumer organisasjonV4Consumer;
+
+	private OrganisasjonV4Mapper organisasjonV4Mapper;
 
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper) {
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper) {
 		super(Mottaker.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
+		this.organisasjonV4Consumer = organisasjonV4Consumer;
+		this.organisasjonV4Mapper = organisasjonV4Mapper;
 	}
 
 
@@ -52,9 +61,13 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		try {
 			Mottaker mottaker = unmarshal(content);
 
-			Person person = personV3Consumer.hentPerson(mottaker.getId());
-
-			personV3Mapper.map(person, mottaker);
+			if ( "PERSON".equals(mottaker.getTypeKode().name())) {
+				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
+				personV3Mapper.map(person, mottaker);
+			} else {
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
+				organisasjonV4Mapper.map(organisasjon, mottaker);
+			}
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);

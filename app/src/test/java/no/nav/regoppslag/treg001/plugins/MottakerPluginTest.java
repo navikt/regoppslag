@@ -9,9 +9,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
+import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.Before;
@@ -35,12 +38,16 @@ public class MottakerPluginTest {
 
 	private PersonV3Consumer personV3Consumer = Mockito.mock(PersonV3Consumer.class);
 	private PersonV3Mapper personV3Mapper = new PersonV3Mapper();
-	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper);
+	private OrganisasjonV4Consumer organisasjonV4Consumer = Mockito.mock(OrganisasjonV4Consumer.class);
+	private OrganisasjonV4Mapper organisasjonV4Mapper= new OrganisasjonV4Mapper();
+	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper);
 
 	@Before
 	public void setUp() {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+//		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 	}
+
 	@Test
 	public void testMottakerPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
@@ -60,7 +67,7 @@ public class MottakerPluginTest {
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
-	private Person createPerson(String fornavn, String mellomnavn, String etternavn) {
+	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
 		Personnavn personnavn = new Personnavn();
 		personnavn.setFornavn(fornavn);
 		if (mellomnavn != null) {
@@ -70,7 +77,7 @@ public class MottakerPluginTest {
 			personnavn.setSammensattNavn(fornavn + " " + etternavn);
 		}
 		personnavn.setEtternavn(etternavn);
-		Person person = new Person();
+		Bruker person = new Bruker();
 		person.setPersonnavn(personnavn);
 		return person;
 	}

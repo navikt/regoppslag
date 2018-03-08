@@ -17,7 +17,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.junit.Test;
 

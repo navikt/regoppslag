@@ -13,7 +13,14 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
+/**
+ * @author Ketill Fenne, Visma Consulting AS
+ */
 public class OrganisasjonV4Mapper {
+	private boolean harPostnummer = false;
+	private boolean harPoststed	= false;
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
@@ -27,12 +34,14 @@ public class OrganisasjonV4Mapper {
 				settAdresseledd(adresse, norskPostadresse);
 			} else {
 				Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
-				norskPostadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
 					//TODO Hente fra kodeverk + validere NO
-					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
-					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
+					if (stedsadresseNorge.getPoststed() != null) {
+						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
+						norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
+					}
 				}
 			}
 			GeografiskAdresse geografiskAdresse = orgDet.getPostadresse().get(0);
@@ -45,12 +54,14 @@ public class OrganisasjonV4Mapper {
 				settAdresseledd(adresse, norskPostadresse);
 			} else {
 				Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
-				norskPostadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
 					//TODO Hente fra kodeverk + validere NO
-					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
-					norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
+					if (stedsadresseNorge.getPoststed() != null) {
+						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeverksRef());
+						norskPostadresse.setPoststed(stedsadresseNorge.getPoststed().getValue());
+					}
 				}
 			}
 			GeografiskAdresse geografiskAdresse = orgDet.getForretningsadresse().get(0);
@@ -75,8 +86,14 @@ public class OrganisasjonV4Mapper {
 				//norskPostadresse.setAdresselinje4(nokler.getVerdi());
 			} else if ("postnr".equals(nokler.getNoekkel().getKodeverksRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());
+				if (!(StringUtils.isEmpty(nokler.getVerdi()))) {
+					harPostnummer = true;
+				}
 			} else if ("poststed".equals(nokler.getNoekkel().getKodeverksRef())) {
 				norskPostadresse.setPoststed(nokler.getVerdi());
+				if (!(StringUtils.isEmpty(nokler.getVerdi()))) {
+					harPoststed = true;
+				}
 			}
 		}
 	}

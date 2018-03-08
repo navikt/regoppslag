@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
@@ -29,7 +30,7 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 
-	public Person hentPerson(final String personidentifikator) {
+	public Bruker hentPerson(final String personidentifikator) {
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
 		HentPersonResponse response = null;
@@ -41,7 +42,7 @@ public class PersonV3Consumer {
 			hentPersonSikkerhetsbegrensning.printStackTrace();
 		}
 		if (response != null && response.getPerson()!= null) {
-			return response.getPerson();
+			return (Bruker) response.getPerson();
 		}
 		return null;
 	}

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
@@ -31,7 +32,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
 
-		Person person = personV3Consumer.hentPerson(FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR);
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM MARVOLO RIDDLE"));
 	}
@@ -40,7 +41,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
 
-		Person person = personV3Consumer.hentPerson(FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR);
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM RIDDLE"));
 	}
@@ -51,7 +52,7 @@ public class PersonV3ConsumerTest {
 		response.setPerson(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 
-		Person person = personV3Consumer.hentPerson(FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR);
 
 		assertThat(person, nullValue());
 	}
@@ -62,7 +63,7 @@ public class PersonV3ConsumerTest {
 		response.getPerson().setPersonnavn(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 
-		Person person = personV3Consumer.hentPerson(FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR);
 
 		assertThat(person.getPersonnavn(), nullValue());
 	}
@@ -82,7 +83,7 @@ public class PersonV3ConsumerTest {
 			personnavn.setSammensattNavn(fornavn + " " + etternavn);
 		}
 		personnavn.setEtternavn(etternavn);
-		Person person = new Person();
+		Bruker person = new Bruker();
 		person.setPersonnavn(personnavn);
 		response.setPerson(person);
 		return response;

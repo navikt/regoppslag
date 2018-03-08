@@ -8,22 +8,26 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
 
+import java.util.Optional;
+
+/**
+ * @author Ketill Fenne, Visma Consulting AS
+ */
 public class Norg2Mapper {
-	public void mapPostadresse (Organisasjonsenhet enhet, NavEnhet navEnhet) {
+	public void mapPostadresse(Organisasjonsenhet enhet, NavEnhet navEnhet) {
 		if (enhet != null) {
 			navEnhet.setEnhetsNavn(enhet.getEnhetNavn());
 //TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
 			NorskPostadresse postadresse = new NorskPostadresse();
 			if (enhet.getKontaktinformasjon() != null && enhet.getKontaktinformasjon().getPostadresse() != null) {
 				if (enhet.getKontaktinformasjon().getPostadresse() instanceof Stedsadresse) {
-					Gateadresse gateadresse	= 	(Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
-
-					postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+					Gateadresse gateadresse = (Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
+					postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 					postadresse.setPostnummer(gateadresse.getPoststed().getKodeverksRef());
 					postadresse.setPoststed(gateadresse.getPoststed().getValue());
 				} else {
-					PostboksadresseNorsk postboksadresseNorsk	= 	(PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
-					postadresse.setAdresselinje1(postboksadresseNorsk.getPostboksnummer() + " " + postboksadresseNorsk.getPostboksanlegg());
+					PostboksadresseNorsk postboksadresseNorsk = (PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
+					postadresse.setAdresselinje1(Optional.ofNullable(postboksadresseNorsk.getPostboksnummer()).orElse("") + " " + Optional.ofNullable(postboksadresseNorsk.getPostboksanlegg()).orElse(""));
 					postadresse.setPostnummer(postboksadresseNorsk.getPoststed().getKodeverksRef());
 					postadresse.setPoststed(postboksadresseNorsk.getPoststed().getValue());
 				}
@@ -32,22 +36,22 @@ public class Norg2Mapper {
 		}
 	}
 
-	public void mapBesokadresse (Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+	public void mapBesokadresse(Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
 		if (wsEnhet != null) {
 			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
 			//TODO			navEnhet.setKontakttelefon(wsEnhet.getKontaktinformasjon().getTelefonnummer());
 			NorskPostadresse postadresse = new NorskPostadresse();
-			Gateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
-			if (gateadresse != null) {
-				postadresse.setAdresselinje1(gateadresse.getGatenavn() + " " + gateadresse.getHusnummer() + gateadresse.getHusbokstav());
+			if (wsEnhet.getKontaktinformasjon().getBesoeksadresse() != null) {
+				Gateadresse gateadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse();
+				if (gateadresse != null) {
+					postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 
-				Postnummer stedadresse = wsEnhet.getKontaktinformasjon().getBesoeksadresse().getPoststed();
-
-				if (stedadresse != null) {
-					postadresse.setPostnummer(stedadresse.getKodeverksRef());
-					postadresse.setPoststed(stedadresse.getValue());
+					if (gateadresse.getPoststed() != null) {
+						postadresse.setPostnummer(gateadresse.getPoststed().getKodeverksRef());
+						postadresse.setPoststed(gateadresse.getPoststed().getValue());
+					}
+					navEnhet.setAdresse(postadresse);
 				}
-				navEnhet.setAdresse(postadresse);
 			}
 		}
 	}
