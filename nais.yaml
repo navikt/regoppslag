@@ -25,24 +25,25 @@ prometheus:
   enabled: true
   path: /prometheus
 fasitResources:
- - alias: srvregoppslag
-    resourceType: credential
-    propertyMap:
-      username: SERVICEUSER_USERNAME
-      password: SERVICEUSER_PASSWORD
- - alias: srvregoppslag
-     resourceType: certificate
-     propertyMap:
-       keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
-       password: SRVREGOPPSLAG_CERT_PASSWORD
-  - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
-      resourceType: webserviceendpoint
-  - alias: "virksomhet:Organisasjon_v4"
-      resourceType: webserviceendpoint
-  - alias: "virksomhet:Person_v3"
-      resourceType: webserviceendpoint
-  - alias: securityTokenService
-      resourceType: baseurl
-   - alias: ldap
-      resourceType: ldap
-exposed:
+  used:
+   - alias: srvregoppslag
+      resourceType: credential
+      propertyMap:
+        username: SERVICEUSER_USERNAME
+        password: SERVICEUSER_PASSWORD
+   - alias: srvregoppslag
+       resourceType: certificate
+       propertyMap:
+         keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
+         password: SRVREGOPPSLAG_CERT_PASSWORD
+    - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
+        resourceType: webserviceendpoint
+    - alias: "virksomhet:Organisasjon_v4"
+        resourceType: webserviceendpoint
+    - alias: "virksomhet:Person_v3"
+        resourceType: webserviceendpoint
+    - alias: securityTokenService
+        resourceType: baseurl
+     - alias: ldap
+        resourceType: ldap
+  exposed:
