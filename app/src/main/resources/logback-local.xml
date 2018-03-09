@@ -8,10 +8,16 @@
 
 	<logger name="org.apache.cxf.common.logging" level="WARN" additivity="false"/>
 
-	<root level="WARN">
+	<root level="INFO">
 		<appender-ref ref="CONSOLE"/>
 	</root>
 
 	<logger name="no.nav.regoppslag" level="INFO"/>
 	<logger name="org.springframework" level="INFO"/>
+
+	<logger name="org.apache.cxf.interceptor" additivity="true">
+		    
+		<appender-ref ref="CONSOLE"/>
+		  
+	</logger>
 </included>

@@ -11,6 +11,7 @@ import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
+import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
@@ -22,7 +23,8 @@ import org.springframework.context.annotation.Import;
 		OrganisasjonV4Alias.class,
 		PersonV3Alias.class,
 		OrganisasjonEnhetKontaktinformasjonV1Alias.class,
-		NavAppCertAlias.class
+		NavAppCertAlias.class,
+		ServiceuserAlias.class
 })
 @Import({
 		PersonV3Consumer.class,

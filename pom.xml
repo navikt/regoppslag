@@ -53,8 +53,8 @@
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<regoppslag.version>1.0.0</regoppslag.version>
 		<prometheus.version>0.0.26</prometheus.version>
-		<cxf.version>3.2.1</cxf.version>
-		<camel.version>2.19.1</camel.version>
+		<cxf.version>3.2.2</cxf.version>
+		<camel.version>2.20.2</camel.version>
 		<nav-person-v3-tjenestespesifikasjon.version>3.0.2</nav-person-v3-tjenestespesifikasjon.version>
 		<nav-fim-organisasjon-v4-tjenestespesifikasjon.version>1.0.4</nav-fim-organisasjon-v4-tjenestespesifikasjon.version>
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0</organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>
@@ -71,6 +71,13 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>
 				<version>${bootstrap.version}</version>
+			</dependency>
+
+			<!--Camel dependencies-->
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-cxf</artifactId>
+				<version>${camel.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.camel</groupId>
@@ -110,6 +117,7 @@
 	</dependencyManagement>
 
 	<dependencies>
+
 		<!-- Logging dependecies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

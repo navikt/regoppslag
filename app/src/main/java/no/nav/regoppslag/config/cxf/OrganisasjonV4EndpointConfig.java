@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
@@ -33,8 +32,10 @@ public class OrganisasjonV4EndpointConfig extends AbstractCxfEndpointConfig {
 		setAdress(organisasjonV4Alias.getEndpointurl());
 		setReceiveTimeout(organisasjonV4Alias.getReadtimeoutms());
 		setConnectTimeout(organisasjonV4Alias.getConnecttimeoutms());
-		addOutInterceptor(new SystemSAMLOutInterceptor());
 		addFeature(new WSAddressingFeature());
-		return createPort(OrganisasjonV4.class);
+	
+		OrganisasjonV4 organisasjonV4 = createPort(OrganisasjonV4.class);
+		configureSTSSamlToken(organisasjonV4);
+		return organisasjonV4;
 	}
 }
