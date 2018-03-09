@@ -34,7 +34,7 @@ public class PersonV3ConsumerTest {
 
 		Bruker person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM MARVOLO RIDDLE"));
+		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class PersonV3ConsumerTest {
 
 		Bruker person = personV3Consumer.hentPerson(FNR);
 
-		assertThat(person.getPersonnavn().getSammensattNavn(), is("TOM RIDDLE"));
+		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
 	@Test

@@ -228,9 +228,9 @@ public class OrganisasjonV4MapperTest {
 		org.setOrganisasjonDetaljer(orgdet);
 	}
 
-	private Mottaker createMottaker(String fnr) {
+	private Mottaker createMottaker(String orgnr) {
 		Mottaker mottaker = new Mottaker();
-		mottaker.setId(fnr);
+		mottaker.setId(orgnr);
 		mottaker.setTypeKode(AktoerType.ORGANISASJON);
 		return mottaker;
 	}
