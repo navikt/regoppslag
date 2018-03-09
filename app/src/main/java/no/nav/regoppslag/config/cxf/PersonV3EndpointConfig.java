@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -35,9 +34,12 @@ public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 		setAdress(personV3Alias.getEndpointurl());
 		setReceiveTimeout(personV3Alias.getReadtimeoutms());
 		setConnectTimeout(personV3Alias.getConnecttimeoutms());
-		addOutInterceptor(new SystemSAMLOutInterceptor());
 		addFeature(new WSAddressingFeature());
-		return createPort(PersonV3.class);
+		
+		PersonV3 personV3 = createPort(PersonV3.class);
+		configureSTSSamlToken(personV3);
+		
+		return personV3;
 	}
 
 }

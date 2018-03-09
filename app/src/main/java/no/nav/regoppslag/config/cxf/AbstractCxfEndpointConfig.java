@@ -1,5 +1,6 @@
 package no.nav.regoppslag.config.cxf;
 
+import no.nav.regoppslag.config.sts.STSConfig;
 import org.apache.cxf.Bus;
 import org.apache.cxf.feature.Feature;
 import org.apache.cxf.interceptor.Interceptor;
@@ -22,6 +23,9 @@ public abstract class AbstractCxfEndpointConfig {
 
 	@Inject
 	private Bus bus;
+	
+	@Inject
+	private STSConfig stsConfig;
 
 	private int receiveTimeout = DEFAULT_TIMEOUT;
 	private int connectTimeout = DEFAULT_TIMEOUT;
@@ -91,5 +95,9 @@ public abstract class AbstractCxfEndpointConfig {
 
 	public void setConnectTimeout(int connectTimeout) {
 		this.connectTimeout = connectTimeout;
+	}
+	
+	public void configureSTSSamlToken(Object port){
+		stsConfig.configureSTS(port);
 	}
 }

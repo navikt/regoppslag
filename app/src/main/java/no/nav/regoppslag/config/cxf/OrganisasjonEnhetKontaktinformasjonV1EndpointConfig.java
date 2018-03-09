@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
@@ -34,8 +33,10 @@ public class OrganisasjonEnhetKontaktinformasjonV1EndpointConfig extends Abstrac
 		setAdress(organisasjonEnhetKontaktinformasjonV1Alias.getEndpointurl());
 		setReceiveTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getReadtimeoutms());
 		setConnectTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getConnecttimeoutms());
-		addOutInterceptor(new SystemSAMLOutInterceptor());
 		addFeature(new WSAddressingFeature());
-		return createPort(OrganisasjonEnhetKontaktinformasjonV1.class);
+		
+		OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = createPort(OrganisasjonEnhetKontaktinformasjonV1.class);
+		configureSTSSamlToken(organisasjonEnhetKontaktinformasjonV1);
+		return organisasjonEnhetKontaktinformasjonV1;
 	}
 }
