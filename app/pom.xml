@@ -174,48 +174,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<skip>false</skip>
-					<fork>true</fork>
-					<useTestClasspath>true</useTestClasspath>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-						<configuration>
-							<finalName>regoppslag</finalName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>com.spotify</groupId>-->
-				<!--<artifactId>dockerfile-maven-plugin</artifactId>-->
-				<!--<configuration>-->
-					<!--<repository>docker.adeo.no:5000/dok/regoppslag</repository>-->
-					<!--<tag>${project.version}</tag>-->
-				<!--</configuration>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<phase>deploy</phase>-->
-						<!--<goals>-->
-							<!--<goal>build</goal>-->
-							<!--<goal>push</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
-			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
 				<executions>
@@ -275,37 +233,6 @@
 							<args>
 								<arg>-Xannotate</arg>
 							</args>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>${build-helper-maven-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>add-test-sources</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-test-sources/xjc-xsd</source>
-							</sources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>add-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-sources/xjc-xsd</source>
-							</sources>
 						</configuration>
 					</execution>
 				</executions>
