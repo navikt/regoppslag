@@ -3,9 +3,7 @@ package no.nav.regoppslag.nais.selftest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.selftest.support.SelftestResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,29 +59,8 @@ public class SelftestController {
 	public SelftestResponse selftest() {
 		return performSelftest();
 	}
-
-	/**
-	 * Rest Nais Liveness contract
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/isAlive", produces = MediaType.TEXT_PLAIN_VALUE)
-	public String isAlive() {
-		return APPLICATION_LIVENESS;
-	}
-
-	/**
-	 * Rest Nais Readyness contract
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity isReady() {
-		SelftestResponse response = performSelftest();
-		if (response.isError()) {
-			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
-	}
-
+	
+	
 	private SelftestResponse performSelftest() {
 		SelftestResponse response = new SelftestResponse();
 		response.setApplication(applicationName);
