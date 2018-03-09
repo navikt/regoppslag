@@ -1,4 +1,5 @@
 naisPipeline {
-    applicationName = "dokprod"
+    applicationName = "regoppslag"
     dockerfileDir = "./app"
+    deployEnvironmentT = "t8"
 }
