@@ -18,8 +18,6 @@ import javax.inject.Inject;
 @Service
 public class STSClientService  {
 	
-	public static String REQUEST="REGOPPSLAG SAML TOKEN";
-	
 	@Inject
 	OrganisasjonEnhetKontaktinformasjonV1 v1;
 	

@@ -12,36 +12,35 @@ healthcheck:
   readiness:
     path: /isReady
     initialDelay: 30
-    timeout: 3
 prometheus:
   enabled: true
   path: /prometheus
 resources:
   limits:
-    cpu: 6000m
-    memory: 1024Mi
-  requests:
-    cpu: 250m
-    memory: 512Mi
+    cpu: 1000m
 fasitResources:
   used:
-    - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
-        resourceType: webserviceendpoint
-    - alias: "virksomhet:Organisasjon_v4"
-        resourceType: webserviceendpoint
-    - alias: "virksomhet:Person_v3"
-        resourceType: webserviceendpoint
-    - alias: securityTokenService
-        resourceType: baseurl
-    - alias: ldap
-        resourceType: ldap
-    - alias: srvregoppslag
-        resourceType: credential
-        propertyMap:
-            username: SERVICEUSER_USERNAME
-            password: SERVICEUSER_PASSWORD
-    - alias: srvregoppslag
-        resourceType: certificate
-        propertyMap:
-          keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
-          password: SRVREGOPPSLAG_CERT_PASSWORD
+  - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
+      resourceType: webserviceendpoint
+  - alias: "virksomhet:Organisasjon_v4"
+      resourceType: webserviceendpoint
+  - alias: "virksomhet:Person_v3"
+      resourceType: webserviceendpoint
+  - alias: securityTokenService
+      resourceType: baseurl
+  - alias: ldap
+      resourceType: ldap
+  - alias: srvregoppslag
+      resourceType: credential
+      propertyMap:
+          username: SERVICEUSER_USERNAME
+          password: SERVICEUSER_PASSWORD
+  - alias: srvregoppslag
+      resourceType: certificate
+      propertyMap:
+        keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
+        password: SRVREGOPPSLAG_CERT_PASSWORD
+exposed:
+  - alias: dokmot_SEDMOTTAK
+    resourceType: queue
+    name: dokmot_SEDMOTTAK
