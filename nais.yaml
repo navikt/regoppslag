@@ -1,4 +1,3 @@
-name: regoppslag
 image: "docker.adeo.no:5000/dok/regoppslag"
 replicas:
   min: 1
@@ -14,6 +13,9 @@ healthcheck:
     path: /isReady
     initialDelay: 30
     timeout: 3
+prometheus:
+  enabled: true
+  path: /prometheus
 resources:
   limits:
     cpu: 6000m
@@ -21,9 +23,6 @@ resources:
   requests:
     cpu: 250m
     memory: 512Mi
-prometheus:
-  enabled: true
-  path: /prometheus
 fasitResources:
   used:
     - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
@@ -46,4 +45,3 @@ fasitResources:
         propertyMap:
           keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
           password: SRVREGOPPSLAG_CERT_PASSWORD
-exposed:
