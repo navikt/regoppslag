@@ -2,6 +2,8 @@ package no.nav.regoppslag.config;
 
 import no.nav.regoppslag.treg001.Orchestrator;
 import no.nav.regoppslag.treg001.plugins.MottakerPlugin;
+import no.nav.regoppslag.treg001.plugins.NavOrgenhetPlugin;
+import no.nav.regoppslag.treg001.plugins.SaksbehandlerPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
@@ -24,6 +26,8 @@ public class OrchestratorConfig {
 	ElementEnricherPluginRegistry registry() throws DuplicatedElementSupportException {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
 		registry.registerPlugin(new QName("mottaker"), MottakerPlugin.class);
+		registry.registerPlugin(new QName("signerendeSaksbehandler"), SaksbehandlerPlugin.class);
+		registry.registerPlugin(new QName("kontaktinformasjon"), NavOrgenhetPlugin.class);
 		return registry;
 	}
 }

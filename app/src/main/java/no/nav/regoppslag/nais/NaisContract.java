@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.selftest;
+package no.nav.regoppslag.nais;
 
 import static no.nav.regoppslag.metrics.PrometheusMetrics.isReady;
 
@@ -7,6 +7,7 @@ import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
 import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.selftest.support.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -50,8 +53,10 @@ public class NaisContract {
 	@ResponseBody
 	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity isReady() {
+		List<String> error=new ArrayList<>();
 		try {
-			personV3Check.check();
+			//TODO: Denne vil ikke feil hvis det skjer noe feil. Fiks det
+			personV3Check.check().getResult().equals(Result.OK);
 			organisasjonV4Check.check();
 			organisasjonEnhetKontaktinformasjonV1Check.check();
 			isReady.set(1);
@@ -65,6 +70,7 @@ public class NaisContract {
 		
 		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 	}
+	
 	
 
 

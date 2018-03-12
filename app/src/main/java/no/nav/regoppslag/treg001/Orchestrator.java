@@ -2,23 +2,17 @@ package no.nav.regoppslag.treg001;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
-import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
+import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +20,8 @@ import java.util.Set;
 /**
  * @author Hans Petter Simonsen - Miles
  */
+@Slf4j
 public class Orchestrator {
-	private static final Logger LOG = LoggerFactory.getLogger(Orchestrator.class);
 
 	private ElementEnricherPluginRegistry registry;
 
@@ -35,9 +29,8 @@ public class Orchestrator {
 		this.registry = registry;
 	}
 
-
-
-	private Node findSingleNode(QName qname, Document xmlDocument) throws XPathExpressionException {
+	
+	private Node findSingleNode(QName qname, Document xmlDocument)  {
 		return xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
 	}
 
@@ -77,7 +70,7 @@ public class Orchestrator {
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
 						(Throwable onError) -> unhandledErrors.add(onError),
-						() -> LOG.debug("Processing completed successfully - context hopefully displayed in MDC")
+						() -> log.debug("Processing completed successfully - context hopefully displayed in MDC")
 				)
 				;
 

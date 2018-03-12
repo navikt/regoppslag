@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
@@ -8,8 +9,6 @@ import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
 import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,8 +19,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+@Slf4j
 public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements ElementEnricherPlugin {
-	Logger LOG = LoggerFactory.getLogger(MottakerPlugin.class);
 
 	public SaksbehandlerPlugin() {
 		super(Saksbehandler.class);
