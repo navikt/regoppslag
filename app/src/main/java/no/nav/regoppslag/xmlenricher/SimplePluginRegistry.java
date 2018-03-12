@@ -2,6 +2,8 @@ package no.nav.regoppslag.xmlenricher;
 
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 
 import javax.xml.namespace.QName;
 import java.util.HashMap;
@@ -15,6 +17,12 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 
 	private Map<QName, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
 
+	private ApplicationContext applicationContext;
+	
+	public SimplePluginRegistry(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+	
 	@Override
 		public void registerPlugin(QName supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
 		pluginMap.put(supportedElement, plugin);
@@ -25,8 +33,8 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(QName supportedElement) throws MissingPluginException {
 		if (pluginMap.containsKey(supportedElement)) {
 			try {
-				return pluginMap.get(supportedElement).newInstance();
-			} catch (InstantiationException|IllegalAccessException e) {
+				return applicationContext.getBean(pluginMap.get(supportedElement));//.newInstance();
+			} catch (BeansException e) {
 				throw new RuntimeException(e);
 			}
 		} else {

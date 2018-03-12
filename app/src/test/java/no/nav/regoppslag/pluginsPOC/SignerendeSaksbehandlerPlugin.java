@@ -1,9 +1,8 @@
 package no.nav.regoppslag.pluginsPOC;
 
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
-import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
-import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -19,7 +18,7 @@ public class SignerendeSaksbehandlerPlugin implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(SignerendeSaksbehandlerPlugin.class);
 
 	@Override
-	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+	public Node processElement(Node content) throws InvalidElementException, RegOppslagFunctionalException {
 		validateElementType(content);
 		Element element = (Element) content;
 		Node navn = element.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler","navn").item(0);

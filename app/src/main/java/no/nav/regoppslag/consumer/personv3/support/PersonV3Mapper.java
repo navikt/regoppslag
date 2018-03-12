@@ -7,15 +7,15 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseNorge;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUtland;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postboksadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
  */
+@Component
 public class PersonV3Mapper {
 	public void map(Bruker person, Mottaker mottaker) {
 		//Spraakkode?

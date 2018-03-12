@@ -31,8 +31,7 @@ public class JaxbHelper<T>{
 
 
 	public T unmarshal(Node node) throws JAXBException {
-		String contextPath = jaxbClass.getPackage().getName();
-		JAXBContext context = JAXBContext.newInstance(contextPath);
+		JAXBContext context = JAXBContext.newInstance(jaxbClass);
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 		return unmarshal.getValue();

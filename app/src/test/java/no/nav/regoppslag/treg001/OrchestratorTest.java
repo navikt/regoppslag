@@ -16,9 +16,11 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.inject.Inject;
 import javax.xml.namespace.QName;
 import java.io.File;
 
@@ -31,13 +33,16 @@ public class OrchestratorTest {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
+	
+	@Inject
+	ApplicationContext applicationContext;
 
 	@Test
 	public void shouldProcessDocumentWithPlugin1() throws Exception, MultiExceptionHolder {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		QName qname = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
 		registry.registerPlugin(qname, MottakerPlugin1.class);
@@ -61,7 +66,7 @@ public class OrchestratorTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
 		registry.registerPlugin(qname1, MottakerPlugin1.class);
@@ -92,7 +97,7 @@ public class OrchestratorTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
 		registry.registerPlugin(qname1, FailingPlugin.class);

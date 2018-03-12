@@ -7,6 +7,7 @@ import no.nav.regoppslag.treg001.plugins.SaksbehandlerPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import javax.xml.namespace.QName;
@@ -15,6 +16,16 @@ import javax.xml.namespace.QName;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class OrchestratorConfig {
+	
+	@Bean
+	private ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException {
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
+		registry.registerPlugin(new QName("mottaker"), MottakerPlugin.class);
+		registry.registerPlugin(new QName("signerendeSaksbehandler"), SaksbehandlerPlugin.class);
+		registry.registerPlugin(new QName("kontaktinformasjon"), NavOrgenhetPlugin.class);
+		return registry;
+	}
+	
 	@Bean
 	public Orchestrator orchestrator(ElementEnricherPluginRegistry registry) {
 		Orchestrator orchestrator = new Orchestrator();
@@ -22,12 +33,5 @@ public class OrchestratorConfig {
 		return orchestrator;
 	}
 	
-	@Bean
-	ElementEnricherPluginRegistry registry() throws DuplicatedElementSupportException {
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry();
-		registry.registerPlugin(new QName("mottaker"), MottakerPlugin.class);
-		registry.registerPlugin(new QName("signerendeSaksbehandler"), SaksbehandlerPlugin.class);
-		registry.registerPlugin(new QName("kontaktinformasjon"), NavOrgenhetPlugin.class);
-		return registry;
-	}
+	
 }

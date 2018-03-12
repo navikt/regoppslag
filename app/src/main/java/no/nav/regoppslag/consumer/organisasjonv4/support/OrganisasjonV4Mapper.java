@@ -11,6 +11,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdr
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
@@ -18,6 +19,8 @@ import java.util.Optional;
 /**
  * @author Ketill Fenne, Visma Consulting AS
  */
+
+@Component
 public class OrganisasjonV4Mapper {
 	private boolean harPostnummer = false;
 	private boolean harPoststed	= false;

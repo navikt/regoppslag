@@ -53,12 +53,12 @@ public class NaisContract {
 	@ResponseBody
 	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity isReady() {
-		List<String> error=new ArrayList<>();
+		List<Result> results=new ArrayList<>();
 		try {
 			//TODO: Denne vil ikke feil hvis det skjer noe feil. Fiks det
-			personV3Check.check().getResult().equals(Result.OK);
-			organisasjonV4Check.check();
-			organisasjonEnhetKontaktinformasjonV1Check.check();
+			results.add(personV3Check.check().getResult());
+			results.add(organisasjonV4Check.check().getResult());
+			results.add(organisasjonEnhetKontaktinformasjonV1Check.check().getResult());
 			isReady.set(1);
 			
 		} catch (ApplicationNotReadyException e) {
@@ -68,8 +68,15 @@ public class NaisContract {
 			return new ResponseEntity<>(errorMsg + " reason=" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
+		if (results.stream().filter((result) -> {return result.equals(Result.ERROR)||result.equals(Result.WARNING);}).count()>0){
+			String errorMsg = "Application not ready to accept traffic.";
+			isReady.dec();
+			return new ResponseEntity<>(errorMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 	}
+	
 	
 	
 

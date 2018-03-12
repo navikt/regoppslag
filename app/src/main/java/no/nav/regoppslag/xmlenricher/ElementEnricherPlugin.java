@@ -1,5 +1,6 @@
 package no.nav.regoppslag.xmlenricher;
 
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
 import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
@@ -32,6 +33,6 @@ public interface ElementEnricherPlugin {
 	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 */
 	//Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException;
-	Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException;
+	Node processElement(Node content) throws RegOppslagFunctionalException, InvalidElementException;
 
 }

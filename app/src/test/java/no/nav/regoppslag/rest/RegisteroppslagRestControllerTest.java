@@ -41,7 +41,7 @@ public class RegisteroppslagRestControllerTest {
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
-		RegOppslagResponseTo actualResponse = registeroppslagRestController.getKomplettBrevdata(request);
+		RegOppslagResponseTo actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(regOppslagService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}
@@ -58,7 +58,7 @@ public class RegisteroppslagRestControllerTest {
 		MultiExceptionHolder exceptionHolder = new MultiExceptionHolder("registeroppslag feilet");
 		//TODO lag exceptions.
 		when(regOppslagService.hentBrevdataFraRegistre(any())).thenThrow(exceptionHolder);
-		registeroppslagRestController.getKomplettBrevdata(request);
+		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 	
 }

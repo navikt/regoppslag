@@ -8,10 +8,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
 
-import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
 import java.util.List;
 
 /**
@@ -27,7 +24,6 @@ public class LdapAdeoUserLookup {
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
 
-	@Inject
 	public LdapAdeoUserLookup(LdapTemplate ldapTemplate, String userBaseDn) {
 		this.ldapTemplate = ldapTemplate;
 		this.userBaseDn = userBaseDn;
@@ -40,7 +36,7 @@ public class LdapAdeoUserLookup {
 	 * @return The full name of the user or null if not found.
 	 */
 	@Cacheable(HENT_FULLT_NAVN)
-	public String hentFulltNavn(final String adeoIdent) {
+	public String hentFulltNavn(final String adeoIdent)  {
 		LdapQuery cn = LdapQueryBuilder.query()
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
@@ -54,20 +50,17 @@ public class LdapAdeoUserLookup {
 	}
 
 	private List<String> doSearch(LdapQuery cn) {
-		return ldapTemplate.search(cn, new AttributesMapper<String>() {
-			@Override
-			public String mapFromAttributes(Attributes attributes) throws NamingException {
-				// Description contains most consistent naming format
-				Attribute description = attributes.get(DESCRIPTION);
-				if (description != null) {
-					return (String) description.get();
-				}
-				Attribute dname = attributes.get(DISPLAYNAME);
-				if (dname != null) {
-					return (String) dname.get();
-				}
-				return null;
+		return ldapTemplate.search(cn, (AttributesMapper<String>) attributes -> {
+			// Description contains most consistent naming format
+			Attribute description = attributes.get(DESCRIPTION);
+			if (description != null) {
+				return (String) description.get();
 			}
+			Attribute dname = attributes.get(DISPLAYNAME);
+			if (dname != null) {
+				return (String) dname.get();
+			}
+			return null;
 		});
 	}
 }

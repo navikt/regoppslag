@@ -5,14 +5,15 @@ import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
  */
+@Component
 public class Norg2Mapper {
 	public void mapPostadresse(Organisasjonsenhet enhet, NavEnhet navEnhet) {
 		if (enhet != null) {

@@ -2,10 +2,9 @@ package no.nav.regoppslag.pluginsPOC;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
-import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
-import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 	}
 
 	@Override
-	public Node processElement(Node content) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException {
+	public Node processElement(Node content) throws InvalidElementException, RegOppslagFunctionalException {
 		validateElementType(content);
 		try {
 			Mottaker mottaker = unmarshal(content);

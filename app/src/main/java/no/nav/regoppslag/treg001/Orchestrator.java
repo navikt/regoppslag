@@ -22,7 +22,7 @@ import java.util.Set;
  */
 @Slf4j
 public class Orchestrator {
-
+	
 	private ElementEnricherPluginRegistry registry;
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
@@ -71,8 +71,7 @@ public class Orchestrator {
 						onNextElement -> aggregate(document, onNextElement),
 						(Throwable onError) -> unhandledErrors.add(onError),
 						() -> log.debug("Processing completed successfully - context hopefully displayed in MDC")
-				)
-				;
+				);
 
 		if (!unhandledErrors.isEmpty()) {
 			MultiExceptionHolder errors = new MultiExceptionHolder("Errors in asynch prosessing");
