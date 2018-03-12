@@ -33,7 +33,7 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(QName supportedElement) throws MissingPluginException {
 		if (pluginMap.containsKey(supportedElement)) {
 			try {
-				return applicationContext.getBean(pluginMap.get(supportedElement));//.newInstance();
+				return applicationContext.getBean(pluginMap.get(supportedElement));
 			} catch (BeansException e) {
 				throw new RuntimeException(e);
 			}

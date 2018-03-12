@@ -57,7 +57,7 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 			
 			NavEnhet navEnhet = unmarshal(content);
 
-			validateNavEnhet(navEnhet);
+			//validateNavEnhet(navEnhet);
 			
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
