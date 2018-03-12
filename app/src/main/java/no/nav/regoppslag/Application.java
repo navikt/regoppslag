@@ -1,7 +1,6 @@
 package no.nav.regoppslag;
 
 import no.nav.regoppslag.util.RegoppslagConfigSetter;
-import org.apache.camel.spring.boot.CamelAutoConfiguration;
 import org.apache.cxf.spring.boot.autoconfigure.CxfAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
@@ -40,7 +39,6 @@ import org.springframework.context.annotation.Import;
 		WebClientAutoConfiguration.class,
 		WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class,
-		CamelAutoConfiguration.class,
 		PublicMetricsAutoConfiguration.class,
 		ApplicationConfig.class})
 @SpringBootApplication

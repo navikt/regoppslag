@@ -43,7 +43,6 @@ public class JaxbHelper<T>{
 		JAXBContext context = JAXBContext.newInstance(contextPath);
 		Marshaller marshaller = context.createMarshaller();
 		if (namespacePrefixMapper != null) {
-//			marshaller.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper", namespacePrefixMapper);
 			marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", namespacePrefixMapper);
 		}
 		JAXBElement<T> jaxbElement = (JAXBElement<T>) getJaxbElement(jaxbObject, jaxbClass);

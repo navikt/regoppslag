@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.is;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
@@ -19,6 +21,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PersonV3MapperTest {
@@ -39,11 +42,21 @@ public class PersonV3MapperTest {
 	private static final String UTLAND_ADRESSELINJE3 = "Foreign address 3";
 	private static final String UTLAND_ADRESSELINJE4 = "Foreign address 4";
 	private static final String POSTNR = "5460";
-	private static final String POSTSTED = "Husnes";
-	private static final String LANDKODE = "DK";
-	private static final String LAND = "Danmark";
+	private static final String POSTSTED = "HUSNES";
+	private static final String LANDKODE = "NOR";
+	private static final String LAND = "NORWAY";
 
+	private PostnummerService postnummerService = new PostnummerService();
+	private LandkodeService landkodeService= new LandkodeService();
 	private PersonV3Mapper mapper = new PersonV3Mapper();
+
+	@Before
+	public	void initPostnummer() throws Exception {
+		landkodeService.init();
+		postnummerService.init();
+		mapper.postnummerService = postnummerService;
+		mapper.landkodeService = landkodeService;
+	}
 
 	@Test
 	public void simpleMapping() {
@@ -206,13 +219,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		gateadresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		gateadresse.setLandkode(landkoder);
 
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
@@ -233,13 +246,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		matrikkeladresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		matrikkeladresse.setLandkode(landkoder);
 
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
@@ -260,13 +273,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		postboksadresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		postboksadresse.setLandkode(landkoder);
 
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
@@ -290,7 +303,7 @@ public class PersonV3MapperTest {
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		ustrukturertAdresse.setLandkode(landkoder);
 
 		Postadresse postadresse = new Postadresse();
@@ -314,7 +327,7 @@ public class PersonV3MapperTest {
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		ustrukturertAdresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = new MidlertidigPostadresseUtland();
@@ -337,13 +350,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		gateadresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		gateadresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
@@ -364,13 +377,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		matrikkeladresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		matrikkeladresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
@@ -391,13 +404,13 @@ public class PersonV3MapperTest {
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeverksRef(POSTNR);
 		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
+		postnummer.setValue(POSTNR);
 		postboksadresse.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
 		landkoder.setKodeverksRef(LANDKODE);
 		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LAND);
+		landkoder.setValue(LANDKODE);
 		postboksadresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
