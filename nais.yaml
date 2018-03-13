@@ -28,6 +28,8 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: "virksomhet:Person_v3"
     resourceType: webserviceendpoint
+  - alias: DokumenttypeInfo_v3
+    resourceType: restservice
   - alias: ldap
     resourceType: ldap
   - alias: srvregoppslag
@@ -41,3 +43,6 @@ fasitResources:
       keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
       password: SRVREGOPPSLAG_CERT_PASSWORD
 exposed:
+  - alias: ValiderOgKompletterBrevdata
+    resourceType: restservice
+    path: /kompletterBrevdata
