@@ -4,6 +4,7 @@ import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
 import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;
 import io.prometheus.client.spring.web.EnablePrometheusTiming;
 import no.nav.regoppslag.config.OrchestratorConfig;
+import no.nav.regoppslag.config.RestConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonV4EndpointConfig;
 import no.nav.regoppslag.config.cxf.PersonV3EndpointConfig;
@@ -35,7 +36,8 @@ import org.springframework.context.annotation.Import;
 		OrganisasjonEnhetKontaktinformasjonV1EndpointConfig.class,
 		OrganisasjonV4EndpointConfig.class,
 		PersonV3EndpointConfig.class,
-		OrchestratorConfig.class})
+		OrchestratorConfig.class,
+		RestConfig.class})
 @EnablePrometheusEndpoint
 @EnablePrometheusTiming
 @EnableSpringBootMetricsCollector
