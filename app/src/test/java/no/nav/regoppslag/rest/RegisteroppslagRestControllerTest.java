@@ -17,6 +17,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -41,7 +42,8 @@ public class RegisteroppslagRestControllerTest {
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
-		RegOppslagResponseTo actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
+		ResponseEntity response = registeroppslagRestController.validerOgKompletterBrevdata(request);
+		RegOppslagResponseTo actualResponse= (RegOppslagResponseTo)response.getBody();
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(regOppslagService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}

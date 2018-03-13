@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
-import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.support.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,11 +27,9 @@ import java.util.List;
 @RestController
 public class NaisContract {
 	
-	public static final String APPLICATION_ALIVE = "Application is alive!";
-	public static final String APPLICATION_READY = "Application is ready for traffic!";
-	private static final int MAX_READY_FAIL = 3;
-	public static final String ROUTE_SUSPENDED = "Suspended";
-	public static final String ROUTE_STARTED = "Started";
+	private static final String APPLICATION_ALIVE = "Application is alive!";
+	private static final String APPLICATION_READY = "Application is ready for traffic!";
+	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
 	
 	private final PersonV3Check personV3Check;
 	private final OrganisasjonV4Check organisasjonV4Check;
@@ -54,31 +51,25 @@ public class NaisContract {
 	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity isReady() {
 		List<Result> results=new ArrayList<>();
-		try {
-			//TODO: Denne vil ikke feil hvis det skjer noe feil. Fiks det
-			results.add(personV3Check.check().getResult());
-			results.add(organisasjonV4Check.check().getResult());
-			results.add(organisasjonEnhetKontaktinformasjonV1Check.check().getResult());
-			isReady.set(1);
-			
-		} catch (ApplicationNotReadyException e) {
-			String errorMsg = "Application not ready to accept traffic.";
-			log.error(errorMsg, e);
+	
+		results.add(personV3Check.check().getResult());
+		results.add(organisasjonV4Check.check().getResult());
+		results.add(organisasjonEnhetKontaktinformasjonV1Check.check().getResult());
+		
+		if (isAnyDependencyUnhealthy(results)){
 			isReady.dec();
-			return new ResponseEntity<>(errorMsg + " reason=" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(APPLICATION_NOT_READY, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if (results.stream().filter((result) -> {return result.equals(Result.ERROR)||result.equals(Result.WARNING);}).count()>0){
-			String errorMsg = "Application not ready to accept traffic.";
-			isReady.dec();
-			return new ResponseEntity<>(errorMsg, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		isReady.set(1);
 		
 		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 	}
 	
 	
-	
+	private boolean isAnyDependencyUnhealthy(List<Result> results){
+		return results.stream().anyMatch((result) -> result.equals(Result.ERROR) || result.equals(Result.WARNING));
+	}
 
 
 }

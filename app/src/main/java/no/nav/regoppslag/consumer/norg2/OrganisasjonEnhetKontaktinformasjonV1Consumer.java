@@ -1,5 +1,9 @@
 package no.nav.regoppslag.consumer.norg2;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+
+import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.HentKontaktinformasjonForEnhetBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
@@ -19,6 +23,7 @@ import javax.inject.Inject;
 public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
+	private Histogram.Timer requestTimer;
 
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
 
@@ -29,11 +34,15 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) {
 		try {
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk").startTimer();
+			
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
 			hentKontaktinformasjonForEnhetBolkUgyldigInput.printStackTrace();
 			return null;
+		} finally {
+			requestTimer.observeDuration();
 		}
 	}
 
