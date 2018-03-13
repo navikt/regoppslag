@@ -31,7 +31,7 @@ public class RegisteroppslagRestController {
 	
 	@PostMapping(value = REGISTEROPPSLAG_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
-	public @ResponseBody RegOppslagResponse getKomplettBrevdata(@RequestBody RegOppslagRequest requestBody)
+	public @ResponseBody RegOppslagResponse validerOgKompletterBrevdata(@RequestBody RegOppslagRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		return regOppslagService.hentBrevdataFraRegistre(requestBody);
 	}

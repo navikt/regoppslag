@@ -43,6 +43,7 @@ public class MultiExceptionHolder extends Throwable {
 			StringBuilder report = new StringBuilder();
 			report.append(this.getMessage());
 			report.append("\n\rAntall feil: " + getUnhandledErrors().size() + ".\n\r");
+			report.append("Feilmeldinger: ");
 			report.append(getAllMessages());
 			return report.toString();
 		}
