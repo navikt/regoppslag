@@ -120,6 +120,11 @@
 			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
+			<groupId>no.nav.dokkat</groupId>
+			<artifactId>dokkat-api</artifactId>
+			<version>${dokkat-api.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
 			<artifactId>pesysbrev01</artifactId>
 			<version>1.0.44</version>

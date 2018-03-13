@@ -57,6 +57,7 @@
 		<nav-person-v3-tjenestespesifikasjon.version>3.0.2</nav-person-v3-tjenestespesifikasjon.version>
 		<nav-fim-organisasjon-v4-tjenestespesifikasjon.version>1.0.4</nav-fim-organisasjon-v4-tjenestespesifikasjon.version>
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0</organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>
+		<dokkat-api.version>9.4.1</dokkat-api.version>
 		<modig-security.version>3.0.6</modig-security.version>
 		<modig-log-common.version>1.1.3</modig-log-common.version>
 		<wiremock-standalone.version>2.12.0</wiremock-standalone.version>

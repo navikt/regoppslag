@@ -7,6 +7,7 @@ import no.nav.regoppslag.config.OrchestratorConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonV4EndpointConfig;
 import no.nav.regoppslag.config.cxf.PersonV3EndpointConfig;
+import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.Import;
 		OrganisasjonV4Alias.class,
 		PersonV3Alias.class,
 		OrganisasjonEnhetKontaktinformasjonV1Alias.class,
+		DokumenttypeInfoV3Alias.class,
 		NavAppCertAlias.class,
 		ServiceuserAlias.class
 })
