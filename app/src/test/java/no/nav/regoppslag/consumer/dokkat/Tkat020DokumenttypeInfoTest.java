@@ -1,15 +1,8 @@
 package no.nav.regoppslag.consumer.dokkat;
 
-import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
-import static org.codehaus.groovy.runtime.DefaultGroovyMethods.any;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class Tkat020DokumenttypeInfoTest {
@@ -31,7 +24,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 	List<SpraakInfoTo> defaultResponse(List<String> langs) {
 		List<SpraakInfoTo> list = new ArrayList<>();
-		langs.forEach(lang -> list.add(new SpraakInfoTo().lang));
+		//langs.forEach(lang -> list.add(new SpraakInfoTo().lang));
 //		list.add(langs.forEach(list.add(kabng)); -> setSpraaklag(lang) );
 
 		return list;
