@@ -5,14 +5,12 @@ import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.xml.namespace.QName;
 
 /**
  * @author Paul Magne Lunde, Visma Consulting
  */
-@Configuration
 public class OrganisasjonV4EndpointConfig extends AbstractCxfEndpointConfig {
 
 	private static final String NAMESPACE = "http://nav.no/tjeneste/virksomhet/organisasjon/v4/Binding";

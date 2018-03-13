@@ -24,7 +24,7 @@ import java.util.Map;
 public class PostnummerService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
-	private final static URL FILENAME = Resources.getResource("postnummerregister.txt");
+	private final static URL FILENAME = Resources.getResource("postnummer/postnummerregister.txt");
 
 	private final Map<String, PostData> postalCodeTable;
 

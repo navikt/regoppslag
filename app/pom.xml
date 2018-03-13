@@ -16,6 +16,16 @@
 	</properties>
 
 	<dependencies>
+		<!--CXF dependencies-->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -69,11 +79,7 @@
 			<artifactId>simpleclient_spring_web</artifactId>
 			<version>${prometheus.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>io.reactivex.rxjava2</groupId>
 			<artifactId>rxjava</artifactId>
@@ -135,7 +141,6 @@
 			<version>2.2.11</version>
 		</dependency>
 
-
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -151,7 +156,6 @@
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock-standalone</artifactId>
-			<version>${wiremock-standalone.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -173,78 +177,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-			<resources>
-				<resource>
-					<directory>src/main/resources/postnummer</directory>
-				</resource>
-			</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-jaxb-xsd-test.felles</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
-							<generateDirectory>${project.build.directory}/generated-test-sources/xjc-xsd/felles</generateDirectory>
-							<strict>false</strict>
-							<plugins>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics-annotate</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-							</plugins>
-							<args>
-								<arg>-Xannotate</arg>
-							</args>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-jaxb-xsd.felles</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc-xsd/felles</generateDirectory>
-							<strict>false</strict>
-							<plugins>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics-annotate</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-							</plugins>
-							<args>
-								<arg>-Xannotate</arg>
-							</args>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

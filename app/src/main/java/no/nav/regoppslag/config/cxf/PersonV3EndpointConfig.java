@@ -5,7 +5,6 @@ import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.xml.namespace.QName;
 
@@ -14,7 +13,6 @@ import javax.xml.namespace.QName;
  *
  * @author Olav Røstvold Thorsen, Visma Consulting
  */
-@Configuration
 public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 
 	private static final String NAMESPACE = "http://nav.no/tjeneste/virksomhet/person/v3/Binding";

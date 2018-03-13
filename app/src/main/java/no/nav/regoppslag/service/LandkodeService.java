@@ -25,7 +25,7 @@ import java.util.Map;
 public class LandkodeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
-	private final static URL FILENAME = Resources.getResource("countries.txt");
+	private final static URL FILENAME = Resources.getResource("postnummer/countries.txt");
 
 	private final Map<String, LandData> landkodeTable;
 

@@ -6,6 +6,7 @@ import org.apache.cxf.feature.Feature;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.message.Message;
+import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Inject;
 import javax.xml.namespace.QName;
@@ -18,6 +19,7 @@ import java.util.Map;
  *
  * @author Andreas Skomedal, Visma Consulting.
  */
+@Configuration
 public abstract class AbstractCxfEndpointConfig {
 	public static final int DEFAULT_TIMEOUT = 30_000;
 
