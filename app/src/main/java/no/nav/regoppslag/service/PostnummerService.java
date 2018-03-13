@@ -1,12 +1,12 @@
 package no.nav.regoppslag.service;
 
-import com.google.common.io.Resources;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class PostnummerService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
-	private final static URL FILENAME = Resources.getResource("postnummer/postnummerregister.txt");
+	private static URL FILENAME;
 
 	private final Map<String, PostData> postalCodeTable;
 
@@ -34,6 +34,9 @@ public class PostnummerService {
 
 	@PostConstruct
 	public void init() throws Exception {
+		
+		FILENAME= new ClassPathResource("postnummer/countries.txt").getURL();
+		
 		String line;
 		String csvSplitBy = "\t";
 

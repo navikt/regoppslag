@@ -1,12 +1,12 @@
 package no.nav.regoppslag.service;
 
-import com.google.common.io.Resources;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,21 +23,22 @@ import java.util.Map;
 @Service
 @Scope("singleton")
 public class LandkodeService {
-
+	
 	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
-	private final static URL FILENAME = Resources.getResource("postnummer/countries.txt");
-
+	private static URL FILENAME;
+	
 	private final Map<String, LandData> landkodeTable;
-
+	
 	public LandkodeService() {
 		landkodeTable = new HashMap<>();
 	}
-
+	
 	@PostConstruct
 	public void init() throws Exception {
+		FILENAME = new ClassPathResource("postnummer/countries.txt").getURL();
 		String line;
 		String csvSplitBy = "\t";
-
+		
 		File filename = new File(FILENAME.getFile());
 		BufferedReader br = new BufferedReader(new FileReader(filename));
 		while ((line = br.readLine()) != null) {
@@ -47,18 +48,18 @@ public class LandkodeService {
 		}
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
-
+	
 	@Setter
 	@Getter
 	@AllArgsConstructor
 	public class LandData {
-
+		
 		private String landkode;
 		private String navn;
 	}
-
-	public String finnLandnavn (String landkode) {
+	
+	public String finnLandnavn(String landkode) {
 		return landkodeTable.get(landkode).getNavn();
 	}
-
+	
 }
