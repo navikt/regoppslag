@@ -125,7 +125,8 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(NORSK_ADRESSELINJE1));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(NORSK_ADRESSELINJE2));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(NORSK_ADRESSELINJE3));
-//TODO		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje4()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
@@ -141,7 +142,8 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
-//		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje4()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is("UKJENT/UNKNOWN"));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 

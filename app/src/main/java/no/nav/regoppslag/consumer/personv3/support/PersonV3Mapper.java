@@ -121,6 +121,7 @@ public class PersonV3Mapper {
 		}
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())){
 			norskPostadresse.setPostnummer("0000");
+			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 		}
 		mottaker.setAdresse(norskPostadresse);
 	}
