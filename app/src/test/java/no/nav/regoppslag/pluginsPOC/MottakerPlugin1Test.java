@@ -21,6 +21,7 @@ import java.io.File;
  */
 public class MottakerPlugin1Test {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	private static final String DOKUMENTTYPEID = "I000003";
 
 	@Test
 	public void testPlugin1() throws Exception {
@@ -33,7 +34,7 @@ public class MottakerPlugin1Test {
 		writeXml(node);
 
 		MottakerPlugin1 plugin1 = new MottakerPlugin1();
-		Node processed = plugin1.processElement(node);
+		Node processed = plugin1.processElement(node, DOKUMENTTYPEID);
 		writeXml(processed);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);

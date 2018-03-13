@@ -62,7 +62,7 @@ public class RegOppslagService {
 		String responseBrevdata = null;
 		try {
 			Document brevdata = stringToDocument(requestTo.getBrevdata());
-			Document brevdataUtfylt = orchestrator.process(brevdata);
+			Document brevdataUtfylt = orchestrator.process(brevdata, requestTo.getDokumentTypeId());
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error(e.getMessage(), e);

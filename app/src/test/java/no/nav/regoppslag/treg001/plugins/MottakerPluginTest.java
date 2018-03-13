@@ -6,31 +6,34 @@ import static no.nav.regoppslag.util.TestUtil.writeXml;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,17 +48,21 @@ public class MottakerPluginTest {
 	private static final String ORGNAVN_2 = "Orgnavn_2";
 	private static final String ORGKORTNAVN = "OrgKortnavn 1";
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+	private static final String DOKUMENTTYPEID = "I000003";
+	private static final String SPRAAK_NB = "nb";
 
-	private PersonV3Consumer personV3Consumer = Mockito.mock(PersonV3Consumer.class);
+	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
 	private PersonV3Mapper personV3Mapper = new PersonV3Mapper();
-	private OrganisasjonV4Consumer organisasjonV4Consumer = Mockito.mock(OrganisasjonV4Consumer.class);
-	private OrganisasjonV4Mapper organisasjonV4Mapper= new OrganisasjonV4Mapper();
-	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper);
+	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+	private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper();
+	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo);
 
 	@Before
-	public void setUp() {
+	public void setUp() throws RegOppslagFunctionalException {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
 	}
 
 	@Test
@@ -63,16 +70,16 @@ public class MottakerPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles","mottaker");
+		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
 		Node node = findSingleNode(qName, document);
 
 		writeXml(node);
 
-		Node processed = mottakerPlugin.processElement(node);
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID);
 		writeXml(processed);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker= mottakerJaxbHelper.unmarshal(processed);
+		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
@@ -107,5 +114,15 @@ public class MottakerPluginTest {
 		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
 
 		return organisasjon;
+	}
+
+	private List<SpraakInfoTo> createTkatResponse(List<String> langs) {
+		List<SpraakInfoTo> list = new ArrayList<>();
+		langs.forEach(lang -> {
+			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
+			spraakInfoTo.setSpraaklag(lang);
+			list.add(spraakInfoTo);
+		});
+		return list;
 	}
 }

@@ -11,7 +11,7 @@ import org.w3c.dom.Node;
  * @author Hans Petter Simonsen - Miles
  * Enriches a specific {@link Element} with additional content.
  * Intended use is to use a specific key element within the Element content input to lookup additional registry content.
- * The {@link #processElement(Node)} method will populate additional content within the content element node and return
+ * The {@link #processElement(Node, String)} method will populate additional content within the content element node and return
  * either a copy of the element or a modified version og the same element to the caller.
  * All {@link ElementEnricherPlugin} classes must be registered with the {@link ElementEnricherPluginRegistry} to be picked up by the XmlEnricherEngine (TBEST001)
  *  - alternative solution is that ElementEnricherPluginRegistry scans classpath for all {@link ElementEnricherPlugin} classes.
@@ -27,12 +27,12 @@ public interface ElementEnricherPlugin {
 	 *
 	 * @param content is a complex element node of some specific type.
 	 *       Element must contain a key subelement to be used for lookup of registry data.
+	 * @param dokumentTypeId is the DokumentType for the content to be produced.
 	 * @return Element of the same type as the input, but enriched with registry data.
 	 * @throws InvalidElementException if element is not of correct type
 	 * @throws MissingKeyValueException if lookup key subelement is empty or missing
 	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 */
-	//Node processElement(Node content, NamespaceContext namespaceContext) throws InvalidElementException, MissingKeyValueException, RegistryServiceFunctionalException;
-	Node processElement(Node content) throws RegOppslagFunctionalException, InvalidElementException;
+	Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException;
 
 }

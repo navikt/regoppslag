@@ -48,7 +48,7 @@ public class Tkat020DokumenttypeInfoTest {
 		assertThat(sprakinfos.get(1).getSpraaklag(), is(LANG2));
 	}
 
-	DokumentTypeInfoToV3 defaultResponse(List<String> langs) {
+	private DokumentTypeInfoToV3 defaultResponse(List<String> langs) {
 		DokumentTypeInfoToV3 dokumentTypeInfoToV3 = new DokumentTypeInfoToV3();
 		DokumentProduksjonsInfoToV3 dokumentProduksjonsInfo = new DokumentProduksjonsInfoToV3();
 		List<SpraakInfoTo> list = new ArrayList<>();

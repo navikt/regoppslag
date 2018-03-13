@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
  */
 public class FailingPlugin implements ElementEnricherPlugin {
 	@Override
-	public Node processElement(Node content) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
 		throw new RegOppslagFunctionalException("something went wrong calling registryservice");
 	}
 }

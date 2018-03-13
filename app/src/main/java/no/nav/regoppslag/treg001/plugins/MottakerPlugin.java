@@ -3,6 +3,8 @@ package no.nav.regoppslag.treg001.plugins;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
@@ -26,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.List;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -45,23 +48,26 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
+
+	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 	
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper) {
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
 		super(Mottaker.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
+		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 	}
 	
 	
 	@Override
-	public Node processElement(Node content) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
 //		validateElementType(content);
 		try {
 			log.info("Henter mottaker info");
@@ -78,6 +84,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
 							.getId()));
 				}
+				List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+
 				personV3Mapper.map(person, mottaker);
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());

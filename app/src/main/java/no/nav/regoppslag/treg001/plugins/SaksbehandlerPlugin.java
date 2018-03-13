@@ -36,7 +36,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 	private SaksbehandlerMapper saksbehandlerMapper;
 
 	@Override
-	public Node processElement(Node content) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
 
 //		validateElementType(content);
 		try {

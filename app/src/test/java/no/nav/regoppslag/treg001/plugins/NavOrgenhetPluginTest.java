@@ -29,6 +29,7 @@ public class NavOrgenhetPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
+	private static final String DOKUMENTTYPEID = "I000003";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
 	private Norg2Mapper norg2Mapper = new Norg2Mapper();
@@ -48,7 +49,7 @@ public class NavOrgenhetPluginTest {
 
 		writeXml(node);
 
-		Node processed = norgPlugin.processElement(node);
+		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID);
 		writeXml(processed);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);

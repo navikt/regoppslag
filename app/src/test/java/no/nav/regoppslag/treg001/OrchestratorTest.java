@@ -35,6 +35,7 @@ import java.io.File;
 public class OrchestratorTest {
 
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	private static final String DOKUMENTTYPEID = "I000003";
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -61,7 +62,7 @@ public class OrchestratorTest {
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document);
+		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 
@@ -88,7 +89,7 @@ public class OrchestratorTest {
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document);
+		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 
@@ -116,7 +117,7 @@ public class OrchestratorTest {
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
 
-		Document processed = orchestrator.process(document);
+		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 	}

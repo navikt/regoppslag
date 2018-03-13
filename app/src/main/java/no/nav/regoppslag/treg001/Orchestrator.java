@@ -50,7 +50,7 @@ public class Orchestrator {
 		}
 	}
 
-	public Document process(Document document) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
 		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
 		Set<QName> supportedElements = registry.getSupportedElements();
 		for (QName xpath : supportedElements) {
@@ -65,7 +65,7 @@ public class Orchestrator {
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.computation())
-				.map(tuple -> tuple.plugin.processElement(tuple.element))
+				.map(tuple -> tuple.plugin.processElement(tuple.element, dokumentTypeId))
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),

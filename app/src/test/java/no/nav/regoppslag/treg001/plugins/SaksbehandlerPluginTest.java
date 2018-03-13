@@ -1,10 +1,10 @@
 package no.nav.regoppslag.treg001.plugins;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static no.nav.regoppslag.util.TestUtil.writeXml;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,6 +34,7 @@ import java.io.File;
 @TestPropertySource("classpath:ldap.properties")
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	private static final String DOKUMENTTYPEID = "I000003";
 
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
@@ -53,7 +54,7 @@ public class SaksbehandlerPluginTest {
 
 		writeXml(node);
 
-		Node processed = saksbehandlerPlugin.processElement(node);
+		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID);
 		writeXml(processed);
 
 		JaxbHelper<Saksbehandler> mottakerJaxbHelper = new JaxbHelper<Saksbehandler>(Saksbehandler.class);

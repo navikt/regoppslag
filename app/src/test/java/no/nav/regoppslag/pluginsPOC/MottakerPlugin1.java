@@ -30,7 +30,7 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 	}
 
 	@Override
-	public Node processElement(Node content) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
 		validateElementType(content);
 		try {
 			Mottaker mottaker = unmarshal(content);

@@ -18,7 +18,7 @@ public class SignerendeSaksbehandlerPlugin implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(SignerendeSaksbehandlerPlugin.class);
 
 	@Override
-	public Node processElement(Node content) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
 		validateElementType(content);
 		Element element = (Element) content;
 		Node navn = element.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler","navn").item(0);

@@ -49,7 +49,7 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 
 
 	@Override
-	public Node processElement(Node content) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
 		validateElementType(content);
 		try {
 			
