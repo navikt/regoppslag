@@ -40,7 +40,11 @@ public class Tkat020DokumenttypeInfo {
 				.build();
 	}
 
-	@Cacheable(cacheNames =HENT_DOKKAT_SPRAAKINFO)
+	public Tkat020DokumenttypeInfo(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	@Cacheable(cacheNames = HENT_DOKKAT_SPRAAKINFO)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException{
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
