@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +26,7 @@ import java.util.Map;
 public class PostnummerService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
-	private static URL FILENAME;
+	private static final String FILENAME = "/postnummer/postnummerregister.txt";
 
 	private final Map<String, PostData> postalCodeTable;
 
@@ -35,13 +37,12 @@ public class PostnummerService {
 	@PostConstruct
 	public void init() throws Exception {
 		
-		FILENAME= new ClassPathResource("postnummer/countries.txt").getURL();
-		
+		InputStream in = getClass().getResourceAsStream(FILENAME);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
 		String line;
 		String csvSplitBy = "\t";
 
-		File filename = new File(FILENAME.getFile());
-		BufferedReader br = new BufferedReader(new FileReader(filename));
 		while ((line = br.readLine()) != null) {
 			String[] postArray = line.split(csvSplitBy);
 

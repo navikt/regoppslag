@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +27,8 @@ import java.util.Map;
 public class LandkodeService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
-	private static URL FILENAME;
-	
+	private static final String FILENAME = "/postnummer/countries.txt";
+
 	private final Map<String, LandData> landkodeTable;
 	
 	public LandkodeService() {
@@ -35,12 +37,11 @@ public class LandkodeService {
 	
 	@PostConstruct
 	public void init() throws Exception {
-		FILENAME = new ClassPathResource("postnummer/countries.txt").getURL();
+		InputStream in = getClass().getResourceAsStream(FILENAME);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String line;
 		String csvSplitBy = "\t";
 		
-		File filename = new File(FILENAME.getFile());
-		BufferedReader br = new BufferedReader(new FileReader(filename));
 		while ((line = br.readLine()) != null) {
 			String[] postArray = line.split(csvSplitBy);
 			LandData data = new LandData(postArray[2], postArray[0].toUpperCase());

@@ -24,6 +24,7 @@ import java.util.Map;
 @Service
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
+	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 
 	@Inject
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
@@ -39,7 +40,7 @@ public class Tkat020DokumenttypeInfo {
 				.build();
 	}
 
-	@Cacheable(cacheNames ="hentDokumenttypeInfoSpraak")
+	@Cacheable(cacheNames =HENT_DOKKAT_SPRAAKINFO)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException{
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
