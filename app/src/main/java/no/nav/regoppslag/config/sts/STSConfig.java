@@ -16,6 +16,7 @@ public class STSConfig {
 	
 	@Value("${securityTokenService.url}")
 	private String stsUrl;
+	
 	@Inject
 	private ServiceuserAlias serviceuserAlias;
 	
