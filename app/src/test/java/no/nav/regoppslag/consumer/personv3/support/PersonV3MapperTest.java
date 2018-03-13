@@ -6,9 +6,12 @@ import static org.hamcrest.Matchers.is;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseNorge;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUtland;
@@ -16,7 +19,9 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PersonV3MapperTest {
@@ -35,8 +40,23 @@ public class PersonV3MapperTest {
 	private static final String UTLAND_ADRESSELINJE1 = "Foreign address 1";
 	private static final String UTLAND_ADRESSELINJE2 = "Foreign address 2";
 	private static final String UTLAND_ADRESSELINJE3 = "Foreign address 3";
+	private static final String UTLAND_ADRESSELINJE4 = "Foreign address 4";
+	private static final String POSTNR = "5460";
+	private static final String POSTSTED = "HUSNES";
+	private static final String LANDKODE = "NOR";
+	private static final String LAND = "NORWAY";
 
+	private PostnummerService postnummerService = new PostnummerService();
+	private LandkodeService landkodeService= new LandkodeService();
 	private PersonV3Mapper mapper = new PersonV3Mapper();
+
+	@Before
+	public	void initPostnummer() throws Exception {
+		landkodeService.init();
+		postnummerService.init();
+		mapper.postnummerService = postnummerService;
+		mapper.landkodeService = landkodeService;
+	}
 
 	@Test
 	public void simpleMapping() {
@@ -58,6 +78,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -70,6 +93,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(EIENDOMSNAVN));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -82,6 +108,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -96,6 +125,9 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(NORSK_ADRESSELINJE1));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(NORSK_ADRESSELINJE2));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(NORSK_ADRESSELINJE3));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -110,6 +142,9 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -122,6 +157,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -134,6 +172,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(EIENDOMSNAVN));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -146,6 +187,9 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
 	}
 
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
@@ -174,6 +218,18 @@ public class PersonV3MapperTest {
 		gateadresse.setHusnummer(HUSNR);
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		gateadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		gateadresse.setLandkode(landkoder);
+
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
 		bostedsadresse.setStrukturertAdresse(gateadresse);
 
@@ -189,6 +245,18 @@ public class PersonV3MapperTest {
 		Matrikkeladresse matrikkeladresse= new Matrikkeladresse();
 		matrikkeladresse.setEiendomsnavn(EIENDOMSNAVN);
 
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		matrikkeladresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		matrikkeladresse.setLandkode(landkoder);
+
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
 		bostedsadresse.setStrukturertAdresse(matrikkeladresse);
 
@@ -203,6 +271,18 @@ public class PersonV3MapperTest {
 
 		PostboksadresseNorsk postboksadresse= new PostboksadresseNorsk();
 		postboksadresse.setPostboksnummer(POSTBOKS);
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		postboksadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		postboksadresse.setLandkode(landkoder);
 
 		Bostedsadresse bostedsadresse = new Bostedsadresse();
 		bostedsadresse.setStrukturertAdresse(postboksadresse);
@@ -220,6 +300,13 @@ public class PersonV3MapperTest {
 		ustrukturertAdresse.setAdresselinje1(NORSK_ADRESSELINJE1);
 		ustrukturertAdresse.setAdresselinje2(NORSK_ADRESSELINJE2);
 		ustrukturertAdresse.setAdresselinje3(NORSK_ADRESSELINJE3);
+		ustrukturertAdresse.setAdresselinje4(POSTNR);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		ustrukturertAdresse.setLandkode(landkoder);
 
 		Postadresse postadresse = new Postadresse();
 		postadresse.setUstrukturertAdresse(ustrukturertAdresse);
@@ -237,6 +324,13 @@ public class PersonV3MapperTest {
 		ustrukturertAdresse.setAdresselinje1(UTLAND_ADRESSELINJE1);
 		ustrukturertAdresse.setAdresselinje2(UTLAND_ADRESSELINJE2);
 		ustrukturertAdresse.setAdresselinje3(UTLAND_ADRESSELINJE3);
+		ustrukturertAdresse.setAdresselinje4(UTLAND_ADRESSELINJE4);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		ustrukturertAdresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = new MidlertidigPostadresseUtland();
 		midlertidigPostadresseUtland.setUstrukturertAdresse(ustrukturertAdresse);
@@ -255,6 +349,18 @@ public class PersonV3MapperTest {
 		gateadresse.setHusnummer(HUSNR);
 		gateadresse.setHusbokstav(HUSBOKSTAV);
 
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		gateadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		gateadresse.setLandkode(landkoder);
+
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
 		midlertidigPostadresseNorge.setStrukturertAdresse(gateadresse);
 
@@ -270,6 +376,18 @@ public class PersonV3MapperTest {
 		Matrikkeladresse matrikkeladresse= new Matrikkeladresse();
 		matrikkeladresse.setEiendomsnavn(EIENDOMSNAVN);
 
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		matrikkeladresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		matrikkeladresse.setLandkode(landkoder);
+
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
 		midlertidigPostadresseNorge.setStrukturertAdresse(matrikkeladresse);
 
@@ -284,6 +402,18 @@ public class PersonV3MapperTest {
 
 		PostboksadresseNorsk postboksadresse= new PostboksadresseNorsk();
 		postboksadresse.setPostboksnummer(POSTBOKS);
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeverksRef(POSTNR);
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		postboksadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeverksRef(LANDKODE);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		postboksadresse.setLandkode(landkoder);
 
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
 		midlertidigPostadresseNorge.setStrukturertAdresse(postboksadresse);
