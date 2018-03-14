@@ -18,6 +18,9 @@ public class Maalform {
 				if (mottaker.getSpraakkode() == Spraakkode.NN && malInneholderSpraak(spraakInfoMal, "NB")) {
 					//Har bruker satt nynorsk, men malen finnes på bokmål
 					mottaker.setSpraakkode(Spraakkode.NB);
+				} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
+					//Malen finnes på nynorsk
+					mottaker.setSpraakkode(Spraakkode.NN);
 				} else if (malInneholderSpraak(spraakInfoMal, "EN")) {
 					//Malen finnes på engelsk
 					mottaker.setSpraakkode(Spraakkode.EN);
