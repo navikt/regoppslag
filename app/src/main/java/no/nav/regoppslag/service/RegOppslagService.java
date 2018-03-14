@@ -68,7 +68,7 @@ public class RegOppslagService {
 			log.error(e.getMessage(), e);
 			throw new RegOppslagTechnicalException(e);
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
 			logExceptions(t);
