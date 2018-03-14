@@ -29,7 +29,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.lang.reflect.MalformedParameterizedTypeException;
 import java.util.List;
 
 /**
@@ -92,12 +91,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 				personV3Mapper.map(person, mottaker);
 
-				List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
-				if (sprakinfos.isEmpty()) {
-					log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);
-				}
-				maalform.setMaalform(mottaker, sprakinfos);
-
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 				if (organisasjon == null) {
@@ -106,7 +99,13 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				}
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
-			
+			//Sjekker språket på malen opp mot mottakers preferanser
+			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+			if (sprakinfos.isEmpty()) {
+				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);
+			}
+			maalform.setMaalform(mottaker, sprakinfos);
+
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
 			

@@ -3,6 +3,7 @@ package no.nav.regoppslag.consumer.personv3.support;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
@@ -27,7 +28,13 @@ public class PersonV3Mapper {
 	LandkodeService landkodeService;
 
 	public void map(Bruker person, Mottaker mottaker) {
-		//Spraakkode?
+		if (person.getMaalform() != null) {
+			if (person.getMaalform().getValue() == "NO") {
+				mottaker.setSpraakkode(Spraakkode.NB);
+			} else {
+				mottaker.setSpraakkode(Spraakkode.valueOf(person.getMaalform().getValue()));
+			}
+		}
 		mottaker.setKortNavn(person.getPersonnavn().getSammensattNavn());
 		if (person.getPersonnavn().getMellomnavn() == null) {
 			mottaker.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn());

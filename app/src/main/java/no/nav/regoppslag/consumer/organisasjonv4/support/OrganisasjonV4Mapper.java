@@ -2,6 +2,7 @@ package no.nav.regoppslag.consumer.organisasjonv4.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.GeografiskAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdresse;
@@ -29,6 +30,13 @@ public class OrganisasjonV4Mapper {
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
 
 		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn)orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
+		if (orgDet.getGjeldendeMaalform() != null) {
+			if (orgDet.getGjeldendeMaalform().getValue() == "NO") {
+				mottaker.setSpraakkode(Spraakkode.NB);
+			} else {
+				mottaker.setSpraakkode(Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getValue()));
+			}
+		}
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!orgDet.getPostadresse().isEmpty()) {

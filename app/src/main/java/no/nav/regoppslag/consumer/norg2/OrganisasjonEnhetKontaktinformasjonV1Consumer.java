@@ -39,7 +39,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
-			hentKontaktinformasjonForEnhetBolkUgyldigInput.printStackTrace();
+			log.info("Nav enhet finnes ikke for enhetNr={}, message={}", enhetNr, hentKontaktinformasjonForEnhetBolkUgyldigInput.getMessage());
 			return null;
 		} finally {
 			requestTimer.observeDuration();
