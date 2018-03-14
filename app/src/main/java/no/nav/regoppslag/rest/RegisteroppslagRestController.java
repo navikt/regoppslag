@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 @RestController
 public class RegisteroppslagRestController {
-	public static final String REGISTEROPPSLAG_URI_PATH = "/REST/registeroppslag";
+	public static final String KOMPLETTER_BREVDATA_URI_PATH = "/REST/kompletterBrevdata";
 	
 	private RegOppslagService regOppslagService;
 	
@@ -29,7 +29,7 @@ public class RegisteroppslagRestController {
 		this.regOppslagService = regOppslagService;
 	}
 	
-	@PostMapping(value = REGISTEROPPSLAG_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
 	public @ResponseBody RegOppslagResponse validerOgKompletterBrevdata(@RequestBody RegOppslagRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {

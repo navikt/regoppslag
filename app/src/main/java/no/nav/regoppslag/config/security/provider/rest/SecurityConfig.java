@@ -1,6 +1,6 @@
 package no.nav.regoppslag.config.security.provider.rest;
 
-import static no.nav.regoppslag.rest.RegisteroppslagRestController.REGISTEROPPSLAG_URI_PATH;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 
 import no.nav.regoppslag.config.fasit.LdapAlias;
 import org.springframework.cache.CacheManager;
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/isAlive","/isReady","/internal/**").permitAll();
-		http.authorizeRequests().antMatchers(REGISTEROPPSLAG_URI_PATH)
+		http.authorizeRequests().antMatchers(KOMPLETTER_BREVDATA_URI_PATH)
 				.fullyAuthenticated()
 				.and().httpBasic()
 		;

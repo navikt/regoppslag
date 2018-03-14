@@ -16,9 +16,8 @@ import javax.xml.namespace.QName;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class OrchestratorConfig {
-	
 	@Bean
-	private ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException {
+	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 		registry.registerPlugin(new QName("mottaker"), MottakerPlugin.class);
 		registry.registerPlugin(new QName("signerendeSaksbehandler"), SaksbehandlerPlugin.class);
@@ -32,6 +31,5 @@ public class OrchestratorConfig {
 		orchestrator.setRegistry(registry);
 		return orchestrator;
 	}
-	
 	
 }

@@ -75,7 +75,7 @@ public class RegOppslagService {
 			if (t.hasFunctionExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", requestTo.getDokumentTypeId(), t.report()));
 			} else {
-				throw new RegOppslagTechnicalException(String.format("Technical exception: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
+				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
 			}
 		}
 		return RegOppslagResponse.builder().brevdata(responseBrevdata).build();
