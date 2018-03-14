@@ -10,6 +10,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -28,6 +29,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.lang.reflect.MalformedParameterizedTypeException;
 import java.util.List;
 
 /**
@@ -50,19 +52,22 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
-	
+
+	private Maalform maalform;
+
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 	
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo, Maalform maalform) {
 		super(Mottaker.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
+		this.maalform = maalform;
 	}
 	
 	
@@ -84,11 +89,15 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
 							.getId()));
 				}
-				if (person.getMaalform() != null && person.getMaalform().getValue() != null) {
-					List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
-				}
 
 				personV3Mapper.map(person, mottaker);
+
+				List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+				if (sprakinfos.isEmpty()) {
+					log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);
+				}
+				maalform.setMaalform(mottaker, sprakinfos);
+
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 				if (organisasjon == null) {

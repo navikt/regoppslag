@@ -93,5 +93,8 @@ public class RegOppslagService {
 			}
 		});
 	}
-	
+
+	private void settMaalform(Document dokument) {
+		dokument.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/Mottaker", "id");
+	}
 }
