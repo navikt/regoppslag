@@ -52,7 +52,12 @@ public class LdapAdeoUserLookupCacheTest {
 
 		assertEquals(fulltNavn, NAME1);
 	}
-
+	
+	@Test
+	public void shouldCallMethodIfCacheThrowsException() {
+		//TODO Applikasjonen skal ikke kaste feilmelding selv om cache feiler, men kalle metoden.
+	}
+	
 	@Configuration
 	static class Config {
 		@Bean

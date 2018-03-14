@@ -41,9 +41,10 @@ public class MultiExceptionHolder extends Throwable {
  	public String report() {
 		if (!getUnhandledErrors().isEmpty()) {
 			StringBuilder report = new StringBuilder();
-			report.append("Antall feil=" + getUnhandledErrors().size() + "; ");
+			report.append(this.getMessage());
+			report.append("\n\rAntall feil: " + getUnhandledErrors().size() + ".\n\r");
 			report.append("Feilmeldinger: ");
-			report.append(getAllMessages()); //Er dette godt nok for brukeren? Bør det også legges ved initCause?
+			report.append(getAllMessages());
 			return report.toString();
 		}
 		return "No unhandled errors exist.";
@@ -53,6 +54,4 @@ public class MultiExceptionHolder extends Throwable {
 		return getUnhandledErrors().stream().map(throwable -> throwable.getClass().getSimpleName()+"; "+throwable.getMessage()).collect(Collectors.joining(", ","[","]"));
 	}
 	
-	//All Messages med FirstCause exceptionClass og nummerering
-	//All stacktraces
 }

@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableCaching
-public class RestConfig {
+public class RestConsumerConfig {
 	@Bean
 	public HttpComponentsClientHttpRequestFactory requestFactory() {
 		return new HttpComponentsClientHttpRequestFactory(httpClient());
@@ -25,13 +25,5 @@ public class RestConfig {
 	@Bean
 	public HttpClient httpClient() {
 		return HttpClients.createDefault();
-	}
-
-	@Bean
-	public CacheManager cacheManager() {
-		// configure and return an implementation of Spring's CacheManager SPI
-		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache(HENT_DOKKAT_SPRAAKINFO)));
-		return cacheManager;
 	}
 }

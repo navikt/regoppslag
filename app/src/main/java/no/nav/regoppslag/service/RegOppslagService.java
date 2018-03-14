@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.Orchestrator;
-import no.nav.regoppslag.treg001.RegOppslagRequestTo;
-import no.nav.regoppslag.treg001.RegOppslagResponseTo;
+import no.nav.regoppslag.treg001.RegOppslagRequest;
+import no.nav.regoppslag.treg001.RegOppslagResponse;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class RegOppslagService {
 		return writer.toString();
 	}
 	
-	public RegOppslagResponseTo hentBrevdataFraRegistre(RegOppslagRequestTo requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public RegOppslagResponse hentBrevdataFraRegistre(RegOppslagRequest requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		String responseBrevdata = null;
 		try {
@@ -71,30 +71,23 @@ public class RegOppslagService {
 			log.error(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
-			//TODO: lage MultiExceptionHolder.report og rapportere som enten functional eller teknisk feil
 			logExceptions(t);
 			if (t.hasFunctionExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", requestTo.getDokumentTypeId(), t.report()));
 			} else {
-				throw new RegOppslagTechnicalException(String.format("Technical exception: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
+				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
 			}
 		}
-		return RegOppslagResponseTo.builder().brevdata(responseBrevdata).build();
+		return RegOppslagResponse.builder().brevdata(responseBrevdata).build();
 		
 	}
 	
 	private void logExceptions(MultiExceptionHolder t) {
-		t.getUnhandledErrors().forEach(error -> {
-			String msg=String.format("Exception: %s - errorMsg=%s",error.getClass().getSimpleName(), error.getMessage());
+		t.getUnhandledErrors().stream().forEach(error -> {
 			if (error instanceof RegOppslagFunctionalException) {
-				log.warn(msg,error);
+				log.warn(error.getMessage(),error);
 			} else {
-				log.error(msg,error);
-			}
-		});
-	}
-
-	private void settMaalform(Document dokument) {
-		dokument.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/Mottaker", "id");
+				log.error(error.getMessage(),error);
+			}   });
 	}
 }

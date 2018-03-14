@@ -6,17 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * TO object used in POST
- *
- * @author Ketill Fenne, Visma Consulting
- */
-@Getter
 @Setter
+@Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class RegOppslagRequestTo {
-		private String dokumentTypeId;
+@AllArgsConstructor
+public class RegOppslagResponse {
 		private String brevdata;
 }
