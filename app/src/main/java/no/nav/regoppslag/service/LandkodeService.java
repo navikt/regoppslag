@@ -6,16 +6,12 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +23,7 @@ import java.util.Map;
 public class LandkodeService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
-	private static final String FILENAME = "/postnummer/countries.txt";
+	private static final String FILENAME = "/kodeverk/countries.txt";
 
 	private final Map<String, LandData> landkodeTable;
 	

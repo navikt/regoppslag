@@ -84,7 +84,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
 							.getId()));
 				}
-				List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+				if (person.getMaalform() != null && person.getMaalform().getValue() != null) {
+					List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+				}
 
 				personV3Mapper.map(person, mottaker);
 			} else {
