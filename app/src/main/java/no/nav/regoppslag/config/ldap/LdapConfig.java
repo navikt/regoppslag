@@ -1,10 +1,11 @@
 package no.nav.regoppslag.config.ldap;
 
 import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE_RS_LOGIN;
-import static no.nav.regoppslag.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import no.nav.regoppslag.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
