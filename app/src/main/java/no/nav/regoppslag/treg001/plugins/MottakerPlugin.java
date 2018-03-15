@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -121,21 +122,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info("Mottaker er beriket med data");
-			return newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
+			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
 				ParserConfigurationException e)
-
 		{
 			throw new RuntimeException(e);
 		}
 
-	}
-
-	private void validateElementType(Node element) throws InvalidElementException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new InvalidElementException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
-		}
 	}
 }

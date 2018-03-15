@@ -19,9 +19,9 @@ public class OrchestratorConfig {
 	@Bean
 	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
-		registry.registerPlugin(new QName("mottaker"), MottakerPlugin.class);
-		registry.registerPlugin(new QName("signerendeSaksbehandler"), SaksbehandlerPlugin.class);
-		registry.registerPlugin(new QName("kontaktinformasjon"), NavOrgenhetPlugin.class);
+		registry.registerPlugin(new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker"), MottakerPlugin.class);
+		registry.registerPlugin(new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "signerendeSaksbehandler"), SaksbehandlerPlugin.class);
+		registry.registerPlugin(new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "kontaktinformasjon"), NavOrgenhetPlugin.class);
 		return registry;
 	}
 	

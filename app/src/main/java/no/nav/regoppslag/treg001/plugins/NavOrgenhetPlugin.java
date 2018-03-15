@@ -75,11 +75,10 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 			Node node = marshal(navEnhet, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
-			Node renameNode = newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "f:kontaktinformasjon");
-			
+
 			log.info("NavOrgenhet er beriket med data");
+			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
-			return renameNode;
 		} catch (JAXBException | ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}

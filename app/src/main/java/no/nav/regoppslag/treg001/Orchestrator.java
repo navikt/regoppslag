@@ -84,7 +84,7 @@ public class Orchestrator {
 	private void aggregate(Document document, Node newElement) {
 		Element element = (Element) newElement;
 		// Find element in original XML, only one of each supported
-		Node orgElem = document.getElementsByTagName(newElement.getNodeName()).item(0);
+		Node orgElem = document.getElementsByTagNameNS(newElement.getNamespaceURI(),  newElement.getNodeName()).item(0);
 		// If plugin does in-place mutation, no aggregation is necessary.
 		if (newElement.isSameNode(orgElem)) {
 			return;

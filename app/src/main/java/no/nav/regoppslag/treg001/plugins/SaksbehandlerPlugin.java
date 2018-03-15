@@ -39,7 +39,6 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 	@Override
 	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
 
-//		validateElementType(content);
 		try {
 			
 			log.info("Henter saksbehandler info");
@@ -67,27 +66,15 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 			
 			log.info("Saksbehandler er beriket med data");
 			
-			return newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", content.getNodeName());
+			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException | ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	private void validateSaksbehandler(Saksbehandler saksbehandler) throws RegOppslagFunctionalException {
-		
 		if (saksbehandler.getAnsattId()==null){
 			throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId"));
 		}
-		
 	}
-
-//	private void validateElementType(Node element) throws InvalidElementException {
-//		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-//				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-//			throw new InvalidElementException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-//					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
-//		}
-//	}
-//		return (ldapConsumer.hentFulltNavn(ansattId));
-//	}
 }
