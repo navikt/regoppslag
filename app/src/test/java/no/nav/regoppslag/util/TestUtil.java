@@ -1,5 +1,6 @@
 package no.nav.regoppslag.util;
 
+import com.google.common.io.Resources;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -20,11 +21,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Hans Petter Simonsen - Miles
  */
 public class TestUtil {
+	
+	public static String resourceUrlToString(URL url) {
+		try {
+			return Resources.toString(url, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not convert url to String" + url);
+		}
+	}
+	
 	public static Document loadDocument(File xmlFile) throws IOException, ParserConfigurationException, SAXException {
 		FileInputStream fileIS = new FileInputStream(xmlFile);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
