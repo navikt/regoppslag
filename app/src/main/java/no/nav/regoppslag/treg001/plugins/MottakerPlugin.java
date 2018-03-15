@@ -42,13 +42,13 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	Logger LOG = LoggerFactory.getLogger(MottakerPlugin.class);
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
 	public static final String ELEMENT_LOCALNAME = "mottaker";
-	
+
 	private PersonV3Consumer personV3Consumer;
-	
+
 	private PersonV3Mapper personV3Mapper;
-	
+
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
-	
+
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
@@ -58,7 +58,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
-	
+
 	@Inject
 	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo, Maalform maalform) {
 		super(Mottaker.class);
@@ -69,20 +69,23 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 		this.maalform = maalform;
 	}
-	
-	
+
+
 	@Override
 	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
 //		validateElementType(content);
 		try {
 			log.info("Henter mottaker info");
-			
+
+			if (dokumentTypeId == null) {
+				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!");
+			}
 			Mottaker mottaker = unmarshal(content);
-			
+
 			if (mottaker.getTypeKode() == null || mottaker.getId() == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere."));
 			}
-			
+
 			if (AktoerType.PERSON == mottaker.getTypeKode()) {
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
 				if (person == null) {
@@ -102,28 +105,32 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			}
 			//Sjekker språket på malen opp mot mottakers preferanser
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
-			if (sprakinfos.isEmpty()) {
+			if (sprakinfos == null) {
 				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);
 			}
 			maalform.setMaalform(mottaker, sprakinfos);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
-			
+
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
-			
+
 			Node node = marshal(mottaker, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
-			
+
 			log.info("Mottaker er beriket med data");
 			return newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
-		} catch (JAXBException | ParserConfigurationException e) {
+		} catch (JAXBException |
+				ParserConfigurationException e)
+
+		{
 			throw new RuntimeException(e);
 		}
+
 	}
-	
+
 	private void validateElementType(Node element) throws InvalidElementException {
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {

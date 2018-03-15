@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class Tkat020DokumenttypeInfoTest {
 
-	private static final String DOKDUMENTYPE_ID = "123";
+	private static final String DOKDUMENTYPE_ID = "I000003";
 	private static final String LANG1 = "nb";
 	private static final String LANG2 = "no";
 
