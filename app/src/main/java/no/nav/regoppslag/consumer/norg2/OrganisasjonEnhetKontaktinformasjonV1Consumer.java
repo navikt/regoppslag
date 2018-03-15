@@ -37,7 +37,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;
 	}
 
-	@Cacheable(cacheNames = HENT_ENHET_NAVN)
+	@Cacheable(HENT_ENHET_NAVN)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException {
 		try {

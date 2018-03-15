@@ -47,7 +47,7 @@ public class Tkat020DokumenttypeInfo {
 		this.restTemplate = restTemplate;
 	}
 
-	@Cacheable(cacheNames = HENT_DOKKAT_SPRAAKINFO)
+	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
 	@Retryable(value = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		try {

@@ -67,20 +67,6 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 		assertThat(enhet, nullValue());
 	}
 
-	//TODO
-	//@Test
-	public void shouldCacheHentEnhetNavn() throws Exception {
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
-
-		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(createResponse("Denne enheten"));
-
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-
-		assertThat(enhet.getEnhetNavn(), is(ENHET_NAVN));
-	}
-
 
 	private HentKontaktinformasjonForEnhetBolkResponse defaultResponse() {
 		return createResponse(ENHET_NAVN);
