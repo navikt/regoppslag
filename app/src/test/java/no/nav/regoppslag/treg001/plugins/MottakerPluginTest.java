@@ -17,6 +17,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -61,7 +62,7 @@ public class MottakerPluginTest {
 	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, malform);
 
 	@Before
-	public void setUp() throws RegOppslagFunctionalException {
+	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));

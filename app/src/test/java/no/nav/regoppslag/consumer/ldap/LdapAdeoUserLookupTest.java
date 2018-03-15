@@ -5,7 +5,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import no.nav.regoppslag.config.ldap.LdapConfig;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -23,6 +26,9 @@ import javax.inject.Inject;
 @TestPropertySource("classpath:ldap.properties")
 public class LdapAdeoUserLookupTest {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
@@ -33,10 +39,11 @@ public class LdapAdeoUserLookupTest {
 	}
 
 	@Test
-	public void shouldReturnNullWhenAdeoIdentNotFound() throws Exception {
+	public void shouldThrowExceptionWhenAdeoIdentNotFound() throws Exception {
+		thrown.expect(RegOppslagFunctionalException.class);
+		thrown.expectMessage("Ldap.hentFulltNavn finner ikke bruker med ident:bxxxxxx");
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("bxxxxxx");
 
-		assertThat(fulltNavn, nullValue());
 	}
 
 	static class Config {

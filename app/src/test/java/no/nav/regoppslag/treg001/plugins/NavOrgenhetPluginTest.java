@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
@@ -36,7 +37,7 @@ public class NavOrgenhetPluginTest {
 	private NavOrgenhetPlugin norgPlugin = new NavOrgenhetPlugin(norgConsumer, norg2Mapper);
 
 	@Before
-	public void setUp() {
+	public void setUp() throws RegOppslagFunctionalException {
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 	@Test

@@ -1,12 +1,15 @@
 package no.nav.regoppslag.consumer.ldap;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 import javax.naming.directory.Attribute;
 import java.util.List;
@@ -36,7 +39,8 @@ public class LdapAdeoUserLookup {
 	 * @return The full name of the user or null if not found.
 	 */
 	@Cacheable(HENT_FULLT_NAVN)
-	public String hentFulltNavn(final String adeoIdent)  {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
+	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
 		LdapQuery cn = LdapQueryBuilder.query()
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
@@ -44,8 +48,7 @@ public class LdapAdeoUserLookup {
 		if (search != null && !search.isEmpty()) {
 			return search.get(0);
 		} else {
-			log.warn("Fant ikke navn for adeoIdent={}", adeoIdent);
-			return null;
+			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
 		}
 	}
 

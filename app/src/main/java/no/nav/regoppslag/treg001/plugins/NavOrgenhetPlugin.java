@@ -5,6 +5,7 @@ import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -49,7 +50,7 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
 		validateElementType(content);
 		try {
 			

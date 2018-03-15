@@ -5,6 +5,7 @@ import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -36,7 +37,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 	private SaksbehandlerMapper saksbehandlerMapper;
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
 
 //		validateElementType(content);
 		try {

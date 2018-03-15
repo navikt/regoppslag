@@ -5,6 +5,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -16,12 +17,15 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
+ * @author Ketill Fenne, Visma Consulting AS
  */
 @Slf4j
 @Service
@@ -34,21 +38,22 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 
-	public Bruker hentPerson(final String personidentifikator) {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
+	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException {
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
-		HentPersonResponse response = null;
+		HentPersonResponse response;
 		try {
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "PERSON_V3", "hentPerson").startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			hentPersonPersonIkkeFunnet.printStackTrace();
+			throw new RegOppslagFunctionalException("PersoV3.hentPerson finner ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet.getMessage(), hentPersonPersonIkkeFunnet);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			hentPersonSikkerhetsbegrensning.printStackTrace();
-		}finally {
+			throw new RegOppslagFunctionalException("PersoV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning.getMessage(), hentPersonSikkerhetsbegrensning);
+		} finally {
 			requestTimer.observeDuration();
 		}
-		if (response != null && response.getPerson()!= null) {
+		if (response != null && response.getPerson() != null) {
 			return (Bruker) response.getPerson();
 		}
 		return null;

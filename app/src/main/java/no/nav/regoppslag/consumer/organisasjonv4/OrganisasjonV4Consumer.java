@@ -5,12 +5,15 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -30,18 +33,18 @@ public class OrganisasjonV4Consumer {
 		this.organisasjonV4 = organisasjonV4;
 	}
 
-	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
+	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException {
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "ORGANISASJON_V4", "hentOrganisasjon").startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
-			log.info("Organisasjonen finnes ikke for organisasjonsnummer={}, message={}", organisasjonsnummer, e.getMessage());
+			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + organisasjonsnummer + ", message=" + e.getMessage(), e);
 		} finally {
 			requestTimer.observeDuration();
 		}
-		return null;
 	}
 
 	private HentOrganisasjonRequest mapHentNoekkelinfoOrganisasjonRequest(String avsenderId) {

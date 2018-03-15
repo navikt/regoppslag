@@ -5,9 +5,12 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -45,7 +48,8 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(cacheNames = HENT_DOKKAT_SPRAAKINFO)
-	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException{
+	@Retryable(value = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
@@ -60,7 +64,7 @@ public class Tkat020DokumenttypeInfo {
 			throw new RegOppslagFunctionalException("TKAT020 failed with statusCode=" + e.getRawStatusCode() + ", message=" + e
 					.getResponseBodyAsString(), e);
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagFunctionalException("TKAT020 failed with statusCode=" + e.getRawStatusCode(), e);
+			throw new RegOppslagTechnicalException("TKAT020 failed with statusCode=" + e.getRawStatusCode(), e);
 		}
 	}
 }

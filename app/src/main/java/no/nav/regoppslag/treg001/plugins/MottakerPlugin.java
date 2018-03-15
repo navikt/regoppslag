@@ -10,6 +10,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
@@ -71,7 +72,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
 //		validateElementType(content);
 		try {
 			log.info("Henter mottaker info");
