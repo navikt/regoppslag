@@ -62,23 +62,20 @@ public class ValiderOgKompletterBrevdataCompTest {
 	public void shouldThrowFunctionalException() throws Exception {
 		String feilmelding = "feilmelding";
 		when(regOppslagService.hentBrevdataFraRegistre(any())).thenThrow(new RegOppslagFunctionalException(feilmelding));
-		
-		MvcResult mvcResult= mvc.perform(post(KOMPLETTER_BREVDATA_URI_PATH).contentType(MediaType.APPLICATION_JSON)
+		mvc.perform(post(KOMPLETTER_BREVDATA_URI_PATH).contentType(MediaType.APPLICATION_JSON)
 				.content(request))
-				.andDo(print())
 				.andExpect(status().isBadRequest())
-		.andReturn()
 		;
 	}
 	
 	@Test
-	@Ignore("Funker ikke. ")
 	public void shouldThrowTechnicalException() throws Exception {
-		when(regOppslagService.hentBrevdataFraRegistre(any())).thenThrow(new RegOppslagTechnicalException());
+		String feilmelding = "feilmelding";
+		when(regOppslagService.hentBrevdataFraRegistre(any())).thenThrow(new RegOppslagTechnicalException(feilmelding));
 		
 		mvc.perform(post(KOMPLETTER_BREVDATA_URI_PATH).contentType(MediaType.APPLICATION_JSON)
 				.content(request))
-				.andDo(print()).andExpect(status().isInternalServerError());
+				.andExpect(status().isInternalServerError());
 	}
 	
 	}
