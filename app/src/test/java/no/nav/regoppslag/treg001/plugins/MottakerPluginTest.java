@@ -18,6 +18,8 @@ import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -54,9 +56,11 @@ public class MottakerPluginTest {
 	private static final String SPRAAK_NB = "nb";
 
 	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
-	private PersonV3Mapper personV3Mapper = new PersonV3Mapper();
+	private PostnummerService postnummerService = new PostnummerService();
+	private LandkodeService landkodeService = new LandkodeService();
+	private PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService);
 	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-	private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper();
+	private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 	private Maalform malform = new Maalform();
 	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, malform);

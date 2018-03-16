@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.nullValue;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Landkoder;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdresse;
@@ -18,6 +21,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -25,7 +29,16 @@ import java.util.List;
 
 public class OrganisasjonV4MapperTest {
 
-	private OrganisasjonV4Mapper mapper = new OrganisasjonV4Mapper();
+	private PostnummerService postnummerService = new PostnummerService();
+	private LandkodeService landkodeService= new LandkodeService();
+	private OrganisasjonV4Mapper mapper;
+
+	@Before
+	public	void initPostnummer() throws Exception {
+		landkodeService.init();
+		postnummerService.init();
+		mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
+	}
 
 	private static final String FNR = "12345678901";
 	private static final String ORGNAVN = "Orgnavn 1";
@@ -39,8 +52,9 @@ public class OrganisasjonV4MapperTest {
 	private static final String SEMIADR2 = "Semistrukturert adresselinje 2";
 	private static final String SEMIADR3 = "Semistrukturert adresselinje 3";
 	private static final String POSTNR = "5460";
-	private static final String POSTSTED = "Husnes";
-	private static final String LAND = "Noreg";
+	private static final String POSTSTED = "HUSNES";
+	private static final String LANDKODE = "NOR";
+	private static final String LAND = "NORWAY";
 
 	@Test
 	public void simpleMapping() {
@@ -143,7 +157,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje1
 		NoekkelVerdiAdresse noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		NoeklerAdresseleddSemistrukturerteAdresser noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeverksRef("adresselinje1");
+		noekkel.setKodeRef("adresselinje1");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR1);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -151,7 +165,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje2
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeverksRef("adresselinje2");
+		noekkel.setKodeRef("adresselinje2");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR2);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -159,7 +173,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje3
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeverksRef("adresselinje3split1");
+		noekkel.setKodeRef("adresselinje3split1");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR3);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -169,23 +183,14 @@ public class OrganisasjonV4MapperTest {
 		//Postnr
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeverksRef("postnr");
+		noekkel.setKodeRef("postnr");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(POSTNR);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
 
-		//Poststed
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeverksRef("poststed");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(POSTSTED);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
 		Landkoder landkoder = new Landkoder();
-		landkoder.setKodeRef(LAND);
-		landkoder.setKodeverksRef(LAND);
-		landkoder.setValue(LAND);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
 		semistrukturertAdresse.setLandkode(landkoder);
 
 		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
@@ -207,16 +212,14 @@ public class OrganisasjonV4MapperTest {
 
 
 		Postnummer postnummer = new Postnummer();
-		postnummer.setKodeverksRef(POSTNR);
-		postnummer.setKodeRef(POSTSTED);
+		postnummer.setKodeRef(POSTNR);
 		postnummer.setValue(POSTSTED);
 		StedsadresseNorge stedsadresseNorge = gateadresse;
 		stedsadresseNorge.setPoststed(postnummer);
 
 		Landkoder landkoder = new Landkoder();
-		landkoder.setKodeRef(LAND);
-		landkoder.setKodeverksRef(LAND);
-		landkoder.setValue(LAND);
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
 		stedsadresseNorge.setLandkode(landkoder);
 
 		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
