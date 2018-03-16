@@ -48,14 +48,13 @@ public class PersonV3MapperTest {
 
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService= new LandkodeService();
-	private PersonV3Mapper mapper = new PersonV3Mapper();
+	private PersonV3Mapper mapper;
 
 	@Before
 	public	void initPostnummer() throws Exception {
 		landkodeService.init();
 		postnummerService.init();
-		mapper.postnummerService = postnummerService;
-		mapper.landkodeService = landkodeService;
+		mapper = new PersonV3Mapper(postnummerService, landkodeService);
 	}
 
 	@Test
