@@ -1,0 +1,46 @@
+	<b:hentPersonResponse xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
+		<response>
+			<person xmlns:c="http://www.w3.org/2001/XMLSchema-instance" c:type="a:Bruker">
+				<bostedsadresse>
+					<strukturertAdresse c:type="a:Gateadresse">
+						<landkode>NOR</landkode>
+						<tilleggsadresseType>Offisiell adresse</tilleggsadresseType>
+						<poststed>2630</poststed>
+						<kommunenummer>0520</kommunenummer>
+						<gatenavn>HALVOR VEKTERS VEG</gatenavn>
+						<husnummer>11</husnummer>
+					</strukturertAdresse>
+				</bostedsadresse>
+				<sivilstand fomGyldighetsperiode="2014-05-22T00:00:00.000+02:00">
+					<sivilstand>ENKE</sivilstand>
+				</sivilstand>
+				<statsborgerskap>
+					<land>NOR</land>
+				</statsborgerskap>
+				<aktoer c:type="a:PersonIdent">
+					<ident>
+						<ident>01054042317</ident>
+						<type>FNR</type>
+					</ident>
+				</aktoer>
+				<kjoenn>
+					<kjoenn>M</kjoenn>
+				</kjoenn>
+				<personnavn>
+					<etternavn>RØNNINGEN</etternavn>
+					<fornavn>HÅKON</fornavn>
+					<sammensattNavn>RØNNINGEN HÅKON</sammensattNavn>
+				</personnavn>
+				<personstatus>
+					<personstatus>BOSA</personstatus>
+				</personstatus>
+				<foedselsdato>
+					<foedselsdato>1940-05-01+01:00</foedselsdato>
+				</foedselsdato>
+				<gjeldendePostadressetype>BOSTEDSADRESSE</gjeldendePostadressetype>
+				<geografiskTilknytning c:type="a:Kommune">
+					<geografiskTilknytning>0520</geografiskTilknytning>
+				</geografiskTilknytning>
+			</person>
+		</response>
+	</b:hentPersonResponse>
