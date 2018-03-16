@@ -14,14 +14,13 @@ import org.springframework.ldap.core.LdapTemplate;
 public class MockLdapTestConfig {
 	
 	
-		@Bean
-		static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-			return new PropertySourcesPlaceholderConfigurer();
-		}
-		
-		@Bean
-		LdapTemplate ldapTemplate() {
-			return mock(LdapTemplate.class);
-		}
-		
+	@Bean
+	static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
+	
+	@Bean
+	LdapTemplate ldapTemplate() {
+		return mock(LdapTemplate.class);
+	}
 }
