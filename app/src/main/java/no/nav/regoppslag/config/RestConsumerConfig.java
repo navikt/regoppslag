@@ -19,4 +19,5 @@ public class RestConsumerConfig {
 	public HttpClient httpClient() {
 		return HttpClients.createDefault();
 	}
+	
 }

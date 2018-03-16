@@ -42,21 +42,60 @@ public class HentMottakerOgAdresseService {
 	
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		Mottaker mottaker = new Mottaker();
-		log.info(String.format("Mottat hentMottakerOgAdresse kall. Identifikator=%s, type=%s",request.getIdentifikator(), request.getType()));
-		if (AktoerType.PERSON.name().equals(request.getType())) {
-			Bruker bruker  = personV3Consumer.hentPerson(request.getIdentifikator());
-			personV3Mapper.map(bruker, mottaker);
-		} else {
-			Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
-			organisasjonV4Mapper.map(organisasjon, mottaker);
+		validateInput(request);
+		try {
+			Mottaker mottaker = new Mottaker();
+			log.info(String.format("Mottat hentMottakerOgAdresse kall. Identifikator=%s, type=%s", request.getIdentifikator(), request
+					.getType()));
+			if (AktoerType.PERSON.name().equals(request.getType())) {
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
+				personV3Mapper.map(bruker, mottaker);
+			} else {
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
+				organisasjonV4Mapper.map(organisasjon, mottaker);
+			}
+			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Identifikator=%s, type=%s", request.getIdentifikator(), request
+					.getType()));
+			
+			return HentMottakerOgAdresseResponse.builder()
+					.identifikator(request.getIdentifikator())
+					.navn(mottaker.getNavn())
+					.adresse(AdresseMapper.map(mottaker))
+					.build();
+		} catch (Exception e) {
+			logAndRethrowException(e);
 		}
-		log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Identifikator=%s, type=%s",request.getIdentifikator(), request.getType()));
 		
-		return HentMottakerOgAdresseResponse.builder().identifikator(request.getIdentifikator()).navn(mottaker.getNavn()).adresse(AdresseMapper.map(mottaker)).build();
+		return null;
 	}
 	
+	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		
+		if (request==null){
+			throw new RegOppslagFunctionalException("Input body er null");
+		}
+		
+		if (request.getIdentifikator()==null){
+			throw new RegOppslagFunctionalException("Identifikator kan ikke være null");
+		}
+		
+		if (request.getType()==null) {
+			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null");
+		} else if (!AktoerType.PERSON.name().equals(request.getType())||!AktoerType.ORGANISASJON.name().equals(request.getType())) {
+			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være enten PERSON eller ORGANISASJON.",request.getType()));
+		}
+	}
 	
+	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		if (e instanceof RegOppslagFunctionalException) {
+			log.info("Funksjonell feil", e);
+			throw (RegOppslagFunctionalException) e;
+			
+		} else {
+			log.error("Technical exception", e);
+			throw new RegOppslagTechnicalException(String.format("Technical exception: errorMsg=%s", e.getMessage()));
+		}
+	}
 	
 	
 }

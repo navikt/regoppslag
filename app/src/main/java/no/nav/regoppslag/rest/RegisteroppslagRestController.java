@@ -1,5 +1,11 @@
 package no.nav.regoppslag.rest;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+
+import io.prometheus.client.Histogram;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
@@ -24,12 +30,13 @@ import javax.inject.Inject;
 @RestController
 public class RegisteroppslagRestController {
 	
-	public static final String REST = "/REST/";
+	public static final String REST = "/rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = REST+"kompletterBrevdata";
 	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = REST+"hentMottakerOgAdresse";
 	
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
+	private Histogram.Timer requestTimer;
 	
 	@Inject
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService, HentMottakerOgAdresseService hentMottakerOgAdresseService) {
@@ -42,13 +49,33 @@ public class RegisteroppslagRestController {
 	public @ResponseBody
 	ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		return kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
+		
+		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "TREG001", "validerOgKompletterBrevdata").startTimer();
+		try {
+			requestCounter.labels(SERVICE_CODE_TREG001, "received").inc();
+			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
+			requestCounter.labels(SERVICE_CODE_TREG001, "processed_ok").inc();
+			return response;
+		} finally {
+			requestTimer.observeDuration();
+		}
+		
 	}
 	
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
 	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		return hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
+		
+		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, "TREG002", "hentMottakerOgAdresse").startTimer();
+		try {
+			requestCounter.labels(SERVICE_CODE_TREG002, "received").inc();
+			HentMottakerOgAdresseResponse response  = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
+			requestCounter.labels(SERVICE_CODE_TREG002, "processed_ok").inc();
+			return response;
+		} finally {
+			requestTimer.observeDuration();
+		}
+		
 	}
 }

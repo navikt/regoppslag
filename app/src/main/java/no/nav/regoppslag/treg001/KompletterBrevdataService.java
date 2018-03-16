@@ -82,7 +82,7 @@ public class KompletterBrevdataService {
 	}
 	
 	private void logExceptions(MultiExceptionHolder t) {
-		t.getUnhandledErrors().stream().forEach(error -> {
+		t.getUnhandledErrors().forEach(error -> {
 			if (error instanceof RegOppslagFunctionalException) {
 				log.warn(error.getMessage(),error);
 			} else {

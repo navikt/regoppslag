@@ -24,6 +24,7 @@ public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 
 	@Bean
 	public PersonV3 personV3(PersonV3Alias personV3Alias, NavAppCertAlias navAppCertAlias) {
+		
 		navAppCertAlias.postConstruct();
 
 		setWsdlUrl(WSDL_URL);

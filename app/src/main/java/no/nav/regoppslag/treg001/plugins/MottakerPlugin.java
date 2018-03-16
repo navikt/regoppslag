@@ -123,7 +123,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
 				ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			throw new RegOppslagFunctionalException(e);
 		}
 
 	}

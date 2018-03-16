@@ -12,13 +12,11 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseNorge;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUtland;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postboksadresse;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.lang.invoke.LambdaConversionException;
 import java.util.Optional;
 
 /**
@@ -38,7 +36,7 @@ public class PersonV3Mapper {
 
 	public void map(Bruker person, Mottaker mottaker) {
 		if (person.getMaalform() != null) {
-			if (person.getMaalform().getValue() == "NO") {
+			if (person.getMaalform().getValue().equals("NO")) {
 				mottaker.setSpraakkode(Spraakkode.NB);
 			} else {
 				mottaker.setSpraakkode(Spraakkode.valueOf(person.getMaalform().getValue()));
@@ -112,7 +110,7 @@ public class PersonV3Mapper {
 		} else if (person.getGjeldendePostadressetype() != null && "MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
 			if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Gateadresse) {
 				Gateadresse gateadresse = (Gateadresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse();
-				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 			} else if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Matrikkeladresse) {
 				Matrikkeladresse matrikkeladresse = (Matrikkeladresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse();
 				norskPostadresse.setAdresselinje1(matrikkeladresse.getEiendomsnavn());
