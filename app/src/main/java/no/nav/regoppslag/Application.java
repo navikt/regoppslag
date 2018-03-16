@@ -8,7 +8,6 @@ import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties
 import org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -32,7 +31,6 @@ import org.springframework.context.annotation.Import;
 		HttpEncodingAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class,
 		JacksonAutoConfiguration.class,
-		JmsAutoConfiguration.class,
 		MultipartAutoConfiguration.class,
 		ServerPropertiesAutoConfiguration.class,
 		ValidationAutoConfiguration.class,

@@ -47,9 +47,9 @@ public class PersonV3Consumer {
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "PERSON_V3", "hentPerson").startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagFunctionalException("PersoV3.hentPerson finner ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet.getMessage(), hentPersonPersonIkkeFunnet);
+			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet.getMessage(), hentPersonPersonIkkeFunnet);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagFunctionalException("PersoV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning.getMessage(), hentPersonSikkerhetsbegrensning);
+			throw new RegOppslagFunctionalException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning.getMessage(), hentPersonSikkerhetsbegrensning);
 		} finally {
 			requestTimer.observeDuration();
 		}
