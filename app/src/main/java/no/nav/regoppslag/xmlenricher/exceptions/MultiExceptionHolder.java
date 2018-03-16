@@ -24,17 +24,10 @@ public class MultiExceptionHolder extends Throwable {
 
 	public void setUnhandledErrors(List<Throwable> unhandledErrors) {
 		this.unhandledErrors = unhandledErrors;
-		setFunctionalExceptionFlag();
-	}
-	
-	private void setFunctionalExceptionFlag() {
-		if (unhandledErrors.stream().anyMatch(error -> error instanceof RegOppslagFunctionalException)) {
-			hasFunctionalExceptions=true;
-		}
 	}
 	
 	public boolean hasFunctionExceptions() {
-		return hasFunctionalExceptions;
+		return unhandledErrors.stream().anyMatch(error -> error instanceof RegOppslagFunctionalException);
 	}
 	
 		
