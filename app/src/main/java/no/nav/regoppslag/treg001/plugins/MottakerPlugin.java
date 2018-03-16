@@ -27,7 +27,6 @@ import org.w3c.dom.Node;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -74,7 +73,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	@Override
 	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
-//		validateElementType(content);
 		try {
 			log.info("Henter mottaker info");
 
@@ -124,8 +122,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			log.info("Mottaker er beriket med data");
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
-				ParserConfigurationException e)
-		{
+				ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}
 

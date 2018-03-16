@@ -56,4 +56,10 @@ public class Norg2Mapper {
 			}
 		}
 	}
+
+	public void mapEnhetNavn(Organisasjonsenhet wsEnhet, NavEnhet navEnhet) {
+		if (wsEnhet != null) {
+			navEnhet.setEnhetsNavn(wsEnhet.getEnhetNavn());
+		}
+	}
 }

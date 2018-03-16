@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
 import java.io.File;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class NavOrgenhetPluginTest {
+public class NavOrgenhetNavnPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
@@ -34,14 +34,14 @@ public class NavOrgenhetPluginTest {
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
 	private Norg2Mapper norg2Mapper = new Norg2Mapper();
-	private NavOrgenhetPlugin norgPlugin = new NavOrgenhetPlugin(norgConsumer, norg2Mapper);
+	private NavOrgenhetNavnPlugin norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
 
 	@Before
 	public void setUp() throws RegOppslagFunctionalException {
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 	@Test
-	public void testOrgEnhetPlugin() throws Exception {
+	public void testNavOrgenhetNavnPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
