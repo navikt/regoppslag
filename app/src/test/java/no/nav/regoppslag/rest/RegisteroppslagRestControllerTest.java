@@ -5,11 +5,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.service.RegOppslagService;
-import no.nav.regoppslag.treg001.RegOppslagRequest;
-import no.nav.regoppslag.treg001.RegOppslagResponse;
+import no.nav.regoppslag.treg001.KompletterBrevdataService;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -18,25 +19,26 @@ import org.mockito.Mockito;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class RegisteroppslagRestControllerTest {
-	private RegOppslagRequest request;
-	private RegOppslagResponse response;
+	private ValiderOgKompletterBrevdataRequest request;
+	private ValiderOgKompletterBrevdataResponse response;
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<ole>brumm</ole>";
-	RegOppslagService regOppslagService = mock(RegOppslagService.class);
-	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(regOppslagService);
+	KompletterBrevdataService kompletterBrevdataService = mock(KompletterBrevdataService.class);
+	HentMottakerOgAdresseService hentMottakerOgAdresseService = mock(HentMottakerOgAdresseService.class);
+	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService,hentMottakerOgAdresseService);
 
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		request = RegOppslagRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
-		response = RegOppslagResponse.builder().brevdata(brevdataUtfylt).build();
-		when(regOppslagService.hentBrevdataFraRegistre(request)).thenReturn(response);
+		request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
+		response = ValiderOgKompletterBrevdataResponse.builder().brevdata(brevdataUtfylt).build();
+		when(kompletterBrevdataService.hentBrevdataFraRegistre(request)).thenReturn(response);
 	}
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		RegOppslagResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
+		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
-		Mockito.verify(regOppslagService, Mockito.times(1)).hentBrevdataFraRegistre(any());
+		Mockito.verify(kompletterBrevdataService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}
 	
 	/** HVIS feil kastes, så skal feilmeldingene returneres i REST-responsen */

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001;
+package no.nav.regoppslag.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegOppslagRequest {
+public class ValiderOgKompletterBrevdataRequest {
 		private String dokumentTypeId;
 		private String brevdata;
 }

@@ -6,11 +6,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg001.Orchestrator;
-import no.nav.regoppslag.treg001.RegOppslagRequest;
-import no.nav.regoppslag.treg001.RegOppslagResponse;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.junit.Ignore;
@@ -29,13 +30,13 @@ import java.util.Arrays;
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-public class RegOppslagServiceTest {
+public class KompletterBrevdataServiceTest {
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
 	
-	private RegOppslagRequest request = RegOppslagRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
+	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
 	Orchestrator orchestrator = mock(Orchestrator.class);
-	private RegOppslagService regOppslagService = new RegOppslagService(orchestrator);
+	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(orchestrator);
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -44,7 +45,7 @@ public class RegOppslagServiceTest {
 	@Test
 	public void shouldValiderOgKompletterBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
 		when(orchestrator.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
-		RegOppslagResponse actualResponse = regOppslagService.hentBrevdataFraRegistre(request);
+		ValiderOgKompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
 		Mockito.verify(orchestrator, Mockito.times(1)).process(any(),any());
 	}
@@ -54,7 +55,7 @@ public class RegOppslagServiceTest {
 	public void shouldHandleMissingPluginException() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
 		exception.expect(RegOppslagTechnicalException.class);
 		when(orchestrator.process(any(),any())).thenThrow(MissingPluginException.class);
-		regOppslagService.hentBrevdataFraRegistre(request);
+		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
 	/** HVIS XPathExpression feiler i behandling av brevdata, SÅ skal funksjonell feil kastes */
@@ -62,7 +63,7 @@ public class RegOppslagServiceTest {
 	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException {
 		exception.expect(RegOppslagFunctionalException.class);
 		when(orchestrator.process(any(),any())).thenThrow(XPathExpressionException.class);
-		regOppslagService.hentBrevdataFraRegistre(request);
+		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
 	/** HVIS parsing av brevdata fra xml- til streng-format feiler, SÅ skal funksjonell feil kastes */
@@ -72,7 +73,7 @@ public class RegOppslagServiceTest {
 		exception.expect(RegOppslagTechnicalException.class);
 		Document document= null;
 		when(orchestrator.process(any(),any())).thenReturn(document);
-		regOppslagService.hentBrevdataFraRegistre(request);
+		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
 	/** HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker */
@@ -82,7 +83,7 @@ public class RegOppslagServiceTest {
 		MultiExceptionHolder exceptionHolder = new MultiExceptionHolder("registeroppslag feilet");
 		exceptionHolder.setUnhandledErrors(Arrays.asList(new RegOppslagFunctionalException("feil 1"),new RegOppslagTechnicalException("feil 2")));
 		when(orchestrator.process(any(),any())).thenThrow(exceptionHolder);
-		regOppslagService.hentBrevdataFraRegistre(request);
+		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
 }

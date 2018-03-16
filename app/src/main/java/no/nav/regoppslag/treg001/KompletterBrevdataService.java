@@ -1,11 +1,10 @@
-package no.nav.regoppslag.service;
+package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
+import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.treg001.Orchestrator;
-import no.nav.regoppslag.treg001.RegOppslagRequest;
-import no.nav.regoppslag.treg001.RegOppslagResponse;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
@@ -33,12 +32,12 @@ import java.io.StringWriter;
  */
 @Slf4j
 @Service
-public class RegOppslagService {
+public class KompletterBrevdataService {
 	
 	private Orchestrator orchestrator;
 	
 	@Inject
-	public RegOppslagService(Orchestrator orchestrator) {
+	public KompletterBrevdataService(Orchestrator orchestrator) {
 		this.orchestrator = orchestrator;
 	}
 	
@@ -57,12 +56,12 @@ public class RegOppslagService {
 		return writer.toString();
 	}
 	
-	public RegOppslagResponse hentBrevdataFraRegistre(RegOppslagRequest requestTo) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		String responseBrevdata = null;
 		try {
-			Document brevdata = stringToDocument(requestTo.getBrevdata());
-			Document brevdataUtfylt = orchestrator.process(brevdata, requestTo.getDokumentTypeId());
+			Document brevdata = stringToDocument(request.getBrevdata());
+			Document brevdataUtfylt = orchestrator.process(brevdata, request.getDokumentTypeId());
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error(e.getMessage(), e);
@@ -73,12 +72,12 @@ public class RegOppslagService {
 		} catch (MultiExceptionHolder t) {
 			logExceptions(t);
 			if (t.hasFunctionExceptions()) {
-				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", requestTo.getDokumentTypeId(), t.report()));
+				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
 			} else {
-				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
+				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.report()));
 			}
 		}
-		return RegOppslagResponse.builder().brevdata(responseBrevdata).build();
+		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
 		
 	}
 	
