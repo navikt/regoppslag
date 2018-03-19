@@ -1,5 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.AdresseEnhet;
 import no.nav.dok.metaforcemal.jaxb2.gen.Besoksadresse;
@@ -56,6 +59,8 @@ public class NavOrgenhetPlugin extends JaxbHelper<Postadresse> implements Elemen
 		try {
 
 			log.info("Henter NavOrgenhet info");
+
+			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPlugin");
 
 			Postadresse adresse = unmarshal(content);
 

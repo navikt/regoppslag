@@ -30,6 +30,7 @@ public class OrganisasjonV4Mapper {
 
 	@Inject
 	private LandkodeService landkodeService;
+	
 	@Inject
 	private PostnummerService postnummerService;
 
@@ -37,13 +38,14 @@ public class OrganisasjonV4Mapper {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
+	
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
 
 		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn)orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
 		if (orgDet.getGjeldendeMaalform() != null) {
-			if (orgDet.getGjeldendeMaalform().getKodeRef() == "NO") {
+			if (orgDet.getGjeldendeMaalform().getKodeRef().equals("NO")) {
 				mottaker.setSpraakkode(Spraakkode.NB);
 			} else {
 				mottaker.setSpraakkode(Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef()));
@@ -60,7 +62,7 @@ public class OrganisasjonV4Mapper {
 				}
 			} else {
 				Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
-				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
 					//TODO validere NO
@@ -83,7 +85,7 @@ public class OrganisasjonV4Mapper {
 				}
 			} else {
 				Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
-				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
 					//TODO validere NO
@@ -111,7 +113,7 @@ public class OrganisasjonV4Mapper {
 			} else if ("adresselinje3split1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
 			} else if ("adresselinje3split2".equals(nokler.getNoekkel().getKodeRef())) {
-				//norskPostadresse.setAdresselinje4(nokler.getVerdi());
+//				norskPostadresse.setAdresselinje4(nokler.getVerdi());
 			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());
 				if (!(StringUtils.isEmpty(nokler.getVerdi()))) {
