@@ -1,5 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
@@ -42,6 +45,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 		try {
 			
 			log.info("Henter saksbehandler info");
+			requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin");
 			
 			Saksbehandler saksbehandler = unmarshal(content);
 			

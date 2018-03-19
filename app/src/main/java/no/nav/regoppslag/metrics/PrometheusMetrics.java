@@ -5,7 +5,6 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_DOKUMENTTYPEID;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_ERROR_TYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EVENT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_CAUSE;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_MESSAGE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS_CALLED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS_TITLE;
@@ -41,7 +40,7 @@ public class PrometheusMetrics {
 			.namespace(DOK_NAMESPACE)
 			.name("request_exception_total_counter")
 			.help("Total exception counter.")
-			.labelNames(LABEL_PROCESS, LABEL_ERROR_TYPE, LABEL_EXCEPTION_CAUSE, LABEL_EXCEPTION_MESSAGE)
+			.labelNames(LABEL_PROCESS, LABEL_ERROR_TYPE, LABEL_EXCEPTION_CAUSE)
 			.register();
 	
 	public static final Histogram requestLatency = Histogram.build()

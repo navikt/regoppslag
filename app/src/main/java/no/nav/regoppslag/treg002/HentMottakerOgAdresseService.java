@@ -45,7 +45,7 @@ public class HentMottakerOgAdresseService {
 		validateInput(request);
 		try {
 			Mottaker mottaker = new Mottaker();
-			log.info(String.format("Mottat hentMottakerOgAdresse kall. Identifikator=%s, type=%s", request.getIdentifikator(), request
+			log.info(String.format("Mottat hentMottakerOgAdresse kall. Identifikator=%s, Type=%s", request.getIdentifikator(), request
 					.getType()));
 			if (AktoerType.PERSON.name().equals(request.getType())) {
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
@@ -54,7 +54,7 @@ public class HentMottakerOgAdresseService {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
-			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Identifikator=%s, type=%s", request.getIdentifikator(), request
+			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Identifikator=%s, Type=%s", request.getIdentifikator(), request
 					.getType()));
 			
 			return HentMottakerOgAdresseResponse.builder()
@@ -69,20 +69,22 @@ public class HentMottakerOgAdresseService {
 		return null;
 	}
 	
-	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
 		
-		if (request==null){
+		if (request == null) {
 			throw new RegOppslagFunctionalException("Input body er null");
 		}
 		
-		if (request.getIdentifikator()==null){
+		if (request.getIdentifikator() == null) {
 			throw new RegOppslagFunctionalException("Identifikator kan ikke være null");
 		}
 		
-		if (request.getType()==null) {
+		if (request.getType() == null) {
 			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null");
-		} else if (!(AktoerType.PERSON.name().equals(request.getType())|| AktoerType.ORGANISASJON.name().equals(request.getType()))) {
-			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være enten PERSON eller ORGANISASJON.",request.getType()));
+		} else if (!(AktoerType.PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
+				.equals(request.getType()))) {
+			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
+					.getType()));
 		}
 	}
 	
@@ -92,8 +94,8 @@ public class HentMottakerOgAdresseService {
 			throw (RegOppslagFunctionalException) e;
 			
 		} else {
-			log.error("Technical exception", e);
-			throw new RegOppslagTechnicalException(String.format("Technical exception: errorMsg=%s", e.getMessage()));
+			log.error("Teknisk feil", e);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: errorMsg=%s", e.getMessage()));
 		}
 	}
 	
