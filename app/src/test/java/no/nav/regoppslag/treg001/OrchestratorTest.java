@@ -56,8 +56,8 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		QName qname = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
-		registry.registerPlugin(qname, MottakerPlugin1.class);
+		String xpath1 = "felles:ottaker";
+		registry.registerPlugin(xpath1, MottakerPlugin1.class);
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
@@ -80,11 +80,11 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
-		registry.registerPlugin(qname1, MottakerPlugin1.class);
+		String xpath1 = "felles:mottaker";
+		registry.registerPlugin(xpath1, MottakerPlugin1.class);
 
-		QName qname2 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "signerendeSaksbehandler");
-		registry.registerPlugin(qname2, SignerendeSaksbehandlerPlugin.class);
+		String xpath2 = "felles:signerendeSaksbehandler";
+		registry.registerPlugin(xpath2, SignerendeSaksbehandlerPlugin.class);
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);
@@ -99,7 +99,7 @@ public class OrchestratorTest {
 		Felles felles = fellesJaxbHelper.unmarshal(fellesElement);
 
 		assertThat(felles.getMottaker().getNavn(), is("Test Testesen"));
-		assertThat(felles.getSignerendeSaksbehandler().getNavn(), is("Flittige Frida"));
+		assertThat(felles.getSignerendeSaksbehandler().getNavAnsatt().getNavn(), is("Flittige Frida"));
 
 
 	}
@@ -111,8 +111,8 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		QName qname1 = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
-		registry.registerPlugin(qname1, FailingPlugin.class);
+		String xpath1 = "felles:mottaker";
+		registry.registerPlugin(xpath1, FailingPlugin.class);
 
 		Orchestrator orchestrator = new Orchestrator();
 		orchestrator.setRegistry(registry);

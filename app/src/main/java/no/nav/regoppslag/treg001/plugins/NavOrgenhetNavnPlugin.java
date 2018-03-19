@@ -30,7 +30,6 @@ import javax.xml.parsers.ParserConfigurationException;
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
-
 	private Norg2Mapper norg2Mapper;
 
 	public NavOrgenhetNavnPlugin() {

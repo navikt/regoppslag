@@ -9,11 +9,16 @@ import static org.hamcrest.Matchers.is;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 
 /**
@@ -28,8 +33,13 @@ public class MottakerPlugin1Test {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles","mottaker");
-		Node node = findSingleNode(qName, document);
+		String expression1 = "//f:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
 
 		writeXml(node);
 

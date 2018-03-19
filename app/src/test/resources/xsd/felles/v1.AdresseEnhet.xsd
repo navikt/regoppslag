@@ -20,7 +20,7 @@
 			<xs:extension base="navenhet:NavEnhet">
 				<xs:sequence>
 					<xs:element name="kontaktTelefonnummer" type="st:NonEmptyString"/>
-					<xs:element name="kontaktAdresse" type="norskpostadresse:NorskPostadresse"/>
+					<xs:element name="adresse" type="norskpostadresse:NorskPostadresse"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

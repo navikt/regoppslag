@@ -11,8 +11,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +34,21 @@ public class Orchestrator {
 		this.registry = registry;
 	}
 
-	
+	private NamespaceContext namespaceContext;
+
+	public void setNamespaceContext(NamespaceContext namespaceContext) {
+		this.namespaceContext = namespaceContext;
+	}
+
+
+	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression expression = xPath.compile(xpathExpression);
+
+		return (Node) expression.evaluate(xmlDocument, XPathConstants.NODE);
+	}
+
 	private Node findSingleNode(QName qname, Document xmlDocument)  {
 		return xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
 	}
@@ -52,8 +71,8 @@ public class Orchestrator {
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
 		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
-		Set<QName> supportedElements = registry.getSupportedElements();
-		for (QName xpath : supportedElements) {
+		Set<String> supportedElements = registry.getSupportedElements();
+		for (String xpath : supportedElements) {
 			Node node = findSingleNode(xpath, document);
 			if (node != null) {
 				processingList.add(new Tuple<>(node, registry.getOrCreateElementEnricherPlugin(xpath)));

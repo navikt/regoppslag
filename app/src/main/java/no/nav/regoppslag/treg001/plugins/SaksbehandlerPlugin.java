@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
 import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
@@ -24,10 +25,10 @@ import javax.xml.parsers.ParserConfigurationException;
 @Slf4j
 @Component
 @Scope("prototype")
-public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements ElementEnricherPlugin {
+public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
 
 	public SaksbehandlerPlugin() {
-		super(Saksbehandler.class);
+		super(NavAnsatt.class);
 	}
 
 	@Inject
@@ -43,16 +44,16 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 			
 			log.info("Henter saksbehandler info");
 			
-			Saksbehandler saksbehandler = unmarshal(content);
+			NavAnsatt navAnsatt = unmarshal(content);
 			
-			validateSaksbehandler(saksbehandler);
+			validateSaksbehandler(navAnsatt);
 			
-			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(saksbehandler.getAnsattId());
+			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 			
 			if (saksbehandlerNavn==null){
-				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s",saksbehandler.getAnsattId()));
+				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s",navAnsatt.getAnsattId()));
 			}
-			saksbehandler = saksbehandlerMapper.map(saksbehandlerNavn, saksbehandler);
+			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
@@ -60,7 +61,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
 
-			Node node = marshal(saksbehandler, document);
+			Node node = marshal(navAnsatt, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
@@ -72,8 +73,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<Saksbehandler> implements El
 		}
 	}
 	
-	private void validateSaksbehandler(Saksbehandler saksbehandler) throws RegOppslagFunctionalException {
-		if (saksbehandler.getAnsattId()==null){
+	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
+		if (navAnsatt.getAnsattId()==null){
 			throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId"));
 		}
 	}

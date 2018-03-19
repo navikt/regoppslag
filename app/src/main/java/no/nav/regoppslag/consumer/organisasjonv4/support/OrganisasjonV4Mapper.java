@@ -63,7 +63,7 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
-					//TODO Hente fra kodeverk + validere NO
+					//TODO validere NO
 					if (stedsadresseNorge.getPoststed() != null) {
 						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
 						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
@@ -86,7 +86,7 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
-					//TODO Hente fra kodeverk + validere NO
+					//TODO validere NO
 					if (stedsadresseNorge.getPoststed() != null) {
 						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
 						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));

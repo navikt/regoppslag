@@ -6,6 +6,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathExpression;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
  */
 public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 
-	private Map<QName, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
+	private Map<String, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
 
 	private ApplicationContext applicationContext;
 	
@@ -24,13 +25,13 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 	}
 	
 	@Override
-		public void registerPlugin(QName supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
+		public void registerPlugin(String supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
 		pluginMap.put(supportedElement, plugin);
 
 	}
 
 	@Override
-	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(QName supportedElement) throws MissingPluginException {
+	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(String supportedElement) throws MissingPluginException {
 		if (pluginMap.containsKey(supportedElement)) {
 			try {
 				return applicationContext.getBean(pluginMap.get(supportedElement));
@@ -43,7 +44,7 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 	}
 
 	@Override
-	public Set<QName> getSupportedElements() {
+	public Set<String> getSupportedElements() {
 		return pluginMap.keySet();
 	}
 }
