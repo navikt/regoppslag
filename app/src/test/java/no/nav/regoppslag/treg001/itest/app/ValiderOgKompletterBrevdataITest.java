@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,8 @@ public class ValiderOgKompletterBrevdataITest {
 		WireMock.resetAllRequests();
 		
 		clearCachene();
-		stubOppslagLDAP();
+		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
+//		stubOppslagLDAP();
 		stubFor(post("/STS").willReturn(aResponse().withBody("treg001/sts_signature-responsebody.xml")));
 	}
 	
@@ -98,9 +100,11 @@ public class ValiderOgKompletterBrevdataITest {
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
 	}
 	
-	@Test(expected = RegOppslagTechnicalException.class)
+	@Test
 	public void shouldThrowTechnicalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		//TODO hvordan kontrollert trigge tekniske feil
+		//TODO hvordan kontrollert trigge tekniske feil? Utelate stubs slik at alle kall fra plugins gir timeoutException?
+		exception.expect(RegOppslagTechnicalException.class);
+		exception.expectMessage("TODO ");
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 	
@@ -122,13 +126,14 @@ public class ValiderOgKompletterBrevdataITest {
 	}
 	
 	private void happypathStubs() {
+		//Stub REST services:
+//		stubFor(post("/DOKUMENTTYPEINFO_V3/*").willReturn(aResponse().withStatus(HttpStatus.OK.value()).withBody("treg001/tkat020-dokumenttypeinfo-responsebody.json"))); //Brukes til hentDokumenttypeinfo for Spraak
+		
 		//Stub web services:
-// TODO		stubFor(post("/DOKUMENTTYPEINFO_V3").willReturn()); //Brukes til hentDokumenttypeinfo for Spraak
-		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
-				.withRequestBody(containing("hentKontaktinformasjonForEnhetBolkRequest"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("")));
-//		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4"))
+//		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
+//				.withRequestBody(containing("hentKontaktinformasjonForEnhetBolkRequest"))
+//				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+//						.withBodyFile(""))); //TODO interceptor
 		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.withRequestBody(containing("hentPersonRequest"))
