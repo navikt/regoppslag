@@ -81,7 +81,7 @@ public class HentMottakerOgAdresseService {
 		
 		if (request.getType()==null) {
 			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null");
-		} else if (!AktoerType.PERSON.name().equals(request.getType())||!AktoerType.ORGANISASJON.name().equals(request.getType())) {
+		} else if (!(AktoerType.PERSON.name().equals(request.getType())|| AktoerType.ORGANISASJON.name().equals(request.getType()))) {
 			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være enten PERSON eller ORGANISASJON.",request.getType()));
 		}
 	}
