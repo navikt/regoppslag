@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class RegOppslagFunctionalException extends Exception {
+public class RegOppslagFunctionalException extends RuntimeException {
 	public RegOppslagFunctionalException() {
 	}
 	

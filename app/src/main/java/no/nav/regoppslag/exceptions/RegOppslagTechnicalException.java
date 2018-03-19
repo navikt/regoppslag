@@ -4,7 +4,7 @@ package no.nav.regoppslag.exceptions;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 
-public class RegOppslagTechnicalException extends Exception {
+public class RegOppslagTechnicalException extends RuntimeException {
 	public RegOppslagTechnicalException() {
 	}
 	
