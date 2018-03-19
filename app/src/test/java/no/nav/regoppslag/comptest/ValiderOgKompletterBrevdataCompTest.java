@@ -17,13 +17,9 @@ import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import no.nav.regoppslag.service.RegOppslagService;
 import no.nav.regoppslag.treg001.RegOppslagResponse;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.net.URL;
@@ -43,8 +39,9 @@ public class ValiderOgKompletterBrevdataCompTest {
 	private MockMvc mvc;
 	
 	@Before
-	public void setup() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void setup() {
 		mvc = MockMvcBuilders.standaloneSetup(registeroppslagRestController).build(); //TODO bytt ut med webAppContext
+		//TODO: SecurityTestConfig med local authentication eller stubFor LdapConfig authentication eller mock bort ldapTemplate
 	}
 	
 	@Test
@@ -66,6 +63,7 @@ public class ValiderOgKompletterBrevdataCompTest {
 				.content(request))
 				.andExpect(status().isBadRequest())
 		;
+		//PS: man får ikke testet med mockmvc at feilmeldingen i responsen ser ut som den skal. Her må man stole på @ExceptionHandler.
 	}
 	
 	@Test
@@ -75,6 +73,7 @@ public class ValiderOgKompletterBrevdataCompTest {
 		
 		mvc.perform(post(KOMPLETTER_BREVDATA_URI_PATH).contentType(MediaType.APPLICATION_JSON)
 				.content(request))
+				.andDo(print())
 				.andExpect(status().isInternalServerError());
 	}
 	
