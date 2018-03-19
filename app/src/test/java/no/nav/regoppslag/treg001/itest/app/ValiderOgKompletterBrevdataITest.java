@@ -16,7 +16,6 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import no.nav.regoppslag.treg001.RegOppslagRequest;
 import no.nav.regoppslag.treg001.RegOppslagResponse;
-import no.nav.regoppslag.treg001.itest.config.MockLdapTestConfig;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,13 +24,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -42,14 +42,17 @@ import java.util.ArrayList;
  *
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {MockLdapTestConfig.class,Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 public class ValiderOgKompletterBrevdataITest {
 	private final String DOKUMENTTYPEID = "123";
 	@Inject
 	public RegisteroppslagRestController registeroppslagRestController;
+	
+	@Inject
+	CacheManager cacheManager;
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -68,10 +71,16 @@ public class ValiderOgKompletterBrevdataITest {
 		WireMock.reset();
 		WireMock.resetAllRequests();
 		
-		stubOppslagAD();  //FIXME: MockLdapTestConfig sine bønner gjør ingen forskjell fra eller til. derfor er ldaptemplate = null når Skasbehandlerplugin.processElement blir kalt.
+		clearCachene();
+		stubOppslagLDAP();
+		stubFor(post("/STS").willReturn(aResponse().withBody("treg001/sts_signature-responsebody.xml")));
 	}
 	
-	private void stubOppslagAD() {
+	private void clearCachene() {
+		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
+	}
+	
+	private void stubOppslagLDAP() {
 		
 		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add("en vilkaarlig autentisert person");
@@ -90,15 +99,17 @@ public class ValiderOgKompletterBrevdataITest {
 	}
 	
 	@Test(expected = RegOppslagTechnicalException.class)
-	public void shouldThrowTechnicalExceptionFromPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowTechnicalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		//TODO hvordan kontrollert trigge tekniske feil
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 	
 	@Test
-	public void shouldThrowFunctionalExceptionFromPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		exception.expect(RegOppslagFunctionalException.class);
 		exception.expectMessage("Person med fnr 010524042317 ikke funnet.");
 		exception.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn");
+		exception.expectMessage("TODO velg en feilmelding for hentkontaktinformasjon");
 		functionalExceptionStubs();
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
@@ -113,9 +124,10 @@ public class ValiderOgKompletterBrevdataITest {
 	private void happypathStubs() {
 		//Stub web services:
 // TODO		stubFor(post("/DOKUMENTTYPEINFO_V3").willReturn()); //Brukes til hentDokumenttypeinfo for Spraak
-//	TODO	stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
-//				.withRequestBody(containing("hentKontaktinformasjonForEnhetBolkRequest"))
-//				.willReturn());
+		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
+				.withRequestBody(containing("hentKontaktinformasjonForEnhetBolkRequest"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("")));
 //		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4"))
 		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
@@ -123,6 +135,5 @@ public class ValiderOgKompletterBrevdataITest {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody.xml"))); //mottakerPlugin
 	}
-	
 	
 }
