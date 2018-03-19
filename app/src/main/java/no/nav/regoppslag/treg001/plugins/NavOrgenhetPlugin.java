@@ -1,5 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -55,6 +58,7 @@ public class NavOrgenhetPlugin extends JaxbHelper<NavEnhet> implements ElementEn
 		try {
 			
 			log.info("Henter NavOrgenhet info");
+			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPlugin");
 			
 			NavEnhet navEnhet = unmarshal(content);
 
