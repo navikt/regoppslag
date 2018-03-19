@@ -1,5 +1,9 @@
 package no.nav.regoppslag.consumer.dokkat;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+
+import io.prometheus.client.Histogram;
 import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
@@ -28,6 +32,7 @@ import java.util.Map;
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
+	private Histogram.Timer requestTimer;
 
 	@Inject
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
@@ -53,6 +58,7 @@ public class Tkat020DokumenttypeInfo {
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "TKAT020", "hentDokumenttypeInfoSpraak").startTimer();
 			DokumentTypeInfoToV3 dokumentTypeInfoToV3 =  restTemplate.getForObject("/{dokumenttypeId}", DokumentTypeInfoToV3.class, uriVariables);
 			if (dokumentTypeInfoToV3.getDokumentProduksjonsInfo() != null && dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() != null) {
 				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
@@ -65,6 +71,8 @@ public class Tkat020DokumenttypeInfo {
 					.getResponseBodyAsString(), e);
 		} catch (HttpServerErrorException e) {
 			throw new RegOppslagTechnicalException("TKAT020 failed with statusCode=" + e.getRawStatusCode(), e);
+		} finally {
+			requestTimer.observeDuration();
 		}
 	}
 }
