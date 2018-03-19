@@ -26,7 +26,7 @@ public class MultiExceptionHolder extends Throwable {
 	}
 	
 	public boolean hasFunctionalExceptions() {
-		return unhandledErrors.stream().anyMatch(error -> error instanceof RegOppslagFunctionalException); //TODO legg ved leting gjennom liste av definerte functional exceptions som ikke er instanceof regoppslagFunctionalException. Eksempel: (error instanceof RegOppslagFunctionalException || listOfFunctionalExceptions.stream().anyMatch(listelement -> error instanceof listelement) )
+		return unhandledErrors.stream().anyMatch(error -> error instanceof RegOppslagFunctionalException);
 	}
 	
 		

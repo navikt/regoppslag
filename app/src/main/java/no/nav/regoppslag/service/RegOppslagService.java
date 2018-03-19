@@ -72,7 +72,7 @@ public class RegOppslagService {
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
 			logExceptions(t);
-			if (t.hasFunctionExceptions()) {
+			if (t.hasFunctionalExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", requestTo.getDokumentTypeId(), t.report()));
 			} else {
 				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",requestTo.getDokumentTypeId(), t.report()));
