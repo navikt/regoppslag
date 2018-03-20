@@ -26,6 +26,10 @@ import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 
 /**
@@ -41,9 +45,11 @@ public class ElementEnricherTest {
 	public ExpectedException expected = ExpectedException.none();
 
 	ApplicationContext applicationContext=mock(ApplicationContext.class);
+	RegisteroppslagNamespaceContext context;
 
 	@Before
 	public void setup() throws Exception{
+		context = new RegisteroppslagNamespaceContext();
 		when(applicationContext.getBean(MottakerPlugin1.class)).thenReturn(new MottakerPlugin1());
 		when(applicationContext.getBean(SignerendeSaksbehandlerPlugin.class)).thenReturn(new SignerendeSaksbehandlerPlugin());
 	}
@@ -57,11 +63,10 @@ public class ElementEnricherTest {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		String xpath1 = "//felles:mottaker";
-		registry.registerPlugin(xpath1, MottakerPlugin1.class);
+		registry.registerPlugin(createExpression(xpath1, context), MottakerPlugin1.class);
 
 		ElementEnricher elementEnricher = new ElementEnricher();
 		elementEnricher.setRegistry(registry);
-		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
 		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
@@ -82,14 +87,13 @@ public class ElementEnricherTest {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		String xpath1 = "//felles:mottaker";
-		registry.registerPlugin(xpath1, MottakerPlugin1.class);
+		registry.registerPlugin(createExpression(xpath1,context), MottakerPlugin1.class);
 
 		String xpath2 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
-		registry.registerPlugin(xpath2, SignerendeSaksbehandlerPlugin.class);
+		registry.registerPlugin(createExpression(xpath2,context), SignerendeSaksbehandlerPlugin.class);
 
 		ElementEnricher elementEnricher = new ElementEnricher();
 		elementEnricher.setRegistry(registry);
-		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
 		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
@@ -114,14 +118,20 @@ public class ElementEnricherTest {
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
 		String xpath1 = "//felles:mottaker";
-		registry.registerPlugin(xpath1, FailingPlugin.class);
+		registry.registerPlugin(createExpression(xpath1,context), FailingPlugin.class);
 
 		ElementEnricher elementEnricher = new ElementEnricher();
 		elementEnricher.setRegistry(registry);
-		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
 		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 	}
+
+	private XPathExpression createExpression(String expression, RegisteroppslagNamespaceContext context) throws XPathExpressionException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		xPath.setNamespaceContext(context);
+		return xPath.compile(expression);
+	}
+
 }

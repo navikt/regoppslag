@@ -4,7 +4,6 @@ import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportExceptio
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import org.w3c.dom.TypeInfo;
 
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpression;
 import java.util.Set;
 
@@ -23,8 +22,7 @@ public interface ElementEnricherPluginRegistry {
 	 * @param plugin A class implementing {@link ElementEnricherPlugin}
 	 * @throws DuplicatedElementSupportException when there is more than one plugin class supporting the same {@link TypeInfo} element type
 	 */
-	void registerPlugin(String supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException;
-//	void registerPlugin(QName supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException;
+	void registerPlugin(XPathExpression supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException;
 
 	/**
 	 * Creates a new instance of a plugin class for the specified {@link TypeInfo} element type
@@ -32,13 +30,11 @@ public interface ElementEnricherPluginRegistry {
 	 * @return an instance of a plugin supporting supportedElement
 	 * @throws MissingPluginException when there exists no registered plugin for supportedElement
 	 */
-	ElementEnricherPlugin getOrCreateElementEnricherPlugin(String supportedElement) throws MissingPluginException;
-//	ElementEnricherPlugin getOrCreateElementEnricherPlugin(QName supportedElement) throws MissingPluginException;
+	ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException;
 
 	/**
 	 * Lists all known supportedTypes that are backed by actual implementing classes of {@link ElementEnricherPlugin}
 	 * @return all element types supported by registered {@link ElementEnricherPlugin} classes.
 	 */
-	Set<String> getSupportedElements();
-//	Set<QName> getSupportedElements();
+	Set<XPathExpression> getSupportedElements();
 }
