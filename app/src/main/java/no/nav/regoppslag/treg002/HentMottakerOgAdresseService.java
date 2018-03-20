@@ -1,5 +1,8 @@
 package no.nav.regoppslag.treg002;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
@@ -50,9 +53,11 @@ public class HentMottakerOgAdresseService {
 			if (AktoerType.PERSON.name().equals(request.getType())) {
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
 				personV3Mapper.map(bruker, mottaker);
+				requestCounter.labels(SERVICE_CODE_TREG002, "PERSON");
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				organisasjonV4Mapper.map(organisasjon, mottaker);
+				requestCounter.labels(SERVICE_CODE_TREG002, "ORGANISASJON");
 			}
 			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Identifikator=%s, Type=%s", request.getIdentifikator(), request
 					.getType()));
