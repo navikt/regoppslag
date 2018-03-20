@@ -1,9 +1,13 @@
 package no.nav.regoppslag.treg001;
 
+import static javafx.scene.input.KeyCode.T;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static no.nav.regoppslag.util.TestUtil.writeXml;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,28 +15,31 @@ import no.nav.dok.metaforcemal.jaxb2.gen.Felles;
 import no.nav.regoppslag.pluginsPOC.FailingPlugin;
 import no.nav.regoppslag.pluginsPOC.MottakerPlugin1;
 import no.nav.regoppslag.pluginsPOC.SignerendeSaksbehandlerPlugin;
+import no.nav.regoppslag.treg001.plugins.MottakerPlugin;
 import no.nav.regoppslag.treg001.plugins.SaksbehandlerPlugin;
+import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.QName;
 import java.io.File;
 
 /**
  * @author Hans Petter Simonsen - Miles
  */
 @Ignore
-public class OrchestratorTest {
+public class ElementEnricherTest {
 
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
@@ -43,9 +50,9 @@ public class OrchestratorTest {
 	ApplicationContext applicationContext=mock(ApplicationContext.class);
 	
 	@Before
-	public void setup(){
-		when(applicationContext.getBean("mottaker")).thenReturn(new MottakerPlugin1());
-		when(applicationContext.getBean("signerendeSaksbehandler")).thenReturn(new SaksbehandlerPlugin());
+	public void setup() throws Exception{
+		when(applicationContext.getBean(MottakerPlugin1.class)).thenReturn(new MottakerPlugin1());
+		when(applicationContext.getBean(SignerendeSaksbehandlerPlugin.class)).thenReturn(new SignerendeSaksbehandlerPlugin());
 	}
 	
 
@@ -56,13 +63,14 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		String xpath1 = "felles:ottaker";
+		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(xpath1, MottakerPlugin1.class);
 
-		Orchestrator orchestrator = new Orchestrator();
-		orchestrator.setRegistry(registry);
+		ElementEnricher elementEnricher = new ElementEnricher();
+		elementEnricher.setRegistry(registry);
+		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
-		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
+		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 
@@ -80,16 +88,17 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		String xpath1 = "felles:mottaker";
+		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(xpath1, MottakerPlugin1.class);
 
-		String xpath2 = "felles:signerendeSaksbehandler";
+		String xpath2 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
 		registry.registerPlugin(xpath2, SignerendeSaksbehandlerPlugin.class);
 
-		Orchestrator orchestrator = new Orchestrator();
-		orchestrator.setRegistry(registry);
+		ElementEnricher elementEnricher = new ElementEnricher();
+		elementEnricher.setRegistry(registry);
+		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
-		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
+		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 
@@ -111,13 +120,14 @@ public class OrchestratorTest {
 
 		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
 
-		String xpath1 = "felles:mottaker";
+		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(xpath1, FailingPlugin.class);
 
-		Orchestrator orchestrator = new Orchestrator();
-		orchestrator.setRegistry(registry);
+		ElementEnricher elementEnricher = new ElementEnricher();
+		elementEnricher.setRegistry(registry);
+		elementEnricher.setNamespaceContext(new RegisteroppslagNamespaceContext());
 
-		Document processed = orchestrator.process(document, DOKUMENTTYPEID);
+		Document processed = elementEnricher.process(document, DOKUMENTTYPEID);
 
 		writeXml(processed);
 	}
