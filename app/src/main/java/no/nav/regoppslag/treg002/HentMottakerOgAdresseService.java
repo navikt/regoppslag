@@ -35,12 +35,15 @@ public class HentMottakerOgAdresseService {
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	
+	private final AdresseMapper adresseMapper;
+	
 	@Inject
-	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper) {
+	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, AdresseMapper adresseMapper) {
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
+		this.adresseMapper = adresseMapper;
 	}
 	
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
@@ -65,7 +68,7 @@ public class HentMottakerOgAdresseService {
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())
 					.navn(mottaker.getNavn())
-					.adresse(AdresseMapper.map(mottaker))
+					.adresse(adresseMapper.map(mottaker))
 					.build();
 		} catch (Exception e) {
 			logAndRethrowException(e);

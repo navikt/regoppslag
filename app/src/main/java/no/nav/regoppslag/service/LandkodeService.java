@@ -26,9 +26,11 @@ public class LandkodeService {
 	private static final String FILENAME = "/kodeverk/countries.txt";
 
 	private final Map<String, LandData> landkodeTable;
+	private final Map<String, String> landTable;
 	
 	public LandkodeService() {
 		landkodeTable = new HashMap<>();
+		landTable = new HashMap<>();
 	}
 	
 	@PostConstruct
@@ -42,6 +44,7 @@ public class LandkodeService {
 			String[] postArray = line.split(csvSplitBy);
 			LandData data = new LandData(postArray[2], postArray[0].toUpperCase());
 			landkodeTable.put(data.getLandkode(), data);
+			landTable.put(data.getNavn(), data.getLandkode());
 		}
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
@@ -59,4 +62,5 @@ public class LandkodeService {
 		return landkodeTable.get(landkode).getNavn();
 	}
 	
+	public String finnLandkode(String landnavn) {return landTable.get(landnavn);}
 }
