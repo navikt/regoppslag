@@ -11,7 +11,7 @@ import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
-import no.nav.regoppslag.treg001.Orchestrator;
+import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.junit.Ignore;
@@ -35,26 +35,26 @@ public class KompletterBrevdataServiceTest {
 	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
 	
 	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
-	Orchestrator orchestrator = mock(Orchestrator.class);
-	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(orchestrator);
+	ElementEnricher elementEnricher = mock(ElementEnricher.class);
+	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
-	/**HVIS request inneholder gyldige verdier, SÅ skal orchestrator kalles og metoden returnere ferdig utfylt brevdata.*/
+	/**HVIS request inneholder gyldige verdier, SÅ skal elementEnricher kalles og metoden returnere ferdig utfylt brevdata.*/
 	@Test
 	public void shouldValiderOgKompletterBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
-		when(orchestrator.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
+		when(elementEnricher.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
 		ValiderOgKompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
-		Mockito.verify(orchestrator, Mockito.times(1)).process(any(),any());
+		Mockito.verify(elementEnricher, Mockito.times(1)).process(any(),any());
 	}
 	
 	/** HVIS Plugin mangler, SÅ skal teknisk feil kastes */
 	@Test
 	public void shouldHandleMissingPluginException() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
 		exception.expect(RegOppslagTechnicalException.class);
-		when(orchestrator.process(any(),any())).thenThrow(MissingPluginException.class);
+		when(elementEnricher.process(any(),any())).thenThrow(MissingPluginException.class);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
@@ -62,7 +62,7 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException {
 		exception.expect(RegOppslagFunctionalException.class);
-		when(orchestrator.process(any(),any())).thenThrow(XPathExpressionException.class);
+		when(elementEnricher.process(any(),any())).thenThrow(XPathExpressionException.class);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
@@ -72,7 +72,7 @@ public class KompletterBrevdataServiceTest {
 	public void shouldHandleTransformerException() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
 		exception.expect(RegOppslagTechnicalException.class);
 		Document document= null;
-		when(orchestrator.process(any(),any())).thenReturn(document);
+		when(elementEnricher.process(any(),any())).thenReturn(document);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
@@ -82,7 +82,7 @@ public class KompletterBrevdataServiceTest {
 		exception.expect(RegOppslagFunctionalException.class);
 		MultiExceptionHolder exceptionHolder = new MultiExceptionHolder("registeroppslag feilet");
 		exceptionHolder.setUnhandledErrors(Arrays.asList(new RegOppslagFunctionalException("feil 1"),new RegOppslagTechnicalException("feil 2")));
-		when(orchestrator.process(any(),any())).thenThrow(exceptionHolder);
+		when(elementEnricher.process(any(),any())).thenThrow(exceptionHolder);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	

@@ -8,15 +8,12 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
-import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +24,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -43,13 +39,13 @@ public class NavOrgenhetPluginTest {
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
 	private PostnummerService postnummerService = new PostnummerService();
 	private Norg2Mapper norg2Mapper;
-	private NavOrgenhetPlugin norgPlugin;
+	private NavOrgenhetPostadressePlugin norgPlugin;
 
 	@Before
 	public void setUp() throws Exception {
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPlugin = new NavOrgenhetPlugin(norgConsumer, norg2Mapper);
+		norgPlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper);
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 	@Test

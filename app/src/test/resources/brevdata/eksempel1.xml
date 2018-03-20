@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata xmlns="http://nav.no/dok/pesysbrev/v1/000073">
 	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:felles="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
 			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
 			xmlns:sakspart="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
 			xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
@@ -10,18 +10,18 @@
 			xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
 			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
 			xmlns:navAnsatt="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt">
-		<f:spraakkode>NB</f:spraakkode>
-		<f:fagsaksnummer>30085849677</f:fagsaksnummer>
-		<f:navnAvsenderEnhet>Pensjon Inc</f:navnAvsenderEnhet>
-		<f:automatiskBehandlet>true</f:automatiskBehandlet>
-		<f:dokumentDato>2017-11-17</f:dokumentDato>
-		<f:sakspart>
+		<felles:spraakkode>NB</felles:spraakkode>
+		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
+		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
+		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
+		<felles:sakspart>
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
 			<sakspart:diskresjonskode>true</sakspart:diskresjonskode>
-		</f:sakspart>
-		<f:mottaker>
+		</felles:sakspart>
+		<felles:mottaker>
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
@@ -34,32 +34,33 @@
 				<norskPostadresse:poststed>Oslo</norskPostadresse:poststed>
 				<norskPostadresse:land>NORGE</norskPostadresse:land>
 			</mottaker:adresse>
-		</f:mottaker>
-		<f:signerendeSaksbehandler>
+		</felles:mottaker>
+		<felles:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
+				<navAnsatt:navn>KOKO</navAnsatt:navn>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</saksbehandler:navEnhet>
+		</felles:signerendeSaksbehandler>
+		<felles:signerendeBeslutter>
 			<saksbehandler:navAnsatt>
 				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
 			</saksbehandler:navAnsatt>
 			<saksbehandler:navEnhet>
 				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
 			</saksbehandler:navEnhet>
-		</f:signerendeSaksbehandler>
-		<f:signerendeBeslutter>
-			<saksbehandler:navAnsatt>
-				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
-			</saksbehandler:navAnsatt>
-			<saksbehandler:navEnhet>
-				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
-			</saksbehandler:navEnhet>
-		</f:signerendeBeslutter>
-		<f:kontaktinformasjon>
+		</felles:signerendeBeslutter>
+		<felles:kontaktinformasjon>
 			<kontaktinformasjon:postadresse>
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
 			</kontaktinformasjon:postadresse>
-		</f:kontaktinformasjon>
-		<f:returadresse>
+		</felles:kontaktinformasjon>
+		<felles:returadresse>
 			<navEnhet:enhetsId>TKN6675</navEnhet:enhetsId>
-		</f:returadresse>
+		</felles:returadresse>
 	</felles>
 	<fag  xmlns:avdod="http://nav.no/dok/pesysbrev/fag/v1/Avdod"
 		  xmlns:barn="http://nav.no/dok/pesysbrev/fag/v1/Barn"

@@ -4,11 +4,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.AdresseEnhet;
 import no.nav.dok.metaforcemal.jaxb2.gen.Besoksadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.Kontaktinformasjon;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -34,21 +30,19 @@ import javax.xml.parsers.ParserConfigurationException;
 @Component
 @Scope("prototype")
 @Slf4j
-public class NavOrgenhetPlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
-	Logger LOG = LoggerFactory.getLogger(NavOrgenhetPlugin.class);
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
-	public static final String ELEMENT_LOCALNAME = "kontaktinformasjon";
+public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> implements ElementEnricherPlugin {
+	Logger LOG = LoggerFactory.getLogger(NavOrgenhetBesoksadressePlugin.class);
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
 
-	public NavOrgenhetPlugin() {
-		super(Postadresse.class);
+	public NavOrgenhetBesoksadressePlugin() {
+		super(Besoksadresse.class);
 	}
 
 	@Inject
-	public NavOrgenhetPlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper) {
-		super(Postadresse.class);
+	public NavOrgenhetBesoksadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper) {
+		super(Besoksadresse.class);
 		this.norg2Consumer = norg2Consumer;
 		this.norg2Mapper = norg2Mapper;
 	}
@@ -60,13 +54,13 @@ public class NavOrgenhetPlugin extends JaxbHelper<Postadresse> implements Elemen
 
 			log.info("Henter NavOrgenhet info");
 
-			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetBesoksadressePlugin");
 
-			Postadresse adresse = unmarshal(content);
+			Besoksadresse adresse = unmarshal(content);
 
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
-			norg2Mapper.mapPostadresse(wsEnhet, adresse);
+			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);

@@ -33,7 +33,7 @@ public class MottakerPlugin1Test {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		String expression1 = "//f:mottaker";
+		String expression1 = "//felles:mottaker";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new UniversalNamespaceCache(document, false);
 		xPath.setNamespaceContext(namespaceContext);

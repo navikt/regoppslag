@@ -51,7 +51,7 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 			Node node = marshal(mottaker, document);
 			Document newNode = (Document)node;
 			Element documentElement = newNode.getDocumentElement();
-			Node renameNode = newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "f:mottaker");
+			Node renameNode = newNode.renameNode(documentElement, "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles", "mottaker");
 
 			return renameNode;
 		} catch (JAXBException|ParserConfigurationException  e) {

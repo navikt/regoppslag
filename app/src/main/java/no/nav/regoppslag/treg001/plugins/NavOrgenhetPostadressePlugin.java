@@ -4,15 +4,17 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
-import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
-import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
-import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
+import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -25,61 +27,56 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-@Slf4j
 @Component
 @Scope("prototype")
-public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
+@Slf4j
+public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
+	Logger LOG = LoggerFactory.getLogger(NavOrgenhetPostadressePlugin.class);
 
-	public SaksbehandlerPlugin() {
-		super(NavAnsatt.class);
+	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
+	private Norg2Mapper norg2Mapper;
+
+	public NavOrgenhetPostadressePlugin() {
+		super(Postadresse.class);
 	}
 
 	@Inject
-	private LdapAdeoUserLookup ldapAdeoUserLookup;
+	public NavOrgenhetPostadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper) {
+		super(Postadresse.class);
+		this.norg2Consumer = norg2Consumer;
+		this.norg2Mapper = norg2Mapper;
+	}
 
-	@Inject
-	private SaksbehandlerMapper saksbehandlerMapper;
 
 	@Override
 	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
-
 		try {
-			
-			log.info("Henter saksbehandler info");
-			requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin");
-			
-			NavAnsatt navAnsatt = unmarshal(content);
-			
-			validateSaksbehandler(navAnsatt);
-			
-			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
-			
- 			if (saksbehandlerNavn==null){
-				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s",navAnsatt.getAnsattId()));
-			}
-			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
-			
+
+			log.info("Henter NavOrgenhet info");
+
+			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPostadressePlugin");
+
+			Postadresse adresse = unmarshal(content);
+
+			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
+
+			norg2Mapper.mapPostadresse(wsEnhet, adresse);
+
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
 
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
 
-			Node node = marshal(navAnsatt, document);
+			Node node = marshal(adresse, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
-			
-			log.info("Saksbehandler er beriket med data");
-			
+
+			log.info("NavOrgenhet er beriket med data");
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
+
 		} catch (JAXBException | ParserConfigurationException e) {
 			throw new RuntimeException(e);
-		}
-	}
-	
-	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
-		if (navAnsatt.getAnsattId()==null){
-			throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId"));
 		}
 	}
 }

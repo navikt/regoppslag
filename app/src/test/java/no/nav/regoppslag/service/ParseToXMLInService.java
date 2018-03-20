@@ -6,7 +6,7 @@ import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
-import no.nav.regoppslag.treg001.Orchestrator;
+import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -23,11 +23,11 @@ import java.util.Collection;
 public class ParseToXMLInService {
 	
 	ExpectedException exception = ExpectedException.none();
-	Orchestrator orchestrator = mock(Orchestrator.class);
+	ElementEnricher elementEnricher = mock(ElementEnricher.class);
 	
 	private String brevdata = "<ole>brumm</ole>";
 	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
-	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(orchestrator);
+	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
 	
 	@Parameterized.Parameter
 	public String brevdataFeilFormat;

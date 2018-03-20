@@ -5,6 +5,7 @@ import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
@@ -34,11 +35,11 @@ import java.io.StringWriter;
 @Service
 public class KompletterBrevdataService {
 	
-	private Orchestrator orchestrator;
+	private ElementEnricher elementEnricher;
 	
 	@Inject
-	public KompletterBrevdataService(Orchestrator orchestrator) {
-		this.orchestrator = orchestrator;
+	public KompletterBrevdataService(ElementEnricher elementEnricher) {
+		this.elementEnricher = elementEnricher;
 	}
 	
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {
@@ -61,7 +62,7 @@ public class KompletterBrevdataService {
 		String responseBrevdata = null;
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
-			Document brevdataUtfylt = orchestrator.process(brevdata, request.getDokumentTypeId());
+			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error(e.getMessage(), e);

@@ -22,8 +22,7 @@ public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 	private static final  Map<String, String> uri2Prefix = prefix2Uri.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
 	/**
-	 * This method is called by XPath. It returns the default namespace, if the
-	 * prefix is null or "".
+	 * This method is called by XPath.
 	 *
 	 * @param prefix
 	 *            to search for
