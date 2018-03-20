@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.nullValue;
 import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
