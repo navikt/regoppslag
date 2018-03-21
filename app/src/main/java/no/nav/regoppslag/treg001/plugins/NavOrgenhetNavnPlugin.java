@@ -11,9 +11,9 @@ import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -30,6 +30,8 @@ import javax.xml.parsers.ParserConfigurationException;
 @Scope("prototype")
 @Slf4j
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
+	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
+	public static final String ELEMENT_LOCALNAME = "navEnhet";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -46,15 +48,18 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
+		validateElementType(content);
 		try {
 			log.info("Henter NavOrgenhetNavn");
 			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin");
 			
 			NavEnhet navEnhet = unmarshal(content);
+
+			validateEnhet(navEnhet);
 
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
@@ -74,7 +79,20 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e);
+		}
+	}
+	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
+		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
+			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: navEnhet mangler påkrevde parametere."));
+		}
+	}
+
+	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+		if (!ELEMENT_NS.equals(element.getNamespaceURI())
+				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
 		}
 	}
 }

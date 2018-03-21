@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by T133804 on 15.08.2017.
  */
-public class SelftestResponse {
+public final class SelftestResponse {
 	
 	private String application;
 	private String version;
@@ -67,7 +67,7 @@ public class SelftestResponse {
 	}
 	
 	public List<SelftestCheck> getChecks() {
-		return checks;
+		return this.checks;
 	}
 	
 	public String getAggregateResponseTime() {

@@ -54,7 +54,7 @@ public class NavOrgenhetPluginTest {
 
 		Document document = loadDocument(xmlFile);
 
-		String expression1 = "//felles:kontaktinformasjon";
+		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:postadresse";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
 		xPath.setNamespaceContext(namespaceContext);

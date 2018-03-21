@@ -5,7 +5,6 @@ import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +22,13 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(MottakerPlugin1.class);
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
-	public static final String ELEMENT_LOCALNAME = "mottaker";
 
 	public MottakerPlugin1() {
 		super(Mottaker.class);
 	}
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws InvalidElementException, RegOppslagFunctionalException {
-		validateElementType(content);
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException {
 		try {
 			Mottaker mottaker = unmarshal(content);
 			LOG.info("Looking up mottaker with id {}", mottaker.getId());
@@ -57,14 +53,6 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 			return renameNode;
 		} catch (JAXBException|ParserConfigurationException  e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	private void validateElementType(Node element) throws InvalidElementException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new InvalidElementException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
 		}
 	}
 }

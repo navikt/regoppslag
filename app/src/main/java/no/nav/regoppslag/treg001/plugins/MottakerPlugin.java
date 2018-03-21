@@ -17,10 +17,10 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -76,10 +76,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
+		validateElementType(content);
 		try {
 			log.info("Henter mottaker info");
 			requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin");
@@ -88,11 +89,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			}
 			Mottaker mottaker = unmarshal(content);
 
-			if (mottaker.getTypeKode() == null || mottaker.getId() == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere."));
-			}
+			validateMottaker(mottaker);
 
-			if (AktoerType.PERSON == mottaker.getTypeKode()) {
+			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
@@ -128,10 +127,23 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			log.info("Mottaker er beriket med data");
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
-		} catch (JAXBException |
-				ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException(e);
+		} catch (JAXBException | ParserConfigurationException e) {
+			throw new RegOppslagFunctionalException("MottakerPlugin: Feil ved parsing av XML", e);
 		}
-
 	}
+
+	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
+		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
+			throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere."));
+		}
+	}
+
+	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+		if (!ELEMENT_NS.equals(element.getNamespaceURI())
+				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+		}
+	}
+
 }
