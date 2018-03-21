@@ -39,10 +39,15 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 	private static final String MASTER_NAME = "mymaster";
 	private @Value("${app.name}") String APPNAME;
-
+	
 	@Bean
-	public CacheManager cacheManager() {
-		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
+	
+	@Bean
+	public CacheManager cacheManager(RedisTemplate redisTemplate) {
+		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
 
 		//default expiration in seconds (equal to two days)
 		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
@@ -51,6 +56,7 @@ public class CacheConfig {
 		return redisCacheManager;
 	}
 	
+	@Bean
 	public JedisConnectionFactory jedisConnectionFactory() {
 		JedisConnectionFactory factory = new JedisConnectionFactory(sentinelConfiguration());
 		factory.setUsePool(true);
@@ -62,6 +68,7 @@ public class CacheConfig {
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-"+APPNAME, 26379));
 	}
 	
+	@Bean
 	public RedisTemplate<?, ?> redisTemplate() {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
