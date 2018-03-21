@@ -92,7 +92,20 @@ public class ValiderOgKompletterBrevdataITest {
 	
 	
 	/**
-	 * Happypath: HVIS ufullstendig brevdata sendes inn, skal brevdata valideres og kompletteres med data fra registrene.
+	 * Happypath testbetingelser:
+	 * HVIS ufullstendig brevdata sendes inn, skal brevdata valideres og kompletteres med data fra registrene.
+	 * - HVIS hentPerson ok SÅ skal output returners ihht tabell i behandlingssteg 4
+	 * - HVIS operasjonen får treff på ident i LDAP SÅ skal verdien i navn utledes og returneres i XML
+	 * - HVIS hentKontaktInformasjonForEnhetBolk går ok SÅ skal output returneres ihht tabell i behandlingssteg 3
+	 * - HVIS hentKontaktInformasjonForEnhetBolk går ok SÅ skal output returners ihht tabell i behandlingssteg 3
+	 * - HVIS brevdataelement støttes av   berikerplugin SÅ gjør kall mot beriker OG populer attributter
+	 * 			(her testes følgende plugins ved request brevdata:
+	 * 		--	mottakerPlugin ved attributtet "mottaker"
+	 * 		--	SaksbehandlerPlugin ved "signerendeSaksbehandler"
+	 * 		--	NavOrgenhetPlugin ved "kontaktinformasjon"
+ * 				)
+	 * - HVIS brevdataelementet IKKE er støttet av   en berikeplugin SÅ fortsett til neste brevdataelement (her testet ved attributtet signerendeBeslutter i request brevdata)
+	 * - HVIS alle brevdataelementer er kontrollert mot beriker SÅ SKAL brevdata returneres
 	 */
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
@@ -101,7 +114,11 @@ public class ValiderOgKompletterBrevdataITest {
 		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
 	}
 	
-	@Test
+	/**Testbetingelser:
+	 * - HVIS det oppstår en teknisk feil for et   brevdataelement i en berikerplugin SÅ oppdater feillogg teknisk feil OG   fortsett til neste brevdataelement
+	 * - HVIS det er opprettet en feillogg   tekniske feil SÅ SKAL loggen returneres
+	 */
+	 @Test
 	public void shouldThrowTechnicalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		//TODO hvordan kontrollert trigge tekniske feil? Utelate stubs slik at alle kall fra plugins gir timeoutException?
 		exception.expect(RegOppslagTechnicalException.class);
@@ -109,6 +126,10 @@ public class ValiderOgKompletterBrevdataITest {
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 	
+	/**Testbetingelser:
+	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
+	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
+	 */
 	@Test
 	public void shouldThrowFunctionalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		exception.expect(RegOppslagFunctionalException.class);

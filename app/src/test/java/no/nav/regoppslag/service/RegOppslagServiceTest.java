@@ -40,7 +40,7 @@ public class RegOppslagServiceTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
-	/**HVIS request inneholder gyldige verdier, SÅ skal orchestrator kalles og metoden returnere ferdig utfylt brevdata.*/
+	/**HVIS request inneholder gyldige verdier, SÅ skal orchestrator kalles og metoden returnere ferdig utfylt/beriket brevdata.*/
 	@Test
 	public void shouldValiderOgKompletterBrevdata() throws MultiExceptionHolder, XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
 		when(orchestrator.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
@@ -75,7 +75,12 @@ public class RegOppslagServiceTest {
 		regOppslagService.hentBrevdataFraRegistre(request);
 	}
 	
-	/** HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker */
+	/** Testbetingelser:
+	 * - HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker
+	 * - HVIS det oppstår en teknisk feil for et   brevdataelement i en berikerplugin SÅ oppdater feillogg teknisk feil OG   fortsett til neste brevdataelement
+	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
+	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
+	 */
 	@Test
 	public void shouldHandleMultiExceptionHolder() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException {
 		exception.expect(RegOppslagFunctionalException.class);
