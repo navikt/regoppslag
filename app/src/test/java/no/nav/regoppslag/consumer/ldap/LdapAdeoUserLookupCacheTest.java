@@ -29,6 +29,7 @@ import java.util.ArrayList;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {LdapConfig.class, CacheConfig.class, LdapAdeoUserLookupCacheTest.Config.class})
 @TestPropertySource("classpath:ldap.properties")
+@Ignore
 public class LdapAdeoUserLookupCacheTest {
 
 	@Inject
