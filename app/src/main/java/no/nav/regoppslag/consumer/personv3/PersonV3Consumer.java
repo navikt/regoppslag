@@ -1,6 +1,7 @@
 package no.nav.regoppslag.consumer.personv3;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
@@ -17,6 +18,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -32,14 +34,22 @@ import javax.inject.Inject;
 public class PersonV3Consumer {
 	private final PersonV3 personV3;
 	private Histogram.Timer requestTimer;
-
+	
+	public static final String HENT_PERSON = "hentPerson";
+	
+	
 	@Inject
 	public PersonV3Consumer(PersonV3 personV3) {
 		this.personV3 = personV3;
 	}
 
+	@Cacheable(HENT_PERSON)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
 	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException {
+		
+		cacheCounter.labels("hentOrganisasjon:cacheMiss", HENT_PERSON).inc();
+		log.info("Henter Mottaker fra PersonV3");
+		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
 		HentPersonResponse response;

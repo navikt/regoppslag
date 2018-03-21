@@ -4,6 +4,7 @@ import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDA
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +52,7 @@ public class CacheConfig {
 
 		//default expiration in seconds (equal to two days)
 		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
-		redisCacheManager.setCacheNames(Arrays.asList(HENT_FULLT_NAVN, LDAP_CACHE_RS_LOGIN, HENT_ENHET_NAVN,HENT_DOKKAT_SPRAAKINFO));
+		redisCacheManager.setCacheNames(Arrays.asList(HENT_FULLT_NAVN, LDAP_CACHE_RS_LOGIN, HENT_ENHET_NAVN,HENT_DOKKAT_SPRAAKINFO, HENT_PERSON));
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}

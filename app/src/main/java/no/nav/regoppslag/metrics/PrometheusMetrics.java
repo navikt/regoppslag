@@ -33,7 +33,7 @@ public class PrometheusMetrics {
 	
 	public static final Counter cacheCounter = Counter.build()
 			.namespace(DOK_NAMESPACE)
-			.name("cacheHit_counter")
+			.name("cache_counter")
 			.help("Counts total number of cache misses")
 			.labelNames(LABEL_EVENT, LABEL_CACHE_NAME).register();
 	

@@ -1,6 +1,7 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
@@ -12,6 +13,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,21 @@ public class OrganisasjonV4Consumer {
 
 	private final OrganisasjonV4 organisasjonV4;
 	private Histogram.Timer requestTimer;
-
+	
+	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
+	
 	@Inject
 	public OrganisasjonV4Consumer(OrganisasjonV4 organisasjonV4) {
 		this.organisasjonV4 = organisasjonV4;
 	}
 
+	@Cacheable(HENT_ORGANISASJON)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException {
+		
+		cacheCounter.labels("hentOrganisasjon:cacheMiss", HENT_ORGANISASJON).inc();
+		log.info("Henter organisasjon fra OrganisasjonV4");
+		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "ORGANISASJON_V4", "hentOrganisasjon").startTimer();

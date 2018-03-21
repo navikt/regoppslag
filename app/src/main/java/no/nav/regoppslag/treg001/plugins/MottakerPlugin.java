@@ -1,6 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -95,6 +97,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			}
 
 			if (AktoerType.PERSON == mottaker.getTypeKode()) {
+				cacheCounter.labels("hentOrganisasjon:cacheTry", HENT_PERSON).inc();
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
@@ -104,6 +107,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				personV3Mapper.map(person, mottaker);
 
 			} else {
+				cacheCounter.labels("hentOrganisasjon:cacheTry", HENT_ORGANISASJON).inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 				if (organisasjon == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s", mottaker
