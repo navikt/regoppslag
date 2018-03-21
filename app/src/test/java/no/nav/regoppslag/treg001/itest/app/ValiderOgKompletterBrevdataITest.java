@@ -61,7 +61,8 @@ public class ValiderOgKompletterBrevdataITest {
 	private LdapTemplate ldapTemplate;
 	
 	private URL brevdataRequest_URL = Resources.getResource("__files/treg001/validerOgKompletterBrevdata_happypath_REST_requestcontent-brevdata.xml");
-	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
+	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/validerOgKompletterBrevdata_happypath_REST_responsebody.xml");
+	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
 	private RegOppslagRequest request = RegOppslagRequest.builder()
 			.dokumentTypeId(DOKUMENTTYPEID)
 			.brevdata(resourceUrlToString(brevdataRequest_URL))
@@ -97,7 +98,7 @@ public class ValiderOgKompletterBrevdataITest {
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		happypathStubs();
 		RegOppslagResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
-		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
+		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
 	}
 	
 	@Test

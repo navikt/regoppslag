@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
-		<mottaker>
+	<felles
+			xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
+		<f:mottaker>
 			<aktoer:id>20096828390</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
-		</mottaker>
+		</f:mottaker>
 		<signerendeSaksbehandler>
 			<ansattId>Z991006</ansattId>
 			<enhet>NAV Sentrum i bygda</enhet>
