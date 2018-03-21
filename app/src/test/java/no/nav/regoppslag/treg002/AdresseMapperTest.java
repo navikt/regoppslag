@@ -10,19 +10,38 @@ import static no.nav.regoppslag.util.TestDataUtil.createMottaker;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.common.Adresse;
+import no.nav.regoppslag.service.LandkodeService;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AdresseMapperTest {
 
+	@Mock
+	private LandkodeService landkodeService;
+	
+	@InjectMocks
+	private AdresseMapper adresseMapper;
+	
+	@Before
+	public void setup(){
+		when(landkodeService.finnLandkode(any())).thenReturn(LANDKODE);
+	}
 	
 	@Test
 	public void shouldMapWithNorskPostAdresse(){
-		Adresse adresse = AdresseMapper.map(createMottaker());
+		Adresse adresse = adresseMapper.map(createMottaker());
 		
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
@@ -34,7 +53,7 @@ public class AdresseMapperTest {
 	
 	@Test
 	public void shouldMapWithUtenlandskPostAdresse(){
-		Adresse adresse = AdresseMapper.map(createMottaker(false));
+		Adresse adresse = adresseMapper.map(createMottaker(false));
 		
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
