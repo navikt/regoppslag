@@ -1,5 +1,6 @@
 package no.nav.regoppslag.pluginsPOC;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -30,7 +31,7 @@ public class MottakerPlugin1 extends JaxbHelper<Mottaker> implements ElementEnri
 	}
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws InvalidElementException, RegOppslagFunctionalException {
 		validateElementType(content);
 		try {
 			Mottaker mottaker = unmarshal(content);

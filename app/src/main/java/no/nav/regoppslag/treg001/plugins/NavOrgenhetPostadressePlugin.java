@@ -3,6 +3,7 @@ package no.nav.regoppslag.treg001.plugins;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -49,7 +50,10 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, InvalidElementException {
+		if (prefixMapper != null) {
+			setNamespacePrefixMapper(prefixMapper);
+		}
 		try {
 
 			log.info("Henter NavOrgenhet info");

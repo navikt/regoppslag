@@ -9,6 +9,7 @@ import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
+import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,8 @@ public class ElementEnricherConfig {
 	@Bean
 	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException, XPathExpressionException {
 		RegisteroppslagNamespaceContext context = new RegisteroppslagNamespaceContext();
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
+		NamespacePrefixMapperHelper jaxbhelper = new NamespacePrefixMapperHelper(context);
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext, jaxbhelper);
 		registry.registerPlugin(createExpression("//felles:mottaker", context), MottakerPlugin.class);
 		registry.registerPlugin(createExpression("//felles:behandlendeEnhet", context), NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);

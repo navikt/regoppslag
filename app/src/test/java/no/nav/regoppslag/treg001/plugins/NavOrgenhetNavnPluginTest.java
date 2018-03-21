@@ -11,11 +11,9 @@ import static org.mockito.Mockito.when;
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
-import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.ws.rs.POST;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -67,7 +63,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		writeXml(node);
 
-		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID);
+		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID, null);
 		writeXml(processed);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);

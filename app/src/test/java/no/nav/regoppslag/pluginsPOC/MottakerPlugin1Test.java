@@ -15,7 +15,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -44,7 +43,7 @@ public class MottakerPlugin1Test {
 		writeXml(node);
 
 		MottakerPlugin1 plugin1 = new MottakerPlugin1();
-		Node processed = plugin1.processElement(node, DOKUMENTTYPEID);
+		Node processed = plugin1.processElement(node, DOKUMENTTYPEID, null);
 		writeXml(processed);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);

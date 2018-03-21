@@ -60,7 +60,7 @@ public class ElementEnricherTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext, null);
 
 		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(createExpression(xpath1, context), MottakerPlugin1.class);
@@ -84,7 +84,7 @@ public class ElementEnricherTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext, null);
 
 		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(createExpression(xpath1,context), MottakerPlugin1.class);
@@ -115,7 +115,7 @@ public class ElementEnricherTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext);
+		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext, null);
 
 		String xpath1 = "//felles:mottaker";
 		registry.registerPlugin(createExpression(xpath1,context), FailingPlugin.class);

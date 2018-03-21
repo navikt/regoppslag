@@ -1,5 +1,6 @@
 package no.nav.regoppslag.pluginsPOC;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
@@ -18,7 +19,7 @@ public class SignerendeSaksbehandlerPlugin implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(SignerendeSaksbehandlerPlugin.class);
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws InvalidElementException, RegOppslagFunctionalException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws InvalidElementException, RegOppslagFunctionalException {
 //		validateElementType(content);
 		Element element = (Element) content;
 		Node navn = element.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt","navn").item(0);

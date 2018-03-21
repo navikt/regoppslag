@@ -10,13 +10,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
-import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
-import no.nav.regoppslag.xmlenricher.util.UniversalNamespaceCache;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +28,6 @@ import org.w3c.dom.Node;
 
 import javax.inject.Inject;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -66,7 +63,7 @@ public class SaksbehandlerPluginTest {
 
 		writeXml(node);
 
-		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID);
+		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
 		writeXml(processed);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);

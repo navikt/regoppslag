@@ -64,7 +64,7 @@ public class NavOrgenhetPluginTest {
 
 		writeXml(node);
 
-		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID);
+		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID, null);
 		writeXml(processed);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);

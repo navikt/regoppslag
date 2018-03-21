@@ -2,43 +2,33 @@ package no.nav.regoppslag.xmlenricher.util;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
-import javax.xml.namespace.NamespaceContext;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * @author Hans Petter Simonsen - Miles
  */
 public class NamespacePrefixMapperHelper extends NamespacePrefixMapper {
 	public static final String NAMESPACES_FELLES = "http://nav.no/dok/pesysbrev/felles/v1/";
-	private NamespaceContext namespaceCache;
-	private String[] contextualPrefixes;
 
-	public NamespacePrefixMapperHelper(UniversalNamespaceCache namespaceCache) {
-		this.namespaceCache = namespaceCache;
-		List<String> prefixNamespacePairs = new ArrayList<>();
-		Iterator<String> prefixIterator = namespaceCache.getPrefixIterator();
-		while (prefixIterator.hasNext()) {
-			String prefix = prefixIterator.next();
-			String namespaceURI = namespaceCache.getNamespaceURI(prefix);
-			// Ignore namespaces not used in <felles>
-			if (namespaceURI.startsWith(NAMESPACES_FELLES) || namespaceURI.equals("http://www.w3.org/2001/XMLSchema-instance")) {
-				prefixNamespacePairs.add(prefix);
-				prefixNamespacePairs.add(namespaceURI);
-			}
-		};
-		contextualPrefixes = prefixNamespacePairs.toArray(new String[prefixNamespacePairs.size()]);
+	private static RegisteroppslagNamespaceContext registeroppslagNamespaceContext;
+
+	public NamespacePrefixMapperHelper(RegisteroppslagNamespaceContext registeroppslagNamespaceContext) {
+		this.registeroppslagNamespaceContext = registeroppslagNamespaceContext;
 	}
 
 	@Override
 	public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
-		return namespaceCache.getPrefix(namespaceUri);
+		return registeroppslagNamespaceContext.getPrefix(namespaceUri);
+	}
+
+	@Override
+	public String[] getPreDeclaredNamespaceUris() {
+		return new String[0];
+//		return registeroppslagNamespaceContext.getNamespaces();
 	}
 
 	@Override
 	public String[] getPreDeclaredNamespaceUris2() {
-		return contextualPrefixes;
+		return new String[0];
+//		return registeroppslagNamespaceContext.getDecls();
 	}
 
 	/**
@@ -50,7 +40,7 @@ public class NamespacePrefixMapperHelper extends NamespacePrefixMapper {
 	 */
 	@Override
 	public String[] getContextualNamespaceDecls() {
-//		return contextualPrefixes;
 		return new String[0];
+//		return registeroppslagNamespaceContext.getDecls();
 	}
 }

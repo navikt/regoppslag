@@ -2,6 +2,7 @@ package no.nav.regoppslag.xmlenricher;
 
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -19,8 +20,15 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 
 	private ApplicationContext applicationContext;
 
-	public SimplePluginRegistry(ApplicationContext applicationContext) {
+	private NamespacePrefixMapperHelper jaxbNamspaceHelper;
+
+	public SimplePluginRegistry(ApplicationContext applicationContext, NamespacePrefixMapperHelper jaxbNamspaceHelper) {
 		this.applicationContext = applicationContext;
+		this.jaxbNamspaceHelper = jaxbNamspaceHelper;
+	}
+
+	public NamespacePrefixMapperHelper getJaxbNamespaceHelper() {
+		return jaxbNamspaceHelper;
 	}
 
 	@Override
