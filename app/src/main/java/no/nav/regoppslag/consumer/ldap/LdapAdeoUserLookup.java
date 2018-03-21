@@ -1,5 +1,7 @@
 package no.nav.regoppslag.consumer.ldap;
 
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,19 +21,19 @@ import java.util.List;
  */
 @Slf4j
 public class LdapAdeoUserLookup {
-
+	
 	public static final String DESCRIPTION = "description";
 	public static final String DISPLAYNAME = "displayname";
 	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
-
+	
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
-
+	
 	public LdapAdeoUserLookup(LdapTemplate ldapTemplate, String userBaseDn) {
 		this.ldapTemplate = ldapTemplate;
 		this.userBaseDn = userBaseDn;
 	}
-
+	
 	/**
 	 * Gets the full name based on lookup in AD
 	 *
@@ -41,6 +43,8 @@ public class LdapAdeoUserLookup {
 	@Cacheable(HENT_FULLT_NAVN)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
+		log.info(String.format("Henter Fullt navn fra LDAP for bruker med adeoIdent=%s", adeoIdent));
+		cacheCounter.labels("hentFulltNavn:cacheMiss", HENT_FULLT_NAVN).inc();
 		LdapQuery cn = LdapQueryBuilder.query()
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
@@ -51,7 +55,7 @@ public class LdapAdeoUserLookup {
 			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
 		}
 	}
-
+	
 	private List<String> doSearch(LdapQuery cn) {
 		return ldapTemplate.search(cn, (AttributesMapper<String>) attributes -> {
 			// Description contains most consistent naming format

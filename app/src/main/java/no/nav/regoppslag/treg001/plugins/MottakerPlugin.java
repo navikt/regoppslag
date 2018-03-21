@@ -1,6 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -110,6 +112,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
 			//Sjekker språket på malen opp mot mottakers preferanser
+			cacheCounter.labels("hentDokumenttypeInfoSpraak:cacheTry", HENT_DOKKAT_SPRAAKINFO).inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
 			if (sprakinfos == null) {
 				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);

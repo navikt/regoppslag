@@ -63,38 +63,21 @@ public class CacheConfig {
 		return factory;
 	}
 	
-	private RedisSentinelConfiguration sentinelConfiguration () {
-		return new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-"+APPNAME, 26379));
-	}
-	
 	@Bean
 	public RedisTemplate<?, ?> redisTemplate() {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
 		return redisTemplate;
 	}
-
+	
+	private RedisSentinelConfiguration sentinelConfiguration () {
+		return new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-"+APPNAME, 26379));
+	}
+	
 	private Long daysToSeconds(Integer days){
 		return days*24L*60L*60L;
 	}
 	
-//	@Bean
-//	public CacheManager cacheManager() {
-//		// configure and return an implementation of Spring's CacheManager SPI
-//		SimpleCacheManager cacheManager = new SimpleCacheManager();
-//		//TODO BRUKER
-//		//TODO ORGANISASJON
-//		//TODO Virksomhetsadresse EREG
-//		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
-//				.expireAfterAccess(2, TimeUnit.DAYS)
-//				.maximumSize(2000)
-//				.build());
-//		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
-//				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
-//				new ConcurrentMapCache(HENT_ENHET_NAVN),
-//				new ConcurrentMapCache(HENT_DOKKAT_SPRAAKINFO)));
-//		return cacheManager;
-//	}
 	
 }

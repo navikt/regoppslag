@@ -1,9 +1,12 @@
 package no.nav.regoppslag.consumer.dokkat;
 
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
@@ -29,6 +32,7 @@ import java.util.Map;
  * @author Ketill Fenne, Visma Consulting AS
  */
 @Service
+@Slf4j
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
@@ -55,6 +59,9 @@ public class Tkat020DokumenttypeInfo {
 	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
 	@Retryable(value = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
+		
+		cacheCounter.labels("hentDokumenttypeInfoSpraak:cacheMiss", HENT_DOKKAT_SPRAAKINFO).inc();
+		log.info("Henter SpraakInfo fra Dokkat ");
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
