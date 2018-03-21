@@ -1,6 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -56,6 +58,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 			validateSaksbehandler(navAnsatt);
 
+			cacheCounter.labels("hentFulltNavn:cacheTry", HENT_FULLT_NAVN).inc();
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 
 			if (saksbehandlerNavn == null) {

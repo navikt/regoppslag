@@ -1,5 +1,6 @@
 package no.nav.regoppslag.metrics;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_DOKUMENTTYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_DOKUMENTTYPEID;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_ERROR_TYPE;
@@ -29,6 +30,12 @@ public class PrometheusMetrics {
 			.name("request_total_counter")
 			.help("Counts total number of messages received per event")
 			.labelNames(LABEL_PROCESS, LABEL_EVENT).register();
+	
+	public static final Counter cacheCounter = Counter.build()
+			.namespace(DOK_NAMESPACE)
+			.name("cache_counter")
+			.help("Counts total number of cache misses")
+			.labelNames(LABEL_EVENT, LABEL_CACHE_NAME).register();
 	
 	public static final Counter requestCounterDocument = Counter.build()
 			.namespace(DOK_NAMESPACE)

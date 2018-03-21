@@ -1,6 +1,8 @@
 package no.nav.regoppslag.treg001.plugins;
 
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -67,6 +69,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 
 			validateAdresse(adresse);
 
+			cacheCounter.labels("hentKontaktinformasjonForEnhet:cacheTry", HENT_ENHET_NAVN).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
