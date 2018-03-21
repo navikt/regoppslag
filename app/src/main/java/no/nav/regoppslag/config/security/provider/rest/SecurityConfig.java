@@ -38,11 +38,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/isAlive","/isReady","/internal/**").permitAll();
-		http.authorizeRequests().antMatchers(REST+"**")
-				.fullyAuthenticated()
-				.and().httpBasic();
+//		http.authorizeRequests()
+//				.antMatchers("/isAlive","/isReady","/internal/**").permitAll();
+//		http.authorizeRequests().antMatchers(REST+"**")
+//				.fullyAuthenticated()
+//				.and().httpBasic();
 		
 		http.csrf().disable(); //Innloggingen er stateless og uten cookies, så dette er trygt.
 	}
