@@ -62,8 +62,8 @@ public class CacheConfig {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
 		
-		redisTemplate.setValueSerializer(customRedisSerializer);
-		redisTemplate.setHashValueSerializer(customRedisSerializer);
+		redisTemplate.setDefaultSerializer(customRedisSerializer);
+		redisTemplate.setEnableDefaultSerializer(true);
 		
 		return redisTemplate;
 	}
