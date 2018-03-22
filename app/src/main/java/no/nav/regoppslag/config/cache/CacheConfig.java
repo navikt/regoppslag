@@ -32,6 +32,7 @@ import java.util.Arrays;
 public class CacheConfig {
 	private static final String MASTER_NAME = "mymaster";
 	private @Value("${app.name}") String APPNAME;
+	private CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -60,8 +61,9 @@ public class CacheConfig {
 	public RedisTemplate<?, ?> redisTemplate() {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
-		redisTemplate.setValueSerializer(new CustomRedisSerializer());
-		redisTemplate.setHashValueSerializer(new CustomRedisSerializer());
+		
+		redisTemplate.setValueSerializer(customRedisSerializer);
+		redisTemplate.setHashValueSerializer(customRedisSerializer);
 		
 		return redisTemplate;
 	}

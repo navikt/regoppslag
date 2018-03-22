@@ -13,7 +13,11 @@ import org.springframework.data.redis.serializer.SerializationException;
  */
 public class CustomRedisSerializer implements RedisSerializer<Object> {
 	
-	private KryoPool kryoPool = new KryoPool.Builder(Kryo::new).build();
+	private KryoPool kryoPool;
+
+	public CustomRedisSerializer() {
+		this.kryoPool = new KryoPool.Builder(Kryo::new).build();
+	}
 	
 	@Override
 	public byte[] serialize(Object o) throws SerializationException {
