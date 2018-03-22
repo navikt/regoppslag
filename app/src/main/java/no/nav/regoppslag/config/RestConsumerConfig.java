@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 @Configuration
-@EnableCaching
 public class RestConsumerConfig {
 	@Bean
 	public HttpComponentsClientHttpRequestFactory requestFactory() {

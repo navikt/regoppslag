@@ -1,5 +1,7 @@
 package no.nav.regoppslag.consumer.norg2;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -41,8 +43,9 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	@Cacheable(HENT_ENHET_NAVN)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException {
-		cacheCounter.labels("hentKontaktinformasjonForEnhet:cacheMiss", HENT_ENHET_NAVN).inc();
-		log.info("Henter Organisasjonsenhet fra OrganisasjonEnhetKontaktinformasjonV1 ");
+		
+		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).dec();
+		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_MISS).inc();
 		
 		try {
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk").startTimer();

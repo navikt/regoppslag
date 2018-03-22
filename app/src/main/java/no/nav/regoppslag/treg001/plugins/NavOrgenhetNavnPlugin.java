@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -56,14 +57,14 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		}
 		validateElementType(content);
 		try {
-			log.info("Henter NavOrgenhetNavn");
-			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetNavnPlugin").inc();
 			
 			NavEnhet navEnhet = unmarshal(content);
+			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 
 			validateEnhet(navEnhet);
-
-			cacheCounter.labels("hentKontaktinformasjonForEnhet:cacheTry", HENT_ENHET_NAVN).inc();
+			
+			cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
 			if (wsEnhet == null) {
@@ -82,7 +83,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info("NavOrgenhetNavn er beriket med data");
+			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (JAXBException | ParserConfigurationException e) {

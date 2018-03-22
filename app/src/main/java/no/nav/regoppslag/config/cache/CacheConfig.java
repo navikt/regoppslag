@@ -38,7 +38,7 @@ public class CacheConfig {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
 		
 		//default expiration in seconds (equal to two days)
-		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
+		redisCacheManager.setDefaultExpiration(daysToSeconds(2)); //TODO: Juster på dette. Kan evt sette expiration for individuelle cache senere.
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}

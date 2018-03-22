@@ -1,5 +1,7 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -41,12 +43,12 @@ public class OrganisasjonV4Consumer {
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException {
 		
-		cacheCounter.labels("hentOrganisasjon:cacheMiss", HENT_ORGANISASJON).inc();
-		log.info("Henter organisasjon fra OrganisasjonV4");
+		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_HIT).dec();
+		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_MISS).inc();
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "ORGANISASJON_V4", "hentOrganisasjon").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "OrganisasjonV4", "hentOrganisasjon").startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {

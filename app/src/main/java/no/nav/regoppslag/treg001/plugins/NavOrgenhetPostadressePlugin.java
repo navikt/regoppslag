@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -61,16 +62,15 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		validateElementType(content);
 		try {
 
-			log.info("Henter NavOrgenhet info");
 
-			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPostadressePlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetPostadressePlugin").inc();
 
 			Postadresse adresse = unmarshal(content);
+			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
 
 			validateAdresse(adresse);
-
-			cacheCounter.labels("hentKontaktinformasjonForEnhet:cacheTry", HENT_ENHET_NAVN).inc();
-
+			
+			cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			if (wsEnhet == null) {
@@ -89,7 +89,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info("NavOrgenhet er beriket med data");
+			log.info(String.format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
+			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (JAXBException | ParserConfigurationException e) {

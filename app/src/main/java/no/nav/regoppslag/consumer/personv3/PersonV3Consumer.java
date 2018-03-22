@@ -1,5 +1,7 @@
 package no.nav.regoppslag.consumer.personv3;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -42,47 +44,52 @@ public class PersonV3Consumer {
 	public PersonV3Consumer(PersonV3 personV3) {
 		this.personV3 = personV3;
 	}
-
+	
 	@Cacheable(HENT_PERSON)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
 	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException {
 		
-		cacheCounter.labels("hentOrganisasjon:cacheMiss", HENT_PERSON).inc();
-		log.info("Henter Mottaker fra PersonV3");
+		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_HIT).dec();
+		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_MISS).inc();
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
-
+		
 		HentPersonResponse response;
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "PERSON_V3", "hentPerson").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "PersonV3", "hentPerson").startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet.getMessage(), hentPersonPersonIkkeFunnet);
+			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
+					.getMessage(), hentPersonPersonIkkeFunnet);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagFunctionalException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning.getMessage(), hentPersonSikkerhetsbegrensning);
+			throw new RegOppslagFunctionalException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning
+					.getMessage(), hentPersonSikkerhetsbegrensning);
 		} finally {
 			requestTimer.observeDuration();
 		}
 		if (response != null && response.getPerson() != null) {
+			
 			return (Bruker) response.getPerson();
 		}
+		
+		
 		return null;
 	}
-
+	
 	private HentPersonRequest mapHentPersonRequest(String personidentifikator) {
 		HentPersonRequest request = new HentPersonRequest();
-
+		
 		Personidenter personidenter = new Personidenter();
 		if (StringUtils.startsWithAny(personidentifikator, "0", "1", "2", "3")) {
 			personidenter.setValue("FNR");
 		} else {
 			personidenter.setValue("DNR");
 		}
-
+		
 		NorskIdent norskIdent = new NorskIdent();
 		norskIdent.setType(personidenter);
 		norskIdent.setIdent(personidentifikator);
-
+		
 		PersonIdent personIdent = new PersonIdent();
 		personIdent.setIdent(norskIdent);
 		request.setAktoer(personIdent);
