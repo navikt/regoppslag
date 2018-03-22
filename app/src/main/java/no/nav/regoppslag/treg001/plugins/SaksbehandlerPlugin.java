@@ -52,7 +52,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "SaksbehandlerPlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "SaksbehandlerPlugin").inc();
 			
 			NavAnsatt navAnsatt = unmarshal(content);
 			

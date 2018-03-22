@@ -57,7 +57,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetNavnPlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetNavnPlugin").inc();
 			
 			NavEnhet navEnhet = unmarshal(content);
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));

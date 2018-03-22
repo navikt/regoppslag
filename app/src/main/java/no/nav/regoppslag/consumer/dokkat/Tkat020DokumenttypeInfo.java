@@ -75,7 +75,6 @@ public class Tkat020DokumenttypeInfo {
 			} else {
 				return null;
 			}
-
 		} catch (HttpClientErrorException e) {
 			throw new RegOppslagFunctionalException("TKAT020 failed with statusCode=" + e.getRawStatusCode() + ", message=" + e
 					.getResponseBodyAsString(), e);

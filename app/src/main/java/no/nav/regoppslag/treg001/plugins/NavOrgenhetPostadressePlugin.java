@@ -63,7 +63,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		try {
 
 
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetPostadressePlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetPostadressePlugin").inc();
 
 			Postadresse adresse = unmarshal(content);
 			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));

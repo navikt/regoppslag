@@ -62,7 +62,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		validateElementType(content);
 		try {
 			
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetBesoksadressePlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetBesoksadressePlugin").inc();
 			
 			Besoksadresse adresse = unmarshal(content);
 			

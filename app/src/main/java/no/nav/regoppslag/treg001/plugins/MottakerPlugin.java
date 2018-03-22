@@ -87,7 +87,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "MottakerPlugin");
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "MottakerPlugin").inc();
 			if (dokumentTypeId == null) {
 				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!");
 			}
