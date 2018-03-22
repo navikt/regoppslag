@@ -19,6 +19,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
 import java.util.Arrays;
 
@@ -40,7 +41,7 @@ public class CacheConfig {
 	@Bean
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
-
+		
 		//default expiration in seconds (equal to two days)
 		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
 		redisCacheManager.setCacheNames(Arrays.asList(HENT_FULLT_NAVN, LDAP_CACHE_RS_LOGIN, HENT_ENHET_NAVN,HENT_DOKKAT_SPRAAKINFO, HENT_PERSON, HENT_ORGANISASJON));
@@ -59,7 +60,8 @@ public class CacheConfig {
 	public RedisTemplate<?, ?> redisTemplate() {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
-		redisTemplate.setDefaultSerializer(new CustomRedisSerializer());
+		redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 		
 		return redisTemplate;
 	}
