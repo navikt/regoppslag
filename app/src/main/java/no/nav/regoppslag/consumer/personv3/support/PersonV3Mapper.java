@@ -3,9 +3,12 @@ package no.nav.regoppslag.consumer.personv3.support;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
@@ -14,6 +17,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUt
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postboksadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
+import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -34,7 +38,7 @@ public class PersonV3Mapper {
 		this.postnummerService = postnummerService;
 	}
 
-	public void map(Bruker person, Mottaker mottaker) {
+	public void map(Bruker person, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if (person.getMaalform() != null) {
 			if (person.getMaalform().getValue().equals("NO")) {
 				mottaker.setSpraakkode(Spraakkode.NB);
@@ -135,10 +139,18 @@ public class PersonV3Mapper {
 				norskPostadresse.setLand(landkodeService.finnLandnavn(((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse().getLandkode().getValue()));
 			}
 		}
+		validatePostadresse(norskPostadresse, mottaker);
+
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())){
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 		}
 		mottaker.setAdresse(norskPostadresse);
+	}
+
+	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws  RegOppslagFunctionalException{
+		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
+			throw new RegOppslagFunctionalException("Mottaker personoppslag - mangler postnummer for bruker: " + mottaker.getId());
+		}
 	}
 }

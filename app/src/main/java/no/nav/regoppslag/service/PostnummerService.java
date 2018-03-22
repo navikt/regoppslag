@@ -60,7 +60,9 @@ public class PostnummerService {
 	public String finnPoststed (String postnr) {
 		if (postalCodeTable.get(postnr) == null) {
 			LOG.warn("Finner ikke poststed for postnummer: " + postnr + ", sjekk om ny postnummer.txt må lastes ned.");
+			return null;
+		} else {
+			return postalCodeTable.get(postnr).getPoststed();
 		}
-		return postalCodeTable.get(postnr).getPoststed();
 	}
 }

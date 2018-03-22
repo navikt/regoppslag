@@ -66,6 +66,10 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			cacheCounter.labels("hentKontaktinformasjonForEnhet:cacheTry", HENT_ENHET_NAVN).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
+			if (wsEnhet == null) {
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. enhetId=%s", navEnhet.getEnhetsId()));
+			}
+
 			norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -87,7 +91,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: navEnhet mangler påkrevde parametere."));
+			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: mangler enhetId."));
 		}
 	}
 

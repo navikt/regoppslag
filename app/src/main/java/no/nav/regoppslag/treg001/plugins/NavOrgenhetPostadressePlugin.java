@@ -73,6 +73,10 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
+			if (wsEnhet == null) {
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s", adresse.getEnhetsId()));
+			}
+
 			norg2Mapper.mapPostadresse(wsEnhet, adresse);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -94,7 +98,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin: adressedata mangler påkrevde parametere."));
+			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin: mangler enhetId."));
 		}
 	}
 
