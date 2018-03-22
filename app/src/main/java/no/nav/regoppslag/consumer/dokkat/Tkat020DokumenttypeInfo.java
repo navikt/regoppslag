@@ -1,6 +1,8 @@
 package no.nav.regoppslag.consumer.dokkat;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -60,12 +62,13 @@ public class Tkat020DokumenttypeInfo {
 	@Retryable(value = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		
-		cacheCounter.labels("hentDokumenttypeInfoSpraak:cacheMiss", HENT_DOKKAT_SPRAAKINFO).inc();
-		log.info("Henter SpraakInfo fra Dokkat ");
+		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, "DOKKAT", CACHE_HIT).dec();
+		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, "DOKKAT", CACHE_MISS).inc();
+		
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "TKAT020", "hentDokumenttypeInfoSpraak").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "DOKKAT", "hentDokumenttypeInfoSpraak").startTimer();
 			DokumentTypeInfoToV3 dokumentTypeInfoToV3 =  restTemplate.getForObject("/{dokumenttypeId}", DokumentTypeInfoToV3.class, uriVariables);
 			if (dokumentTypeInfoToV3.getDokumentProduksjonsInfo() != null && dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() != null) {
 				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();

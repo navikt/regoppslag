@@ -53,9 +53,9 @@ public class RegisteroppslagRestController {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata").startTimer();
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, "controller", "received").inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, "controller", "processed_ok").inc();
 			return response;
 		} catch (Exception e){
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
@@ -72,9 +72,9 @@ public class RegisteroppslagRestController {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG002, "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, "controller", "received").inc();
 			HentMottakerOgAdresseResponse response  = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, "controller", "processed_ok").inc();
 			return response;
 		}catch (Exception e){
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);

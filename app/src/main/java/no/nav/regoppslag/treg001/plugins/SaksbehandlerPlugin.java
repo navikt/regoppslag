@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.plugins;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -33,17 +34,17 @@ import javax.xml.parsers.ParserConfigurationException;
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
-
+	
 	public SaksbehandlerPlugin() {
 		super(NavAnsatt.class);
 	}
-
+	
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
-
+	
 	@Inject
 	private SaksbehandlerMapper saksbehandlerMapper;
-
+	
 	@Override
 	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		if (prefixMapper != null) {
@@ -51,45 +52,47 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		}
 		validateElementType(content);
 		try {
-			log.info("Henter saksbehandler info");
-			requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin");
-
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "SaksbehandlerPlugin");
+			
 			NavAnsatt navAnsatt = unmarshal(content);
-
+			
+			log.info(String.format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
+			
 			validateSaksbehandler(navAnsatt);
-
-			cacheCounter.labels("hentFulltNavn:cacheTry", HENT_FULLT_NAVN).inc();
+			
+			cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).inc();
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
-
+			
 			if (saksbehandlerNavn == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s", navAnsatt.getAnsattId()));
+				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s", navAnsatt
+						.getAnsattId()));
 			}
 			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
-
+			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
-
+			
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
-
+			
 			Node node = marshal(navAnsatt, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
-
-			log.info("Saksbehandler er beriket med data");
-
+			
+			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
+			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException | ParserConfigurationException e) {
 			throw new RegOppslagFunctionalException("SaksbehandlerPlugin: Feil ved parsing av XML", e);
 		}
 	}
-
+	
 	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
 			throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId"));
 		}
 	}
-
+	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
@@ -97,5 +100,5 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
 		}
 	}
-
+	
 }

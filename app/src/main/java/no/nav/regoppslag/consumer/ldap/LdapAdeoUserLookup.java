@@ -1,5 +1,7 @@
 package no.nav.regoppslag.consumer.ldap;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +45,10 @@ public class LdapAdeoUserLookup {
 	@Cacheable(HENT_FULLT_NAVN)
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
-		log.info(String.format("Henter Fullt navn fra LDAP for bruker med adeoIdent=%s", adeoIdent));
-		cacheCounter.labels("hentFulltNavn:cacheMiss", HENT_FULLT_NAVN).inc();
+		
+		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).dec();
+		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_MISS).inc();
+		
 		LdapQuery cn = LdapQueryBuilder.query()
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
