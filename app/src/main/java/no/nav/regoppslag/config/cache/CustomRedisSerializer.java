@@ -3,6 +3,7 @@ package no.nav.regoppslag.config.cache;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
+import com.esotericsoftware.kryo.io.ByteBufferOutputStream;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
@@ -16,7 +17,7 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	
 	@Override
 	public byte[] serialize(Object o) throws SerializationException {
-		ByteBufferOutput output = new ByteBufferOutput();
+		ByteBufferOutput output = new ByteBufferOutput(10240);
 		Kryo kryo = kryoPool.borrow();
 		try {
 			kryo.writeClassAndObject(output, o);
