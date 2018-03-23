@@ -57,6 +57,10 @@
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
 			</kontaktinformasjon:postadresse>
+			<kontaktinformasjon:besoksadresse>
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</kontaktinformasjon:besoksadresse>
 		</felles:kontaktinformasjon>
 		<felles:returadresse>
 			<navEnhet:enhetsId>TKN6675</navEnhet:enhetsId>

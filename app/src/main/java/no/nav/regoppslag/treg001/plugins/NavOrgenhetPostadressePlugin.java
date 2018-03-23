@@ -61,8 +61,6 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		}
 		validateElementType(content);
 		try {
-
-
 			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetPostadressePlugin").inc();
 
 			Postadresse adresse = unmarshal(content);
@@ -97,6 +95,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			throw new RegOppslagFunctionalException("NavOrgenhetPostadressePlugin: Feil ved parsing av XML", e);
 		}
 	}
+
 	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
 			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin: mangler enhetId."));

@@ -13,9 +13,12 @@ import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +42,9 @@ import java.io.File;
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
@@ -71,6 +77,25 @@ public class SaksbehandlerPluginTest {
 
 		assertThat(navAnsatt.getNavn(), is("Test Testesen"));
 	}
+
+	@Test
+	public void throwFunctionalErceptionWhenSaksbehandlerNotFound() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=");
+		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn(null);
+
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
+}
 
 	@Configuration
 	static class Config {

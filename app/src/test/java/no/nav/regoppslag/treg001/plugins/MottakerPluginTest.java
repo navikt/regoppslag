@@ -30,7 +30,9 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
@@ -48,6 +50,9 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MottakerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
+	public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
+	public static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
 	private static final String FORNAVN = "TOM";
 	private static final String MELLOMNAVN = "MARVOLO";
@@ -69,6 +74,9 @@ public class MottakerPluginTest {
 	private Maalform malform = new Maalform();
 	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, malform);
 
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
@@ -77,7 +85,7 @@ public class MottakerPluginTest {
 	}
 
 	@Test
-	public void testMottakerPlugin() throws Exception {
+	public void testMottakerPluginPerson() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -98,6 +106,106 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+	}
+
+	@Test
+	public void testMottakerPluginOrganisasjon() throws Exception {
+		File xmlFile = new File(BREVDATA_ORG);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		writeXml(node);
+
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
+		writeXml(processed);
+
+		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+
+		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=");
+		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(null);
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenOrganisasjonIkkeFunnet() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=");
+		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
+		File xmlFile = new File(BREVDATA_ORG);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("eil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
+		File xmlFile = new File(BREVDATA_TYPE);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("eil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
+		File xmlFile = new File(BREVDATA_ID);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:mottaker";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
 	}
 
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {

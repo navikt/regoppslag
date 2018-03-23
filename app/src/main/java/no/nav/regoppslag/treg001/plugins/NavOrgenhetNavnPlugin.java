@@ -90,6 +90,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e);
 		}
 	}
+
 	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
 			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: mangler enhetId."));
