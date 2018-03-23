@@ -173,7 +173,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("eil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+		expectedException.expectMessage("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
