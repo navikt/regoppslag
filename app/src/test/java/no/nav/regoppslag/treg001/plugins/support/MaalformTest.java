@@ -1,5 +1,8 @@
 package no.nav.regoppslag.treg001.plugins.support;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
@@ -8,9 +11,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class MaalformTest {
 
@@ -71,6 +71,24 @@ public class MaalformTest {
 	}
 
 	@Test
+	public void spraakPaaMalOgMottakerMatcherIkkeOgUkjentSpråk() {
+		Mottaker mottaker = new Mottaker();
+		mottaker.setSpraakkode(Spraakkode.NN);
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("FR"));
+		maalform.setMaalform(mottaker, list);
+		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
+	}
+
+	@Test
+	public void spraakPaaMalErTomBrukerHarSattMaalform() {
+		Mottaker mottaker = new Mottaker();
+		mottaker.setSpraakkode(Spraakkode.NN);
+		maalform.setMaalform(mottaker, null);
+		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
+	}
+
+
+	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_NB() {
 		Mottaker mottaker = new Mottaker();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NB"));
@@ -94,14 +112,32 @@ public class MaalformTest {
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
 	}
 
+	@Test
+	public void spraakPaaMalOgMottakerSpraakNULL_UGYLDIGSPRAAK() {
+		Mottaker mottaker = new Mottaker();
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("HOHO"));
+		maalform.setMaalform(mottaker, list);
+		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
+	}
+
+
+	@Test
+	public void spraakIkkesatt() {
+		Mottaker mottaker = new Mottaker();
+		List<SpraakInfoTo> list = null;
+		maalform.setMaalform(mottaker, list);
+		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
+	}
 
 	private List<SpraakInfoTo> createTkatResponse(List<String> langs) {
 		List<SpraakInfoTo> list = new ArrayList<>();
-		langs.forEach(lang -> {
-			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
-			spraakInfoTo.setSpraaklag(lang);
-			list.add(spraakInfoTo);
-		});
+		if (langs != null) {
+			langs.forEach(lang -> {
+				SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
+				spraakInfoTo.setSpraaklag(lang);
+				list.add(spraakInfoTo);
+			});
+		}
 		return list;
 	}
 }

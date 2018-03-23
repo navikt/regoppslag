@@ -9,6 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
@@ -40,8 +41,8 @@ public class OrganisasjonV4Consumer {
 	}
 
 	@Cacheable(HENT_ORGANISASJON)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
-	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class })
+	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_HIT).dec();
 		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_MISS).inc();
@@ -53,6 +54,8 @@ public class OrganisasjonV4Consumer {
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
 			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + organisasjonsnummer + ", message=" + e.getMessage(), e);
+		} catch (Exception e) {
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=" + organisasjonsnummer + ", message=" + e.getMessage(), e);
 		} finally {
 			requestTimer.observeDuration();
 		}

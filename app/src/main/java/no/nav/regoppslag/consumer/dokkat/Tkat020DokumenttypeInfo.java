@@ -1,6 +1,5 @@
 package no.nav.regoppslag.consumer.dokkat;
 
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
@@ -17,6 +16,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -76,10 +76,15 @@ public class Tkat020DokumenttypeInfo {
 				return null;
 			}
 		} catch (HttpClientErrorException e) {
-			throw new RegOppslagFunctionalException("TKAT020 failed with statusCode=" + e.getRawStatusCode() + ", message=" + e
-					.getResponseBodyAsString(), e);
+			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
+				throw new RegOppslagFunctionalException("Dokkat.TKAT020 failed with bad request for dokumenttypeId:" + dokumenttypeId, e);
+			} else {
+				throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed. (HttpStatus=" + e.getStatusCode() + ") for dokumenttypeId:" + dokumenttypeId, e);
+			}
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException("TKAT020 failed with statusCode=" + e.getRawStatusCode(), e);
+			throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed with statusCode=" + e.getRawStatusCode(), e);
+		} catch (Exception e) {
+			throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed with message=" + e.getMessage(), e);
 		} finally {
 			requestTimer.observeDuration();
 		}

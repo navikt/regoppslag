@@ -7,12 +7,19 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -26,6 +33,9 @@ public class PersonV3ConsumerTest {
 
 	private PersonV3 personV3 = mock(PersonV3.class);
 	private PersonV3Consumer personV3Consumer = new PersonV3Consumer(personV3);
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
 	public void shouldHentPersonnavn() throws Exception{
@@ -65,6 +75,24 @@ public class PersonV3ConsumerTest {
 		Bruker person = personV3Consumer.hentPerson(FNR);
 
 		assertThat(person.getPersonnavn(), nullValue());
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenPersonIkkeFunnet() throws Exception {
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
+
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident:" + FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR);
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + FNR);
+
+		Bruker person = personV3Consumer.hentPerson(FNR);
 	}
 
 	private HentPersonResponse defaultResponse() {

@@ -3,9 +3,7 @@ package no.nav.regoppslag.consumer.norg2.support;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Kontaktinformasjon;
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
@@ -13,9 +11,7 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.StrukturertAdresse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class Norg2MapperTest {
@@ -40,10 +36,20 @@ public class Norg2MapperTest {
 	}
 
 	@Test
+	public void shouldMapNavEnhetNavn() {
+		NavEnhet enhet = new NavEnhet();
+		enhet.setEnhetsId(NAV_ENHET_ID);
+		norg2Mapper.mapEnhetNavn(createEnhetWithStedsadresse(NAV_ENHET_NAVN), enhet);
+		assertThat(enhet.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(enhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+	}
+
+	@Test
 	public void shouldMapStedadresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
 		norg2Mapper.mapPostadresse(createEnhetWithStedsadresse(NAV_ENHET_NAVN), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
 		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
@@ -55,6 +61,7 @@ public class Norg2MapperTest {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
 		norg2Mapper.mapPostadresse(createEnhetWithPostbokssadresse(NAV_ENHET_NAVN), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is(POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
 		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
@@ -80,6 +87,7 @@ public class Norg2MapperTest {
 
 	private Organisasjonsenhet createEnhetWithStedsadresse (String enhetNavn) {
 		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
+		wsEnhet.setEnhetNavn(enhetNavn);
 
 		Gateadresse gateadresse = new Gateadresse();
 		gateadresse.setGatenavn(GATENAVN);
@@ -101,6 +109,7 @@ public class Norg2MapperTest {
 
 	private Organisasjonsenhet createEnhetWithPostbokssadresse (String enhetNavn) {
 		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
+		wsEnhet.setEnhetNavn(enhetNavn);
 
 		Postnummer postnummer = new Postnummer();
 		postnummer.setKodeRef(POSTNR);
@@ -122,6 +131,7 @@ public class Norg2MapperTest {
 
 	private Organisasjonsenhet createWSEnhetWithBesoksadresse (String enhetNavn) {
 		Organisasjonsenhet wsEnhet = new Organisasjonsenhet();
+		wsEnhet.setEnhetNavn(enhetNavn);
 
 		Gateadresse gateadresse = new Gateadresse();
 		gateadresse.setGatenavn(GATENAVN);

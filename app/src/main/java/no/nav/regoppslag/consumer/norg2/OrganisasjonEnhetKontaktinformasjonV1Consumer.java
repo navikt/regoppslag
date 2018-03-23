@@ -41,8 +41,8 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	}
 
 	@Cacheable(HENT_ENHET_NAVN)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class })
-	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class })
+	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).dec();
 		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_MISS).inc();
@@ -54,6 +54,8 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
 			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + enhetNr + ", message=" + hentKontaktinformasjonForEnhetBolkUgyldigInput.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput);
+		} catch (Exception e) {
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til Norg for enhetNr=" + enhetNr + ", message=" + e.getMessage());
 		} finally {
 			requestTimer.observeDuration();
 		}

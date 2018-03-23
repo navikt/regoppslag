@@ -9,6 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -46,8 +47,8 @@ public class PersonV3Consumer {
 	}
 	
 	@Cacheable(HENT_PERSON)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
-	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException {
+	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class})
+	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_HIT).dec();
 		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_MISS).inc();
@@ -64,6 +65,8 @@ public class PersonV3Consumer {
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning
 					.getMessage(), hentPersonSikkerhetsbegrensning);
+		} catch (Exception e) {
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson for ident: " + personidentifikator + ", message=" + e.getMessage());
 		} finally {
 			requestTimer.observeDuration();
 		}
