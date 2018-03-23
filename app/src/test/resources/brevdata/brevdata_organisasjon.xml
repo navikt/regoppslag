@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata xmlns="http://nav.no/dok/pesysbrev/v1/000073">
+	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:felles="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
+			xmlns:sakspart="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
+			xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
+			xmlns:norskPostadresse="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"
+			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
+			xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
+			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
+			xmlns:navAnsatt="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt">
+		<felles:spraakkode>NB</felles:spraakkode>
+		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
+		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
+		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
+		<felles:sakspart>
+			<aktoer:id>974727854</aktoer:id>
+			<aktoer:typeKode>ORGANISASJON</aktoer:typeKode>
+			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
+			<sakspart:diskresjonskode>true</sakspart:diskresjonskode>
+		</felles:sakspart>
+		<felles:mottaker>
+			<aktoer:id>974727854</aktoer:id>
+			<aktoer:typeKode>ORGANISASJON</aktoer:typeKode>
+			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
+			<mottaker:kortNavn>Queen Latifa</mottaker:kortNavn>
+			<mottaker:adresse xsi:type="norskPostadresse:NorskPostadresse">
+				<norskPostadresse:adresselinje1>adresselinje1</norskPostadresse:adresselinje1>
+				<norskPostadresse:adresselinje2>adresselinje2</norskPostadresse:adresselinje2>
+				<norskPostadresse:adresselinje3>adresselinje3</norskPostadresse:adresselinje3>
+				<norskPostadresse:postnummer>0130</norskPostadresse:postnummer>
+				<norskPostadresse:poststed>Oslo</norskPostadresse:poststed>
+				<norskPostadresse:land>NORGE</norskPostadresse:land>
+			</mottaker:adresse>
+		</felles:mottaker>
+		<felles:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
+				<navAnsatt:navn>KOKO</navAnsatt:navn>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</saksbehandler:navEnhet>
+		</felles:signerendeSaksbehandler>
+		<felles:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</saksbehandler:navEnhet>
+		</felles:signerendeBeslutter>
+		<felles:kontaktinformasjon>
+			<kontaktinformasjon:postadresse>
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</kontaktinformasjon:postadresse>
+			<kontaktinformasjon:besoksadresse>
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</kontaktinformasjon:besoksadresse>
+		</felles:kontaktinformasjon>
+		<felles:returadresse>
+			<navEnhet:enhetsId>TKN6675</navEnhet:enhetsId>
+		</felles:returadresse>
+	</felles>
+</brevdata>

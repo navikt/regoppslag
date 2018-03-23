@@ -12,6 +12,8 @@ healthcheck:
   readiness:
     path: /isReady
     initialDelay: 30
+    timeout: 3
+redis: true
 prometheus:
   enabled: true
   path: /prometheus
@@ -35,14 +37,17 @@ fasitResources:
   - alias: srvregoppslag
     resourceType: credential
     propertyMap:
-        username: SERVICEUSER_USERNAME
-        password: SERVICEUSER_PASSWORD
+      username: SERVICEUSER_USERNAME
+      password: SERVICEUSER_PASSWORD
   - alias: srvregoppslag
     resourceType: certificate
     propertyMap:
       keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
       password: SRVREGOPPSLAG_CERT_PASSWORD
-exposed:
+  exposed:
   - alias: ValiderOgKompletterBrevdata
     resourceType: restservice
-    path: /kompletterBrevdata
+    path: /rest/kompletterBrevdata
+  - alias: HentMottakerOgAdresse
+    resourceType: restservice
+    path: /rest/hentMottakerOgAdresse

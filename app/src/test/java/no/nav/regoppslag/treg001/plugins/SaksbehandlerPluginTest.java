@@ -9,12 +9,16 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Saksbehandler;
+import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +30,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,6 +42,9 @@ import java.io.File;
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
@@ -49,19 +59,43 @@ public class SaksbehandlerPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		QName qName = new QName("http://nav.no/dok/pesysbrev/felles/v1/PesysFelles","signerendeSaksbehandler");
-		Node node = findSingleNode(qName, document);
+		String expression1 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
 
 		writeXml(node);
 
-		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID);
+		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
 		writeXml(processed);
 
-		JaxbHelper<Saksbehandler> mottakerJaxbHelper = new JaxbHelper<Saksbehandler>(Saksbehandler.class);
-		Saksbehandler saksbehandler= mottakerJaxbHelper.unmarshal(processed);
+		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
+		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
-		assertThat(saksbehandler.getNavn(), is("Test Testesen"));
+		assertThat(navAnsatt.getNavn(), is("Test Testesen"));
 	}
+
+	@Test
+	public void throwFunctionalErceptionWhenSaksbehandlerNotFound() throws Exception {
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=");
+		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn(null);
+
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
+		xPath.setNamespaceContext(namespaceContext);
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
+}
 
 	@Configuration
 	static class Config {

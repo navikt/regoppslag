@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema	attributeFormDefault="unqualified"
-			  elementFormDefault="qualified"
-			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
-			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
-			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes">
+<xs:schema attributeFormDefault="unqualified"
+		   elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
+		   xmlns="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
+		   xmlns:na="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt"
+		   xmlns:ne="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet">
 
-	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
+	<xs:import schemaLocation="v1.NavAnsatt.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt"/>
+	<xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"/>
 
 	<xs:complexType name="Saksbehandler">
-		<xs:annotation>
-			<xs:documentation>Brukes når saksbehandler skal signere et dokument</xs:documentation>
-		</xs:annotation>
 		<xs:all>
-			<xs:element name="ansattId" type="st:Identifikator">
-				<xs:annotation>
-					<xs:documentation>Identifikasjon av saksbehandler</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="navn" type="st:NonEmptyString">
-				<xs:annotation>
-					<xs:documentation>Navn på saksbehandler</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="enhet" type="xs:string" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Navnet på enheten til saksbehandler</xs:documentation>
-				</xs:annotation>
-			</xs:element>
+			<xs:element name="navAnsatt" type="na:NavAnsatt"/>
+			<xs:element name="navEnhet" type="ne:NavEnhet"/>
 		</xs:all>
 	</xs:complexType>
-
 </xs:schema>

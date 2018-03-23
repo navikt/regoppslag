@@ -1,8 +1,8 @@
 package no.nav.regoppslag.pluginsPOC;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.exceptions.InvalidElementException;
 import org.w3c.dom.Node;
 
 /**
@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
  */
 public class FailingPlugin implements ElementEnricherPlugin {
 	@Override
-	public Node processElement(Node content, String dokumentTypeId) throws RegOppslagFunctionalException, InvalidElementException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException {
 		throw new RegOppslagFunctionalException("something went wrong calling registryservice");
 	}
 }

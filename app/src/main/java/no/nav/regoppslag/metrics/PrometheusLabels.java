@@ -12,10 +12,12 @@ public class PrometheusLabels {
     public static final String LABEL_PROCESS = "process";
     public static final String LABEL_PROCESS_CODE = "process_code";
     public static final String LABEL_PROCESS_CALLED = "process_called";
+    public static final String LABEL_TYPE = "type";
     public static final String LABEL_PROCESS_TITLE = "process_title";
     
     public static final String LABEL_HANDLER = "handler";
     public static final String LABEL_EVENT = "event";
+
     public static final String LABEL_ERROR_TYPE = "error_type";
     public static final String LABEL_DOKUMENTTYPEID = "dokumenttypeId";
     public static final String LABEL_DOKUMENTTYPE = "dokumenttype";
@@ -23,4 +25,12 @@ public class PrometheusLabels {
     
     public static final String SERVICE_CODE_TREG001="TREG001";
     public static final String SERVICE_CODE_TREG002="TREG002";
+    
+    //Cache
+	public static final String LABEL_CACHE_NAME = "name";
+	public static final String LABEL_CACHE_CONSUMER = "consumer";
+	public static final String LABEL_CACHE_OPERATION = "operation";
+	public static final String CACHE_MISS = "cacheMiss";
+	public static final String CACHE_HIT = "cacheHit";
+	
 }

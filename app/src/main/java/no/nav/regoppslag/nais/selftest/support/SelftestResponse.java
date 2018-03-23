@@ -2,6 +2,7 @@ package no.nav.regoppslag.nais.selftest.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by T133804 on 15.08.2017.
  */
-public class SelftestResponse {
+public final class SelftestResponse {
 	
 	private String application;
 	private String version;
@@ -67,7 +68,7 @@ public class SelftestResponse {
 	}
 	
 	public List<SelftestCheck> getChecks() {
-		return checks;
+		return ImmutableList.copyOf(this.checks);
 	}
 	
 	public String getAggregateResponseTime() {

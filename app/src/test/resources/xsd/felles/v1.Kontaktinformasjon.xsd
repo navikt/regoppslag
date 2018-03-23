@@ -4,33 +4,23 @@
 			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
 			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-			  xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"
-			  xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet">
+			  xmlns:returadresse="http://nav.no/dok/pesysbrev/felles/v1/Returadresse"
+			  xmlns:besoksadresse="http://nav.no/dok/pesysbrev/felles/v1/Besoksadresse"
+			  xmlns:postadresse="http://nav.no/dok/pesysbrev/felles/v1/Postadresse">
 
-	<xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
-	<xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"/>
+	<xs:import schemaLocation="v1.Returadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Returadresse"/>
+	<xs:import schemaLocation="v1.Postadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Postadresse"/>
+	<xs:import schemaLocation="v1.Besoksadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Besoksadresse"/>
 
 
 	<xs:complexType name="Kontaktinformasjon">
 		<xs:annotation>
-			<xs:documentation>Informasjon om hvordan bruker kan kontakte NAV</xs:documentation>
+			<xs:documentation>Informasjon om hvordan bruker kan kontakte NAV før å følge opp saken</xs:documentation>
 		</xs:annotation>
 		<xs:all>
-			<xs:element name="telefonnummer" type="st:NonEmptyString">
-				<xs:annotation>
-					<xs:documentation>Telefonnummer bruker/mottaker skal benytte ved henvendelse</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="nettsted" type="st:NonEmptyString">
-				<xs:annotation>
-					<xs:documentation>Nettsted bruker/mottaker kan benytte for å innhente generell informasjon om saken</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="postadresse" type="navEnhet:NavEnhet">
-				<xs:annotation>
-					<xs:documentation>Adressen skal benyttes dersom bruker/mottaker har behov for å kontakte NAV per post</xs:documentation>
-				</xs:annotation>
-			</xs:element>
+			<xs:element name="returadresse" type="returadresse:Returadresse"/>
+			<xs:element name="postadresse" type="postadresse:Postadresse"/>
+			<xs:element name="besoksadresse" type="besoksadresse:Besoksadresse"/>
 		</xs:all>
 	</xs:complexType>
 

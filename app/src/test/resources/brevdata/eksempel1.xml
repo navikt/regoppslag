@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata xmlns="http://nav.no/dok/pesysbrev/v1/000073">
 	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:felles="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
 			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
 			xmlns:sakspart="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
 			xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
 			xmlns:norskPostadresse="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"
-			xmlns:sakbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
+			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
 			xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet">
-		<f:spraakkode>NB</f:spraakkode>
-		<f:fagsaksnummer>30085849677</f:fagsaksnummer>
-		<f:navnAvsenderEnhet>Pensjon Inc</f:navnAvsenderEnhet>
-		<f:automatiskBehandlet>true</f:automatiskBehandlet>
-		<f:dokumentDato>2017-11-17</f:dokumentDato>
-		<f:sakspart>
+			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
+			xmlns:navAnsatt="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt">
+		<felles:spraakkode>NB</felles:spraakkode>
+		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
+		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
+		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
+		<felles:sakspart>
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
 			<sakspart:diskresjonskode>true</sakspart:diskresjonskode>
-		</f:sakspart>
-		<f:mottaker>
+		</felles:sakspart>
+		<felles:mottaker>
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
@@ -33,41 +34,37 @@
 				<norskPostadresse:poststed>Oslo</norskPostadresse:poststed>
 				<norskPostadresse:land>NORGE</norskPostadresse:land>
 			</mottaker:adresse>
-		</f:mottaker>
-		<f:signerendeSaksbehandler>
-			<sakbehandler:ansattId>B342586</sakbehandler:ansattId>
-			<sakbehandler:navn>Tormund Giantsbane</sakbehandler:navn>
-			<sakbehandler:enhet>NAV Sentrum i bygda</sakbehandler:enhet>
-		</f:signerendeSaksbehandler>
-		<f:signerendeBeslutter>
-			<sakbehandler:ansattId>O837534</sakbehandler:ansattId>
-			<sakbehandler:navn>Sandor Clegane</sakbehandler:navn>
-			<sakbehandler:enhet>Sentrale NAV i hovedstaden</sakbehandler:enhet>
-		</f:signerendeBeslutter>
-		<f:kontaktinformasjon>
-			<kontaktinformasjon:telefonnummer>55553333</kontaktinformasjon:telefonnummer>
-			<kontaktinformasjon:nettsted>nav.no.alderspensjon</kontaktinformasjon:nettsted>
-			<kontaktinformasjon:postadresse>
+		</felles:mottaker>
+		<felles:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
+				<navAnsatt:navn>KOKO</navAnsatt:navn>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
 				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
-				<navEnhet:enhetsNavn>Pensjon Inc.</navEnhet:enhetsNavn>
-				<navEnhet:adresse>
-					<norskPostadresse:adresselinje1>Postboks 6944 St.Olavs plass</norskPostadresse:adresselinje1>
-					<norskPostadresse:postnummer>0130</norskPostadresse:postnummer>
-					<norskPostadresse:poststed>OSLO</norskPostadresse:poststed>
-					<norskPostadresse:land>NORGE</norskPostadresse:land>
-				</navEnhet:adresse>
+			</saksbehandler:navEnhet>
+		</felles:signerendeSaksbehandler>
+		<felles:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<navAnsatt:ansattId>O837534</navAnsatt:ansattId>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</saksbehandler:navEnhet>
+		</felles:signerendeBeslutter>
+		<felles:kontaktinformasjon>
+			<kontaktinformasjon:postadresse>
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
 			</kontaktinformasjon:postadresse>
-		</f:kontaktinformasjon>
-		<f:returadresse>
+			<kontaktinformasjon:besoksadresse>
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<navEnhet:enhetsId>TKN5427</navEnhet:enhetsId>
+			</kontaktinformasjon:besoksadresse>
+		</felles:kontaktinformasjon>
+		<felles:returadresse>
 			<navEnhet:enhetsId>TKN6675</navEnhet:enhetsId>
-			<navEnhet:enhetsNavn>Pensjon Inc.</navEnhet:enhetsNavn>
-			<navEnhet:adresse>
-				<norskPostadresse:adresselinje1>Postboks 6944 St.Olavs plass</norskPostadresse:adresselinje1>
-				<norskPostadresse:postnummer>0130</norskPostadresse:postnummer>
-				<norskPostadresse:poststed>OSLO</norskPostadresse:poststed>
-				<norskPostadresse:land>NORGE</norskPostadresse:land>
-			</navEnhet:adresse>
-		</f:returadresse>
+		</felles:returadresse>
 	</felles>
 	<fag  xmlns:avdod="http://nav.no/dok/pesysbrev/fag/v1/Avdod"
 		  xmlns:barn="http://nav.no/dok/pesysbrev/fag/v1/Barn"

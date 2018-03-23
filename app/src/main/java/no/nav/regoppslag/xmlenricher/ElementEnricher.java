@@ -1,17 +1,20 @@
-package no.nav.regoppslag.treg001;
+package no.nav.regoppslag.xmlenricher;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
+import no.nav.regoppslag.xmlenricher.util.Aggregate;
+import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
+import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,42 +24,30 @@ import java.util.Set;
  * @author Hans Petter Simonsen - Miles
  */
 @Slf4j
-public class Orchestrator {
+public class ElementEnricher {
 	
 	private ElementEnricherPluginRegistry registry;
+
+	private NamespacePrefixMapperHelper jaxbHelper;
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
 	}
 
-	
-	private Node findSingleNode(QName qname, Document xmlDocument)  {
-		return xmlDocument.getElementsByTagNameNS(qname.getNamespaceURI(), qname.getLocalPart()).item(0);
-	}
-
-
-	public static class Tuple<A,B> {
-		private A element;
-		private B plugin;
-		public Tuple(A element, B plugin) {
-			this.element = element;
-			this.plugin = plugin;
-		}
-		A getElement() {
-			return element;
-		}
-		B getPlugin() {
-			return plugin;
-		}
+	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
+		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
-		List<Tuple<Node, ElementEnricherPlugin>> processingList = new ArrayList<>();
-		Set<QName> supportedElements = registry.getSupportedElements();
-		for (QName xpath : supportedElements) {
+
+		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
+
+		List<Payload> processingList = new ArrayList<>();
+		Set<XPathExpression> supportedElements = registry.getSupportedElements();
+		for (XPathExpression xpath : supportedElements) {
 			Node node = findSingleNode(xpath, document);
 			if (node != null) {
-				processingList.add(new Tuple<>(node, registry.getOrCreateElementEnricherPlugin(xpath)));
+				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath),node));
 			}
 		}
 
@@ -65,7 +56,7 @@ public class Orchestrator {
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.computation())
-				.map(tuple -> tuple.plugin.processElement(tuple.element, dokumentTypeId))
+				.map(payload -> new Aggregate(payload.getPlugin().processElement(payload.getElement(), dokumentTypeId, prefixMapper), payload.getElement()))
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
@@ -81,12 +72,12 @@ public class Orchestrator {
 		return document;
 	}
 
-	private void aggregate(Document document, Node newElement) {
-		Element element = (Element) newElement;
+	private void aggregate(Document document, Aggregate aggregate) {
+		Element element = (Element) aggregate.getNewNode();
 		// Find element in original XML, only one of each supported
-		Node orgElem = document.getElementsByTagName(newElement.getNodeName()).item(0);
+		Node orgElem = aggregate.getOrigNode();
 		// If plugin does in-place mutation, no aggregation is necessary.
-		if (newElement.isSameNode(orgElem)) {
+		if (aggregate.getNewNode().isSameNode(orgElem)) {
 			return;
 		}
 		Node importNode = document.adoptNode(element);
@@ -94,6 +85,4 @@ public class Orchestrator {
 		orgElem.getParentNode().insertBefore(importNode, orgElem);
 		orgElem.getParentNode().removeChild(orgElem);
 	}
-
-
 }

@@ -5,7 +5,7 @@
 	<groupId>no.nav.regoppslag</groupId>
 	<artifactId>regoppslag</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.13-SNAPSHOT</version>
+	<version>0.0.29-SNAPSHOT</version>
 	<name>regoppslag</name>
 
 	<prerequisites>
@@ -45,11 +45,13 @@
 
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
+		<spring.v>1.5.10.RELEASE</spring.v>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<lombok.version>1.16.20</lombok.version>
 		<bootstrap.version>3.3.6</bootstrap.version>
+		<retry.version>1.0.2.RELEASE</retry.version>
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<prometheus.version>0.3.0</prometheus.version>
 		<cxf.version>3.2.2</cxf.version>
@@ -132,6 +134,11 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+			<version>${retry.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.logstash.logback</groupId>

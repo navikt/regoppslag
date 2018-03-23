@@ -21,42 +21,53 @@ import java.util.Map;
 @Service
 @Scope("singleton")
 public class LandkodeService {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
 	private static final String FILENAME = "/kodeverk/countries.txt";
 
 	private final Map<String, LandData> landkodeTable;
-	
+	private final Map<String, String> landTable;
+
 	public LandkodeService() {
 		landkodeTable = new HashMap<>();
+		landTable = new HashMap<>();
 	}
-	
+
 	@PostConstruct
 	public void init() throws Exception {
 		InputStream in = getClass().getResourceAsStream(FILENAME);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String line;
 		String csvSplitBy = "\t";
-		
+
 		while ((line = br.readLine()) != null) {
 			String[] postArray = line.split(csvSplitBy);
 			LandData data = new LandData(postArray[2], postArray[0].toUpperCase());
 			landkodeTable.put(data.getLandkode(), data);
+			landTable.put(data.getNavn(), data.getLandkode());
 		}
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
-	
+
 	@Setter
 	@Getter
 	@AllArgsConstructor
 	public class LandData {
-		
+
 		private String landkode;
 		private String navn;
 	}
-	
+
 	public String finnLandnavn(String landkode) {
-		return landkodeTable.get(landkode).getNavn();
+		if (landkodeTable.get(landkode) == null) {
+			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om ny landkoder.txt må lastes ned/endres.");
+			return null;
+		} else {
+			return landkodeTable.get(landkode).getNavn();
+		}
 	}
-	
+
+	public String finnLandkode(String landnavn) {
+		return landTable.get(landnavn);
+	}
 }

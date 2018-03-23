@@ -7,19 +7,19 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentNoekkelinfoOrganisasjonOrganisasjonIkkeFunnet;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.feil.OrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SammensattNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentNoekkelinfoOrganisasjonRequest;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentNoekkelinfoOrganisasjonResponse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +35,9 @@ public class OrganisasjonV4ConsumerTest {
 	private static final String ORGNAVN_2 = "SAGENE";
 	private OrganisasjonV4 organisasjonV4 = mock(OrganisasjonV4.class);
 	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4);
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldHentOrganisasjon() throws Exception {
@@ -55,14 +58,25 @@ public class OrganisasjonV4ConsumerTest {
 	}
 
 	@Test
-	public void shouldReturnNullWhenOrganisasjonNotFound() throws Exception {
+	public void shouldThrowExceptionWhenOrganisasjonNotFound() throws Exception {
+		thrown.expect(RegOppslagFunctionalException.class);
+		thrown.expectMessage("Nav enhet finnes ikke for enhetNr=999999999");
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
 
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
-
-		assertThat(organisasjon, nullValue());
 	}
+
+	@Test
+	public void shouldThrowTechnicalExceptionWhenRuntimeExceptionThrown() throws Exception {
+		thrown.expect(RegOppslagTechnicalException.class);
+		thrown.expectMessage("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
+		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
+				.thenThrow(new RuntimeException());
+
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+	}
+
 
 	@Test
 	public void shouldReturnNullWhenNavnIsNull() throws Exception {
