@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
@@ -46,14 +48,14 @@ import java.util.ArrayList;
 @SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
-@Ignore ("Må få på plass cachemanger først")
+@Ignore
 public class ValiderOgKompletterBrevdataITest {
 	private final String DOKUMENTTYPEID = "123";
 	@Inject
 	public RegisteroppslagRestController registeroppslagRestController;
 	
-//	@Inject
-//	CacheManager cacheManager;
+	@Inject
+	CacheManager cacheManager;
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -74,18 +76,17 @@ public class ValiderOgKompletterBrevdataITest {
 		WireMock.resetAllRequests();
 
 		//TODO se på disse cachegreiene, foreløpig bare kommentert ut
-//		clearCachene();
-//		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
-//		stubOppslagLDAP();
-		stubFor(post("/STS").willReturn(aResponse().withBody("treg001/sts_signature-responsebody.xml")));
+		clearCachene();
+		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
+		stubOppslagLDAP();
+//		stubFor(post("/STS").willReturn(aResponse().withBody("treg001/sts_signature-responsebody.xml")));
 	}
 	
-//	private void clearCachene() {
-//		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
-//	}
+	private void clearCachene() {
+		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
+	}
 	
 	private void stubOppslagLDAP() {
-		
 		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add("en vilkaarlig autentisert person");
 		}});
@@ -111,6 +112,7 @@ public class ValiderOgKompletterBrevdataITest {
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		happypathStubs();
+		stubOppslagLDAP();
 		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
 	}

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles
-			xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+	<felles xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
 			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
 		<f:mottaker>
 			<aktoer:id>20096828390</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 		</f:mottaker>
-		<signerendeSaksbehandler>
-			<ansattId>Z991006</ansattId>
-			<enhet>NAV Sentrum i bygda</enhet>
-		</signerendeSaksbehandler>
-		<signerendeBeslutter>
-			<ansattId>Z991006</ansattId>
-			<navn>Sandor Clegane</navn>
-			<enhet>Sentrale NAV i hovedstaden</enhet>
-		</signerendeBeslutter>
+		<f:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+			</saksbehandler:navAnsatt>
+		</f:signerendeSaksbehandler>
+		<f:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+			</saksbehandler:navAnsatt>
+		</f:signerendeBeslutter>
 	</felles>
 </brevdata>

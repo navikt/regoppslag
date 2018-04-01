@@ -21,14 +21,16 @@
 			</mottaker:adresse>
 		</f:mottaker>
 		<f:signerendeSaksbehandler>
-			<saksbehandler:ansattId>Z991006</saksbehandler:ansattId>
-			<saksbehandler:navn>en vilkaarlig saksbehandler</saksbehandler:navn>
-			<saksbehandler:enhet>NAV Sentrum i bygda</saksbehandler:enhet>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+				<navn>en vilkaarlig saksbehandler</navn>
+			</saksbehandler:navAnsatt>
 		</f:signerendeSaksbehandler>
-		<signerendeBeslutter>
-			<ansattId>Z991006</ansattId>
-			<navn>Sandor Clegane</navn>
-			<enhet>Sentrale NAV i hovedstaden</enhet>
-		</signerendeBeslutter>
+		<f:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+				<navn>en vilkaarlig saksbehandler</navn>
+			</saksbehandler:navAnsatt>
+		</f:signerendeBeslutter>
 	</felles>
 </brevdata>

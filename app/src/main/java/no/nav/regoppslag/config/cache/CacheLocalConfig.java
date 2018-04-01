@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 @Configuration
-@Profile("local")
+@Profile("itest")
 public class CacheLocalConfig {
 	
 	@Bean
