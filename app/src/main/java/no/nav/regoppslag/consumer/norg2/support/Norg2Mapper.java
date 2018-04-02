@@ -23,7 +23,7 @@ import java.util.Optional;
 public class Norg2Mapper {
 
 	@Inject
-	private PostnummerService postnummerService;
+	private final PostnummerService postnummerService;
 
 	public Norg2Mapper(PostnummerService postnummerService) {
 		this.postnummerService = postnummerService;

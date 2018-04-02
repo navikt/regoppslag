@@ -31,7 +31,7 @@ public class OrganisasjonV4Mapper {
 
 	@Inject
 	private final LandkodeService landkodeService;
-	
+
 	@Inject
 	private final PostnummerService postnummerService;
 
@@ -39,11 +39,11 @@ public class OrganisasjonV4Mapper {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
-	
+
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
-		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn)orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
+		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
 
 		if (orgDet.getGjeldendeMaalform() != null) {
 			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
@@ -104,7 +104,7 @@ public class OrganisasjonV4Mapper {
 		mottaker.setAdresse(norskPostadresse);
 	}
 
-	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse)  {
+	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse) {
 		for (NoekkelVerdiAdresse nokler : adresse.getAdresseledd()) {
 			if ("ADR1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje1(nokler.getVerdi());
@@ -121,6 +121,7 @@ public class OrganisasjonV4Mapper {
 			}
 		}
 	}
+
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId());

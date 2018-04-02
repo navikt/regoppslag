@@ -32,8 +32,10 @@ public class OrganisasjonV4Consumer {
 
 	private final OrganisasjonV4 organisasjonV4;
 	private Histogram.Timer requestTimer;
-	
+
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
+	public static final String ORGANISASJON_V4 = "OrganisasjonV4";
+
 	
 	@Inject
 	public OrganisasjonV4Consumer(OrganisasjonV4 organisasjonV4) {
@@ -41,15 +43,15 @@ public class OrganisasjonV4Consumer {
 	}
 
 	@Cacheable(HENT_ORGANISASJON)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class })
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_HIT).dec();
-		cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_MISS).inc();
+		cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJON_V4, CACHE_HIT).dec();
+		cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJON_V4, CACHE_MISS).inc();
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "OrganisasjonV4", "hentOrganisasjon").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJON_V4, HENT_ORGANISASJON).startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {

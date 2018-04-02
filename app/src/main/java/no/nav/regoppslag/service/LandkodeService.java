@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ public class LandkodeService {
 	}
 
 	@PostConstruct
-	public void init() throws Exception {
+	public void init() throws IOException {
 		InputStream in = getClass().getResourceAsStream(FILENAME);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String line;
@@ -52,7 +54,7 @@ public class LandkodeService {
 	@Setter
 	@Getter
 	@AllArgsConstructor
-	public class LandData {
+	static class LandData {
 
 		private String landkode;
 		private String navn;

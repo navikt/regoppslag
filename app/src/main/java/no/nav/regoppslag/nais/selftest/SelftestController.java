@@ -19,9 +19,6 @@ import java.net.UnknownHostException;
 @Controller
 @Slf4j
 public class SelftestController {
-	// Application is up and running
-	private static final String APPLICATION_LIVENESS = "Application is alive!";
-	private static final String APPLICATION_READY = "Application is ready!";
 
 	@Value("${applicationName}")
 	private String applicationName;
@@ -29,10 +26,6 @@ public class SelftestController {
 	private String applicationVersion;
 	@Value("${bootstrapVersion}")
 	private String bootstrapVersion;
-
-	@Inject
-	public SelftestController() {
-	}
 
 	/**
 	 * Thymeleaf view
@@ -59,8 +52,8 @@ public class SelftestController {
 	public SelftestResponse selftest() {
 		return performSelftest();
 	}
-	
-	
+
+
 	private SelftestResponse performSelftest() {
 		SelftestResponse response = new SelftestResponse();
 		response.setApplication(applicationName);
