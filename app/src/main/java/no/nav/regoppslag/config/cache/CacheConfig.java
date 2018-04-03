@@ -35,17 +35,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 	private CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
 	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
-	
-	@Bean
-	@Override
-	public CacheErrorHandler errorHandler(){
-		return new CustomCacheErrorHandler();
-	}
-	
-	@Bean
 	public CacheManager cacheManager() {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
 		
@@ -53,13 +42,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
-	}
-	
-	public RedisConnectionFactory redisConnectionFactory() {
-		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + APPNAME, 26379)));
-		factory.setUsePool(true);
-		return factory;
 	}
 	
 	@Bean
@@ -73,6 +55,18 @@ public class CacheConfig extends CachingConfigurerSupport {
 		return redisTemplate;
 	}
 	
+	@Bean
+	@Override
+	public CacheErrorHandler errorHandler(){
+		return new CustomCacheErrorHandler();
+	}
+	
+	public RedisConnectionFactory redisConnectionFactory() {
+		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + APPNAME, 26379)));
+		factory.setUsePool(true);
+		return factory;
+	}
 	
 	private Long daysToSeconds(Integer days) {
 		return days * 24L * 60L * 60L;
