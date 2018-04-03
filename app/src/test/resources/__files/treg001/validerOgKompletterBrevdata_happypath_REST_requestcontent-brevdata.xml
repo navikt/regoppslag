@@ -11,6 +11,9 @@
 			<saksbehandler:navAnsatt>
 				<ansattId>Z991006</ansattId>
 			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<enhetsId>1234</enhetsId>
+			</saksbehandler:navEnhet>
 		</f:signerendeSaksbehandler>
 		<f:signerendeBeslutter>
 			<saksbehandler:navAnsatt>

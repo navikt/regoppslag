@@ -1,46 +1,55 @@
-	<b:hentPersonResponse xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
-		<response>
-			<person xmlns:c="http://www.w3.org/2001/XMLSchema-instance" c:type="a:Bruker">
-				<bostedsadresse>
-					<strukturertAdresse c:type="a:Gateadresse">
-						<landkode>NOR</landkode>
-						<tilleggsadresseType>Offisiell adresse</tilleggsadresseType>
-						<poststed>2630</poststed>
-						<kommunenummer>0520</kommunenummer>
-						<gatenavn>HALVOR VEKTERS VEG</gatenavn>
-						<husnummer>11</husnummer>
-					</strukturertAdresse>
-				</bostedsadresse>
-				<sivilstand fomGyldighetsperiode="2014-05-22T00:00:00.000+02:00">
-					<sivilstand>ENKE</sivilstand>
-				</sivilstand>
-				<statsborgerskap>
-					<land>NOR</land>
-				</statsborgerskap>
-				<aktoer c:type="a:PersonIdent">
-					<ident>
-						<ident>01054042317</ident>
-						<type>FNR</type>
-					</ident>
-				</aktoer>
-				<kjoenn>
-					<kjoenn>M</kjoenn>
-				</kjoenn>
-				<personnavn>
-					<etternavn>Latifa</etternavn>
-					<fornavn>Queen</fornavn>
-					<sammensattNavn>Her Majesty The Duchess of York: Queen Latifa</sammensattNavn>
-				</personnavn>
-				<personstatus>
-					<personstatus>BOSA</personstatus>
-				</personstatus>
-				<foedselsdato>
-					<foedselsdato>1940-05-01+01:00</foedselsdato>
-				</foedselsdato>
-				<gjeldendePostadressetype>BOSTEDSADRESSE</gjeldendePostadressetype>
-				<geografiskTilknytning c:type="a:Kommune">
-					<geografiskTilknytning>0520</geografiskTilknytning>
-				</geografiskTilknytning>
-			</person>
-		</response>
-	</b:hentPersonResponse>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
+		<wsa:Action>http://nav.no/tjeneste/virksomhet/person/v3/Person_v3/hentPersonResponse</wsa:Action>
+		<wsa:RelatesTo>urn:uuid:70338bd9-860f-4b1f-b2bd-780831167df9</wsa:RelatesTo>
+	</soapenv:Header>
+	<soapenv:Body>
+		<b:hentPersonResponse xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
+			<response>
+				<person xmlns:c="http://www.w3.org/2001/XMLSchema-instance" c:type="a:Bruker">
+					<bostedsadresse>
+						<strukturertAdresse c:type="a:Gateadresse">
+							<landkode>NOR</landkode>
+							<tilleggsadresseType>Offisiell adresse</tilleggsadresseType>
+							<poststed>0350</poststed>
+							<bolignummer>H0403</bolignummer>
+							<kommunenummer>0301</kommunenummer>
+							<gatenavn>WELHAVENS GATE</gatenavn>
+							<husnummer>10</husnummer>
+						</strukturertAdresse>
+					</bostedsadresse>
+					<sivilstand fomGyldighetsperiode="9999-01-01T00:00:00.000+01:00">
+						<sivilstand>UGIF</sivilstand>
+					</sivilstand>
+					<statsborgerskap>
+						<land>NOR</land>
+					</statsborgerskap>
+					<aktoer c:type="a:PersonIdent">
+						<ident>
+							<ident>20096828390</ident>
+							<type>FNR</type>
+						</ident>
+					</aktoer>
+					<kjoenn>
+						<kjoenn>M</kjoenn>
+					</kjoenn>
+					<personnavn>
+						<etternavn>AUNE</etternavn>
+						<fornavn>LARS NARVE</fornavn>
+						<sammensattNavn>AUNE LARS NARVE</sammensattNavn>
+					</personnavn>
+					<personstatus>
+						<personstatus>BOSA</personstatus>
+					</personstatus>
+					<foedselsdato>
+						<foedselsdato>1968-09-20+01:00</foedselsdato>
+					</foedselsdato>
+					<gjeldendePostadressetype>BOSTEDSADRESSE</gjeldendePostadressetype>
+					<geografiskTilknytning c:type="a:Bydel">
+						<geografiskTilknytning>030105</geografiskTilknytning>
+					</geografiskTilknytning>
+				</person>
+			</response>
+		</b:hentPersonResponse>
+	</soapenv:Body>
+</soapenv:Envelope>
