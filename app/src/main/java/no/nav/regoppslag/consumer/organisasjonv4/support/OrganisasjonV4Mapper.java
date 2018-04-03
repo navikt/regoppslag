@@ -106,17 +106,17 @@ public class OrganisasjonV4Mapper {
 
 	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse) {
 		for (NoekkelVerdiAdresse nokler : adresse.getAdresseledd()) {
-			if ("ADR1".equals(nokler.getNoekkel().getKodeRef())) {
+			if ("adresselinje1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje1(nokler.getVerdi());
-			} else if ("ADR2".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("adresselinje2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje2(nokler.getVerdi());
 			} else if ("ADR3_1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
 			} else if ("ADR3_2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje4(nokler.getVerdi());
-			} else if ("PONR".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());
-			} else if ("POST".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("poststed".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPoststed(nokler.getVerdi());
 			}
 		}
