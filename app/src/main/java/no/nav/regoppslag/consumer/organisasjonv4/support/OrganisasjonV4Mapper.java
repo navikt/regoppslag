@@ -111,8 +111,10 @@ public class OrganisasjonV4Mapper {
 			} else if ("adresselinje2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje2(nokler.getVerdi());
 			} else if ("ADR3_1".equals(nokler.getNoekkel().getKodeRef())) {
+				//TODO ADR3_1 er ikke riktig, må finne eksempel og teste
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
 			} else if ("ADR3_2".equals(nokler.getNoekkel().getKodeRef())) {
+				//TODO ADR3_2 er ikke riktig, må finne eksempel og teste
 				norskPostadresse.setAdresselinje4(nokler.getVerdi());
 			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());

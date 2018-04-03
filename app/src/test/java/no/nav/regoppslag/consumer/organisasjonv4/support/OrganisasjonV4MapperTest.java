@@ -187,7 +187,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje1
 		NoekkelVerdiAdresse noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		NoeklerAdresseleddSemistrukturerteAdresser noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("ADR1");
+		noekkel.setKodeRef("adresselinje1");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR1);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -195,7 +195,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje2
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("ADR2");
+		noekkel.setKodeRef("adresselinje2");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR2);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -219,7 +219,7 @@ public class OrganisasjonV4MapperTest {
 		//Postnr
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("PONR");
+		noekkel.setKodeRef("postnr");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(POSTNR);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -227,7 +227,7 @@ public class OrganisasjonV4MapperTest {
 		//Poststed
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("POST");
+		noekkel.setKodeRef("poststed");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(POSTSTED);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
