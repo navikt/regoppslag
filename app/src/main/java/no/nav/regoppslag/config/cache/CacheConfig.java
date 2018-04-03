@@ -2,16 +2,22 @@ package no.nav.regoppslag.config.cache;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+
+import java.util.Arrays;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -19,7 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Profile("nais")
 @Configuration
 @EnableCaching
-public class CacheConfig {
+public class CacheConfig extends CachingConfigurerSupport {
 	
 	private static final String MASTER_NAME = "mymaster";
 	
@@ -34,17 +40,22 @@ public class CacheConfig {
 	}
 	
 	@Bean
-	public CacheManager cacheManager(RedisTemplate redisTemplate) {
-		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
+	@Override
+	public CacheErrorHandler errorHandler(){
+		return new CustomCacheErrorHandler();
+	}
+	
+	@Bean
+	public CacheManager cacheManager() {
+		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
 		
 		//default expiration in seconds (equal to two days)
-		redisCacheManager.setDefaultExpiration(daysToSeconds(2)); //TODO: Juster på dette. Kan evt sette expiration for individuelle cache senere.
+		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}
 	
-	@Bean
-	public JedisConnectionFactory jedisConnectionFactory() {
+	public RedisConnectionFactory redisConnectionFactory() {
 		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + APPNAME, 26379)));
 		factory.setUsePool(true);
@@ -54,7 +65,7 @@ public class CacheConfig {
 	@Bean
 	public RedisTemplate<?, ?> redisTemplate() {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
-		redisTemplate.setConnectionFactory(jedisConnectionFactory());
+		redisTemplate.setConnectionFactory(redisConnectionFactory());
 		
 		redisTemplate.setDefaultSerializer(customRedisSerializer);
 		redisTemplate.setEnableDefaultSerializer(true);
