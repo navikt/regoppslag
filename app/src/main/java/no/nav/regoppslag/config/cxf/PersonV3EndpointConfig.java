@@ -3,6 +3,7 @@ package no.nav.regoppslag.config.cxf;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
 
@@ -34,10 +35,14 @@ public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 		setReceiveTimeout(personV3Alias.getReadtimeoutms());
 		setConnectTimeout(personV3Alias.getConnecttimeoutms());
 		addFeature(new WSAddressingFeature());
-		
+
+		LoggingInInterceptor loggingInInterceptor=new LoggingInInterceptor();
+		loggingInInterceptor.setPrettyLogging(true);
+		addInnInterceptor(loggingInInterceptor);
+
 		PersonV3 personV3 = createPort(PersonV3.class);
 		configureSTSSamlToken(personV3);
-		
+
 		return personV3;
 	}
 

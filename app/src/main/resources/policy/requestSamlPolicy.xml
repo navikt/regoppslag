@@ -8,7 +8,7 @@
                     <sp:TransportToken>
                         <wsp:Policy>
                             <sp:HttpToken>
-                                <wsp:Policy/>
+,                                <wsp:Policy/>
                             </sp:HttpToken>
                         </wsp:Policy>
                     </sp:TransportToken>

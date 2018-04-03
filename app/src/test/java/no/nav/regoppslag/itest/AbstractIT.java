@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 0)
+@AutoConfigureWireMock(port = 0, httpsPort = 8443)
 @ActiveProfiles("itest")
 public abstract class AbstractIT {
 	

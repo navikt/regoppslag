@@ -1,9 +1,4 @@
 <soapenv:Envelope xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-	<soapenv:Header>
-		<wsa:MessageID>urn:uuid:51c6faec-ae34-4bc7-9ab4-04aaa26394cc</wsa:MessageID>
-		<wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>
-		<wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
-	</soapenv:Header>
 	<soapenv:Body>
 		<wst:RequestSecurityTokenResponseCollection xmlns:wst="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
 			<wst:RequestSecurityTokenResponse Context="supportLater">
@@ -49,10 +44,10 @@
 						<saml2:Subject>
 							<saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">srvregoppslag</saml2:NameID>
 							<saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-								<saml2:SubjectConfirmationData NotBefore="2018-03-19T12:52:34Z" NotOnOrAfter="2018-03-19T13:52:40Z"/>
+								<saml2:SubjectConfirmationData NotBefore="2018-03-19T12:52:34Z" NotOnOrAfter="2018-04-19T13:52:40Z"/>
 							</saml2:SubjectConfirmation>
 						</saml2:Subject>
-						<saml2:Conditions NotBefore="2018-03-19T12:52:34Z" NotOnOrAfter="2018-03-19T13:52:40Z"/>
+						<saml2:Conditions NotBefore="2018-03-19T12:52:34Z" NotOnOrAfter="2018-04-19T13:52:40Z"/>
 						<saml2:AttributeStatement>
 							<saml2:Attribute Name="identType" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
 								<saml2:AttributeValue>Systemressurs</saml2:AttributeValue>
@@ -68,7 +63,7 @@
 				</wst:RequestedSecurityToken>
 				<wst:Lifetime>
 					<wsu:Created>2018-03-19T12:52:34Z</wsu:Created>
-					<wsu:Expires>2018-03-19T13:52:40Z</wsu:Expires>
+					<wsu:Expires>2018-04-19T13:52:40Z</wsu:Expires>
 				</wst:Lifetime>
 			</wst:RequestSecurityTokenResponse>
 		</wst:RequestSecurityTokenResponseCollection>

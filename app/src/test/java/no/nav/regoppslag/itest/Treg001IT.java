@@ -2,8 +2,12 @@ package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
@@ -98,17 +102,21 @@ public class Treg001IT extends AbstractIT{
 	
 	private void happypathStubs() {
 		//Stub REST services:
-//		stubFor(post("/DOKUMENTTYPEINFO_V3/*").willReturn(aResponse().withStatus(HttpStatus.OK.value()).withBody("treg001/tkat020-dokumenttypeinfo-responsebody.json"))); //Brukes til hentDokumenttypeinfo for Spraak
-		
+//		stubFor(get(urlMatching("/DOKUMENTTYPEINFO_V3/"))
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withHeader("Content-Type","application/json")
+						.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); //Brukes til hentDokumenttypeinfo for Spraak
+
 		//Stub web services:
-//		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
-//				.withRequestBody(containing("hentKontaktinformasjonForEnhetBolkRequest"))
-//				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-//						.withBodyFile(""))); //TODO interceptor
+		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/norg/happy-response.xml")));
 		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/sts_signature-responsebody.xml"))); //mottakerPlugin
+
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody.xml"))); //mottakerPlugin

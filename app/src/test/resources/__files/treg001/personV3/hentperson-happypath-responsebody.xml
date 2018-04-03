@@ -1,8 +1,4 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-	<soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
-		<wsa:Action>http://nav.no/tjeneste/virksomhet/person/v3/Person_v3/hentPersonResponse</wsa:Action>
-		<wsa:RelatesTo>urn:uuid:70338bd9-860f-4b1f-b2bd-780831167df9</wsa:RelatesTo>
-	</soapenv:Header>
 	<soapenv:Body>
 		<b:hentPersonResponse xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
 			<response>
