@@ -61,12 +61,24 @@ public class TREG002IT extends AbstractIT {
 	}
 	
 	@Test
-	public void shouldThrowWhenPersonV3FailsFunctional() throws Exception{
+	public void shouldThrowWhenPersonV3FailsFunctionalNotFound() throws Exception{
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
 		exception.expect(RegOppslagFunctionalException.class);
 		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:0102030405, message=Ingen forekomster funnet");
+		
+		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsFunctionalSecurityError() throws Exception{
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 0102030405, message=Sikkerhetsfeil");
 		
 		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
 		
