@@ -30,6 +30,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class TestUtil {
 	
+	public static String classpathToString(String path){
+		return resourceUrlToString(Resources.getResource(path));
+	}
+	
 	public static String resourceUrlToString(URL url) {
 		try {
 			return Resources.toString(url, StandardCharsets.UTF_8);

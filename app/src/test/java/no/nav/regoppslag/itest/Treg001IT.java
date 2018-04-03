@@ -1,96 +1,43 @@
-package no.nav.regoppslag.treg001.itest.app;
+package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.io.Resources;
-import no.nav.regoppslag.Application;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.CacheManager;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.AttributesMapper;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.query.LdapQuery;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
- * TODO gjør om denne testen til en comp-test. Dvs fjerne mock av service-laget, og mock ut registrene i stedet. Få registrene til å kaste tekniske feil og funksjonelle feil eller returnere med fungerende oppsett.
  *
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 0)
-@ActiveProfiles("itest")
-@Ignore
-public class ValiderOgKompletterBrevdataITest {
+
+public class Treg001IT extends AbstractIT{
+	
 	private final String DOKUMENTTYPEID = "123";
-	@Inject
-	public RegisteroppslagRestController registeroppslagRestController;
 	
-	@Inject
-	CacheManager cacheManager;
 	
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-	@Mock
-	private LdapTemplate ldapTemplate;
-	
-	private URL brevdataRequest_URL = Resources.getResource("__files/treg001/validerOgKompletterBrevdata_happypath_REST_requestcontent-brevdata.xml");
 	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/validerOgKompletterBrevdata_happypath_REST_responsebody.xml");
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
-	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder()
-			.dokumentTypeId(DOKUMENTTYPEID)
-			.brevdata(resourceUrlToString(brevdataRequest_URL))
-			.build();
 	
-	@Before
-	public void setUp() {
-		WireMock.reset();
-		WireMock.resetAllRequests();
+	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/validerOgKompletterBrevdata_happypath_REST_requestcontent-brevdata.xml");
+	
 
-		//TODO se på disse cachegreiene, foreløpig bare kommentert ut
-		clearCachene();
-		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
-		stubOppslagLDAP();
-//		stubFor(post("/STS").willReturn(aResponse().withBody("treg001/sts_signature-responsebody.xml")));
-	}
-	
-	private void clearCachene() {
-		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
-	}
-	
-	private void stubOppslagLDAP() {
-		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
-			add("en vilkaarlig autentisert person");
-		}});
-	}
 	
 	
 	/**
@@ -112,7 +59,6 @@ public class ValiderOgKompletterBrevdataITest {
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		happypathStubs();
-		stubOppslagLDAP();
 		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
 	}
@@ -160,10 +106,19 @@ public class ValiderOgKompletterBrevdataITest {
 //				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 //						.withBodyFile(""))); //TODO interceptor
 		
+		stubFor(post("/STS")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/sts_signature-responsebody.xml"))); //mottakerPlugin
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
-				.withRequestBody(containing("hentPersonRequest"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody.xml"))); //mottakerPlugin
 	}
 	
+	
+	private ValiderOgKompletterBrevdataRequest createRequest(String path){
+		return ValiderOgKompletterBrevdataRequest.builder()
+				.dokumentTypeId(DOKUMENTTYPEID)
+				.brevdata(classpathToString(path))
+				.build();
+	}
 }
