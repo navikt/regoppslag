@@ -1,8 +1,14 @@
 package no.nav.regoppslag.itest;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.io.Resources;
+import no.nav.modig.core.test.FileUtils;
+import no.nav.modig.testcertificates.TestCertificates;
 import no.nav.regoppslag.Application;
 import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import org.junit.Before;
@@ -17,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.io.File;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -47,6 +54,8 @@ public abstract class AbstractIT {
 	
 	@Before
 	public void setUp() {
+		
+		
 		clearCachene();
 		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
 	}

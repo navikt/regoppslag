@@ -15,4 +15,10 @@
 
 	<logger name="no.nav.regoppslag" level="INFO"/>
 
+	<logger name="org.apache.cxf.interceptor" additivity="true">
+		    
+		<appender-ref ref="CONSOLE"/>
+		  
+	</logger>
+
 </configuration>
