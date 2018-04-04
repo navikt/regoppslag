@@ -2,14 +2,13 @@ package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingXPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static org.junit.Assert.assertEquals;
 
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
@@ -27,7 +26,7 @@ public class Treg002IT extends AbstractIT {
 	
 	
 	@Before
-	public void setUp(){
+	public void setUpStubs(){
 		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -45,7 +44,8 @@ public class Treg002IT extends AbstractIT {
 	@Test
 	public void shouldGetMottakerAndAdresseForPerson() throws Exception{
 		
-		HentMottakerOgAdresseResponse response = registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL +HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		
 		assertPersonAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
 		assertEquals(response.getNavn(),"Geir Appleson");
@@ -56,7 +56,9 @@ public class Treg002IT extends AbstractIT {
 	
 	@Test
 	public void shouldGetMottakerAndAdresseForOrganisasjon() throws Exception{
-		HentMottakerOgAdresseResponse response = registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL +HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		
 		assertOrgAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
 		assertEquals(response.getNavn(),"ARBEIDS- OG VELFERDSETATEN    ");
