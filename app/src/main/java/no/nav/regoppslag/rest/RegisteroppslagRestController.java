@@ -47,8 +47,7 @@ public class RegisteroppslagRestController {
 	}
 	
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
+	public @ResponseBody ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata").startTimer();
