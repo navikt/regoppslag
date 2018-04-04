@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class TREG002IT extends AbstractIT {
+public class Treg002IT extends AbstractIT {
 	
 	
 	@Before
@@ -45,7 +45,7 @@ public class TREG002IT extends AbstractIT {
 		
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml")));
+						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
 	}
 	
 	@Test
