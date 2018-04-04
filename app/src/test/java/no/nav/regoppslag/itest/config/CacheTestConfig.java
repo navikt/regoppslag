@@ -12,7 +12,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.support.NoOpCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +31,33 @@ public class CacheTestConfig {
 	
 	@Bean
 	public CacheManager cacheManager() {
-		// configure and return an implementation of Spring's CacheManager SPI
+
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Arrays.asList(
-				new NoOpCache(HENT_FULLT_NAVN),
-				new NoOpCache(LDAP_CACHE_RS_LOGIN),
-				new NoOpCache(HENT_ENHET_NAVN),
-				new NoOpCache(HENT_PERSON),
-				new NoOpCache(HENT_ORGANISASJON),
-				new NoOpCache(HENT_DOKKAT_SPRAAKINFO)));
+		//TODO BRUKER
+		//TODO ORGANISASJON
+		//TODO Virksomhetsadresse EREG
+		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+				.expireAfterAccess(2, TimeUnit.DAYS)
+				.maximumSize(2000)
+				.build());
+		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
+				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
+				new ConcurrentMapCache(HENT_ENHET_NAVN),
+				new ConcurrentMapCache(HENT_PERSON),
+				new ConcurrentMapCache(HENT_ORGANISASJON),
+				new ConcurrentMapCache(HENT_DOKKAT_SPRAAKINFO)));
 		return cacheManager;
+
+		// configure and return an implementation of Spring's CacheManager SPI
+//		SimpleCacheManager cacheManager = new SimpleCacheManager();
+//		cacheManager.setCaches(Arrays.asList(
+//				new CaffeineCache(HENT_FULLT_NAVN, ),
+//				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
+//				new NoOpCache(HENT_ENHET_NAVN),
+//				new NoOpCache(HENT_PERSON),
+//				new NoOpCache(HENT_ORGANISASJON),
+//				new NoOpCache(HENT_DOKKAT_SPRAAKINFO)));
+//		return cacheManager;
 	}
 	
 }

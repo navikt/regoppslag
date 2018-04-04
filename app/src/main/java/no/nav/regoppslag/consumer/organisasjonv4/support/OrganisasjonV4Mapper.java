@@ -15,6 +15,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdr
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -26,6 +27,7 @@ import java.util.Optional;
  */
 
 @Component
+@Scope("prototype")
 public class OrganisasjonV4Mapper {
 	private boolean harPostnummer = false;
 
