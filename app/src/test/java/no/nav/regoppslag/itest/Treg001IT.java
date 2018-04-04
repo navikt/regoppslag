@@ -31,7 +31,7 @@ public class Treg001IT extends AbstractIT {
 	private final String DOKUMENTTYPEID = "123";
 
 
-	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/validerOgKompletterBrevdata_happypath_REST_responsebody.xml");
+	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/treg001_full_response.xml");
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
 
 	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
@@ -107,7 +107,6 @@ public class Treg001IT extends AbstractIT {
 		exception.expectMessage("Person med fnr 010524042317 ikke funnet.");
 		exception.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn");
 		exception.expectMessage("TODO velg en feilmelding for hentkontaktinformasjon");
-		functionalExceptionStubs();
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 

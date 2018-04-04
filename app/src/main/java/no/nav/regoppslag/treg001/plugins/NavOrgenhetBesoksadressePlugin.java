@@ -53,7 +53,6 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		this.norg2Mapper = norg2Mapper;
 	}
 	
-	
 	@Override
 	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		if (prefixMapper != null) {
