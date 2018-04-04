@@ -39,7 +39,8 @@ public class PersonV3Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_PERSON = "hentPerson";
-	
+	public static final String PERSONV3 = "PersonV3";
+
 	
 	@Inject
 	public PersonV3Consumer(PersonV3 personV3) {
@@ -50,14 +51,13 @@ public class PersonV3Consumer {
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class})
 	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_HIT).dec();
-		cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_MISS).inc();
-		
+		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).dec();
+		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_MISS).inc();
+
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
-		
 		HentPersonResponse response;
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "PersonV3", "hentPerson").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
@@ -74,8 +74,6 @@ public class PersonV3Consumer {
 			
 			return (Bruker) response.getPerson();
 		}
-		
-		
 		return null;
 	}
 	

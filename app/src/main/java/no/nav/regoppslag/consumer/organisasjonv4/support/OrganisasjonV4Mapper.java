@@ -27,26 +27,26 @@ import java.util.Optional;
 
 @Component
 public class OrganisasjonV4Mapper {
-	private boolean harPostnummer = false;
+	private final boolean harPostnummer = false;
 
 	@Inject
-	private LandkodeService landkodeService;
-	
+	private final LandkodeService landkodeService;
+
 	@Inject
-	private PostnummerService postnummerService;
+	private final PostnummerService postnummerService;
 
 	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
-	
+
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
-		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn)orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
+		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
 
 		if (orgDet.getGjeldendeMaalform() != null) {
-			if (orgDet.getGjeldendeMaalform().getKodeRef().equals("NO")) {
+			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
 			} else {
 				mottaker.setSpraakkode(Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef()));
@@ -54,7 +54,7 @@ public class OrganisasjonV4Mapper {
 		}
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
-		if (orgDet.getPostadresse() != null && !orgDet.getPostadresse().isEmpty()) {
+		if (!(orgDet.getPostadresse() == null || orgDet.getPostadresse().isEmpty())) {
 			if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
 				SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
 				settAdresseledd(adresse, norskPostadresse);
@@ -66,7 +66,6 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
-					//TODO validere NO
 					if (stedsadresseNorge.getPoststed() != null) {
 						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
 						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
@@ -89,7 +88,6 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
-					//TODO validere NO
 					if (stedsadresseNorge.getPoststed() != null) {
 						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
 						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
@@ -106,26 +104,26 @@ public class OrganisasjonV4Mapper {
 		mottaker.setAdresse(norskPostadresse);
 	}
 
-	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse)  {
+	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse) {
 		for (NoekkelVerdiAdresse nokler : adresse.getAdresseledd()) {
-			if ("ADR1".equals(nokler.getNoekkel().getKodeRef())) {
+			if ("adresselinje1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje1(nokler.getVerdi());
-			} else if ("ADR2".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("adresselinje2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje2(nokler.getVerdi());
 			} else if ("ADR3_1".equals(nokler.getNoekkel().getKodeRef())) {
+				//TODO ADR3_1 er ikke riktig, må finne eksempel og teste
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
 			} else if ("ADR3_2".equals(nokler.getNoekkel().getKodeRef())) {
+				//TODO ADR3_2 er ikke riktig, må finne eksempel og teste
 				norskPostadresse.setAdresselinje4(nokler.getVerdi());
-			} else if ("PONR".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());
-//				if (!(StringUtils.isEmpty(nokler.getVerdi()))) {
-//					harPostnummer = true;
-//				}
-			} else if ("POST".equals(nokler.getNoekkel().getKodeRef())) {
+			} else if ("poststed".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPoststed(nokler.getVerdi());
 			}
 		}
 	}
+
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId());

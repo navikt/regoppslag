@@ -43,7 +43,7 @@ public class LdapAdeoUserLookup {
 	 * @return The full name of the user or null if not found.
 	 */
 	@Cacheable(HENT_FULLT_NAVN)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = Exception.class, exclude = {RegOppslagFunctionalException.class})
+	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
 		
 		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).dec();
@@ -53,7 +53,7 @@ public class LdapAdeoUserLookup {
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
 		List<String> search = doSearch(cn);
-		if (search != null && !search.isEmpty()) {
+		if (!(search == null || search.isEmpty())) {
 			return search.get(0);
 		} else {
 			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
