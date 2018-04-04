@@ -11,8 +11,8 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@Profile("itest")
 @Configuration
+@Profile("itest")
 public class RestTemplateTestConfig {
 	
 	public static final int TIMEOUT = 30_000;
