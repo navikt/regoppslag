@@ -71,7 +71,7 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
+		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfyltOrg, actualResponse.getBrevdata());
+		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
 	}
 
 
