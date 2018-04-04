@@ -2,25 +2,20 @@ package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingXPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 
-import com.github.tomakehurst.wiremock.common.Xml;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,7 +24,7 @@ import org.springframework.http.HttpStatus;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class TREG002IT extends AbstractIT {
+public class Treg002IT extends AbstractIT {
 	
 	
 	@Before
@@ -37,7 +32,7 @@ public class TREG002IT extends AbstractIT {
 		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("/felles/sts/sts_signature-responsebody.xml")));
+						.withBodyFile("/xsd/felles/sts/sts_signature-responsebody.xml")));
 		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -45,7 +40,7 @@ public class TREG002IT extends AbstractIT {
 		
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml")));
+						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
 	}
 	
 	@Test
@@ -61,12 +56,24 @@ public class TREG002IT extends AbstractIT {
 	}
 	
 	@Test
-	public void shouldThrowWhenPersonV3FailsFunctional() throws Exception{
+	public void shouldThrowWhenPersonV3FailsFunctionalNotFound() throws Exception{
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
 		exception.expect(RegOppslagFunctionalException.class);
 		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:0102030405, message=Ingen forekomster funnet");
+		
+		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsFunctionalSecurityError() throws Exception{
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 0102030405, message=Sikkerhetsfeil");
 		
 		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
 		

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema	attributeFormDefault="unqualified"
+              elementFormDefault="qualified"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
+              xmlns="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
+              xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
+
+    <xs:import schemaLocation="v1.Aktoer.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"/>
+
+    <xs:complexType name="Sakspart">
+        <xs:annotation>
+            <xs:documentation>Sakspart viser til personen vedtaket gjelder</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="aktoer:Aktoer">
+                <xs:sequence>
+                    <xs:element name="diskresjonskode" type="xs:boolean">
+                        <xs:annotation>
+                            <xs:documentation>Hvis bruker har diskresjonskode</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

@@ -28,9 +28,9 @@ import java.util.Optional;
 @Scope("prototype")
 public class PersonV3Mapper {
 	@Inject
-	private PostnummerService postnummerService;
+	private final PostnummerService postnummerService;
 	@Inject
-	private LandkodeService landkodeService;
+	private final LandkodeService landkodeService;
 
 	public PersonV3Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
@@ -39,7 +39,7 @@ public class PersonV3Mapper {
 
 	public void map(Bruker person, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if (person.getMaalform() != null) {
-			if (person.getMaalform().getValue().equals("NO")) {
+			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
 			} else {
 				mottaker.setSpraakkode(Spraakkode.valueOf(person.getMaalform().getValue()));
@@ -76,7 +76,6 @@ public class PersonV3Mapper {
 					norskPostadresse.setPoststed(postnummerService.finnPoststed(postboksadresseNorsk.getPoststed().getValue()));
 				}
 			}
-			//TODO lookup
 			if (person.getBostedsadresse().getStrukturertAdresse().getLandkode() != null) {
 				norskPostadresse.setLand(landkodeService.finnLandnavn(person.getBostedsadresse().getStrukturertAdresse().getLandkode().getValue()));
 			}
@@ -85,11 +84,9 @@ public class PersonV3Mapper {
 			norskPostadresse.setAdresselinje2(person.getPostadresse().getUstrukturertAdresse().getAdresselinje2());
 			norskPostadresse.setAdresselinje3(person.getPostadresse().getUstrukturertAdresse().getAdresselinje3());
 
-			if (person.getPostadresse().getUstrukturertAdresse().getAdresselinje4() != null && person.getPostadresse().getUstrukturertAdresse().getAdresselinje4().length() == 4) {
-				if (StringUtils.isNumeric(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4())) {
-					norskPostadresse.setPostnummer(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4());
-					norskPostadresse.setPoststed(postnummerService.finnPoststed(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4()));
-				}
+			if (person.getPostadresse().getUstrukturertAdresse().getAdresselinje4() != null && person.getPostadresse().getUstrukturertAdresse().getAdresselinje4().length() == 4 && (StringUtils.isNumeric(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4()))) {
+				norskPostadresse.setPostnummer(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4());
+				norskPostadresse.setPoststed(postnummerService.finnPoststed(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4()));
 			}
 			if (person.getPostadresse().getUstrukturertAdresse().getLandkode() != null) {
 				norskPostadresse.setLand(landkodeService.finnLandnavn(person.getPostadresse().getUstrukturertAdresse().getLandkode().getValue()));
@@ -100,11 +97,9 @@ public class PersonV3Mapper {
 				norskPostadresse.setAdresselinje1(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje1());
 				norskPostadresse.setAdresselinje2(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje2());
 				norskPostadresse.setAdresselinje3(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje3());
-				if (midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4() != null && midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4().length() == 4) {
-					if (StringUtils.isNumeric(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4())) {
-						norskPostadresse.setPostnummer(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4());
-						norskPostadresse.setPoststed(postnummerService.finnPoststed(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4()));
-					}
+				if (midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4() != null && midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4().length() == 4 && StringUtils.isNumeric(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4())) {
+					norskPostadresse.setPostnummer(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4());
+					norskPostadresse.setPoststed(postnummerService.finnPoststed(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje4()));
 				}
 			}
 			if (midlertidigPostadresseUtland.getUstrukturertAdresse().getLandkode() != null) {
@@ -140,14 +135,14 @@ public class PersonV3Mapper {
 		}
 		validatePostadresse(norskPostadresse, mottaker);
 
-		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())){
+		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 		}
 		mottaker.setAdresse(norskPostadresse);
 	}
 
-	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws  RegOppslagFunctionalException{
+	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker personoppslag - mangler postnummer for bruker: " + mottaker.getId());
 		}

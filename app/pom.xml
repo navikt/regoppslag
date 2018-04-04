@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>no.nav.regoppslag</groupId>
 		<artifactId>regoppslag</artifactId>
-		<version>0.0.29-SNAPSHOT</version>
+		<version>0.0.31-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -240,8 +240,8 @@
 						</goals>
 						<configuration>
 							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/xsd/felles/</schemaDirectory>
+							<bindingDirectory>${project.basedir}/src/main/resources/bindings/felles/</bindingDirectory>
 							<generateDirectory>${project.build.directory}/generated-test-sources/xjc-xsd/felles</generateDirectory>
 							<strict>false</strict>
 							<plugins>
@@ -269,8 +269,8 @@
 						</goals>
 						<configuration>
 							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/test/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/test/resources/bindings/felles/</bindingDirectory>
+							<schemaDirectory>${project.basedir}/src/main/resources/xsd/felles/</schemaDirectory>
+							<bindingDirectory>${project.basedir}/src/main/resources/bindings/felles/</bindingDirectory>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc-xsd/felles</generateDirectory>
 							<strict>false</strict>
 							<plugins>

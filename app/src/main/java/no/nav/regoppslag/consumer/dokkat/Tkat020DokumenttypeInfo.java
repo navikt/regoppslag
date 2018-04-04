@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import java.util.Map;
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
+	public static final String DOKKAT = "DOKKAT";
 	private Histogram.Timer requestTimer;
 
 	@Inject
@@ -59,21 +61,21 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
-	@Retryable(value = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		
-		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, "DOKKAT", CACHE_HIT).dec();
-		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, "DOKKAT", CACHE_MISS).inc();
+		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, DOKKAT, CACHE_HIT).dec();
+		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, DOKKAT, CACHE_MISS).inc();
 		
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "DOKKAT", "hentDokumenttypeInfoSpraak").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, DOKKAT, HENT_DOKKAT_SPRAAKINFO).startTimer();
 			DokumentTypeInfoToV3 dokumentTypeInfoToV3 =  restTemplate.getForObject("/{dokumenttypeId}", DokumentTypeInfoToV3.class, uriVariables);
-			if (dokumentTypeInfoToV3.getDokumentProduksjonsInfo() != null && dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() != null) {
+			if (!(dokumentTypeInfoToV3.getDokumentProduksjonsInfo() == null || dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() == null)) {
 				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
 			} else {
-				return null;
+				return Collections.emptyList();
 			}
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {

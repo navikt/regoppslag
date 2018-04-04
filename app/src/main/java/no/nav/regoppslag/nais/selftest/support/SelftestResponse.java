@@ -16,8 +16,8 @@ public final class SelftestResponse {
 	private String application;
 	private String version;
 	private String node;
-	private LocalDateTime timestamp = LocalDateTime.now();
-	private List<SelftestCheck> checks = new ArrayList<>();
+	private final LocalDateTime timestamp = LocalDateTime.now();
+	private final List<SelftestCheck> checks = new ArrayList<>();
 	
 	public String getApplication() {
 		return application;
