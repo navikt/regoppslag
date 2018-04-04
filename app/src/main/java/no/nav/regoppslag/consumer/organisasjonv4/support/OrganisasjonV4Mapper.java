@@ -42,8 +42,8 @@ public class OrganisasjonV4Mapper {
 
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " "));
-		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " "));
+		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ").trim());
+		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " ").trim());
 
 		if (orgDet.getGjeldendeMaalform() != null) {
 			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
