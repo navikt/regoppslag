@@ -17,7 +17,6 @@ import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
@@ -47,13 +46,61 @@ public class Treg002IT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForPerson() throws Exception{
 		
 		HentMottakerOgAdresseResponse response = registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
-		assertAdresse(response);
+		assertPersonAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
 		assertEquals(response.getNavn(),"Geir Appleson");
 		
 		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSON_V3")).withRequestBody(matchingXPath("//ident/text()", equalTo("0102030405"))));
 		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSON_V3")).withRequestBody(matchingXPath("//informasjonsbehov/text()", equalTo("adresse"))));
 	}
+	
+	@Test
+	public void shouldGetMottakerAndAdresseForOrganisasjon() throws Exception{
+		HentMottakerOgAdresseResponse response = registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		assertOrgAdresse(response);
+		assertEquals(response.getIdentifikator(),"0102030405");
+		assertEquals(response.getNavn(),"ARBEIDS- OG VELFERDSETATEN    ");
+		
+		verify(postRequestedFor(urlMatching("/VIRKSOMHET_ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
+	}
+	
+	@Test
+	public void shouldThrowWhenOrganisasjonV4FailsFunctionalInvalidInput() throws Exception{
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ugyldigInput-response.xml")));
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("Nav enhet finnes ikke for enhetNr=0102030405, message=Ugyldig inndata: Organisasjonsnummeret (8896407842) er pÃ¥ et ugyldig format");
+		
+		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenOrganisasjonV4FailsFunctionalNotFound() throws Exception{
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("Nav enhet finnes ikke for enhetNr=0102030405, message=Ingen organisasjon ble funnet med orgnr: 889640732");
+		
+		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		
+	}
+	
+	
+	@Test
+	public void shouldThrowWhenOrganisasjonV4FailsTechnical() throws Exception{
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
+		exception.expect(RegOppslagTechnicalException.class);
+		exception.expectMessage("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=0102030405");
+		
+		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		
+	}
+	
 	
 	@Test
 	public void shouldThrowWhenPersonV3FailsFunctionalNotFound() throws Exception{
@@ -130,17 +177,7 @@ public class Treg002IT extends AbstractIT {
 	}
 	
 	
-	@Test
-	@Ignore
-	public void shouldGetMottakerAndAdresseForOrganisasjon() throws Exception{
-		
-		HentMottakerOgAdresseResponse response = registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
-		assertAdresse(response);
-		assertEquals(response.getIdentifikator(),"0102030405");
-		assertEquals(response.getNavn(),"Geir Appleson");
-	}
-	
-	private void assertAdresse(HentMottakerOgAdresseResponse response){
+	private void assertPersonAdresse(HentMottakerOgAdresseResponse response){
 		assertEquals(response.getAdresse().getAdresselinje1(), "Bak Gate 10");
 		assertEquals(response.getAdresse().getAdresselinje2(), null);
 		assertEquals(response.getAdresse().getAdresselinje3(), null);
@@ -148,6 +185,16 @@ public class Treg002IT extends AbstractIT {
 		assertEquals(response.getAdresse().getPostnummer(), "0350");
 		assertEquals(response.getAdresse().getPoststed(), "OSLO");
 	}
+	
+	private void assertOrgAdresse(HentMottakerOgAdresseResponse response){
+		assertEquals(response.getAdresse().getAdresselinje1(), "Postboks 5 St Olavs Plass");
+		assertEquals(response.getAdresse().getAdresselinje2(), null);
+		assertEquals(response.getAdresse().getAdresselinje3(), null);
+		assertEquals(response.getAdresse().getLandkode(), "NO");
+		assertEquals(response.getAdresse().getPostnummer(), "0130");
+		assertEquals(response.getAdresse().getPoststed(), null);
+	}
+	
 	
 	private HentMottakerOgAdresseRequest createRequest(String type){
 		return HentMottakerOgAdresseRequest.builder()

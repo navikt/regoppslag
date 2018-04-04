@@ -36,10 +36,6 @@ public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 		setConnectTimeout(personV3Alias.getConnecttimeoutms());
 		addFeature(new WSAddressingFeature());
 
-		LoggingInInterceptor loggingInInterceptor=new LoggingInInterceptor();
-		loggingInInterceptor.setPrettyLogging(true);
-		addInnInterceptor(loggingInInterceptor);
-
 		PersonV3 personV3 = createPort(PersonV3.class);
 		configureSTSSamlToken(personV3);
 

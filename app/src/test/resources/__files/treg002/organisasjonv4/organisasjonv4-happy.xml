@@ -1,10 +1,4 @@
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-	<soap:Header>
-		<Action xmlns="http://www.w3.org/2005/08/addressing">http://nav.no/tjeneste/virksomhet/organisasjon/v4/Organisasjon_v4/hentOrganisasjonResponse</Action>
-		<MessageID xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:2b174a23-00f9-4134-887a-5e7a47da9a62</MessageID>
-		<To xmlns="http://www.w3.org/2005/08/addressing">http://www.w3.org/2005/08/addressing/anonymous</To>
-		<RelatesTo xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:fa517364-e304-4d77-bd52-5c88722a0e2f</RelatesTo>
-	</soap:Header>
 	<soap:Body>
 		<ns2:hentOrganisasjonResponse xmlns:ns2="http://nav.no/tjeneste/virksomhet/organisasjon/v4">
 			<response>

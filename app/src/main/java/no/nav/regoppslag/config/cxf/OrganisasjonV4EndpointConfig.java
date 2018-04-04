@@ -3,6 +3,7 @@ package no.nav.regoppslag.config.cxf;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
 
@@ -31,7 +32,7 @@ public class OrganisasjonV4EndpointConfig extends AbstractCxfEndpointConfig {
 		setReceiveTimeout(organisasjonV4Alias.getReadtimeoutms());
 		setConnectTimeout(organisasjonV4Alias.getConnecttimeoutms());
 		addFeature(new WSAddressingFeature());
-	
+		
 		OrganisasjonV4 organisasjonV4 = createPort(OrganisasjonV4.class);
 		configureSTSSamlToken(organisasjonV4);
 		return organisasjonV4;
