@@ -2,25 +2,20 @@ package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingXPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 
-import com.github.tomakehurst.wiremock.common.Xml;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +32,7 @@ public class Treg002IT extends AbstractIT {
 		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("/felles/sts/sts_signature-responsebody.xml")));
+						.withBodyFile("/xsd/felles/sts/sts_signature-responsebody.xml")));
 		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
