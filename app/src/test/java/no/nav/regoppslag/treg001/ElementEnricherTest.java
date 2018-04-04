@@ -99,7 +99,7 @@ public class ElementEnricherTest {
 
 		writeXml(processed);
 
-		Node fellesElement = processed.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/v1/000073", "felles").item(0);
+		Node fellesElement = processed.getElementsByTagNameNS("http://nav.no/dok/pesysbrev/v1/000073", "xsd/felles").item(0);
 
 		JaxbHelper<Felles> fellesJaxbHelper = new JaxbHelper<Felles>(Felles.class);
 		Felles felles = fellesJaxbHelper.unmarshal(fellesElement);
