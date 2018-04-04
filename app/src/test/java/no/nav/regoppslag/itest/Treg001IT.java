@@ -32,9 +32,12 @@ public class Treg001IT extends AbstractIT {
 
 
 	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/treg001_full_response.xml");
+	private URL brevdataResponseOrg_URL = Resources.getResource("__files/treg001/treg001_full_response_orgv4.xml");
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
+	private String expectedBrevdataFerdigUtfyltOrg = resourceUrlToString(brevdataResponseOrg_URL);
 
 	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
+	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
 
 
 	@Before
@@ -57,42 +60,30 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody.xml"))); //mottakerPlugin
 
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml"))); //mottakerPlugin
+
 	}
 
 	/**
-	 * Happypath testbetingelser:
-	 * HVIS ufullstendig brevdata sendes inn, skal brevdata valideres og kompletteres med data fra registrene.
-	 * - HVIS hentPerson ok SÅ skal output returners ihht tabell i behandlingssteg 4
-	 * - HVIS operasjonen får treff på ident i LDAP SÅ skal verdien i navn utledes og returneres i XML
-	 * - HVIS hentKontaktInformasjonForEnhetBolk går ok SÅ skal output returneres ihht tabell i behandlingssteg 3
-	 * - HVIS hentKontaktInformasjonForEnhetBolk går ok SÅ skal output returners ihht tabell i behandlingssteg 3
-	 * - HVIS brevdataelement støttes av   berikerplugin SÅ gjør kall mot beriker OG populer attributter
-	 * (her testes følgende plugins ved request brevdata:
-	 * --	mottakerPlugin ved attributtet "mottaker"
-	 * --	SaksbehandlerPlugin ved "signerendeSaksbehandler"
-	 * --	NavOrgenhetPlugin ved "kontaktinformasjon"
-	 * )
-	 * - HVIS brevdataelementet IKKE er støttet av   en berikeplugin SÅ fortsett til neste brevdataelement (her testet ved attributtet signerendeBeslutter i request brevdata)
-	 * - HVIS alle brevdataelementer er kontrollert mot beriker SÅ SKAL brevdata returneres
+	 * Komplertterer fullt brevdatasett der mottaker er person
 	 */
 	@Test
-	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldGetKomplettBrevdataPerson() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(expectedBrevdataFerdigUtfylt, actualResponse.getBrevdata());
 	}
 
 	/**
-	 * Testbetingelser:
-	 * - HVIS det oppstår en teknisk feil for et   brevdataelement i en berikerplugin SÅ oppdater feillogg teknisk feil OG   fortsett til neste brevdataelement
-	 * - HVIS det er opprettet en feillogg   tekniske feil SÅ SKAL loggen returneres
+	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
 	 */
 	@Test
-	@Ignore
-	public void shouldThrowTechnicalExceptionFromPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		exception.expect(RegOppslagTechnicalException.class);
-		exception.expectMessage("TODO ");
-		registeroppslagRestController.validerOgKompletterBrevdata(request);
+	public void shouldGetKomplettBrevdataOrg() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(requestOrg);
+		assertEquals(expectedBrevdataFerdigUtfyltOrg, actualResponse.getBrevdata());
 	}
+
 
 	/**
 	 * Testbetingelser:
@@ -102,13 +93,13 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		//Stub web services:
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml"))); //mottakerPlugin
+						.withBodyFile("treg001/organisasjonv4/organisasjonv4_orgIkkeFunnet.xml"))); //mottakerPlugin
 
 		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet");
-		registeroppslagRestController.validerOgKompletterBrevdata(request);
+		exception.expectMessage("Ingen organisasjon ble funnet med orgnr: 111111111");
+		registeroppslagRestController.validerOgKompletterBrevdata(requestOrg);
 	}
 
 	@Test

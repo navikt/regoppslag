@@ -33,9 +33,6 @@ public class OrganisasjonEnhetKontaktinformasjonV1EndpointConfig extends Abstrac
 		setReceiveTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getReadtimeoutms());
 		setConnectTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getConnecttimeoutms());
 		addFeature(new WSAddressingFeature());
-		LoggingInInterceptor loggingInInterceptor=new LoggingInInterceptor();
-		loggingInInterceptor.setPrettyLogging(true);
-		addInnInterceptor(loggingInInterceptor);
 
 		OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = createPort(OrganisasjonEnhetKontaktinformasjonV1.class);
 		configureSTSSamlToken(organisasjonEnhetKontaktinformasjonV1);

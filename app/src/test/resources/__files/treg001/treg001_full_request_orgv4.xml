@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata>
+	<felles xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
+			xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
+			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
+			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
+		<f:mottaker>
+			<aktoer:id>111111111</aktoer:id>
+			<aktoer:typeKode>ORGANISASJON</aktoer:typeKode>
+		</f:mottaker>
+		<f:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<enhetsId>0136</enhetsId>
+			</saksbehandler:navEnhet>
+		</f:signerendeSaksbehandler>
+		<f:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+			</saksbehandler:navAnsatt>
+			<saksbehandler:navEnhet>
+				<enhetsId>0136</enhetsId>
+			</saksbehandler:navEnhet>
+		</f:signerendeBeslutter>
+		<f:kontaktinformasjon>
+			<kontaktinformasjon:postadresse>
+				<navEnhet:enhetsId>0136</navEnhet:enhetsId>
+			</kontaktinformasjon:postadresse>
+			<kontaktinformasjon:besoksadresse>
+				<navEnhet:enhetsId>0136</navEnhet:enhetsId>
+			</kontaktinformasjon:besoksadresse></f:kontaktinformasjon>
+	</felles>
+</brevdata>
