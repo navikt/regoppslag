@@ -14,7 +14,7 @@
 				<ansattId>Z991006</ansattId>
 			</saksbehandler:navAnsatt>
 			<saksbehandler:navEnhet>
-				<enhetsId>1234</enhetsId>
+				<enhetsId>0136</enhetsId>
 			</saksbehandler:navEnhet>
 		</f:signerendeSaksbehandler>
 		<f:signerendeBeslutter>
@@ -22,7 +22,7 @@
 				<ansattId>Z991006</ansattId>
 			</saksbehandler:navAnsatt>
 			<saksbehandler:navEnhet>
-				<enhetsId>1234</enhetsId>
+				<enhetsId>0136</enhetsId>
 			</saksbehandler:navEnhet>
 		</f:signerendeBeslutter>
 		<f:kontaktinformasjon>

@@ -88,8 +88,7 @@ public class Treg001IT extends AbstractIT {
 	 */
 	@Test
 	@Ignore
-	public void shouldThrowTechnicalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		//TODO hvordan kontrollert trigge tekniske feil? Utelate stubs slik at alle kall fra plugins gir timeoutException?
+	public void shouldThrowTechnicalExceptionFromPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		exception.expect(RegOppslagTechnicalException.class);
 		exception.expectMessage("TODO ");
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
@@ -101,20 +100,39 @@ public class Treg001IT extends AbstractIT {
 	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
 	 */
 	@Test
-	@Ignore
-	public void shouldThrowFunctionalExceptionFromPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml"))); //mottakerPlugin
+
 		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Person med fnr 010524042317 ikke funnet.");
-		exception.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn");
-		exception.expectMessage("TODO velg en feilmelding for hentkontaktinformasjon");
+		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet");
 		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 
-	private void functionalExceptionStubs() {
+	@Test
+	public void shouldThrowFunctionalExceptionFromPersonPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
-				.withRequestBody(containing("hentPersonRequest"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
+						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml"))); //mottakerPlugin
+
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet");
+		registeroppslagRestController.validerOgKompletterBrevdata(request);
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionFromNorgPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
+
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("Kunne ikke finne enhet. enhetId=0136");
+		registeroppslagRestController.validerOgKompletterBrevdata(request);
 	}
 
 	private ValiderOgKompletterBrevdataRequest createRequest(String path) {
