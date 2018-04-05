@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.plugins;
+package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
@@ -8,7 +8,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
+import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -17,6 +17,8 @@ import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -32,23 +34,25 @@ import javax.xml.parsers.ParserConfigurationException;
 @Component
 @Scope("prototype")
 @Slf4j
-public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
-	public static final String ELEMENT_LOCALNAME = "navEnhet";
+public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
+	Logger LOG = LoggerFactory.getLogger(NavOrgenhetPostadressePlugin.class);
+	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
+	public static final String ELEMENT_LOCALNAME = "postadresse";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
 
-	public NavOrgenhetNavnPlugin() {
-		super(NavEnhet.class);
+	public NavOrgenhetPostadressePlugin() {
+		super(Postadresse.class);
 	}
 
 	@Inject
-	public NavOrgenhetNavnPlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper) {
-		super(NavEnhet.class);
+	public NavOrgenhetPostadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper) {
+		super(Postadresse.class);
 		this.norg2Consumer = norg2Consumer;
 		this.norg2Mapper = norg2Mapper;
 	}
+
 
 	@Override
 	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
@@ -57,21 +61,21 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetNavnPlugin").inc();
-			
-			NavEnhet navEnhet = unmarshal(content);
-			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
+			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetPostadressePlugin").inc();
 
-			validateEnhet(navEnhet);
+			Postadresse adresse = unmarshal(content);
+			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
+
+			validateAdresse(adresse);
 			
 			cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).inc();
-			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
+			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. enhetId=%s", navEnhet.getEnhetsId()));
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s", adresse.getEnhetsId()));
 			}
 
-			norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
+			norg2Mapper.mapPostadresse(wsEnhet, adresse);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
@@ -79,21 +83,22 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
 
-			Node node = marshal(navEnhet, document);
+			Node node = marshal(adresse, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info(String.format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
+			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e);
+			throw new RegOppslagFunctionalException("NavOrgenhetPostadressePlugin: Feil ved parsing av XML", e);
 		}
 	}
 
-	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
-		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: mangler enhetId."));
+	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
+		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
+			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin: mangler enhetId."));
 		}
 	}
 

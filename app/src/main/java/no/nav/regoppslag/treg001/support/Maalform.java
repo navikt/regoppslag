@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.plugins.support;
+package no.nav.regoppslag.treg001.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;

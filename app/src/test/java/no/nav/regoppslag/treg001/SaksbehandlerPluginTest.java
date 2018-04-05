@@ -1,8 +1,7 @@
-package no.nav.regoppslag.treg001.plugins;
+package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
-import static no.nav.regoppslag.util.TestUtil.writeXml;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
@@ -67,10 +66,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		writeXml(node);
-
 		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
-		writeXml(processed);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);

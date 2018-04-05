@@ -1,21 +1,19 @@
 package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
 
 import com.google.common.io.Resources;
-import jdk.nashorn.internal.parser.JSONParser;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -36,7 +34,6 @@ public class Treg001IT extends AbstractIT {
 
 	private final String DOKUMENTTYPEID = "123";
 
-
 	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/treg001_full_response.xml");
 	private URL brevdataResponseOrg_URL = Resources.getResource("__files/treg001/treg001_full_response_orgv4.xml");
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
@@ -44,6 +41,7 @@ public class Treg001IT extends AbstractIT {
 
 	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
 	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
+	private ValiderOgKompletterBrevdataRequest requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
 
 
 	@Before
@@ -76,7 +74,7 @@ public class Treg001IT extends AbstractIT {
 	 * Komplertterer fullt brevdatasett der mottaker er person
 	 */
 	@Test
-	public void shouldGetKomplettBrevdataPerson() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldGetKomplettBrevdataPerson() throws Exception {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
 		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
 	}
@@ -85,7 +83,7 @@ public class Treg001IT extends AbstractIT {
 	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
 	 */
 	@Test
-	public void shouldGetKomplettBrevdataOrg() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldGetKomplettBrevdataOrg() throws Exception {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
 		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
 	}
@@ -97,7 +95,7 @@ public class Treg001IT extends AbstractIT {
 	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
 	 */
 	@Test
-	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -112,7 +110,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionFromPersonPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromPersonPlugin() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -126,7 +124,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionFromNorgPlugins() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromNorgPlugins() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -141,12 +139,13 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromPersonPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowTechnicalExceptionFromPersonPlugin() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse(true);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson for ident: 20096828390"));
@@ -154,12 +153,13 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromOrgPlugin() {
+	public void shouldThrowTechnicalExceptionFromOrgPlugin() throws Exception  {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse(true);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString(" Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
@@ -167,12 +167,13 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromNorgPlugin() {
+	public void shouldThrowTechnicalExceptionFromNorgPlugin() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
-				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+				.willReturn(notFound().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestNorg, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse(true);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));

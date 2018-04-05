@@ -1,10 +1,10 @@
 package no.nav.regoppslag.config;
 
-import no.nav.regoppslag.treg001.plugins.MottakerPlugin;
-import no.nav.regoppslag.treg001.plugins.NavOrgenhetBesoksadressePlugin;
-import no.nav.regoppslag.treg001.plugins.NavOrgenhetNavnPlugin;
-import no.nav.regoppslag.treg001.plugins.NavOrgenhetPostadressePlugin;
-import no.nav.regoppslag.treg001.plugins.SaksbehandlerPlugin;
+import no.nav.regoppslag.treg001.MottakerPlugin;
+import no.nav.regoppslag.treg001.NavOrgenhetBesoksadressePlugin;
+import no.nav.regoppslag.treg001.NavOrgenhetNavnPlugin;
+import no.nav.regoppslag.treg001.NavOrgenhetPostadressePlugin;
+import no.nav.regoppslag.treg001.SaksbehandlerPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;

@@ -41,7 +41,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	}
 
 	@Cacheable(HENT_ENHET_NAVN)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class })
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).dec();

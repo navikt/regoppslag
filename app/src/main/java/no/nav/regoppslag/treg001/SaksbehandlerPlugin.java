@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.plugins;
+package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;

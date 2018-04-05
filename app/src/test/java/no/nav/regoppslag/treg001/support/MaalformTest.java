@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.plugins.support;
+package no.nav.regoppslag.treg001.support;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

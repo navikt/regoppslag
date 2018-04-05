@@ -1,11 +1,7 @@
-package no.nav.regoppslag.treg001.plugins;
+package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.util.CreateResponse.createOrganisasjon;
-import static no.nav.regoppslag.util.CreateResponse.createPerson;
-import static no.nav.regoppslag.util.CreateResponse.createTkatResponse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
-import static no.nav.regoppslag.util.TestUtil.writeXml;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
@@ -23,7 +19,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.treg001.plugins.support.Maalform;
+import no.nav.regoppslag.treg001.support.Maalform;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -100,10 +96,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		writeXml(node);
-
 		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
-		writeXml(processed);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -124,11 +117,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		writeXml(node);
-
 		Node processed = mottakerPlugin.processElement(node, DOKUMENTTYPEID, null);
-		writeXml(processed);
-
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 

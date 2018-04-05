@@ -2,10 +2,14 @@ package no.nav.regoppslag.nais.selftest.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by T133804 on 15.08.2017.
  */
+@Getter
+@Setter
 public class SelftestCheck {
 	
 	private String endpoint;
@@ -16,47 +20,7 @@ public class SelftestCheck {
 	private Result result = Result.OK;
 	private Long responseTime;
 	private Ping.Type type;
-	
-	public String getEndpoint() {
-		return endpoint;
-	}
-	
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
-	
-	public String getAddress() {
-		return address;
-	}
-	
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	
-	public String getStackTrace() {
-		return stackTrace;
-	}
-	
-	public void setStackTrace(String stackTrace) {
-		this.stackTrace = stackTrace;
-	}
-	
+
 	@JsonProperty("resultText")
 	public Result getResult() {
 		return result;
