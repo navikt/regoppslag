@@ -38,7 +38,8 @@ public class Treg001IT extends AbstractIT {
 	private String expectedBrevdataFerdigUtfyltOrg = resourceUrlToString(brevdataResponseOrg_URL);
 
 	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
-	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
+	private ValiderOgKompletterBrevdataRequest requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
+	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
 	private ValiderOgKompletterBrevdataRequest requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
 
 
@@ -82,7 +83,7 @@ public class Treg001IT extends AbstractIT {
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws Exception {
-		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrgFull, ValiderOgKompletterBrevdataResponse.class);
 		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
 	}
 
