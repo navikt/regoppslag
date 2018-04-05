@@ -64,7 +64,6 @@ public class RegisteroppslagRestController {
 		} finally {
 			requestTimer.observeDuration();
 		}
-		
 	}
 	
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

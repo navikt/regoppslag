@@ -1,23 +1,30 @@
 package no.nav.regoppslag.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
 
 import com.google.common.io.Resources;
+import jdk.nashorn.internal.parser.JSONParser;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URL;
 
@@ -90,15 +97,18 @@ public class Treg001IT extends AbstractIT {
 	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
 	 */
 	@Test
-	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws RegOppslagTechnicalException {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4_orgIkkeFunnet.xml"))); //mottakerPlugin
 
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Ingen organisasjon ble funnet med orgnr: 111111111");
-		registeroppslagRestController.validerOgKompletterBrevdata(requestOrg);
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
+		}
 	}
 
 	@Test
@@ -106,11 +116,13 @@ public class Treg001IT extends AbstractIT {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml"))); //mottakerPlugin
-
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet");
-		registeroppslagRestController.validerOgKompletterBrevdata(request);
+						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet"));
+		}
 	}
 
 	@Test
@@ -119,10 +131,52 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke finne enhet. enhetId=0136"));
+		}
 
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Kunne ikke finne enhet. enhetId=0136");
-		registeroppslagRestController.validerOgKompletterBrevdata(request);
+	}
+
+	@Test
+	public void shouldThrowTechnicalExceptionFromPersonPlugin() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson for ident: 20096828390"));
+		}
+	}
+
+	@Test
+	public void shouldThrowTechnicalExceptionFromOrgPlugin() {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString(" Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
+		}
+	}
+
+	@Test
+	public void shouldThrowTechnicalExceptionFromNorgPlugin() {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
+				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
+		}
 	}
 
 	private ValiderOgKompletterBrevdataRequest createRequest(String path) {
