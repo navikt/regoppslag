@@ -16,8 +16,6 @@ import static org.junit.Assert.assertThat;
 import com.google.common.io.Resources;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;

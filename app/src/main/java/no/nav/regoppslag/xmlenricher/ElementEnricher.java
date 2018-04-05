@@ -4,6 +4,7 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
@@ -28,8 +29,6 @@ public class ElementEnricher {
 	
 	private ElementEnricherPluginRegistry registry;
 
-	private NamespacePrefixMapperHelper jaxbHelper;
-
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
 	}
@@ -38,7 +37,7 @@ public class ElementEnricher {
 		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
 
-	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder, RegOppslagTechnicalException {
 
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 

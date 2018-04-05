@@ -1,7 +1,5 @@
 package no.nav.regoppslag.config.security.provider.rest;
 
-import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-
 import no.nav.regoppslag.config.fasit.LdapAlias;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-//		http.authorizeRequests()
-//				.antMatchers("/isAlive","/isReady","/internal/**").permitAll();
-//		http.authorizeRequests().antMatchers(REST+"**")
-//				.fullyAuthenticated()
-//				.and().httpBasic();
-		
 		http.csrf().disable(); //Innloggingen er stateless og uten cookies, så dette er trygt.
 	}
 	

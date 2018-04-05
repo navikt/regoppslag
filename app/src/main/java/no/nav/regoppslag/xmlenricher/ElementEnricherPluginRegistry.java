@@ -1,5 +1,6 @@
 package no.nav.regoppslag.xmlenricher;
 
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
@@ -31,7 +32,7 @@ public interface ElementEnricherPluginRegistry {
 	 * @return an instance of a plugin supporting supportedElement
 	 * @throws MissingPluginException when there exists no registered plugin for supportedElement
 	 */
-	ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException;
+	ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException, RegOppslagTechnicalException;
 
 	/**
 	 * Lists all known supportedTypes that are backed by actual implementing classes of {@link ElementEnricherPlugin}

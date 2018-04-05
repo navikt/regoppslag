@@ -14,13 +14,11 @@ import javax.validation.constraints.Min;
  */
 @Getter
 @Setter
-@ToString
 @ConfigurationProperties("DOKUMENTTYPEINFO_V3")
 @Validated
 public class DokumenttypeInfoV3Alias {
 	@NotEmpty
 	private String url;
-	private String description;
 	@Min(1)
 	private int readtimeoutms;
 	@Min(1)

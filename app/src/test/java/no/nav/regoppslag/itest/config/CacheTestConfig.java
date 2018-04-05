@@ -48,16 +48,5 @@ public class CacheTestConfig {
 				new ConcurrentMapCache(HENT_DOKKAT_SPRAAKINFO)));
 		return cacheManager;
 
-		// configure and return an implementation of Spring's CacheManager SPI
-//		SimpleCacheManager cacheManager = new SimpleCacheManager();
-//		cacheManager.setCaches(Arrays.asList(
-//				new CaffeineCache(HENT_FULLT_NAVN, ),
-//				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
-//				new NoOpCache(HENT_ENHET_NAVN),
-//				new NoOpCache(HENT_PERSON),
-//				new NoOpCache(HENT_ORGANISASJON),
-//				new NoOpCache(HENT_DOKKAT_SPRAAKINFO)));
-//		return cacheManager;
 	}
-	
 }

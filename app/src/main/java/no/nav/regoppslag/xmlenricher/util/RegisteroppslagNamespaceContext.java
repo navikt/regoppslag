@@ -10,7 +10,7 @@ import java.util.Map;
 public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 	private Map<String, String> prefix2Uri = null;
 	private Map<String, String> uri2Prefix = null;
-	private List<String> decls = new ArrayList<>();
+	private final List<String> decls = new ArrayList<>();
 
 	private void init() {
 		prefix2Uri = new HashMap();
@@ -67,27 +67,5 @@ public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 	public Iterator getPrefixes(String namespaceURI) {
 		// Not implemented
 		return null;
-	}
-
-	public String[] getNamespaces() {
-		if (prefix2Uri == null) {
-			init();
-		}
-		return uri2Prefix.keySet().toArray(new String[uri2Prefix.keySet().size()]);
-	}
-
-	public String[] getPrefixes() {
-		if (prefix2Uri == null) {
-			init();
-		}
-		return prefix2Uri.keySet().toArray(new String[uri2Prefix.keySet().size()]);
-	}
-
-
-	public String[] getDecls() {
-		if (prefix2Uri == null) {
-			init();
-		}
-		return decls.toArray(new String[decls.size()]);
 	}
 }

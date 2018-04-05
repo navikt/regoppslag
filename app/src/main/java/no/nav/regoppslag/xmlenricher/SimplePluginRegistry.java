@@ -1,5 +1,6 @@
 package no.nav.regoppslag.xmlenricher;
 
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
@@ -16,11 +17,11 @@ import java.util.Set;
  */
 public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 
-	private Map<XPathExpression, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
+	private final Map<XPathExpression, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	private NamespacePrefixMapperHelper jaxbNamspaceHelper;
+	private final NamespacePrefixMapperHelper jaxbNamspaceHelper;
 
 	public SimplePluginRegistry(ApplicationContext applicationContext, NamespacePrefixMapperHelper jaxbNamspaceHelper) {
 		this.applicationContext = applicationContext;
@@ -37,12 +38,12 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 	}
 
 	@Override
-	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException {
+	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException, RegOppslagTechnicalException {
 		if (pluginMap.containsKey(supportedElement)) {
 			try {
 				return applicationContext.getBean(pluginMap.get(supportedElement));
 			} catch (BeansException e) {
-				throw new RuntimeException(e);
+				throw new RegOppslagTechnicalException("Error getting bean for " + supportedElement, e);
 			}
 		} else {
 			throw new MissingPluginException("Missing plugin for xpath " + supportedElement);
