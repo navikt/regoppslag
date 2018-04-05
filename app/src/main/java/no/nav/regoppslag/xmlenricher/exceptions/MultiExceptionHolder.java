@@ -15,7 +15,7 @@ public class MultiExceptionHolder extends Throwable {
 		super(message);
 	}
 
-	List<Throwable> unhandledErrors = new ArrayList<>();
+	private List<Throwable> unhandledErrors = new ArrayList<>();
 
 	public List<Throwable> getUnhandledErrors() {
 		return unhandledErrors;
@@ -24,26 +24,23 @@ public class MultiExceptionHolder extends Throwable {
 	public void setUnhandledErrors(List<Throwable> unhandledErrors) {
 		this.unhandledErrors = unhandledErrors;
 	}
-	
+
 	public boolean hasFunctionalExceptions() {
 		return unhandledErrors.stream().anyMatch(error -> error instanceof RegOppslagFunctionalException);
 	}
-	
-		
- 	public String report() {
+
+
+	public String report() {
 		if (!getUnhandledErrors().isEmpty()) {
 			StringBuilder report = new StringBuilder();
-			report.append(this.getMessage());
-			report.append("\n\rAntall feil: " + getUnhandledErrors().size() + ".\n\r");
-			report.append("Feilmeldinger: ");
-			report.append(getAllMessages());
+			report.append(this.getMessage()).append("\n\rAntall feil: " + getUnhandledErrors().size() + ".\n\r").append("Feilmeldinger: ").append(getAllMessages());
 			return report.toString();
 		}
 		return "No unhandled errors exist.";
 	}
-	
+
 	private String getAllMessages() {
-		return getUnhandledErrors().stream().map(throwable -> throwable.getClass().getSimpleName()+"; "+throwable.getMessage()).collect(Collectors.joining(", ","[","]"));
+		return getUnhandledErrors().stream().map(throwable -> throwable.getClass().getSimpleName() + "; " + throwable.getMessage()).collect(Collectors.joining(", ", "[", "]"));
 	}
-	
+
 }

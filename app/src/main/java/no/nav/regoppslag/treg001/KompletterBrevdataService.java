@@ -35,7 +35,7 @@ import java.io.StringWriter;
 @Service
 public class KompletterBrevdataService {
 	
-	private ElementEnricher elementEnricher;
+	private final ElementEnricher elementEnricher;
 	
 	@Inject
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {

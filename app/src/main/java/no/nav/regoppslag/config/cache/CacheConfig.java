@@ -28,9 +28,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Value("${app.name}")
 	private String APPNAME;
 	
-	private CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
+	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
 	@Bean
+	@Override
 	public CacheManager cacheManager() {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
 		

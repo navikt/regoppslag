@@ -45,7 +45,7 @@ public class RegoppslagConfigSetter {
 				properties.load(new StringReader(applicationProperties));
 				for (Object propKey : properties.keySet()) {
 					String oldPropValue = System.getProperty((String) propKey);
-					String logSuffix = oldPropValue == null ? "" : ". Overriding existing value=" + oldPropValue;
+					String logSuffix = oldPropValue == null ? "" : (". Overriding existing value=" + oldPropValue);
 					log.info("Setting System property={}, value={} from env source " + PROPSOURCE + logSuffix, propKey, properties.get(propKey));
 					System.setProperty((String) propKey, properties.getProperty((String) propKey));
 				}

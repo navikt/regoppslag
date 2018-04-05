@@ -44,7 +44,7 @@ public class Treg001IT extends AbstractIT {
 
 
 	@Before
-	public void setup() {
+	public void runBefore() {
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader("Content-Type", "application/json")

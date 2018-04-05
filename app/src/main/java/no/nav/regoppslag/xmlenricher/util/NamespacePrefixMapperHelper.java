@@ -6,9 +6,7 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  * @author Hans Petter Simonsen - Miles
  */
 public class NamespacePrefixMapperHelper extends NamespacePrefixMapper {
-	public static final String NAMESPACES_FELLES = "http://nav.no/dok/pesysbrev/felles/v1/";
-
-	private static RegisteroppslagNamespaceContext registeroppslagNamespaceContext;
+	private final RegisteroppslagNamespaceContext registeroppslagNamespaceContext;
 
 	public NamespacePrefixMapperHelper(RegisteroppslagNamespaceContext registeroppslagNamespaceContext) {
 		this.registeroppslagNamespaceContext = registeroppslagNamespaceContext;

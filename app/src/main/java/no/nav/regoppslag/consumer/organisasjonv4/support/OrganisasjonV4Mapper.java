@@ -57,53 +57,62 @@ public class OrganisasjonV4Mapper {
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!(orgDet.getPostadresse() == null || orgDet.getPostadresse().isEmpty())) {
-			if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
-				SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
-				settAdresseledd(adresse, norskPostadresse);
-				if (harPostnummer) {
-					norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
-				}
-			} else {
-				Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
-				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
-				if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
-					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
-					if (stedsadresseNorge.getPoststed() != null) {
-						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
-						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
-					}
-				}
-			}
-			GeografiskAdresse geografiskAdresse = orgDet.getPostadresse().get(0);
-			if (geografiskAdresse.getLandkode() != null) {
-				norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
-			}
+			mapPostadresse(orgDet,norskPostadresse);
 		} else if (!orgDet.getForretningsadresse().isEmpty()) {
-			if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
-				SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
-				settAdresseledd(adresse, norskPostadresse);
-				if (harPostnummer) {
-					norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
-				}
-			} else {
-				Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
-				norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
-				if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
-					StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
-					if (stedsadresseNorge.getPoststed() != null) {
-						norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
-						norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
-					}
-				}
-			}
-			GeografiskAdresse geografiskAdresse = orgDet.getForretningsadresse().get(0);
-			if (geografiskAdresse.getLandkode() != null) {
-				norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
-			}
+			mapForretningsAdresse(orgDet,norskPostadresse);
 		}
 		validatePostadresse(norskPostadresse, mottaker);
 
 		mottaker.setAdresse(norskPostadresse);
+	}
+
+	private void mapPostadresse(OrganisasjonsDetaljer orgDet,NorskPostadresse norskPostadresse) {
+		if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
+			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
+			settAdresseledd(adresse, norskPostadresse);
+			if (harPostnummer) {
+				norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
+			}
+		} else {
+			Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
+				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
+				if (stedsadresseNorge.getPoststed() != null) {
+					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
+					norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
+				}
+			}
+		}
+		GeografiskAdresse geografiskAdresse = orgDet.getPostadresse().get(0);
+		if (geografiskAdresse.getLandkode() != null) {
+			norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
+		}
+	}
+
+	private void mapForretningsAdresse(OrganisasjonsDetaljer orgDet, NorskPostadresse norskPostadresse) {
+		if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
+			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
+			settAdresseledd(adresse, norskPostadresse);
+			if (harPostnummer) {
+				norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
+			}
+		} else {
+			Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
+				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
+				if (stedsadresseNorge.getPoststed() != null) {
+					norskPostadresse.setPostnummer(stedsadresseNorge.getPoststed().getKodeRef());
+					norskPostadresse.setPoststed(postnummerService.finnPoststed(stedsadresseNorge.getPoststed().getKodeRef()));
+				}
+			}
+		}
+		GeografiskAdresse geografiskAdresse = orgDet.getForretningsadresse().get(0);
+		if (geografiskAdresse.getLandkode() != null) {
+			norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
+		}
+
 	}
 
 	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse) {
@@ -112,11 +121,9 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje1(nokler.getVerdi());
 			} else if ("adresselinje2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje2(nokler.getVerdi());
-			} else if ("ADR3_1".equals(nokler.getNoekkel().getKodeRef())) {
-				//TODO ADR3_1 er ikke riktig, må finne eksempel og teste
+			} else if ("Adresse 3 split 1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
-			} else if ("ADR3_2".equals(nokler.getNoekkel().getKodeRef())) {
-				//TODO ADR3_2 er ikke riktig, må finne eksempel og teste
+			} else if ("Adresse 3 split 2".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje4(nokler.getVerdi());
 			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());

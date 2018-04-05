@@ -31,13 +31,9 @@ public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 		uri2Prefix = new HashMap();
 		for (String prefix : prefix2Uri.keySet()) {
 			uri2Prefix.put(prefix2Uri.get(prefix), prefix);
-		}
-
-		for (String prefix : prefix2Uri.keySet()) {
 			decls.add(prefix);
 			decls.add(prefix2Uri.get(prefix));
 		}
-
 	}
 
 	/**

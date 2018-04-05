@@ -12,7 +12,7 @@ import org.springframework.data.redis.serializer.SerializationException;
  */
 public class CustomRedisSerializer implements RedisSerializer<Object> {
 	
-	private KryoPool kryoPool;
+	private final KryoPool kryoPool;
 	
 	private static final Integer MIN_BUFFER_SIZE=1024;
 
@@ -30,13 +30,13 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 			kryoPool.release(kryo);
 			output.close();
 		}
-		
+
 		return output.toBytes();
 	}
 	
 	@Override
 	public Object deserialize(byte[] bytes) throws SerializationException {
-		if(bytes.length == 0) return null;
+		if(bytes.length == 0) {return null;}
 		
 		Kryo kryo = kryoPool.borrow();
 		Object o;

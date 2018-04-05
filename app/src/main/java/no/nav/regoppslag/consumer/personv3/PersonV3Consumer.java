@@ -39,7 +39,7 @@ public class PersonV3Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_PERSON = "hentPerson";
-	public static final String PERSONV3 = "PersonV3";
+	public static final String PERSONV3CONSUMER = "PersonV3";
 
 	
 	@Inject
@@ -51,13 +51,13 @@ public class PersonV3Consumer {
 	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class})
 	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).dec();
-		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_MISS).inc();
+		cacheCounter.labels(HENT_PERSON, PERSONV3CONSUMER, CACHE_HIT).dec();
+		cacheCounter.labels(HENT_PERSON, PERSONV3CONSUMER, CACHE_MISS).inc();
 
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON).startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3CONSUMER, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
@@ -78,8 +78,7 @@ public class PersonV3Consumer {
 	}
 	
 	private HentPersonRequest mapHentPersonRequest(String personidentifikator) {
-		HentPersonRequest request = new HentPersonRequest();
-		
+
 		Personidenter personidenter = new Personidenter();
 		if (StringUtils.startsWithAny(personidentifikator, "0", "1", "2", "3")) {
 			personidenter.setValue("FNR");
@@ -93,6 +92,7 @@ public class PersonV3Consumer {
 		
 		PersonIdent personIdent = new PersonIdent();
 		personIdent.setIdent(norskIdent);
+		HentPersonRequest request = new HentPersonRequest();
 		request.setAktoer(personIdent);
 		request.getInformasjonsbehov().add(Informasjonsbehov.ADRESSE);
 		return request;

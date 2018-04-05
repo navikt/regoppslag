@@ -203,7 +203,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje3
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("ADR3_1");
+		noekkel.setKodeRef("Adresse 3 split 1");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR3);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
@@ -211,7 +211,7 @@ public class OrganisasjonV4MapperTest {
 		//Adresselinje4
 		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
 		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("ADR3_2");
+		noekkel.setKodeRef("Adresse 3 split 2");
 		noekkelVerdiAdresse.setNoekkel(noekkel);
 		noekkelVerdiAdresse.setVerdi(SEMIADR4);
 		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);

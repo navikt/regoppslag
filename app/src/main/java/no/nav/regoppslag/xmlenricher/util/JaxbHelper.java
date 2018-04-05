@@ -18,7 +18,7 @@ import javax.xml.namespace.QName;
  */
 public class JaxbHelper<T>{
 
-	private Class<T> jaxbClass;
+	private final Class<T> jaxbClass;
 
 	private NamespacePrefixMapper namespacePrefixMapper;
 
