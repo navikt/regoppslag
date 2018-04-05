@@ -61,7 +61,7 @@ public class Treg002IT extends AbstractIT {
 		
 		assertOrgAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
-		assertEquals(response.getNavn(),"ARBEIDS- OG VELFERDSETATEN    ");
+		assertEquals(response.getNavn(),"ARBEIDS- OG VELFERDSETATEN");
 		
 		verify(postRequestedFor(urlMatching("/VIRKSOMHET_ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
 	}
