@@ -17,6 +17,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -78,7 +79,7 @@ public class MottakerPluginTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
-	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));

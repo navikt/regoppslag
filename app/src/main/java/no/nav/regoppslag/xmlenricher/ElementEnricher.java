@@ -39,7 +39,6 @@ public class ElementEnricher {
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder {
-
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 
 		List<Payload> processingList = new ArrayList<>();

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
@@ -57,7 +58,7 @@ public class KompletterBrevdataService {
 		return writer.toString();
 	}
 	
-	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		String responseBrevdata = null;
 		try {
@@ -72,7 +73,9 @@ public class KompletterBrevdataService {
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
 			logExceptions(t);
-			if (t.hasFunctionExceptions()) {
+			if (t.hasSecurityExceptions()){
+				throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
+			}else if (t.hasFunctionExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
 			} else {
 				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.report()));

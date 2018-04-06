@@ -19,6 +19,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.plugins.support.Maalform;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
@@ -29,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,6 +65,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	
+	private Authentication authentication;
+	
 	private Maalform maalform;
 	
 	public MottakerPlugin() {
@@ -77,14 +82,16 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 		this.maalform = maalform;
+		this.authentication=SecurityContextHolder.getContext().getAuthentication();
 	}
 	
 	
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
+		SecurityContextHolder.getContext().setAuthentication(this.authentication);
 		validateElementType(content);
 		try {
 			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "MottakerPlugin").inc();
@@ -139,6 +146,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		} catch (JAXBException |
 				ParserConfigurationException e) {
 			throw new RegOppslagFunctionalException(e);
+		} finally {
+			SecurityContextHolder.clearContext();
 		}
 		
 	}
