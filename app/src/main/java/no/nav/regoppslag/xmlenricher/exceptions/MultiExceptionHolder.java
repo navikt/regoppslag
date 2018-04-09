@@ -38,12 +38,12 @@ public class MultiExceptionHolder extends Throwable {
 		if (!getUnhandledErrors().isEmpty()) {
 			StringBuilder report = new StringBuilder();
 			report.append(this.getMessage());
-			report.append("Antall feil: " + getUnhandledErrors().size() + ". ");
+			report.append(" Antall feil: " + getUnhandledErrors().size() + ". ");
 			report.append("Feilmeldinger: ");
 			report.append(getAllMessages());
 			return report.toString();
 		}
-		return "No unhandled errors exist.";
+		return "Ingen ubehandlet feil eksiterer.";
 	}
 	
 	private String getAllMessages() {

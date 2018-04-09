@@ -5,7 +5,6 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,12 +21,12 @@ import java.util.Enumeration;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-@SuppressWarnings("Duplicates")
 public class AuthenticationHandler extends OncePerRequestFilter {
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		
+		SecurityContextHolder.clearContext();
 		String header = getSamlAuthHeader(request.getHeaders("Authorization"));//In case the application have several authorization headers;
 		
 		if (header == null || !header.startsWith("SAML ")) {
@@ -35,14 +34,11 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 			return;
 		}
 		
-		try {
-			String decodedToken = extractAndDecodeHeader(header);
-			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
-			SecurityContextHolder.getContext().setAuthentication(authRequest);
-		} catch(AuthenticationException failed) {
-			SecurityContextHolder.clearContext();
-			return;
-		}
+		
+		String decodedToken = extractAndDecodeHeader(header);
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
+		SecurityContextHolder.getContext().setAuthentication(authRequest);
+	
 		
 		filterChain.doFilter(request, response);
 	}
@@ -57,7 +53,7 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 			decoded = Base64.getDecoder().decode(base64Token);
 		} catch (IllegalArgumentException e) {
 			throw new BadCredentialsException(
-					"Failed to decode basic authentication token");
+					"Failed to decode SAML authentication token");
 		}
 		
 		return new String(decoded, StandardCharsets.UTF_8);

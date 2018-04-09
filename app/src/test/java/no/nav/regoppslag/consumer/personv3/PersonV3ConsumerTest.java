@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -89,7 +90,7 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
-		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expect(RegOppslagSecurityException.class);
 		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + FNR);
 
 		Bruker person = personV3Consumer.hentPerson(FNR);

@@ -39,13 +39,14 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 			
 			if (wrapper==null){
 				log.error("Forespørsel mangler SAML assertion token. SAML assertion token må legges i request header for å kunne kalle PersonV3");
-				throw new SamlTokenInterceptorException("Forespørsel mangler SAML assertion token. SAML assertion token må legges som authorization header for å få kunne kalle PersonV3");
+				throw new SamlTokenInterceptorException("Forespørsel mangler SAML assertion token. Gyldig SAML assertion token må legges som authorization header i forespørselen for å få tilgang til PersonV3");
 			}
 			
 			Element el = (Element)h.getObject();
 			el = (Element) DOMUtils.getDomElement(el);
 			el.appendChild(wrapper.toDOM(el.getOwnerDocument()));
 		} catch (WSSecurityException ex) {
+			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", ex.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved komplettering av SAML assertion token fra header til SOAP meldingen. Det kan hende tokenet er i feil format");
 		}
@@ -73,6 +74,7 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is, StandardCharsets.UTF_8.name());
 		} catch (ParserConfigurationException | IOException | SAXException e) {
+			SecurityContextHolder.clearContext();
 			log.error(String.format("Feil ved parsing av SAML assertion token. Feilmelding=%s", e.getMessage()));
 			throw new SamlTokenInterceptorException("Feil ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
@@ -86,6 +88,7 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 		try {
 			return new SamlAssertionWrapper(token);
 		}catch (WSSecurityException e){
+			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved parsing av SAML assertion element til SamlAssertionWrapper. Feilmelding=%s", e.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
