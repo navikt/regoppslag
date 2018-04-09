@@ -1,6 +1,5 @@
 package no.nav.regoppslag.itest.config;
 
-import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE_RS_LOGIN;
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
@@ -41,7 +40,6 @@ public class CacheTestConfig {
 				.maximumSize(2000)
 				.build());
 		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
-				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
 				new ConcurrentMapCache(HENT_ENHET_NAVN),
 				new ConcurrentMapCache(HENT_PERSON),
 				new ConcurrentMapCache(HENT_ORGANISASJON),

@@ -64,7 +64,7 @@ public class ElementEnricher {
 				);
 
 		if (!unhandledErrors.isEmpty()) {
-			MultiExceptionHolder errors = new MultiExceptionHolder("Errors in asynch prosessing");
+			MultiExceptionHolder errors = new MultiExceptionHolder("Feil i asynk prosessering ");
 			if (unhandledErrors.get(0) instanceof CompositeException) {
 				errors.getUnhandledErrors().addAll(((CompositeException) unhandledErrors.get(0)).getExceptions());
 			} else {

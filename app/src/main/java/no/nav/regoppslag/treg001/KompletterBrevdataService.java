@@ -75,7 +75,7 @@ public class KompletterBrevdataService {
 			logExceptions(t);
 			if (t.hasSecurityExceptions()){
 				throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
-			}else if (t.hasFunctionExceptions()) {
+			}else if (t.hasFunctionalExceptions()) {
 				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
 			} else {
 				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.report()));
