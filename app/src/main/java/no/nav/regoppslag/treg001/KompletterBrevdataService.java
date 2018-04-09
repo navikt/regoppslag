@@ -7,7 +7,6 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -70,24 +69,16 @@ public class KompletterBrevdataService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
-		} catch (MultiExceptionHolder t) {
-			logExceptions(t);
-			if (t.hasFunctionalExceptions()) {
-				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
+		} catch (RegOppslagFunctionalException | RegOppslagTechnicalException t) {
+			if (t instanceof RegOppslagFunctionalException) {
+				log.warn(t.getMessage(),t);
+				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), ((RegOppslagFunctionalException) t).getMessage()));
 			} else {
-				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.report()));
+				log.error(t.getMessage(),t);
+				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.getMessage()));
 			}
 		}
 		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
 		
-	}
-	
-	private void logExceptions(MultiExceptionHolder t) {
-		t.getUnhandledErrors().forEach(error -> {
-			if (error instanceof RegOppslagFunctionalException) {
-				log.warn(error.getMessage(),error);
-			} else {
-				log.error(error.getMessage(),error);
-			}   });
 	}
 }

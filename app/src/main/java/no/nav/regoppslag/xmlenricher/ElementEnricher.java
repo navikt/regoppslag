@@ -5,9 +5,9 @@ import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.w3c.dom.Document;
@@ -38,7 +38,7 @@ public class ElementEnricher {
 		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
 
-	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, MultiExceptionHolder, RegOppslagTechnicalException {
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException {
 
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 
@@ -57,20 +57,18 @@ public class ElementEnricher {
 				.parallel()
 				.runOn(Schedulers.computation())
 				.map(payload -> new Aggregate(payload.getPlugin().processElement(payload.getElement(), dokumentTypeId, prefixMapper), payload.getElement()))
-				.sequentialDelayError()
+				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
 						throwable -> unhandledErrors.add(throwable)
 				);
 
 		if (!unhandledErrors.isEmpty()) {
-			MultiExceptionHolder errors = new MultiExceptionHolder("Errors in asynch prosessing");
 			if (unhandledErrors.get(0) instanceof CompositeException) {
-				errors.getUnhandledErrors().addAll(((CompositeException) unhandledErrors.get(0)).getExceptions());
+				handleException(((CompositeException) unhandledErrors.get(0)).getExceptions().get(0));
 			} else {
-				errors.getUnhandledErrors().addAll(unhandledErrors);
+				handleException(unhandledErrors.get(0));
 			}
-			throw errors;
 		}
 		return document;
 	}
@@ -88,4 +86,13 @@ public class ElementEnricher {
 		orgElem.getParentNode().insertBefore(importNode, orgElem);
 		orgElem.getParentNode().removeChild(orgElem);
 	}
+
+	private void handleException (Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException{
+		if (e instanceof RegOppslagFunctionalException) {
+			throw new RegOppslagFunctionalException(e);
+		} else {
+			throw new RegOppslagTechnicalException(e);
+		}
+	}
+
 }
