@@ -26,6 +26,7 @@ import java.net.URL;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
+ * @author Ketill Fenne, Visma Consulting
  */
 
 public class Treg001IT extends AbstractIT {
@@ -132,7 +133,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke finne enhet. enhetId=0136"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
 
 	}

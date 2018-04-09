@@ -2,13 +2,13 @@ package no.nav.regoppslag.xmlenricher;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
-import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
 import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -18,6 +18,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -50,22 +51,25 @@ public class ElementEnricher {
 			}
 		}
 
-		final List<Throwable> unhandledErrors = new ArrayList<>();
+		final List<Throwable> unhandledErrors = Collections.synchronizedList(new ArrayList<>());
 
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.computation())
 				.map(payload -> new Aggregate(payload.getPlugin().processElement(payload.getElement(), dokumentTypeId, prefixMapper), payload.getElement()))
-				.sequential()
+				.sequentialDelayError()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
-						(Throwable onError) -> unhandledErrors.add(onError),
-						() -> log.debug("Processing completed successfully - context hopefully displayed in MDC")
+						throwable -> unhandledErrors.add(throwable)
 				);
 
 		if (!unhandledErrors.isEmpty()) {
 			MultiExceptionHolder errors = new MultiExceptionHolder("Errors in asynch prosessing");
-			errors.getUnhandledErrors().addAll(unhandledErrors);
+			if (unhandledErrors.get(0) instanceof CompositeException) {
+				errors.getUnhandledErrors().addAll(((CompositeException) unhandledErrors.get(0)).getExceptions());
+			} else {
+				errors.getUnhandledErrors().addAll(unhandledErrors);
+			}
 			throw errors;
 		}
 		return document;

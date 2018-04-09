@@ -63,6 +63,9 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 
 	@Test
 	public void shouldReturnNullWhenFeilEnhetListe() throws Exception{
+		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Nav enhet finnes ikke for enhetNr="+ ENHET_NR);
+
 		HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
 		response.getEnhetListe().clear();
 		FeiletEnhet feiletEnhet = new FeiletEnhet();
@@ -71,9 +74,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 		response.getFeiletEnhetListe().add(0, feiletEnhet);
 		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
 
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-
-		assertThat(enhet, nullValue());
+		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 	}
 
 	@Test
@@ -83,7 +84,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Nav enhet finnes ikke for enhetNr="+ENHET_NR+", message=Ugyldig input");
 
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
+		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
 	}
 

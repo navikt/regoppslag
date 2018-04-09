@@ -67,11 +67,11 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		return request;
 	}
 
-	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) {
+	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) throws HentKontaktinformasjonForEnhetBolkUgyldigInput {
 		if (response != null && response.getEnhetListe().size() == 1) {
 			return response.getEnhetListe().get(0);
 		} else if (response != null && !response.getFeiletEnhetListe().isEmpty()) {
-			logFeilmelding(response, enhetNr);
+			throw new HentKontaktinformasjonForEnhetBolkUgyldigInput("Nav enhet finnes ikke for enhetNr=" + enhetNr, null);
 		}
 		return null;
 	}
