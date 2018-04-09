@@ -1,0 +1,16 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<soap:Fault>
+			<faultcode>soap:Server</faultcode>
+			<faultstring>Ingen organisasjon ble funnet med orgnr: 889640732</faultstring>
+			<detail>
+				<ns2:hentOrganisasjonorganisasjonIkkeFunnet xmlns:ns2="http://nav.no/tjeneste/virksomhet/organisasjon/v4">
+					<feilkilde>Ereg</feilkilde>
+					<feilaarsak>Ingen organisasjon med organisasjonsnummer 889640732 ble funnet</feilaarsak>
+					<feilmelding>Ingen organisasjon med organisasjonsnummer 889640732 ble funnet</feilmelding>
+					<tidspunkt>2018-04-04T09:33:51.336+02:00</tidspunkt>
+				</ns2:hentOrganisasjonorganisasjonIkkeFunnet>
+			</detail>
+		</soap:Fault>
+	</soap:Body>
+</soap:Envelope>

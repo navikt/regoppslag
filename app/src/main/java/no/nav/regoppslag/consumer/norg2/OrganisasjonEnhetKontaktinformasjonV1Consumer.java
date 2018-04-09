@@ -41,7 +41,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	}
 
 	@Cacheable(HENT_ENHET_NAVN)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class })
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).dec();
@@ -67,11 +67,11 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		return request;
 	}
 
-	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) {
+	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) throws HentKontaktinformasjonForEnhetBolkUgyldigInput {
 		if (response != null && response.getEnhetListe().size() == 1) {
 			return response.getEnhetListe().get(0);
 		} else if (response != null && !response.getFeiletEnhetListe().isEmpty()) {
-			logFeilmelding(response, enhetNr);
+			throw new HentKontaktinformasjonForEnhetBolkUgyldigInput("Nav enhet finnes ikke for enhetNr=" + enhetNr, null);
 		}
 		return null;
 	}

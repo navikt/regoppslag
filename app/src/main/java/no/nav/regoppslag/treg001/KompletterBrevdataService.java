@@ -36,7 +36,7 @@ import java.io.StringWriter;
 @Service
 public class KompletterBrevdataService {
 	
-	private ElementEnricher elementEnricher;
+	private final ElementEnricher elementEnricher;
 	
 	@Inject
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {
@@ -69,7 +69,7 @@ public class KompletterBrevdataService {
 			log.error(e.getMessage(), e);
 			throw new RegOppslagTechnicalException(e);
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
 		} catch (MultiExceptionHolder t) {
 			logExceptions(t);

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata>
+	<felles xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer">
+		<f:mottaker>
+			<aktoer:id>111111111</aktoer:id>
+			<aktoer:typeKode>ORGANISASJON</aktoer:typeKode>
+		</f:mottaker>
+	</felles>
+</brevdata>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata>
+	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:f="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
+			xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
+			xmlns:norskPostadresse="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"
+			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
+			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler">
+		<f:mottaker>
+			<aktoer:id>30085849677</aktoer:id>
+			<aktoer:typeKode>PERSON</aktoer:typeKode>
+			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
+			<mottaker:kortNavn>Queen Latifa</mottaker:kortNavn>
+			<mottaker:adresse xsi:type="norskPostadresse:NorskPostadresse">
+				<norskPostadresse:adresselinje1>adresselinje1</norskPostadresse:adresselinje1>
+				<norskPostadresse:adresselinje2>adresselinje2</norskPostadresse:adresselinje2>
+				<norskPostadresse:adresselinje3>adresselinje3</norskPostadresse:adresselinje3>
+				<norskPostadresse:postnummer>0130</norskPostadresse:postnummer>
+				<norskPostadresse:poststed>Oslo</norskPostadresse:poststed>
+				<norskPostadresse:land>NORGE</norskPostadresse:land>
+			</mottaker:adresse>
+		</f:mottaker>
+		<f:signerendeSaksbehandler>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+				<navn>en vilkaarlig saksbehandler</navn>
+			</saksbehandler:navAnsatt>
+		</f:signerendeSaksbehandler>
+		<f:signerendeBeslutter>
+			<saksbehandler:navAnsatt>
+				<ansattId>Z991006</ansattId>
+				<navn>en vilkaarlig saksbehandler</navn>
+			</saksbehandler:navAnsatt>
+		</f:signerendeBeslutter>
+	</felles>
+</brevdata>

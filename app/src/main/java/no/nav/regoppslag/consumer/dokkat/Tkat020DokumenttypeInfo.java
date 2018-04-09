@@ -72,10 +72,10 @@ public class Tkat020DokumenttypeInfo {
 			uriVariables.put("dokumenttypeId", dokumenttypeId);
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, DOKKAT, HENT_DOKKAT_SPRAAKINFO).startTimer();
 			DokumentTypeInfoToV3 dokumentTypeInfoToV3 =  restTemplate.getForObject("/{dokumenttypeId}", DokumentTypeInfoToV3.class, uriVariables);
-			if (!(dokumentTypeInfoToV3.getDokumentProduksjonsInfo() == null || dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() == null)) {
-				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
-			} else {
+			if (dokumentTypeInfoToV3.getDokumentProduksjonsInfo() == null || dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos() == null) {
 				return Collections.emptyList();
+			} else {
+				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
 			}
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {

@@ -1,21 +1,23 @@
 package no.nav.regoppslag.consumer.ldap;
 
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.regoppslag.config.cache.CacheConfig;
 import no.nav.regoppslag.config.ldap.LdapConfig;
-import org.junit.Ignore;
+import no.nav.regoppslag.itest.config.CacheTestConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.LdapQuery;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,10 +29,13 @@ import java.util.ArrayList;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {LdapConfig.class, CacheConfig.class, LdapAdeoUserLookupCacheTest.Config.class})
+@ContextConfiguration(classes = {LdapConfig.class, CacheTestConfig.class, LdapAdeoUserLookupCacheTest.Config.class})
 @TestPropertySource("classpath:ldap.properties")
-@Ignore
+@ActiveProfiles("itest")
 public class LdapAdeoUserLookupCacheTest {
+
+	@Inject
+	private CacheManager cacheManager;
 
 	@Inject
 	private LdapTemplate ldapTemplate;
@@ -43,6 +48,8 @@ public class LdapAdeoUserLookupCacheTest {
 
 	@Test
 	public void shouldCache() throws Exception {
+		cacheManager.getCache(HENT_FULLT_NAVN).clear();
+
 		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add(NAME1);
 		}});
@@ -51,17 +58,13 @@ public class LdapAdeoUserLookupCacheTest {
 		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add(NAME2);
 		}});
+
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
 
 		assertEquals(fulltNavn, NAME1);
 	}
-	
-	@Test
-	@Ignore("Under arbeid")
-	public void shouldCallMethodIfCacheThrowsException() {
-		//TODO Applikasjonen skal ikke kaste feilmelding selv om cache feiler, men kalle metoden.
-	}
-	
+
+
 	@Configuration
 	static class Config {
 		@Bean

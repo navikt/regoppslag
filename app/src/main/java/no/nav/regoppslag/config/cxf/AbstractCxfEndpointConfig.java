@@ -66,7 +66,7 @@ public abstract class AbstractCxfEndpointConfig {
 		factoryBean.getOutInterceptors().add(interceptor);
 	}
 
-	protected void addInnInterceptor(Interceptor<? extends Message> interceptor) {
+	protected void addInInterceptor(Interceptor<? extends Message> interceptor) {
 		factoryBean.getInInterceptors().add(interceptor);
 	}
 

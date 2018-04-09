@@ -1,0 +1,16 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Body>
+		<soapenv:Fault>
+			<faultcode>soapenv:Server</faultcode>
+			<faultstring>Ingen forekomster funnet</faultstring>
+			<detail>
+				<b:hentPersonpersonIkkeFunnet xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon" xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
+					<feilkilde>TPSWS.PersonV3.hentPerson</feilkilde>
+					<feilaarsak>Person med fnr 31107332363 ikke funnet.</feilaarsak>
+					<feilmelding>Person ikke funnet</feilmelding>
+					<tidspunkt>2018-04-04T10:36:28.062+02:00</tidspunkt>
+				</b:hentPersonpersonIkkeFunnet>
+			</detail>
+		</soapenv:Fault>
+	</soapenv:Body>
+</soapenv:Envelope>

@@ -53,10 +53,10 @@ public class LdapAdeoUserLookup {
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
 		List<String> search = doSearch(cn);
-		if (!(search == null || search.isEmpty())) {
-			return search.get(0);
-		} else {
+		if (search == null || search.isEmpty()) {
 			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
+		} else {
+			return search.get(0);
 		}
 	}
 	

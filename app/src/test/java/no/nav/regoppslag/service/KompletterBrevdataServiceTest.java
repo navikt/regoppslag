@@ -77,7 +77,12 @@ public class KompletterBrevdataServiceTest {
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
 	}
 	
-	/** HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker */
+	/** Testbetingelser:
+	 * - HVIS både teknisk og funksjonell feil kastes, SÅ skal funksjonell feil kastes til bruker
+	 * - HVIS det oppstår en teknisk feil for et   brevdataelement i en berikerplugin SÅ oppdater feillogg teknisk feil OG   fortsett til neste brevdataelement
+	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
+	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
+	 */
 	@Test
 	public void shouldHandleMultiExceptionHolder() throws RegOppslagFunctionalException, RegOppslagTechnicalException, MultiExceptionHolder, XPathExpressionException, MissingPluginException,RegOppslagSecurityException {
 		exception.expect(RegOppslagFunctionalException.class);

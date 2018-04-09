@@ -3,6 +3,7 @@ package no.nav.regoppslag.config.cxf;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
 
@@ -32,7 +33,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1EndpointConfig extends Abstrac
 		setReceiveTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getReadtimeoutms());
 		setConnectTimeout(organisasjonEnhetKontaktinformasjonV1Alias.getConnecttimeoutms());
 		addFeature(new WSAddressingFeature());
-		
+
 		OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = createPort(OrganisasjonEnhetKontaktinformasjonV1.class);
 		configureSTSSamlToken(organisasjonEnhetKontaktinformasjonV1);
 		return organisasjonEnhetKontaktinformasjonV1;

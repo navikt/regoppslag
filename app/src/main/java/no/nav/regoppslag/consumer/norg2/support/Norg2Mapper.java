@@ -1,16 +1,14 @@
 package no.nav.regoppslag.consumer.norg2.support;
 
 import no.nav.dok.metaforcemal.jaxb2.gen.AdresseEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.Kontaktinformasjon;
 import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
-import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -20,6 +18,7 @@ import java.util.Optional;
  * @author Ketill Fenne, Visma Consulting AS
  */
 @Component
+@Scope("prototype")
 public class Norg2Mapper {
 
 	@Inject
