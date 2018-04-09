@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -52,9 +56,9 @@ public abstract class AbstractIT {
 	
 	@Before
 	public void setUp() {
+		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 		
 		LOCAL_ENDPOINT_URL ="http://localhost:"+ LOCALPORT;
-		
 		clearCachene();
 		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
 	}
@@ -63,5 +67,10 @@ public abstract class AbstractIT {
 		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
 	}
 	
+	private HttpHeaders createSamlHeader(String token) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set("Authorization", "SAML "+new String(Base64.getEncoder().encode(token.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+		return httpHeaders;
+	}
 	
 }

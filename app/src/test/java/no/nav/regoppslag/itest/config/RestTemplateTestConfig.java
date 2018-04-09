@@ -1,5 +1,7 @@
 package no.nav.regoppslag.itest.config;
 
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
+
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +25,7 @@ public class RestTemplateTestConfig {
 				.requestFactory(new HttpComponentsClientHttpRequestFactory())
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT)
-				.basicAuthorization(serviceuserAlias.getUsername(), serviceuserAlias.getPassword()).build();
+				.interceptors(new SamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
 	}
 	
 }
