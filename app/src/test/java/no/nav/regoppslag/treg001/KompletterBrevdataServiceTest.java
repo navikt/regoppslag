@@ -1,4 +1,4 @@
-package no.nav.regoppslag.service;
+package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.junit.Assert.assertEquals;
@@ -35,7 +35,8 @@ public class KompletterBrevdataServiceTest {
 	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
 	ElementEnricher elementEnricher = mock(ElementEnricher.class);
 	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
-	
+	private ValiderOgKompletterBrevdataRequest illegalRequest = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata("<ole>brumm</oleIllegal>").build();
+
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
@@ -66,12 +67,12 @@ public class KompletterBrevdataServiceTest {
 	
 	/** HVIS parsing av brevdata fra xml- til streng-format feiler, SÅ skal funksjonell feil kastes */
 	@Test
-	@Ignore("Hvordan trigger jeg TransformerException-feilen?")
 	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
-		exception.expect(RegOppslagTechnicalException.class);
+		exception.expect(RegOppslagFunctionalException.class);
+		exception.expectMessage("org.xml.sax.SAXParseException");
 		Document document= null;
 		when(elementEnricher.process(any(),any())).thenReturn(document);
-		kompletterBrevdataService.hentBrevdataFraRegistre(request);
+		kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest);
 	}
 }
 

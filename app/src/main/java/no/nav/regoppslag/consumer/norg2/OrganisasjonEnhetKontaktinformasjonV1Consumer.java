@@ -75,11 +75,4 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		}
 		return null;
 	}
-
-	private void logFeilmelding(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNummer) {
-		for (FeiletEnhet feil : response.getFeiletEnhetListe()) {
-			log.info("Enhet finnes ikke for enhetnummer={}, message={}",
-					enhetNummer, feil.getFeilmelding());
-		}
-	}
 }
