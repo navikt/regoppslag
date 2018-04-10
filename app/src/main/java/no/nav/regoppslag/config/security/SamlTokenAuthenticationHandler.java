@@ -21,12 +21,12 @@ import java.util.Enumeration;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-public class AuthenticationHandler extends OncePerRequestFilter {
+public class SamlTokenAuthenticationHandler extends OncePerRequestFilter {
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		
 		SecurityContextHolder.clearContext();
+		
 		String header = getSamlAuthHeader(request.getHeaders("Authorization"));//In case the application have several authorization headers;
 		
 		if (header == null || !header.startsWith("SAML ")) {
@@ -34,17 +34,14 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 			return;
 		}
 		
-		
 		String decodedToken = extractAndDecodeHeader(header);
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
 		SecurityContextHolder.getContext().setAuthentication(authRequest);
-	
 		
 		filterChain.doFilter(request, response);
 	}
 	
-	
-	private String extractAndDecodeHeader(String header){
+	private String extractAndDecodeHeader(String header) {
 		
 		byte[] base64Token = header.substring(5).getBytes(StandardCharsets.UTF_8);
 		byte[] decoded;
@@ -60,11 +57,11 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 	}
 	
 	
-	private String getSamlAuthHeader(Enumeration<String> headers){
+	private String getSamlAuthHeader(Enumeration<String> headers) {
 		
-		while(headers.hasMoreElements()){
-			String header=headers.nextElement();
-			if (header.startsWith("SAML ")){
+		while (headers.hasMoreElements()) {
+			String header = headers.nextElement();
+			if (header.startsWith("SAML ")) {
 				return header;
 			}
 		}

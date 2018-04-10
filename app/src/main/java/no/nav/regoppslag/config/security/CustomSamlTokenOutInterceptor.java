@@ -27,24 +27,26 @@ import java.nio.charset.StandardCharsets;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
+public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 	
 	@Override
 	protected void addToken(SoapMessage message) {
 		WSSConfig.init();
-		
 		Header h = findSecurityHeader(message, true);
+		
 		try {
 			SamlAssertionWrapper wrapper = getSamlAssertionWrapperFromContext();
 			
-			if (wrapper==null){
-				log.error("Forespørsel mangler SAML assertion token. SAML assertion token må legges i request header for å kunne kalle PersonV3");
-				throw new SamlTokenInterceptorException("Forespørsel mangler SAML assertion token. Gyldig SAML assertion token må legges som authorization header i forespørselen for å få tilgang til PersonV3");
+			if (wrapper == null) {
+				String msg = "Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3";
+				log.error(msg);
+				throw new SamlTokenInterceptorException(msg);
 			}
 			
-			Element el = (Element)h.getObject();
+			Element el = (Element) h.getObject();
 			el = (Element) DOMUtils.getDomElement(el);
 			el.appendChild(wrapper.toDOM(el.getOwnerDocument()));
+			
 		} catch (WSSecurityException ex) {
 			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", ex.getMessage()));
@@ -53,10 +55,10 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 		
 	}
 	
-	private SamlAssertionWrapper getSamlAssertionWrapperFromContext(){
-		String credentials=(String)SecurityContextHolder.getContext().getAuthentication().getCredentials();
+	private SamlAssertionWrapper getSamlAssertionWrapperFromContext() {
+		String credentials = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		
-		if (StringUtils.isEmpty(credentials)){
+		if (StringUtils.isEmpty(credentials)) {
 			return null;
 		}
 		
@@ -66,8 +68,8 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 	
 	private Element samlTokenToElement(String decodedSaml) {
 		InputStream is = new ByteArrayInputStream(decodedSaml.getBytes());
-		
 		Document doc;
+		
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
@@ -79,15 +81,14 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 			throw new SamlTokenInterceptorException("Feil ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
 		
-		
 		return doc.getDocumentElement();
 	}
 	
-	private SamlAssertionWrapper elementToSamlAssertionWrapper(Element token){
+	private SamlAssertionWrapper elementToSamlAssertionWrapper(Element token) {
 		
 		try {
 			return new SamlAssertionWrapper(token);
-		}catch (WSSecurityException e){
+		} catch (WSSecurityException e) {
 			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved parsing av SAML assertion element til SamlAssertionWrapper. Feilmelding=%s", e.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
@@ -95,6 +96,5 @@ public class CustomSamlTokenInterceptor extends SamlTokenInterceptor {
 		
 	}
 	
-
 	
 }

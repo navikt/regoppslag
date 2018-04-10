@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(new AuthenticationHandler(), BasicAuthenticationFilter.class);
+		http.addFilterBefore(new SamlTokenAuthenticationHandler(), BasicAuthenticationFilter.class);
 		http.csrf().disable(); //Innloggingen er stateless og uten cookies, så dette er trygt.
 	}
 }

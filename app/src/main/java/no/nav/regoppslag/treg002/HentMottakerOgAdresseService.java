@@ -19,6 +19,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
@@ -52,7 +53,7 @@ public class HentMottakerOgAdresseService {
 		this.adresseMapper = adresseMapper;
 	}
 	
-	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		validateInput(request);
 		try {
@@ -104,14 +105,16 @@ public class HentMottakerOgAdresseService {
 		}
 	}
 	
-	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
 			log.info("Funksjonell feil", e);
 			throw (RegOppslagFunctionalException) e;
-			
+		} else if (e instanceof RegOppslagSecurityException) {
+			log.info("Sikkerhetsfeil", e);
+			throw (RegOppslagSecurityException) e;
 		} else {
 			log.error("Teknisk feil", e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: errorMsg=%s", e.getMessage()));
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()));
 		}
 	}
 	

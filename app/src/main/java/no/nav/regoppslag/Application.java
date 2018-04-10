@@ -46,7 +46,7 @@ public class Application {
 		RegoppslagConfigSetter configSetter = new RegoppslagConfigSetter();
 		configSetter.configureSsl();
 		configSetter.setAppConfig();
-		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
+		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 		SpringApplication.run(Application.class, args);
 	}
 

@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static no.nav.regoppslag.itest.config.RestTemplateTestConfig.ADD_SAML_TOKEN_TO_HEADER;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
@@ -20,6 +21,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URL;
@@ -107,6 +109,38 @@ public class Treg001IT extends AbstractIT {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
 		}
+	}
+	
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
+		
+		try {
+			ADD_SAML_TOKEN_TO_HEADER = false;
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse("Test did not throw exception", true);
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Forespørsel mangler SAML assertion token. Gyldig SAML assertion token må legges som authorization header i forespørselen for å få tilgang til PersonV3"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
+		
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.UNAUTHORIZED);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 20096828390, message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
+		}
+		
 	}
 
 	@Test

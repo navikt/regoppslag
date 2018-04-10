@@ -23,10 +23,8 @@ import org.mockito.Mockito;
  */
 public class RegisteroppslagRestControllerTest {
 	private ValiderOgKompletterBrevdataRequest request;
-	private ValiderOgKompletterBrevdataResponse response;
 	private HentMottakerOgAdresseResponse responseMogA;
 	private String brevdata = "<ole>brumm</ole>";
-	private String brevdataUtfylt = "<ole>brumm</ole>";
 	HentMottakerOgAdresseRequest mottakerOgAdresseRequest = mock(HentMottakerOgAdresseRequest.class);
 	KompletterBrevdataService kompletterBrevdataService = mock(KompletterBrevdataService.class);
 	HentMottakerOgAdresseService hentMottakerOgAdresseService = mock(HentMottakerOgAdresseService.class);
@@ -35,7 +33,10 @@ public class RegisteroppslagRestControllerTest {
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
-		response = ValiderOgKompletterBrevdataResponse.builder().brevdata(brevdataUtfylt).build();
+		String brevdataUtfylt = "<ole>brumm</ole>";
+		ValiderOgKompletterBrevdataResponse response = ValiderOgKompletterBrevdataResponse.builder()
+				.brevdata(brevdataUtfylt)
+				.build();
 		when(kompletterBrevdataService.hentBrevdataFraRegistre(request)).thenReturn(response);
 		when(hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(mottakerOgAdresseRequest)).thenReturn(responseMogA);
 	}
@@ -48,7 +49,7 @@ public class RegisteroppslagRestControllerTest {
 	}
 
 	@Test
-	public void shouldGetHentMottakerOgAdresse() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldGetHentMottakerOgAdresse() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		HentMottakerOgAdresseResponse actualResponse = registeroppslagRestController.hentMottakerOgAdresse(mottakerOgAdresseRequest);
 		assertEquals(responseMogA, actualResponse);
 		Mockito.verify(hentMottakerOgAdresseService, Mockito.times(1)).hentMottakerOgAdresseInfo(any(HentMottakerOgAdresseRequest.class));

@@ -8,16 +8,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.regoppslag.itest.config.RestTemplateTestConfig.ADD_SAML_TOKEN_TO_HEADER;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -71,10 +75,15 @@ public class Treg002IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ugyldigInput-response.xml")));
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Nav enhet finnes ikke for enhetNr=0102030405, message=Ugyldig inndata: Organisasjonsnummeret (8896407842) er pÃ¥ et ugyldig format");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0102030405, message=Ugyldig inndata: Organisasjonsnummeret (8896407842) er pÃ¥ et ugyldig format"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+		
 		
 	}
 	
@@ -83,10 +92,15 @@ public class Treg002IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Nav enhet finnes ikke for enhetNr=0102030405, message=Ingen organisasjon ble funnet med orgnr: 889640732");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0102030405, message=Ingen organisasjon ble funnet med orgnr: 889640732"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+		
 		
 	}
 	
@@ -96,10 +110,15 @@ public class Treg002IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
-		exception.expect(RegOppslagTechnicalException.class);
-		exception.expectMessage("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=0102030405");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("ORGANISASJON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=0102030405"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagTechnicalException"));
+		}
+		
 		
 	}
 	
@@ -109,22 +128,48 @@ public class Treg002IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("PersonV3.hentPerson fant ikke person med ident:0102030405, message=Ingen forekomster funnet");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident:0102030405, message=Ingen forekomster funnet"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
 		
 	}
 	
 	@Test
-	public void shouldThrowWhenPersonV3FailsFunctionalSecurityError() throws Exception{
+	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() throws Exception {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 0102030405, message=Sikkerhetsfeil");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.UNAUTHORIZED);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 0102030405, message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
+		}
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
+		
+		try {
+			ADD_SAML_TOKEN_TO_HEADER = false;
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			assertFalse("Test did not throw exception", true);
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Forespørsel mangler SAML assertion token. Gyldig SAML assertion token må legges som authorization header i forespørselen for å få tilgang til PersonV3"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
 		
 	}
 	
@@ -133,49 +178,58 @@ public class Treg002IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-Tecnical-responsebody.xml")));
-		exception.expect(RegOppslagTechnicalException.class);
-		exception.expectMessage("Teknisk feil: errorMsg=Noe gikk galt i kall til PersonV3.hentPerson for ident: 0102030405, message=Feil med server. Overbelastning?");
 		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("PERSON"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilemelding=Noe gikk galt i kall til PersonV3.hentPerson for ident: 0102030405, message=Feil med server. Overbelastning?"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagTechnicalException"));
+		}
 		
 	}
 	
 	@Test
 	public void shouldThrowWhenTypeIsIncorrect() throws Exception {
 		
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON.");
-		
-		registeroppslagRestController.hentMottakerOgAdresse(createRequest("FESDASd"));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON."));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
 	}
 	
 	@Test
 	public void shouldThrowWhenIdentifikatorIsEmpty() throws Exception {
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Identifikator kan ikke være null");
 		
-		HentMottakerOgAdresseRequest request = createRequest("PERSON");
-		request.setIdentifikator(null);
-		registeroppslagRestController.hentMottakerOgAdresse(request);
+		try {
+			HentMottakerOgAdresseRequest request = createRequest("PERSON");
+			request.setIdentifikator(null);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Identifikator kan ikke være null"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+	
 	}
 	
 	
 	@Test
 	public void shouldThrowWhenTypeIsEmpty() throws Exception {
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Mottakertype kan ikke være null");
 		
-		HentMottakerOgAdresseRequest request = createRequest("PERSON");
-		request.setType(null);
-		registeroppslagRestController.hentMottakerOgAdresse(request);
-	}
-	
-	@Test
-	public void shouldThrowWhenInputIsNull() throws Exception {
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("Input body er null");
-		
-		registeroppslagRestController.hentMottakerOgAdresse(null);
+		try {
+			HentMottakerOgAdresseRequest request = createRequest("PERSON");
+			request.setType(null);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Mottakertype kan ikke være null"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+
 	}
 	
 	

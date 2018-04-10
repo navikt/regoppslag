@@ -19,13 +19,15 @@ public class RestTemplateTestConfig {
 	
 	public static final int TIMEOUT = 30_000;
 	
+	public static boolean ADD_SAML_TOKEN_TO_HEADER = true;
+	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, final ServiceuserAlias serviceuserAlias) {
 		return restTemplateBuilder
 				.requestFactory(new HttpComponentsClientHttpRequestFactory())
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT)
-				.interceptors(new SamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
+				.interceptors(new RestSamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
 	}
 	
 }
