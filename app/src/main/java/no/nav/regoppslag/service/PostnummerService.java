@@ -22,7 +22,7 @@ import java.util.Map;
 @Scope("singleton")
 public class PostnummerService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
+	public static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
 	private static final String FILENAME = "/kodeverk/postnummerregister.txt";
 
 	private final Map<String, PostData> postalCodeTable;
