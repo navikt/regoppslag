@@ -2,8 +2,11 @@ package no.nav.regoppslag.consumer.ldap;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
+import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,7 +33,8 @@ public class LdapAdeoUserLookup {
 	
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
-	
+	private Histogram.Timer requestTimer;
+
 	public LdapAdeoUserLookup(LdapTemplate ldapTemplate, String userBaseDn) {
 		this.ldapTemplate = ldapTemplate;
 		this.userBaseDn = userBaseDn;
@@ -48,11 +52,15 @@ public class LdapAdeoUserLookup {
 		
 		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).dec();
 		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_MISS).inc();
-		
+
+		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "LDAP", HENT_FULLT_NAVN).startTimer();
+
 		LdapQuery cn = LdapQueryBuilder.query()
 				.base(userBaseDn)
 				.filter(new EqualsFilter("cn", adeoIdent));
 		List<String> search = doSearch(cn);
+
+		requestTimer.observeDuration();
 		if (search == null || search.isEmpty()) {
 			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
 		} else {
