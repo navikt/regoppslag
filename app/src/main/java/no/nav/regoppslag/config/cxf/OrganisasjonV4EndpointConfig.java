@@ -3,7 +3,6 @@ package no.nav.regoppslag.config.cxf;
 import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.springframework.context.annotation.Bean;
 

@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.AppenderBase;
-import org.springframework.cache.annotation.EnableCaching;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,6 @@ import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDA
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import lombok.extern.slf4j.Slf4j;

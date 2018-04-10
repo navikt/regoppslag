@@ -4,7 +4,7 @@
 			<faultcode>soapenv:Server</faultcode>
 			<faultstring>Sikkerhetsfeil</faultstring>
 			<detail>
-				<b:hentPersonsikkerhetsbegrensning xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon" xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
+				<b:hentPersonsikkerhetsbegrensning xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
 					<feilkilde>TPSWS.PersonV3.hentPerson</feilkilde>
 					<feilaarsak>Person med fnr 04079537302 ikke funnet.</feilaarsak>
 					<feilmelding>Person ikke funnet</feilmelding>

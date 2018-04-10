@@ -3,7 +3,6 @@ package no.nav.regoppslag.service;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -12,9 +11,7 @@ import ch.qos.logback.core.Appender;
 import no.nav.regoppslag.util.LogbackCapturingAppender;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;

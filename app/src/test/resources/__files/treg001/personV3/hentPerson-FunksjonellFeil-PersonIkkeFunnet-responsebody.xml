@@ -4,7 +4,7 @@
 			<faultcode>soapenv:Server</faultcode>
 			<faultstring>Ingen forekomster funnet</faultstring>
 			<detail>
-				<b:hentPersonpersonIkkeFunnet xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon" xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
+				<b:hentPersonpersonIkkeFunnet xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
 					<feilkilde>TPSWS.PersonV3.hentPerson</feilkilde>
 					<feilaarsak>Person med fnr 31107332363 ikke funnet.</feilaarsak>
 					<feilmelding>Person ikke funnet</feilmelding>
