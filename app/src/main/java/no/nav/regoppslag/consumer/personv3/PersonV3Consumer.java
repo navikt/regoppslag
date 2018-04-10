@@ -5,6 +5,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3;
 
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,6 @@ public class PersonV3Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_PERSON = "hentPerson";
-	public static final String PERSONV3CONSUMER = "PersonV3";
 
 	
 	@Inject
@@ -48,16 +48,16 @@ public class PersonV3Consumer {
 	}
 	
 	@Cacheable(HENT_PERSON)
-	@Retryable(maxAttempts = 5, backoff = @Backoff(delay = 200), include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class})
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		cacheCounter.labels(HENT_PERSON, PERSONV3CONSUMER, CACHE_HIT).dec();
-		cacheCounter.labels(HENT_PERSON, PERSONV3CONSUMER, CACHE_MISS).inc();
+		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).dec();
+		cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_MISS).inc();
 
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3CONSUMER, HENT_PERSON).startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet

@@ -31,8 +31,7 @@ public class CachingLdapAuthenticationProvider extends LdapAuthenticationProvide
 	}
 
 	@Override
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
+	public Authentication authenticate(Authentication authentication) {
 		Cache ldapCache = cacheManager.getCache(LDAP_CACHE_RS_LOGIN);
 		String userName = authentication.getName();
 		Integer cachedAuthHash = ldapCache.get(userName, Integer.class);

@@ -17,6 +17,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @Component
 @Scope("prototype")
 public class OrganisasjonV4Mapper {
-	private final boolean harPostnummer = false;
+	private static final boolean harPostnummer = false;
 
 	@Inject
 	private final LandkodeService landkodeService;
@@ -56,9 +57,9 @@ public class OrganisasjonV4Mapper {
 		}
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
-		if (!(orgDet.getPostadresse() == null || orgDet.getPostadresse().isEmpty())) {
+		if (!CollectionUtils.isEmpty(orgDet.getPostadresse())) {
 			mapPostadresse(orgDet,norskPostadresse);
-		} else if (!orgDet.getForretningsadresse().isEmpty()) {
+		} else if (!CollectionUtils.isEmpty(orgDet.getForretningsadresse())) {
 			mapForretningsAdresse(orgDet,norskPostadresse);
 		}
 		validatePostadresse(norskPostadresse, mottaker);

@@ -26,7 +26,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	private static final String MASTER_NAME = "mymaster";
 	
 	@Value("${app.name}")
-	private String APPNAME;
+	private String appName;
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
@@ -55,7 +55,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public RedisConnectionFactory redisConnectionFactory() {
 		
 		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + APPNAME, 26379)));
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		factory.setUsePool(false); //Fører til at det blir kastet exception
 		//Timeout i ms
 		factory.setTimeout(2000);
