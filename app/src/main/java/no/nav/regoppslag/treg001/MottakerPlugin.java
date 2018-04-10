@@ -8,7 +8,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3;
+import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3_LABEL;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -99,7 +99,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			validateMottaker(mottaker);
 			
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).inc();
+				cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).inc();
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker

@@ -33,14 +33,14 @@ import java.io.StringWriter;
 @Slf4j
 @Service
 public class KompletterBrevdataService {
-	
+
 	private final ElementEnricher elementEnricher;
-	
+
 	@Inject
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {
 		this.elementEnricher = elementEnricher;
 	}
-	
+
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
@@ -48,17 +48,17 @@ public class KompletterBrevdataService {
 		StringReader str = new StringReader(xml);
 		return builder.parse(new InputSource(str));
 	}
-	
+
 	public static String documentToString(Document xmlDocument) throws TransformerException {
 		StringWriter writer = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.transform(new DOMSource(xmlDocument), new StreamResult(writer));
 		return writer.toString();
 	}
-	
+
 	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		
-		String responseBrevdata = null;
+
+		String responseBrevdata;
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
 			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
@@ -69,16 +69,14 @@ public class KompletterBrevdataService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
-		} catch (RegOppslagFunctionalException | RegOppslagTechnicalException t) {
-			if (t instanceof RegOppslagFunctionalException) {
-				log.warn(t.getMessage(),t);
-				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), ((RegOppslagFunctionalException) t).getMessage()));
-			} else {
-				log.error(t.getMessage(),t);
-				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.getMessage()));
-			}
+		} catch (RegOppslagFunctionalException t) {
+			log.warn(t.getMessage(), t);
+			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.getMessage()));
+		} catch (RegOppslagTechnicalException t) {
+			log.error(t.getMessage(), t);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s", request.getDokumentTypeId(), t.getMessage()));
 		}
 		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
-		
+
 	}
 }

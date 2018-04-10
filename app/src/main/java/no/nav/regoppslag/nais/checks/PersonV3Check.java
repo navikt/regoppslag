@@ -14,15 +14,15 @@ import javax.inject.Inject;
  */
 @Component
 public class PersonV3Check extends AbstractSelftest {
-	public static final String PERSONV3 = "PersonV3";
+	public static final String PERSONV3_LABEL = "PersonV3";
 	private final PersonV3 personV3;
 
 	@Inject
 	public PersonV3Check(PersonV3 personV3, PersonV3Alias personV3Alias) {
 		super(Ping.Type.Soap,
-				PERSONV3,
+				PERSONV3_LABEL,
 				personV3Alias.getEndpointurl(),
-				personV3Alias.getDescription() == null ? PERSONV3 : personV3Alias.getDescription());
+				personV3Alias.getDescription() == null ? PERSONV3_LABEL : personV3Alias.getDescription());
 		this.personV3 = personV3;
 	}
 

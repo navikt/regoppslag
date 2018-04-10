@@ -33,12 +33,12 @@ public class LandkodeServiceTest {
 	private LandkodeService landkodeService = new LandkodeService();
 
 	@Before
-	public void setup() throws IOException{
+	public void setUp() throws IOException{
 		landkodeService.init();
 	}
 
 	@After
-	public void teardown() {
+	public void tearDown() {
 		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		logger.detachAppender(mockAppender);
 	}

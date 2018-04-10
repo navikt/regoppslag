@@ -33,12 +33,12 @@ public class PostnummerServiceTest {
 	private PostnummerService postnumnmerService = new PostnummerService();
 
 	@Before
-	public void setup() throws IOException{
+	public void setUp() throws IOException{
 		postnumnmerService.init();
 	}
 
 	@After
-	public void teardown() {
+	public void tearDown() {
 		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		logger.detachAppender(mockAppender);
 	}
