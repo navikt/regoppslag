@@ -35,7 +35,7 @@ public class AdresseMapperTest {
 	private AdresseMapper adresseMapper;
 	
 	@Before
-	public void setup(){
+	public void setUp(){
 		when(landkodeService.finnLandkode(any())).thenReturn(LANDKODE);
 	}
 	

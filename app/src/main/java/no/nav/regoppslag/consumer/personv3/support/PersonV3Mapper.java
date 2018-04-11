@@ -52,14 +52,16 @@ public class PersonV3Mapper {
 			mottaker.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
 		}
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
-		if (person.getGjeldendePostadressetype() != null && "BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getBostedsadresse() != null) {
-			mapBostedadresse(person, norskPostadresse);
-		} else if (person.getGjeldendePostadressetype() != null && "POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse().getUstrukturertAdresse() != null) {
-			mapPostadresse(person, norskPostadresse);
-		} else if (person.getGjeldendePostadressetype() != null && "MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-			mapMidlertidigUtland(person, norskPostadresse);
-		} else if (person.getGjeldendePostadressetype() != null && "MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-			mapMidlertidigNorge(person, norskPostadresse);
+		if (person.getGjeldendePostadressetype() != null) {
+			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getBostedsadresse() != null) {
+				mapBostedadresse(person, norskPostadresse);
+			} else if ("POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse().getUstrukturertAdresse() != null) {
+				mapPostadresse(person, norskPostadresse);
+			} else if ("MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
+				mapMidlertidigUtland(person, norskPostadresse);
+			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
+				mapMidlertidigNorge(person, norskPostadresse);
+			}
 		}
 		validatePostadresse(norskPostadresse, mottaker);
 
@@ -113,7 +115,7 @@ public class PersonV3Mapper {
 		}
 	}
 
-	private void mapMidlertidigUtland (Bruker person, NorskPostadresse norskPostadresse) {
+	private void mapMidlertidigUtland(Bruker person, NorskPostadresse norskPostadresse) {
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
 		if (midlertidigPostadresseUtland.getUstrukturertAdresse() != null) {
 			norskPostadresse.setAdresselinje1(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje1());

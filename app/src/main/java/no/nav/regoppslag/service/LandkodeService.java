@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,7 +23,7 @@ import java.util.Map;
 @Scope("singleton")
 public class LandkodeService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
+	public static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
 	private static final String FILENAME = "/kodeverk/countries.txt";
 
 	private final Map<String, LandData> landkodeTable;
@@ -51,15 +50,6 @@ public class LandkodeService {
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
 
-	@Setter
-	@Getter
-	@AllArgsConstructor
-	static class LandData {
-
-		private String landkode;
-		private String navn;
-	}
-
 	public String finnLandnavn(String landkode) {
 		if (landkodeTable.get(landkode) == null) {
 			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om ny landkoder.txt må lastes ned/endres.");
@@ -72,4 +62,13 @@ public class LandkodeService {
 	public String finnLandkode(String landnavn) {
 		return landTable.get(landnavn);
 	}
+
+	@Setter
+	@Getter
+	@AllArgsConstructor
+	static class LandData {
+		private String landkode;
+		private String navn;
+	}
+
 }

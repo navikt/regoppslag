@@ -21,7 +21,7 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	}
 	
 	@Override
-	public byte[] serialize(Object o) throws SerializationException {
+	public byte[] serialize(Object o)  {
 		ByteBufferOutput output = new ByteBufferOutput(MIN_BUFFER_SIZE, -1); //-1 means maximum possible buffer size on VM. //TODO: Juster på max buffer size hvis nødvendig
 		Kryo kryo = kryoPool.borrow();
 		try {
@@ -35,9 +35,10 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	}
 	
 	@Override
-	public Object deserialize(byte[] bytes) throws SerializationException {
-		if(bytes.length == 0) {return null;}
-		
+	public Object deserialize(byte[] bytes) {
+		if(bytes.length == 0) {
+			return null;
+		}
 		Kryo kryo = kryoPool.borrow();
 		Object o;
 		try {

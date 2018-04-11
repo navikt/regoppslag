@@ -20,13 +20,11 @@ public class NamespacePrefixMapperHelper extends NamespacePrefixMapper {
 	@Override
 	public String[] getPreDeclaredNamespaceUris() {
 		return new String[0];
-//		return registeroppslagNamespaceContext.getNamespaces();
 	}
 
 	@Override
 	public String[] getPreDeclaredNamespaceUris2() {
 		return new String[0];
-//		return registeroppslagNamespaceContext.getDecls();
 	}
 
 	/**
@@ -39,6 +37,5 @@ public class NamespacePrefixMapperHelper extends NamespacePrefixMapper {
 	@Override
 	public String[] getContextualNamespaceDecls() {
 		return new String[0];
-//		return registeroppslagNamespaceContext.getDecls();
 	}
 }

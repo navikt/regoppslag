@@ -2,8 +2,6 @@ package no.nav.regoppslag.metrics;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_OPERATION;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_DOKUMENTTYPE;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_DOKUMENTTYPEID;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_ERROR_TYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EVENT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_CAUSE;

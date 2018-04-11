@@ -4,11 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.xmlenricher.exceptions.MultiExceptionHolder;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -35,14 +33,14 @@ import java.io.StringWriter;
 @Slf4j
 @Service
 public class KompletterBrevdataService {
-	
+
 	private final ElementEnricher elementEnricher;
-	
+
 	@Inject
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {
 		this.elementEnricher = elementEnricher;
 	}
-	
+
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
@@ -50,17 +48,17 @@ public class KompletterBrevdataService {
 		StringReader str = new StringReader(xml);
 		return builder.parse(new InputSource(str));
 	}
-	
+
 	public static String documentToString(Document xmlDocument) throws TransformerException {
 		StringWriter writer = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.transform(new DOMSource(xmlDocument), new StreamResult(writer));
 		return writer.toString();
 	}
-	
-	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		
-		String responseBrevdata = null;
+
+	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+
+		String responseBrevdata;
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
 			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
@@ -71,26 +69,14 @@ public class KompletterBrevdataService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
-		} catch (MultiExceptionHolder t) {
-			logExceptions(t);
-			if (t.hasSecurityExceptions()){
-				throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
-			}else if (t.hasFunctionalExceptions()) {
-				throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.report()));
-			} else {
-				throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s",request.getDokumentTypeId(), t.report()));
-			}
+		} catch (RegOppslagFunctionalException t) {
+			log.warn(t.getMessage(), t);
+			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.getMessage()));
+		} catch (RegOppslagTechnicalException t) {
+			log.error(t.getMessage(), t);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s description=%s", request.getDokumentTypeId(), t.getMessage()));
 		}
 		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
-		
-	}
-	
-	private void logExceptions(MultiExceptionHolder t) {
-		t.getUnhandledErrors().forEach(error -> {
-			if (error instanceof RegOppslagFunctionalException) {
-				log.warn(error.getMessage(),error);
-			} else {
-				log.error(error.getMessage(),error);
-			}   });
+
 	}
 }

@@ -4,7 +4,7 @@
 			<faultcode>soapenv:Server</faultcode>
 			<faultstring>Feil med server. Overbelastning?</faultstring>
 			<detail>
-				<b:TechnicalError xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon" xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
+				<b:TechnicalError xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3">
 					<feilkilde>TPSWS.PersonV3.hentPerson</feilkilde>
 					<feilaarsak>Feil med server.</feilaarsak>
 					<feilmelding>Overbelastning</feilmelding>

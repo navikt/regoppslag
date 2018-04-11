@@ -26,25 +26,24 @@ public class CacheConfig extends CachingConfigurerSupport {
 	private static final String MASTER_NAME = "mymaster";
 	
 	@Value("${app.name}")
-	private String APPNAME;
+	private String appName;
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
 	@Bean
-	@Override
-	public CacheManager cacheManager() {
-		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate());
-		
+	public CacheManager cacheManager(RedisTemplate redisTemplate) {
+		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
 		//default expiration in seconds (equal to two days)
-		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
+		redisCacheManager.setDefaultExpiration(daysToSeconds(1));
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}
 	
 	@Bean
-	public RedisTemplate<?, ?> redisTemplate() {
+	public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
-		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		
 		redisTemplate.setDefaultSerializer(customRedisSerializer);
 		redisTemplate.setEnableDefaultSerializer(true);
@@ -53,17 +52,22 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
+	public RedisConnectionFactory redisConnectionFactory() {
+		
+		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		factory.setUsePool(true); //Fører til at det blir kastet exception
+		//Timeout i ms
+		factory.setTimeout(2000);
+		return factory;
+	}
+	
+	@Bean
 	@Override
 	public CacheErrorHandler errorHandler(){
 		return new CustomCacheErrorHandler();
 	}
 	
-	public RedisConnectionFactory redisConnectionFactory() {
-		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + APPNAME, 26379)));
-		factory.setUsePool(true);
-		return factory;
-	}
 	
 	private Long daysToSeconds(Integer days) {
 		return days * 24L * 60L * 60L;
