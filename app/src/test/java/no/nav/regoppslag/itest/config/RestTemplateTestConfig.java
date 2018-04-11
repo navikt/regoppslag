@@ -2,7 +2,6 @@ package no.nav.regoppslag.itest.config;
 
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,15 +18,21 @@ public class RestTemplateTestConfig {
 	
 	public static final int TIMEOUT = 30_000;
 	
-	public static boolean ADD_SAML_TOKEN_TO_HEADER = true;
-	
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, final ServiceuserAlias serviceuserAlias) {
+	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder
 				.requestFactory(new HttpComponentsClientHttpRequestFactory())
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT)
 				.interceptors(new RestSamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
+	}
+	
+	@Bean
+	public RestTemplate restTemplateNoHeader(RestTemplateBuilder restTemplateBuilder) {
+		return restTemplateBuilder
+				.requestFactory(new HttpComponentsClientHttpRequestFactory())
+				.setReadTimeout(TIMEOUT)
+				.setConnectTimeout(TIMEOUT).build();
 	}
 	
 }

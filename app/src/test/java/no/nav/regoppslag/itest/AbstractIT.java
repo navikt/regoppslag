@@ -1,7 +1,6 @@
 package no.nav.regoppslag.itest;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.itest.config.RestTemplateTestConfig.ADD_SAML_TOKEN_TO_HEADER;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.regoppslag.Application;
@@ -14,16 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -49,6 +44,9 @@ public abstract class AbstractIT {
 	@Inject
 	protected RestTemplate restTemplate;
 	
+	@Inject
+	protected RestTemplate restTemplateNoHeader;
+	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
@@ -59,7 +57,6 @@ public abstract class AbstractIT {
 	@Before
 	public void setUp() {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-		ADD_SAML_TOKEN_TO_HEADER = true;
 		
 		LOCAL_ENDPOINT_URL ="http://localhost:"+ LOCALPORT;
 		clearCachene();
@@ -68,17 +65,6 @@ public abstract class AbstractIT {
 	
 	private void clearCachene() {
 		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
-	}
-	
-	public HttpHeaders createSamlHeader(String token) {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.set("Authorization", "SAML "+new String(Base64.getEncoder().encode(token.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
-		return httpHeaders;
-	}
-	
-	public HttpEntity createRequestWithHeader(Object request, HttpHeaders httpHeaders) {
-		return new HttpEntity(request, httpHeaders);
-		
 	}
 	
 }

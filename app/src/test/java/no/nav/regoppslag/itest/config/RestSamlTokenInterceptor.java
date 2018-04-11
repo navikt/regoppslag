@@ -1,7 +1,5 @@
 package no.nav.regoppslag.itest.config;
 
-import static no.nav.regoppslag.itest.config.RestTemplateTestConfig.ADD_SAML_TOKEN_TO_HEADER;
-
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -24,11 +22,8 @@ public class RestSamlTokenInterceptor implements ClientHttpRequestInterceptor {
 	
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		if (ADD_SAML_TOKEN_TO_HEADER) { //This is here to be able to test with no headers
-			String token = Base64Utils.encodeToString((this.token).getBytes(StandardCharsets.UTF_8));
-			request.getHeaders().add("Authorization", "SAML " + token);
-			return execution.execute(request, body);
-		}
+		String token = Base64Utils.encodeToString((this.token).getBytes(StandardCharsets.UTF_8));
+		request.getHeaders().add("Authorization", "SAML " + token);
 		return execution.execute(request, body);
 	}
 }

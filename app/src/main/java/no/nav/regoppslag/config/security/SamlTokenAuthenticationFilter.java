@@ -21,7 +21,7 @@ import java.util.Enumeration;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-public class SamlTokenAuthenticationHandler extends OncePerRequestFilter {
+public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
