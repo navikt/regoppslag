@@ -20,6 +20,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URL;
@@ -30,65 +31,69 @@ import java.net.URL;
  */
 
 public class Treg001IT extends AbstractIT {
-
+	
 	private final String DOKUMENTTYPEID = "123";
-
+	
 	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/treg001_full_response.xml");
 	private URL brevdataResponseOrg_URL = Resources.getResource("__files/treg001/treg001_full_response_orgv4.xml");
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
 	private String expectedBrevdataFerdigUtfyltOrg = resourceUrlToString(brevdataResponseOrg_URL);
-
+	
 	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
 	private ValiderOgKompletterBrevdataRequest requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
 	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
 	private ValiderOgKompletterBrevdataRequest requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
-
-
+	
+	
 	@Before
 	public void runBefore() {
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); //Brukes til hentDokumenttypeinfo for Spraak
-
+		
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/happy-response.xml")));
-
+		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/sts_signature-responsebody.xml"))); //mottakerPlugin
-
+						.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
+		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody.xml"))); //mottakerPlugin
-
+		
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml"))); //mottakerPlugin
-
+		
 	}
-
+	
 	/**
 	 * Komplertterer fullt brevdatasett der mottaker er person
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws Exception {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
+		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
+				.replaceAll("`\n", "")
+				.replaceAll("`\t", ""));
 	}
-
+	
 	/**
 	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws Exception {
 		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrgFull, ValiderOgKompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata().replaceAll("`\n", "").replaceAll("`\t", ""));
+		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
+				.replaceAll("`\n", "")
+				.replaceAll("`\t", ""));
 	}
-
-
+	
+	
 	/**
 	 * Testbetingelser:
 	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
@@ -100,7 +105,7 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4_orgIkkeFunnet.xml"))); //mottakerPlugin
-
+		
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
@@ -109,7 +114,39 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
 		}
 	}
-
+	
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
+		
+		try {
+			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse("Test did not throw exception", Boolean.TRUE);
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+		
+	}
+	
+	@Test
+	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
+		
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			assertFalse("Test did not throw exception", Boolean.TRUE);
+		} catch (HttpStatusCodeException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 20096828390, message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
+		}
+		
+	}
+	
 	@Test
 	public void shouldThrowFunctionalExceptionFromPersonPlugin() throws Exception {
 		//Stub web services:
@@ -124,7 +161,7 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet"));
 		}
 	}
-
+	
 	@Test
 	public void shouldThrowFunctionalExceptionFromNorgPlugins() throws Exception {
 		//Stub web services:
@@ -138,8 +175,9 @@ public class Treg001IT extends AbstractIT {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
+		
 	}
-
+	
 	@Test
 	public void shouldThrowTechnicalExceptionFromPersonPlugin() throws Exception {
 		//Stub web services:
@@ -153,9 +191,9 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson for ident: 20096828390"));
 		}
 	}
-
+	
 	@Test
-	public void shouldThrowTechnicalExceptionFromOrgPlugin() throws Exception  {
+	public void shouldThrowTechnicalExceptionFromOrgPlugin() throws Exception {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
@@ -167,7 +205,7 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString(" Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
 		}
 	}
-
+	
 	@Test
 	public void shouldThrowTechnicalExceptionFromNorgPlugin() throws Exception {
 		//Stub web services:
@@ -181,7 +219,7 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
 		}
 	}
-
+	
 	private ValiderOgKompletterBrevdataRequest createRequest(String path) {
 		return ValiderOgKompletterBrevdataRequest.builder()
 				.dokumentTypeId(DOKUMENTTYPEID)

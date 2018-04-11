@@ -6,6 +6,7 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
@@ -37,8 +38,8 @@ public class ElementEnricher {
 	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
 		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
-
-	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException {
+	
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 
@@ -86,10 +87,12 @@ public class ElementEnricher {
 		orgElem.getParentNode().insertBefore(importNode, orgElem);
 		orgElem.getParentNode().removeChild(orgElem);
 	}
-
-	private void handleException (Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException{
+	
+	private void handleException(Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
 			throw new RegOppslagFunctionalException(e);
+		} else if (e instanceof RegOppslagSecurityException) {
+			throw new RegOppslagSecurityException(e);
 		} else {
 			throw new RegOppslagTechnicalException(e);
 		}

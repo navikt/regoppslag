@@ -1,6 +1,5 @@
 package no.nav.regoppslag.itest.config;
 
-import static no.nav.regoppslag.config.security.provider.rest.SecurityConfig.LDAP_CACHE_RS_LOGIN;
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
@@ -11,7 +10,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.NoOpCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,11 +40,10 @@ public class CacheTestConfig {
 				.maximumSize(2000)
 				.build());
 		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
-				new ConcurrentMapCache(LDAP_CACHE_RS_LOGIN),
-				new ConcurrentMapCache(HENT_ENHET_NAVN),
-				new ConcurrentMapCache(HENT_PERSON),
-				new ConcurrentMapCache(HENT_ORGANISASJON),
-				new ConcurrentMapCache(HENT_DOKKAT_SPRAAKINFO)));
+				new NoOpCache(HENT_ENHET_NAVN),
+				new NoOpCache(HENT_PERSON),
+				new NoOpCache(HENT_ORGANISASJON),
+				new NoOpCache(HENT_DOKKAT_SPRAAKINFO)));
 		return cacheManager;
 
 	}

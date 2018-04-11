@@ -10,7 +10,9 @@ import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3_LABEL;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -49,7 +51,7 @@ public class PersonV3Consumer {
 	
 	@Cacheable(HENT_PERSON)
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).dec();
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_MISS).inc();
@@ -63,9 +65,12 @@ public class PersonV3Consumer {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
 					.getMessage(), hentPersonPersonIkkeFunnet);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagFunctionalException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning
+			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning
 					.getMessage(), hentPersonSikkerhetsbegrensning);
 		} catch (Exception e) {
+			if (e.getCause() instanceof SamlTokenInterceptorException){
+				throw new RegOppslagFunctionalException(e.getMessage());
+			}
 			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson for ident: " + personidentifikator + ", message=" + e.getMessage());
 		} finally {
 			requestTimer.observeDuration();

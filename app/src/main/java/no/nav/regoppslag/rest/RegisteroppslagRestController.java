@@ -14,11 +14,12 @@ import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 @RestController
 public class RegisteroppslagRestController {
 	
+	
 	public static final String REST = "/rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = REST+"kompletterBrevdata";
 	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = REST+"hentMottakerOgAdresse";
@@ -46,11 +48,13 @@ public class RegisteroppslagRestController {
 		this.kompletterBrevdataService = kompletterBrevdataService;
 		this.hentMottakerOgAdresseService=hentMottakerOgAdresseService;
 	}
-
-	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class})
+	
+	//	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class, RegOppslagSecurityException.class})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
-			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public @ResponseBody
+	ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
+			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata").startTimer();
 		try {
@@ -63,12 +67,13 @@ public class RegisteroppslagRestController {
 			throw e;
 		} finally {
 			requestTimer.observeDuration();
+			SecurityContextHolder.clearContext();
 		}
 	}
 	
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
-			throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		try {
@@ -81,6 +86,7 @@ public class RegisteroppslagRestController {
 			throw e;
 		} finally {
 			requestTimer.observeDuration();
+			SecurityContextHolder.clearContext();
 		}
 	}
 	

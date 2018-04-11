@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
 @Import(value = {
@@ -45,6 +46,7 @@ public class Application {
 		RegoppslagConfigSetter configSetter = new RegoppslagConfigSetter();
 		configSetter.configureSsl();
 		configSetter.setAppConfig();
+		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 		SpringApplication.run(Application.class, args);
 	}
 

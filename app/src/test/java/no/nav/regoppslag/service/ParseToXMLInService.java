@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
@@ -39,7 +40,7 @@ public class ParseToXMLInService {
 	 * HVIS parsing av brevdata til xml- fra streng-format feiler, SÅ skal funksjonell feil kastes
 	 */
 	@Test
-	public void shouldHandleSaxParserException() throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldHandleSaxParserException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		exception.expect(RegOppslagFunctionalException.class);
 		String brevdataFeilFormat = "<ole>brumm<ole>";
 		ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdataFeilFormat).build();

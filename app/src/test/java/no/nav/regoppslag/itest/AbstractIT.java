@@ -4,7 +4,6 @@ import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.regoppslag.Application;
-import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -25,7 +24,7 @@ import javax.inject.Inject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 0)
+@AutoConfigureWireMock(port = 0, httpsPort = 8443)
 @ActiveProfiles("itest")
 public abstract class AbstractIT {
 	
@@ -35,13 +34,13 @@ public abstract class AbstractIT {
 	protected String LOCAL_ENDPOINT_URL;
 	
 	@Inject
-	protected RegisteroppslagRestController registeroppslagRestController;
-	
-	@Inject
 	private CacheManager cacheManager;
 	
 	@Inject
 	protected RestTemplate restTemplate;
+	
+	@Inject
+	protected RestTemplate restTemplateNoHeader;
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -54,7 +53,6 @@ public abstract class AbstractIT {
 	public void setUp() {
 		
 		LOCAL_ENDPOINT_URL ="http://localhost:"+ LOCALPORT;
-		
 		clearCachene();
 		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
 	}
@@ -62,6 +60,5 @@ public abstract class AbstractIT {
 	private void clearCachene() {
 		cacheManager.getCacheNames().forEach(names -> cacheManager.getCache(names).clear());
 	}
-	
 	
 }
