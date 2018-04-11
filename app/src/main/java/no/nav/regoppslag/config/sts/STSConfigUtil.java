@@ -4,8 +4,6 @@ import org.apache.cxf.binding.soap.Soap12;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.ws.policy.EndpointPolicy;
 import org.apache.cxf.ws.policy.PolicyBuilder;
@@ -46,16 +44,6 @@ public class STSConfigUtil {
 		HashMap<String, Object> properties = new HashMap<>();
 		properties.put(SecurityConstants.USERNAME, username);
 		properties.put(SecurityConstants.PASSWORD, password);
-		
-		LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
-		loggingOutInterceptor.setPrettyLogging(true);
-		loggingOutInterceptor.setLimit(-1);
-		stsClient.getOutInterceptors().add(loggingOutInterceptor);
-		
-		LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor();
-		loggingInInterceptor.setPrettyLogging(true);
-		loggingInInterceptor.setLimit(-1);
-		stsClient.getInInterceptors().add(loggingInInterceptor);
 		
 		stsClient.setProperties(properties);
 		
