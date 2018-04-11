@@ -13,6 +13,10 @@ public class RegOppslagSecurityException extends Exception {
 		super(message);
 	}
 	
+	public RegOppslagSecurityException(Throwable cause) {
+		super(cause);
+	}
+	
 	public RegOppslagSecurityException(String message, Throwable cause) {
 		super(message, cause);
 	}

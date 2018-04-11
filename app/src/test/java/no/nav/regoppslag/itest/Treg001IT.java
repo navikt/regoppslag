@@ -59,7 +59,7 @@ public class Treg001IT extends AbstractIT {
 		
 		stubFor(post("/STS")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/sts_signature-responsebody.xml"))); //mottakerPlugin
+						.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
 		
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -121,7 +121,7 @@ public class Treg001IT extends AbstractIT {
 		
 		try {
 			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
-			assertFalse("Test did not throw exception", true);
+			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpClientErrorException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
@@ -138,7 +138,7 @@ public class Treg001IT extends AbstractIT {
 		
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
-			assertFalse("Test did not throw exception", true);
+			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 20096828390, message=Ingen tilgang"));

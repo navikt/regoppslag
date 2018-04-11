@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
@@ -40,7 +41,7 @@ public class KompletterBrevdataServiceTest {
 	
 	/**HVIS request inneholder gyldige verdier, SÅ skal elementEnricher kalles og metoden returnere ferdig utfylt brevdata.*/
 	@Test
-	public void shouldValiderOgKompletterBrevdata() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
+	public void shouldValiderOgKompletterBrevdata() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
 		ValiderOgKompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
@@ -49,7 +50,7 @@ public class KompletterBrevdataServiceTest {
 	
 	/** HVIS Plugin mangler, SÅ skal teknisk feil kastes */
 	@Test
-	public void shouldHandleMissingPluginException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public void shouldHandleMissingPluginException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		exception.expect(RegOppslagTechnicalException.class);
 		when(elementEnricher.process(any(),any())).thenThrow(MissingPluginException.class);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
@@ -57,7 +58,7 @@ public class KompletterBrevdataServiceTest {
 	
 	/** HVIS XPathExpression feiler i behandling av brevdata, SÅ skal funksjonell feil kastes */
 	@Test
-	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, XPathExpressionException, MissingPluginException {
+	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
 		exception.expect(RegOppslagFunctionalException.class);
 		when(elementEnricher.process(any(),any())).thenThrow(XPathExpressionException.class);
 		kompletterBrevdataService.hentBrevdataFraRegistre(request);
@@ -65,7 +66,7 @@ public class KompletterBrevdataServiceTest {
 	
 	/** HVIS parsing av brevdata fra xml- til streng-format feiler, SÅ skal funksjonell feil kastes */
 	@Test
-	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException {
+	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, RegOppslagSecurityException {
 		exception.expect(RegOppslagFunctionalException.class);
 		exception.expectMessage("org.xml.sax.SAXParseException");
 		Document document= null;

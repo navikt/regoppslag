@@ -48,7 +48,6 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			el.appendChild(wrapper.toDOM(el.getOwnerDocument()));
 			
 		} catch (WSSecurityException ex) {
-			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", ex.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved komplettering av SAML assertion token fra header til SOAP meldingen. Det kan hende tokenet er i feil format");
 		} finally {
@@ -83,7 +82,6 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is, StandardCharsets.UTF_8.name());
 		} catch (ParserConfigurationException | IOException | SAXException e) {
-			SecurityContextHolder.clearContext();
 			log.error(String.format("Feil ved parsing av SAML assertion token. Feilmelding=%s", e.getMessage()));
 			throw new SamlTokenInterceptorException("Feil ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
@@ -96,7 +94,6 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 		try {
 			return new SamlAssertionWrapper(token);
 		} catch (WSSecurityException e) {
-			SecurityContextHolder.clearContext();
 			log.error(String.format("Feilet ved parsing av SAML assertion element til SamlAssertionWrapper. Feilmelding=%s", e.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
