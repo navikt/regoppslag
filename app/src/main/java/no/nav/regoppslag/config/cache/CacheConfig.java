@@ -34,7 +34,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
 		//default expiration in seconds (equal to two days)
-		redisCacheManager.setDefaultExpiration(daysToSeconds(1));
+		redisCacheManager.setDefaultExpiration(10); //TODO: Sett dette til 2 dager. Endret for test
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}
@@ -56,7 +56,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		factory.setUsePool(true); //Fører til at det blir kastet exception
+		factory.setUsePool(false); //Fører til at det blir kastet exception
 		//Timeout i ms
 		factory.setTimeout(2000);
 		return factory;
