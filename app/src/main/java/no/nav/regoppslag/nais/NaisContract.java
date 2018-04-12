@@ -8,6 +8,7 @@ import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
 import no.nav.regoppslag.nais.selftest.support.Result;
+import no.nav.regoppslag.nais.selftest.support.SelftestCheck;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -69,15 +71,16 @@ public class NaisContract {
 			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
 			SecurityContextHolder.getContext().setAuthentication(authRequest);
 
-			List<Result> results = new ArrayList<>();
+			List<SelftestCheck> results = new ArrayList<>();
 
-			results.add(personV3Check.check().getResult());
-			results.add(organisasjonV4Check.check().getResult());
-			results.add(organisasjonEnhetKontaktinformasjonV1Check.check().getResult());
+			results.add(personV3Check.check());
+			results.add(organisasjonV4Check.check());
+			results.add(organisasjonEnhetKontaktinformasjonV1Check.check());
 
-			if (isAnyDependencyUnhealthy(results)) {
+			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
 				isReady.dec();
-				return new ResponseEntity<>(APPLICATION_NOT_READY, HttpStatus.INTERNAL_SERVER_ERROR);
+				String responseBody = APPLICATION_NOT_READY + "/n +  " +  results.stream().map(SelftestCheck::getErrorMessage).collect(Collectors.toList());
+				return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 			isReady.set(1);
@@ -97,7 +100,7 @@ public class NaisContract {
 		return elementToString(stsClient.requestSecurityToken().getToken());
 	}
 
-	protected String elementToString(Element element) {
+	private String elementToString(Element element) {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
