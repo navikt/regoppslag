@@ -23,6 +23,8 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -62,7 +64,7 @@ public class HentMottakerOgAdresseService {
 					.getType()));
 			if (PERSON.name().equals(request.getType())) {
 				cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_HIT).inc();
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getPrincipalName());
 				personV3Mapper.map(bruker, mottaker);
 				requestCounter.labels(SERVICE_CODE_TREG002, "mottakerType", PERSON.name());
 			} else {
@@ -84,6 +86,14 @@ public class HentMottakerOgAdresseService {
 		}
 		
 		return null;
+	}
+	
+	private String getPrincipalName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			return null;
+		}
+		return authentication.getName();
 	}
 	
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {

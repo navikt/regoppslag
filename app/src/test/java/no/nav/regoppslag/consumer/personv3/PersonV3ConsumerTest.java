@@ -31,6 +31,7 @@ public class PersonV3ConsumerTest {
 	private static final String FORNAVN = "TOM";
 	private static final String MELLOMNAVN = "MARVOLO";
 	private static final String ETTERNAVN = "RIDDLE";
+	private static final String PRINCIPAL = "RIDDLE";
 
 	private PersonV3 personV3 = mock(PersonV3.class);
 	private PersonV3Consumer personV3Consumer = new PersonV3Consumer(personV3);
@@ -41,8 +42,8 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldHentPersonnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
-
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
@@ -50,8 +51,8 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
-
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
@@ -61,8 +62,8 @@ public class PersonV3ConsumerTest {
 		HentPersonResponse response = defaultResponse();
 		response.setPerson(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
-
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 
 		assertThat(person, nullValue());
 	}
@@ -72,8 +73,8 @@ public class PersonV3ConsumerTest {
 		HentPersonResponse response = defaultResponse();
 		response.getPerson().setPersonnavn(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
-
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 
 		assertThat(person.getPersonnavn(), nullValue());
 	}
@@ -84,7 +85,7 @@ public class PersonV3ConsumerTest {
 
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident:" + FNR);
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 	}
 
 	@Test
@@ -92,8 +93,8 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
 		expectedException.expect(RegOppslagSecurityException.class);
 		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + FNR);
-
-		Bruker person = personV3Consumer.hentPerson(FNR);
+		
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL);
 	}
 
 	private HentPersonResponse defaultResponse() {

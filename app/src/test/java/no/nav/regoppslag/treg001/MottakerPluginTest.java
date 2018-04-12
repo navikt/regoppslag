@@ -79,7 +79,7 @@ public class MottakerPluginTest {
 
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
 	}
@@ -129,7 +129,7 @@ public class MottakerPluginTest {
 	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=");
-		when(personV3Consumer.hentPerson(any(String.class))).thenReturn(null);
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 

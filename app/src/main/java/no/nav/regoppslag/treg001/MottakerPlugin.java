@@ -94,6 +94,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		}
 		
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
+		
 		validateElementType(content);
 		try {
 			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "MottakerPlugin").inc();
@@ -107,7 +108,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 				cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).inc();
-				Bruker person = personV3Consumer.hentPerson(mottaker.getId());
+				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), authentication == null ? null : authentication.getName());
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
 							.getId()));

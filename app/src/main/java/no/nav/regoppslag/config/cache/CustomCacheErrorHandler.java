@@ -17,19 +17,23 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
 	@Override
 	public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
-		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception.getClass().getSimpleName(), exception.getMessage()));
+		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
+				.getClass()
+				.getSimpleName(), exception.getMessage()));
 		requestCounter.labels("Redis", "CacheError", "Get").inc();
 	}
 	
 	@Override
 	public void handleCachePutError(RuntimeException exception, Cache cache, Object key, Object value) {
-		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception.getClass().getSimpleName(), exception.getMessage()));
+		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
+				.getClass()
+				.getSimpleName(), exception.getMessage()));
 		requestCounter.labels("Redis", "CacheError", "Put").inc();
 	}
 	
 	@Override
 	public void handleCacheEvictError(RuntimeException exception, Cache cache, Object key) {
-		log.warn(String.format("Feil ved Cache Evict operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
+		log.warn(String.format("Feil ved Cache Evict operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
 		requestCounter.labels("Redis", "CacheError", "Evict").inc();
