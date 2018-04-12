@@ -56,7 +56,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		factory.setUsePool(false); //Fører til at det blir kastet exception
+		factory.setUsePool(true); //Fører til at det blir kastet exception
 		//Timeout i ms
 		factory.setTimeout(2000);
 		return factory;
