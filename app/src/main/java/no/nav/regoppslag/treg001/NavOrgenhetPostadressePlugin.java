@@ -37,7 +37,8 @@ import javax.xml.parsers.ParserConfigurationException;
 public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
 	Logger LOG = LoggerFactory.getLogger(NavOrgenhetPostadressePlugin.class);
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
-	public static final String ELEMENT_LOCALNAME = "postadresse";
+	public static final String ELEMENT_LOCALNAME_POST = "postadresse";
+	public static final String ELEMENT_LOCALNAME_RETUR = "returadresse";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -104,9 +105,9 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+				|| (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName())))) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST
+					+ " or {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST  + ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
 		}
 	}
 }

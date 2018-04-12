@@ -73,11 +73,6 @@
                     <xs:documentation>Informasjon om hvordan bruker kan kontakte NAV før å følge opp saken</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="returadresse" type="navEnhet:NavEnhet">
-                <xs:annotation>
-                    <xs:documentation>Adressen skal benyttes ved tilfeller der dokumenter må sendes i retur per post</xs:documentation>
-                </xs:annotation>
-            </xs:element>
         </xs:all>
     </xs:complexType>
 </xs:schema>
