@@ -2,6 +2,7 @@ package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -13,7 +14,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePool;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
@@ -60,17 +63,34 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
+	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
 		
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		
 		factory.setShareNativeConnection(false);
 		factory.setValidateConnection(false);
-		factory.setTimeout(10);
-		factory.setShutdownTimeout(10);
+		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		return factory;
 	}
+	
+	@Bean
+	public LettucePool lettucePool() {
+		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		lettucePool.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
+		lettucePool.setPoolConfig(poolConfig());
+		return lettucePool;
+	}
+	
+	private GenericObjectPoolConfig poolConfig() {
+		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
+		genericObjectPoolConfig.setMaxIdle(128);
+		genericObjectPoolConfig.setMaxTotal(128);
+		genericObjectPoolConfig.setMaxWaitMillis(TimeUnit.MILLISECONDS.toMillis(100));
+		genericObjectPoolConfig.setTestWhileIdle(true);
+		return genericObjectPoolConfig;
+	}
+	
 	
 	@Bean
 	@Override

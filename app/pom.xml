@@ -48,6 +48,12 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 			<version>1.8.11.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>biz.paluch.redis</groupId>
+					<artifactId>lettuce</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
