@@ -52,8 +52,11 @@ public class PersonV3Consumer {
 	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#principalName")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Bruker hentPerson(final String personidentifikator, final String principalName) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+		
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).dec();
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_MISS).inc();
+		
+		log.info("Test-- Henter person --Test");
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;

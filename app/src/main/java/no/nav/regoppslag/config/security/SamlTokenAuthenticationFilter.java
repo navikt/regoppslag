@@ -1,5 +1,7 @@
 package no.nav.regoppslag.config.security;
 
+import static no.nav.regoppslag.config.security.SamlTokenUtils.elementToSamlAssertionWrapper;
+import static no.nav.regoppslag.config.security.SamlTokenUtils.samlTokenToElement;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.w3c.dom.Element;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,7 +30,8 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		SecurityContextHolder.clearContext();
 		
-		String header = getSamlAuthHeader(request.getHeaders("Authorization"));//In case the application have several authorization headers;
+		//In case the application have several authorization headers
+		String header = getSamlAuthHeader(request.getHeaders("Authorization"));
 		
 		if (header == null || !header.startsWith("SAML ")) {
 			filterChain.doFilter(request, response);
@@ -35,7 +39,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		}
 		
 		String decodedToken = extractAndDecodeHeader(header);
-		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(getSubjectName(decodedToken), decodedToken, NO_AUTHORITIES);
 		SecurityContextHolder.getContext().setAuthentication(authRequest);
 		
 		filterChain.doFilter(request, response);
@@ -69,4 +73,8 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 	
+	private String getSubjectName(String decodedToken) {
+		Element element = samlTokenToElement(decodedToken);
+		return elementToSamlAssertionWrapper(element).getSubjectName();
+	}
 }
