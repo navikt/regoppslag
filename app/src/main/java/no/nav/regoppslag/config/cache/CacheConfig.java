@@ -46,7 +46,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
-		
 		return redisCacheManager;
 	}
 	
@@ -65,6 +64,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		
+		factory.setShareNativeConnection(false);
+		factory.setValidateConnection(false);
 		factory.setTimeout(TimeUnit.SECONDS.toMillis(1));
 		return factory;
 	}
