@@ -5,7 +5,6 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.CacheErrorHandler;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 /**
  * CustomCacheErrorHandler
@@ -16,11 +15,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 @Slf4j
 public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
-	private final JedisConnectionFactory jedisConnectionFactory;
-	
-	public CustomCacheErrorHandler(JedisConnectionFactory jedisConnectionFactory) {
-		this.jedisConnectionFactory = jedisConnectionFactory;
-	}
 	
 	@Override
 	public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
@@ -28,16 +22,6 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
 		requestCounter.labels("Redis", "CacheError", "Get").inc();
-		
-		try {
-			
-			/** Destroys the pool connections and reconnects **/
-			jedisConnectionFactory.destroy();
-			jedisConnectionFactory.getConnection().getSubscription().isAlive();
-			log.info("Reconnected to redis");
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
 	}
 	
 	@Override

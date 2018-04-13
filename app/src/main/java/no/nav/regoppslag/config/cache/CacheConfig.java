@@ -9,14 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import redis.clients.jedis.JedisPoolConfig;
 
-import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,9 +31,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
-	@Inject
-	private JedisConnectionFactory jedisConnectionFactory;
-	
 	@Bean
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
@@ -47,10 +41,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		
+	public RedisTemplate<?, ?> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
 		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
-		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.setConnectionFactory(lettuceConnectionFactory);
 		
 		redisTemplate.setDefaultSerializer(customRedisSerializer);
 		redisTemplate.setEnableDefaultSerializer(true);
@@ -58,28 +51,36 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public JedisConnectionFactory redisConnectionFactory() {
+	public LettuceConnectionFactory lettuceConnectionFactory() {
 		
-		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		
-		factory.setUsePool(true);
-		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		jedisPoolConfig.setMaxTotal(128); // Sets the cap on the number of objects that can be allocated by the pool (checked out to clients, or idle awaiting checkout) at a given time.
-		jedisPoolConfig.setMinIdle(0); //Sets the minimum number of objects allowed in the pool before the evictor thread (if active) spawns new objects.
-		jedisPoolConfig.setMaxIdle(128); // controls the maximum number of objects that can sit idle in the pool at any time
-		jedisPoolConfig.setMaxWaitMillis(2000); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
-		jedisPoolConfig.setTimeBetweenEvictionRunsMillis(200); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
-		factory.setPoolConfig(jedisPoolConfig);
-		//Timeout i ms
-		factory.setTimeout(2000);
 		return factory;
 	}
+
+//	@Bean
+//	public JedisConnectionFactory redisConnectionFactory() {
+//
+//		JedisConnectionFactory factory = new JedisConnectionFactory(new RedisSentinelConfiguration()
+//				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+//
+//		factory.setUsePool(true);
+//		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+//		jedisPoolConfig.setMaxTotal(128); // Sets the cap on the number of objects that can be allocated by the pool (checked out to clients, or idle awaiting checkout) at a given time.
+//		jedisPoolConfig.setMinIdle(0); //Sets the minimum number of objects allowed in the pool before the evictor thread (if active) spawns new objects.
+//		jedisPoolConfig.setMaxIdle(128); // controls the maximum number of objects that can sit idle in the pool at any time
+//		jedisPoolConfig.setMaxWaitMillis(2000); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
+//		jedisPoolConfig.setTimeBetweenEvictionRunsMillis(200); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
+//		factory.setPoolConfig(jedisPoolConfig);
+//		//Timeout i ms
+//		factory.setTimeout(2000);
+//		return factory;
+//	}
 	
 	@Bean
 	@Override
 	public CacheErrorHandler errorHandler(){
-		return new CustomCacheErrorHandler(jedisConnectionFactory);
+		return new CustomCacheErrorHandler();
 	}
 	
 }
