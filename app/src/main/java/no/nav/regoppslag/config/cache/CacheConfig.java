@@ -67,7 +67,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		factory.setShareNativeConnection(false);
 		factory.setValidateConnection(false);
-		factory.setTimeout(TimeUnit.SECONDS.toMillis(1));
+		factory.setTimeout(10);
+		factory.setShutdownTimeout(10);
 		return factory;
 	}
 	

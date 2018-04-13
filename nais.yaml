@@ -19,7 +19,11 @@ prometheus:
   path: /prometheus
 resources:
   limits:
-    cpu: 1000m
+      cpu: 6000m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi
 fasitResources:
   used:
   - alias: securityTokenService
