@@ -16,6 +16,9 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
@@ -31,11 +34,14 @@ public class CacheConfig extends CachingConfigurerSupport {
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
+	@Inject
+	private JedisConnectionFactory jedisConnectionFactory;
+	
 	@Bean
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
 		//default expiration in seconds (equal to two days)
-		redisCacheManager.setDefaultExpiration(daysToSeconds(2));
+		redisCacheManager.setDefaultExpiration(TimeUnit.DAYS.toSeconds(2));
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
 		return redisCacheManager;
 	}
@@ -62,11 +68,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 		jedisPoolConfig.setMaxTotal(-1); // Sets the cap on the number of objects that can be allocated by the pool (checked out to clients, or idle awaiting checkout) at a given time.
 		jedisPoolConfig.setMinIdle(1); //Sets the minimum number of objects allowed in the pool before the evictor thread (if active) spawns new objects.
 		jedisPoolConfig.setMaxIdle(5); // controls the maximum number of objects that can sit idle in the pool at any time
-		jedisPoolConfig.setTestOnBorrow(true); // indicates whether or not idle objects should be validated using the factory's PoolableObjectFactory.validateObject(T) method. Objects that fail to validate will be dropped from the pool.
-		jedisPoolConfig.setLifo(true); //Sets the LIFO property of the pool.
 		jedisPoolConfig.setMaxWaitMillis(2000); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
 		jedisPoolConfig.setTimeBetweenEvictionRunsMillis(200); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
-		jedisPoolConfig.setBlockWhenExhausted(true); //Sets the maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and the "when exhausted" action is WHEN_EXHAUSTED_BLOCK.
 		factory.setPoolConfig(jedisPoolConfig);
 		//Timeout i ms
 		factory.setTimeout(2000);
@@ -76,13 +79,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	@Override
 	public CacheErrorHandler errorHandler(){
-		return new CustomCacheErrorHandler();
+		return new CustomCacheErrorHandler(jedisConnectionFactory);
 	}
-	
-	
-	private Long daysToSeconds(Integer days) {
-		return days * 24L * 60L * 60L;
-	}
-	
 	
 }
