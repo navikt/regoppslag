@@ -2,8 +2,11 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LDAP;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -52,7 +55,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "SaksbehandlerPlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerName(), "SaksbehandlerPlugin").inc();
 			
 			NavAnsatt navAnsatt = unmarshal(content);
 			
@@ -60,7 +63,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			
 			validateSaksbehandler(navAnsatt);
 			
-			cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).inc();
+			cacheCounter.labels(HENT_FULLT_NAVN, LDAP, CACHE_HIT).inc();
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 			
 			if (saksbehandlerNavn == null) {

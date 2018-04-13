@@ -70,6 +70,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		factory.setShareNativeConnection(false);
 		factory.setValidateConnection(false);
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
+		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		return factory;
 	}
 	
@@ -87,7 +88,12 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setMaxIdle(128);
 		genericObjectPoolConfig.setMaxTotal(128);
 		genericObjectPoolConfig.setMaxWaitMillis(TimeUnit.MILLISECONDS.toMillis(100));
-		genericObjectPoolConfig.setTestWhileIdle(true);
+		genericObjectPoolConfig.setEvictorShutdownTimeoutMillis(TimeUnit.MILLISECONDS.toMillis(100));
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(TimeUnit.MILLISECONDS.toMillis(100));
+		genericObjectPoolConfig.setTestWhileIdle(false);
+		genericObjectPoolConfig.setTestOnBorrow(false);
+		genericObjectPoolConfig.setTestOnCreate(false);
+		genericObjectPoolConfig.setTestOnReturn(false);
 		return genericObjectPoolConfig;
 	}
 	

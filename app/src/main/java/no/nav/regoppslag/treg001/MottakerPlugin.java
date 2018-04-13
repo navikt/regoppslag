@@ -5,8 +5,10 @@ import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.H
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.ORGANISASJON_V4;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3_LABEL;
 
@@ -97,7 +99,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "MottakerPlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerName(), "MottakerPlugin").inc();
 			if (dokumentTypeId == null) {
 				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!");
 			}

@@ -1,5 +1,6 @@
 package no.nav.regoppslag.config.cache;
 
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", "Get").inc();
+		requestCounter.labels("Redis", "CacheError", getConsumerName(), "Get").inc();
 	}
 	
 	@Override
@@ -29,7 +30,6 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", "Put").inc();
 	}
 	
 	@Override
@@ -37,7 +37,6 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Evict operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", "Evict").inc();
 	}
 	
 	@Override
@@ -45,6 +44,5 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Clear operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", "Clear").inc();
 	}
 }

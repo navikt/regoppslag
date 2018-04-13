@@ -56,10 +56,9 @@ public class PersonV3Consumer {
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).dec();
 		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_MISS).inc();
 		
-		log.info("Test-- Henter person --Test");
-		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;
+		
 		try {
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3_LABEL, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);

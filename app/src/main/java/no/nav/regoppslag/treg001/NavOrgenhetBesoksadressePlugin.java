@@ -2,8 +2,11 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ORGENHETKONTAKTV1;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -61,7 +64,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		validateElementType(content);
 		try {
 			
-			requestCounter.labels(SERVICE_CODE_TREG001, "plugin", "NavOrgenhetBesoksadressePlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerName(), "NavOrgenhetBesoksadressePlugin").inc();
 			
 			Besoksadresse adresse = unmarshal(content);
 			
@@ -69,13 +72,14 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			
 			validateAdresse(adresse);
 			
-			cacheCounter.labels(HENT_ENHET_NAVN, "OrganisasjonEnhetKontaktinformasjonV1", CACHE_HIT).inc();
+			cacheCounter.labels(HENT_ENHET_NAVN, ORGENHETKONTAKTV1, CACHE_HIT).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
-
+			
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetId=%s", adresse.getEnhetsId()));
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetId=%s", adresse
+						.getEnhetsId()));
 			}
-
+			
 			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
 			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

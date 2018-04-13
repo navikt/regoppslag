@@ -5,8 +5,12 @@ import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.PERSON;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.MOTTAKERTYPE;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,15 +67,15 @@ public class HentMottakerOgAdresseService {
 			log.info(String.format("Mottat hentMottakerOgAdresse kall. Type=%s", request
 					.getType()));
 			if (PERSON.name().equals(request.getType())) {
-				cacheCounter.labels(HENT_PERSON, "PersonV3", CACHE_HIT).inc();
+				cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getPrincipalName());
 				personV3Mapper.map(bruker, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, "mottakerType", PERSON.name());
+				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerName(), PERSON.name());
 			} else {
-				cacheCounter.labels(HENT_ORGANISASJON, "OrganisasjonV4", CACHE_HIT).inc();
+				cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJONV4, CACHE_HIT).inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				organisasjonV4Mapper.map(organisasjon, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, "mottakerType", ORGANISASJON.name());
+				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerName(), ORGANISASJON.name());
 			}
 			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Type=%s", request
 					.getType()));

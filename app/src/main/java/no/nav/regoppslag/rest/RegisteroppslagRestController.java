@@ -1,9 +1,11 @@
 package no.nav.regoppslag.rest;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CONTROLLER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestExceptionCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -58,9 +60,9 @@ public class RegisteroppslagRestController {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata").startTimer();
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "controller", "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerName(), "received").inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, "controller", "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerName(), "processed_ok").inc();
 			return response;
 		} catch (Exception e){
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
@@ -77,9 +79,9 @@ public class RegisteroppslagRestController {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG002, "controller", "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerName(), "received").inc();
 			HentMottakerOgAdresseResponse response  = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, "controller", "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerName(), "processed_ok").inc();
 			return response;
 		}catch (Exception e){
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);
