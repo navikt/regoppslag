@@ -75,7 +75,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s", adresse.getEnhetsId()));
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", adresse
+						.getEnhetsId(), getConsumerId()));
 			}
 
 			norg2Mapper.mapPostadresse(wsEnhet, adresse);

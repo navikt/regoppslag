@@ -111,8 +111,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), SERVICE_CODE_TREG001);
 				if (person == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s", mottaker
-							.getId()));
+					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s ConsumerId=%s", mottaker
+							.getId(), getConsumerId()));
 				}
 				
 				personV3Mapper.map(person, mottaker);
@@ -121,8 +121,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s", mottaker
-							.getId()));
+					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
+							.getId(), getConsumerId()));
 				}
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
