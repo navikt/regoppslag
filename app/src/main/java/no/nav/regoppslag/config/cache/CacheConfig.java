@@ -2,6 +2,9 @@ package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 
+import com.lambdaworks.redis.resource.ClientResources;
+import com.lambdaworks.redis.resource.DefaultClientResources;
+import com.lambdaworks.redis.resource.Delay;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -71,6 +74,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 		factory.setValidateConnection(false);
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
+		ClientResources clientResources = DefaultClientResources.builder()
+				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
+				.build();
+		factory.setClientResources(clientResources);
 		return factory;
 	}
 	
