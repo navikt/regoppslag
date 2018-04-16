@@ -15,6 +15,7 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,12 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 public class CacheTestConfig {
+	
+	
+	@Bean
+	public LettuceConnectionFactory lettuceConnectionFactory() {
+		return new LettuceConnectionFactory();
+	}
 	
 	@Bean
 	public CacheManager cacheManager() {

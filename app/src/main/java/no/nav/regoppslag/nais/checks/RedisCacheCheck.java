@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RedisCacheCheck extends AbstractNaisIsReadyTest {
+	
 	public static final String REDIS_LABEL = "Redis";
 	
 	private LettuceConnectionFactory lettuceConnectionFactory;
