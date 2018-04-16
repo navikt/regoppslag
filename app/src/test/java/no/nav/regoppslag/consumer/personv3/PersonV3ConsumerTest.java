@@ -92,7 +92,7 @@ public class PersonV3ConsumerTest {
 	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
 		expectedException.expect(RegOppslagSecurityException.class);
-		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + FNR);
+		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + PRINCIPAL + ", message=Ingen adgang");
 		
 		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
 	}

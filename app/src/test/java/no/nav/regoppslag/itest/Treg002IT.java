@@ -154,7 +154,7 @@ public class Treg002IT extends AbstractIT {
 			assertFalse("Test did not throw exception", true);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.UNAUTHORIZED);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: 0102030405, message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=Z991006, message=Ingen tilgang"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
 		}
 		
@@ -188,7 +188,7 @@ public class Treg002IT extends AbstractIT {
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilmelding=Noe gikk galt i kall til PersonV3.hentPerson for ident: 0102030405, message=Feil med server. Overbelastning?"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilmelding=Noe gikk galt i kall til PersonV3.hentPerson. ConsumerId=Z991006, message=Feil med server. Overbelastning?"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagTechnicalException"));
 		}
 		
