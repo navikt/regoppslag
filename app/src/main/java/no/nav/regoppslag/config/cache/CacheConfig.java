@@ -2,7 +2,6 @@ package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 
-import com.lambdaworks.redis.resource.ClientResources;
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -70,14 +69,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		
-		factory.setShareNativeConnection(false);
-		factory.setValidateConnection(false);
-		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-		ClientResources clientResources = DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
-				.build();
-		factory.setClientResources(clientResources);
+		factory.setShareNativeConnection(true);
 		return factory;
 	}
 	
@@ -85,12 +77,13 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public LettucePool lettucePool() {
 		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		
 		lettucePool.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		lettucePool.setPoolConfig(poolConfig());
-		ClientResources clientResources = DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
-				.build();
-		lettucePool.setClientResources(clientResources);
+		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
+		lettucePool.setClientResources(DefaultClientResources.builder()
+				.reconnectDelay(Delay.constant(100, TimeUnit.MILLISECONDS))
+				.build());
 		return lettucePool;
 	}
 	
@@ -98,9 +91,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
 		genericObjectPoolConfig.setMaxIdle(128);
 		genericObjectPoolConfig.setMaxTotal(128);
-		genericObjectPoolConfig.setMaxWaitMillis(TimeUnit.MILLISECONDS.toMillis(100));
-		genericObjectPoolConfig.setEvictorShutdownTimeoutMillis(TimeUnit.MILLISECONDS.toMillis(100));
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(TimeUnit.MILLISECONDS.toMillis(100));
+		genericObjectPoolConfig.setMaxWaitMillis(100);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(1000);
 		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setTestOnCreate(false);

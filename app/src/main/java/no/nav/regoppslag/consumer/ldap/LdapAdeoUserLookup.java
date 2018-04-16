@@ -1,9 +1,10 @@
 package no.nav.regoppslag.consumer.ldap;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
@@ -50,9 +51,8 @@ public class LdapAdeoUserLookup {
 	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
 		
-		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_HIT).dec();
-		cacheCounter.labels(HENT_FULLT_NAVN, "LDAP", CACHE_MISS).inc();
-
+		requestCounter.labels(HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "LDAP", HENT_FULLT_NAVN).startTimer();
 
 		LdapQuery cn = LdapQueryBuilder.query()

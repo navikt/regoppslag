@@ -1,11 +1,10 @@
 package no.nav.regoppslag.consumer.personv3;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
-import static no.nav.regoppslag.nais.checks.PersonV3Check.PERSONV3_LABEL;
 
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
@@ -49,30 +48,30 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 	
-	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#principalName")
+	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#consumerId")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Bruker hentPerson(final String personidentifikator, final String principalName) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Bruker hentPerson(final String personidentifikator, final String consumerId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
-		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_HIT).dec();
-		cacheCounter.labels(HENT_PERSON, PERSONV3_LABEL, CACHE_MISS).inc();
+		requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, consumerId, CACHE_MISS).inc();
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;
 		
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3_LABEL, HENT_PERSON).startTimer();
+			requestTimer = requestLatency.labels(serviceCode, PERSONV3, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
 					.getMessage(), hentPersonPersonIkkeFunnet);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning for ident: " + personidentifikator + ", message=" + hentPersonSikkerhetsbegrensning
+			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + consumerId + ", message=" + hentPersonSikkerhetsbegrensning
 					.getMessage(), hentPersonSikkerhetsbegrensning);
 		} catch (Exception e) {
 			if (e.getCause() instanceof SamlTokenInterceptorException){
 				throw new RegOppslagFunctionalException(e.getMessage());
 			}
-			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson for ident: " + personidentifikator + ", message=" + e.getMessage());
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson. ConsumerId=" + consumerId + ", message=" + e
+					.getMessage());
 		} finally {
 			requestTimer.observeDuration();
 		}

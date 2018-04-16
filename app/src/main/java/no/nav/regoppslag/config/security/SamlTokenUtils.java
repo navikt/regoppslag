@@ -26,7 +26,9 @@ public class SamlTokenUtils {
 	
 	public static SamlAssertionWrapper getSamlAssertionWrapperFromContext() {
 		
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (SecurityContextHolder.getContext().getAuthentication() == null || !SecurityContextHolder.getContext()
+				.getAuthentication()
+				.isAuthenticated()) {
 			return null;
 		}
 		

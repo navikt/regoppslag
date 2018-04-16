@@ -4,13 +4,11 @@ import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.ORGANISASJON;
 import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.PERSON;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.MOTTAKERTYPE;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +25,6 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -64,21 +60,21 @@ public class HentMottakerOgAdresseService {
 		validateInput(request);
 		try {
 			Mottaker mottaker = new Mottaker();
-			log.info(String.format("Mottat hentMottakerOgAdresse kall. Type=%s", request
-					.getType()));
+			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s, ConsumerId=%s", request
+					.getType(), getConsumerId()));
 			if (PERSON.name().equals(request.getType())) {
-				cacheCounter.labels(HENT_PERSON, PERSONV3, CACHE_HIT).inc();
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getPrincipalName());
+				requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), SERVICE_CODE_TREG002);
 				personV3Mapper.map(bruker, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerName(), PERSON.name());
+				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerId(), PERSON.name());
 			} else {
-				cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJONV4, CACHE_HIT).inc();
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
+				requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				organisasjonV4Mapper.map(organisasjon, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerName(), ORGANISASJON.name());
+				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerId(), ORGANISASJON.name());
 			}
-			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. Type=%s", request
-					.getType()));
+			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s, ConsumerId=%s", request
+					.getType(), getConsumerId()));
 			
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())
@@ -90,14 +86,6 @@ public class HentMottakerOgAdresseService {
 		}
 		
 		return null;
-	}
-	
-	private String getPrincipalName() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
-			return null;
-		}
-		return authentication.getName();
 	}
 	
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {

@@ -42,7 +42,8 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", ex.getMessage()));
 			throw new SamlTokenInterceptorException("Feilet ved komplettering av SAML assertion token fra header til SOAP meldingen. Det kan hende tokenet er i feil format");
 		} finally {
-			SecurityContextHolder.clearContext();
+			//The context is not cleared because the principalname is used for logging and metrics
+			SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		}
 		
 	}

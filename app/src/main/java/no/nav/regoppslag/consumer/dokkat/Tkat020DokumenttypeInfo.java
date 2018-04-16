@@ -1,9 +1,10 @@
 package no.nav.regoppslag.consumer.dokkat;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
@@ -64,8 +65,7 @@ public class Tkat020DokumenttypeInfo {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		
-		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, DOKKAT, CACHE_HIT).dec();
-		cacheCounter.labels(HENT_DOKKAT_SPRAAKINFO, DOKKAT, CACHE_MISS).inc();
+		requestCounter.labels(HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();

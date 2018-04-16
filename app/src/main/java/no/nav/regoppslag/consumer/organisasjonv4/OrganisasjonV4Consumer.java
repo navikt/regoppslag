@@ -1,9 +1,9 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 
 import io.prometheus.client.Histogram;
@@ -44,14 +44,13 @@ public class OrganisasjonV4Consumer {
 
 	@Cacheable(HENT_ORGANISASJON)
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Organisasjon hentOrganisasjon(final String organisasjonsnummer, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJON_V4, CACHE_HIT).dec();
-		cacheCounter.labels(HENT_ORGANISASJON, ORGANISASJON_V4, CACHE_MISS).inc();
+		requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJON_V4, HENT_ORGANISASJON).startTimer();
+			requestTimer = requestLatency.labels(serviceCode, ORGANISASJON_V4, HENT_ORGANISASJON).startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {

@@ -1,8 +1,6 @@
 package no.nav.regoppslag.metrics;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_NAME;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_OPERATION;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CONSUMER_NAME;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CONSUMER_ID;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_ERROR_TYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EVENT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_NAME;
@@ -33,13 +31,7 @@ public class PrometheusMetrics {
 			.namespace(DOK_NAMESPACE)
 			.name("request_total_counter")
 			.help("Counts total number of messages received per event")
-			.labelNames(LABEL_PROCESS, LABEL_TYPE, LABEL_CONSUMER_NAME, LABEL_EVENT).register();
-	
-	public static final Gauge cacheCounter = Gauge.build()
-			.namespace(DOK_NAMESPACE)
-			.name("cache_counter")
-			.help("Counts total number of cache miss/hit")
-			.labelNames(LABEL_CACHE_NAME, LABEL_EVENT, LABEL_CACHE_OPERATION).register();
+			.labelNames(LABEL_PROCESS, LABEL_TYPE, LABEL_CONSUMER_ID, LABEL_EVENT).register();
 	
 	public static final Counter requestExceptionCounter = Counter.build()
 			.namespace(DOK_NAMESPACE)
@@ -55,9 +47,9 @@ public class PrometheusMetrics {
 			.labelNames(LABEL_PROCESS, LABEL_PROCESS_CODE, LABEL_PROCESS_CALLED)
 			.register();
 	
-	public static String getConsumerName() {
+	public static String getConsumerId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
+		if (authentication == null || authentication.getName().equalsIgnoreCase("anonymousUser")) {
 			return "Ukjent";
 		}
 		return authentication.getName();

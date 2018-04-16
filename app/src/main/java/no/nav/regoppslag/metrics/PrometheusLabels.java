@@ -6,13 +6,14 @@ package no.nav.regoppslag.metrics;
 public class PrometheusLabels {
     public static final String LABEL_TECHNICAL_EXCEPTION = "technical";
     public static final String LABEL_FUNCTIONAL_EXCEPTION = "functional";
+	public static final String LABEL_SECURITY_EXCEPTION = "security";
 	
 	public static final String LABEL_EXCEPTION_NAME = "exception_name";
     public static final String LABEL_PROCESS = "process";
 	public static final String LABEL_PROCESS_CODE = "process_called";
     public static final String LABEL_TYPE = "type";
 	public static final String LABEL_PROCESS_CALLED = "process_title";
-	public static final String LABEL_CONSUMER_NAME = "consumer_name";
+	public static final String LABEL_CONSUMER_ID = "consumer_name";
     
     public static final String LABEL_EVENT = "event";
     public static final String LABEL_ERROR_TYPE = "error_type";
@@ -23,8 +24,9 @@ public class PrometheusLabels {
     //Cache
 	public static final String LABEL_CACHE_NAME = "name";
 	public static final String LABEL_CACHE_OPERATION = "operation";
+	public static final String LABEL_CACHE_COUNTER = "cacheCounter";
 	public static final String CACHE_MISS = "cacheMiss";
-	public static final String CACHE_HIT = "cacheHit";
+	public static final String CACHE_TOTAL = "cacheTotal";
 	
 	public static final String MOTTAKERTYPE = "mottakerType";
 	public static final String PLUGIN = "plugin";

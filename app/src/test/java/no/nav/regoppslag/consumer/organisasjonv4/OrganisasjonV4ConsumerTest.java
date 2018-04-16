@@ -42,8 +42,8 @@ public class OrganisasjonV4ConsumerTest {
 	@Test
 	public void shouldHentOrganisasjon() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(defaultResponse());
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN));
 	}
@@ -51,8 +51,8 @@ public class OrganisasjonV4ConsumerTest {
 	@Test
 	public void shouldHentOrganisasjonWithMultipleNavnelinje() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(createResponse(Arrays.asList(ORGNAVN, ORGNAVN_2)));
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN + " " + ORGNAVN_2));
 	}
@@ -63,8 +63,8 @@ public class OrganisasjonV4ConsumerTest {
 		thrown.expectMessage("Nav enhet finnes ikke for enhetNr=999999999");
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class OrganisasjonV4ConsumerTest {
 		thrown.expectMessage("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new RuntimeException());
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 	}
 
 
@@ -83,8 +83,8 @@ public class OrganisasjonV4ConsumerTest {
 		HentOrganisasjonResponse response = defaultResponse();
 		response.setOrganisasjon(null);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 
 		assertThat(organisasjon, nullValue());
 	}
@@ -97,8 +97,8 @@ public class OrganisasjonV4ConsumerTest {
 		});
 		response.setOrganisasjon(org);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
-
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), nullValue());
 	}

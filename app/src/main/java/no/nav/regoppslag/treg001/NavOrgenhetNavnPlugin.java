@@ -1,12 +1,11 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGENHETKONTAKTV1;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -60,14 +59,14 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerName(), "NavOrgenhetNavnPlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerId(), "NavOrgenhetNavnPlugin").inc();
 			
 			NavEnhet navEnhet = unmarshal(content);
-			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s, ConsumerId=%s", navEnhet.getEnhetsId(), getConsumerId()));
 			
 			validateEnhet(navEnhet);
 			
-			cacheCounter.labels(HENT_ENHET_NAVN, ORGENHETKONTAKTV1, CACHE_HIT).inc();
+			requestCounter.labels(HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 			
 			if (wsEnhet == null) {
@@ -87,7 +86,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s, ConsumerId=%s", navEnhet.getEnhetsId(), getConsumerId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
 		} catch (JAXBException | ParserConfigurationException e) {

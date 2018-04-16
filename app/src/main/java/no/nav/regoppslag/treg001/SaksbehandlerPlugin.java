@@ -1,12 +1,11 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_HIT;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LDAP;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.cacheCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
@@ -55,15 +54,15 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		}
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerName(), "SaksbehandlerPlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerId(), "SaksbehandlerPlugin").inc();
 			
 			NavAnsatt navAnsatt = unmarshal(content);
 			
-			log.info(String.format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info(String.format("Henter saksbehandler info. AnsattId=%s, ConsumerId=%s", navAnsatt.getAnsattId(), getConsumerId()));
 			
 			validateSaksbehandler(navAnsatt);
 			
-			cacheCounter.labels(HENT_FULLT_NAVN, LDAP, CACHE_HIT).inc();
+			requestCounter.labels(HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 			
 			if (saksbehandlerNavn == null) {
@@ -82,7 +81,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s, ConsumerId=%s", navAnsatt.getAnsattId(), getConsumerId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException | ParserConfigurationException e) {

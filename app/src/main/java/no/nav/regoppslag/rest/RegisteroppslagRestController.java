@@ -2,10 +2,11 @@ package no.nav.regoppslag.rest;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.CONTROLLER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SECURITY_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerName;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestExceptionCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -38,8 +39,8 @@ public class RegisteroppslagRestController {
 	
 	
 	public static final String REST = "/rest/";
-	public static final String KOMPLETTER_BREVDATA_URI_PATH = REST+"kompletterBrevdata";
-	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = REST+"hentMottakerOgAdresse";
+	public static final String KOMPLETTER_BREVDATA_URI_PATH = REST + "kompletterBrevdata";
+	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = REST + "hentMottakerOgAdresse";
 	
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
@@ -48,23 +49,23 @@ public class RegisteroppslagRestController {
 	@Inject
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService, HentMottakerOgAdresseService hentMottakerOgAdresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;
-		this.hentMottakerOgAdresseService=hentMottakerOgAdresseService;
+		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 	
-	//	@ExceptionHandler({RegOppslagFunctionalException.class, RegOppslagTechnicalException.class, RegOppslagSecurityException.class})
-	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-	
 		
-		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata").startTimer();
+		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "validerOgKompletterBrevdata")
+				.startTimer();
+		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerName(), "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerId(), "received").inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerName(), "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerId(), "processed_ok").inc();
 			return response;
-		} catch (Exception e){
+		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
 			throw e;
 		} finally {
@@ -73,17 +74,19 @@ public class RegisteroppslagRestController {
 		}
 	}
 	
-	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
+	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
+		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerName(), "received").inc();
-			HentMottakerOgAdresseResponse response  = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerName(), "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerId(), "received").inc();
+			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
+			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerId(), "processed_ok").inc();
 			return response;
-		}catch (Exception e){
+		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);
 			throw e;
 		} finally {
@@ -93,8 +96,10 @@ public class RegisteroppslagRestController {
 	}
 	
 	private void incrementExceptionMetrics(Exception e, String serviceCode) {
-		if (e instanceof RegOppslagFunctionalException){
+		if (e instanceof RegOppslagFunctionalException) {
 			requestExceptionCounter.labels(serviceCode, LABEL_FUNCTIONAL_EXCEPTION, e.getClass().getSimpleName()).inc();
+		} else if (e instanceof RegOppslagSecurityException) {
+			requestExceptionCounter.labels(serviceCode, LABEL_SECURITY_EXCEPTION, e.getClass().getSimpleName()).inc();
 		} else {
 			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass().getSimpleName()).inc();
 		}
