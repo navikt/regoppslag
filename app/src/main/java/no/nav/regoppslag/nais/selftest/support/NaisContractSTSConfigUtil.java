@@ -13,7 +13,6 @@ import java.util.HashMap;
 @Slf4j
 public class NaisContractSTSConfigUtil {
 
-	private static final String STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicy.xml";
 	private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
 
 	public static STSClient configureStsRequestSamlToken(String stsUrl, String username, String password) {

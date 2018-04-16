@@ -1,7 +1,7 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
-import no.nav.regoppslag.nais.selftest.support.AbstractSelftest;
+import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.support.Ping;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractSelftest {
+public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractNaisIsReadyTest {
 	public static final String PERSON_V3 = "Person_V3";
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 

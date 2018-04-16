@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
+import no.nav.regoppslag.nais.checks.RedisCacheCheck;
 import no.nav.regoppslag.nais.selftest.support.Result;
 import no.nav.regoppslag.nais.selftest.support.SelftestCheck;
 import org.apache.cxf.ws.security.trust.STSClient;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,19 +45,22 @@ public class NaisContract {
 	private static final String APPLICATION_ALIVE = "Application is alive!";
 	private static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
+	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
 
 	private final PersonV3Check personV3Check;
 	private final OrganisasjonV4Check organisasjonV4Check;
 	private final OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check;
+	private final RedisCacheCheck redisCacheCheck;
 
 	@Inject
-	STSClient stsClient;
-
+	private STSClient stsClient;
+	
 	@Inject
-	public NaisContract(PersonV3Check personV3Check, OrganisasjonV4Check organisasjonV4Check, OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check) {
+	public NaisContract(PersonV3Check personV3Check, OrganisasjonV4Check organisasjonV4Check, OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check, RedisCacheCheck redisCacheCheck) {
 		this.personV3Check = personV3Check;
 		this.organisasjonV4Check = organisasjonV4Check;
 		this.organisasjonEnhetKontaktinformasjonV1Check = organisasjonEnhetKontaktinformasjonV1Check;
+		this.redisCacheCheck = redisCacheCheck;
 	}
 
 	@GetMapping("/isAlive")
@@ -76,14 +81,20 @@ public class NaisContract {
 			results.add(personV3Check.check());
 			results.add(organisasjonV4Check.check());
 			results.add(organisasjonEnhetKontaktinformasjonV1Check.check());
+			
+			if (redisCacheCheck.check().getResult().equals(Result.ERROR)) {
+				isReady.labels("REDIS").set(0);
+			} else {
+				isReady.labels("REDIS").set(1);
+			}
 
 			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
-				isReady.dec();
+				isReady.labels("APP").dec();
 				String responseBody = APPLICATION_NOT_READY + "/n +  " +  results.stream().map(SelftestCheck::getErrorMessage).collect(Collectors.toList());
 				return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-
-			isReady.set(1);
+			
+			isReady.labels("APP").set(1);
 
 			return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 		} finally {
@@ -95,8 +106,9 @@ public class NaisContract {
 	private boolean isAnyDependencyUnhealthy(List<Result> results) {
 		return results.stream().anyMatch((result) -> result.equals(Result.ERROR) || result.equals(Result.WARNING));
 	}
-
-	private String requestStsToken() throws Exception {
+	
+	@Cacheable(value = STS_CACHE_NAME)
+	public String requestStsToken() throws Exception {
 		return elementToString(stsClient.requestSecurityToken().getToken());
 	}
 

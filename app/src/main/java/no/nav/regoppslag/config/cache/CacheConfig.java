@@ -1,6 +1,7 @@
 package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
@@ -48,6 +49,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		//Remaining caches uses the default value
 		Map<String, Long> expiresInSeconds = new HashMap<>();
 		expiresInSeconds.put(HENT_PERSON, 10L);
+		expiresInSeconds.put(STS_CACHE_NAME, TimeUnit.MINUTES.toSeconds(30));
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
@@ -70,6 +72,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		
 		factory.setShareNativeConnection(false);
+		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		return factory;
 	}
 	

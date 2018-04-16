@@ -10,19 +10,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by T133804 on 15.08.2017.
  */
-public abstract class AbstractSelftest {
+public abstract class AbstractNaisIsReadyTest {
 	protected String name;
 	protected String description;
 	protected String address;
 	protected Ping.Type type;
 	
-	public AbstractSelftest(Ping.Type type, String name, String description) {
+	public AbstractNaisIsReadyTest(Ping.Type type, String name, String description) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
 	}
 	
-	public AbstractSelftest(Ping.Type type, String name, String address, String description) {
+	public AbstractNaisIsReadyTest(Ping.Type type, String name, String address, String description) {
 		this.type = type;
 		this.name = name;
 		this.address = address;

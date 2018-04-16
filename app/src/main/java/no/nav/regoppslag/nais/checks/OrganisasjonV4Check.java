@@ -1,7 +1,7 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
-import no.nav.regoppslag.nais.selftest.support.AbstractSelftest;
+import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.support.Ping;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class OrganisasjonV4Check extends AbstractSelftest {
+public class OrganisasjonV4Check extends AbstractNaisIsReadyTest {
 	public static final String ORGANISASJON_V4 = "Organisasjon_v4";
 	private final OrganisasjonV4 organisasjonV4;
 

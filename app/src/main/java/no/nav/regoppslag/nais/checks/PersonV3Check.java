@@ -1,7 +1,7 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
-import no.nav.regoppslag.nais.selftest.support.AbstractSelftest;
+import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.support.Ping;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class PersonV3Check extends AbstractSelftest {
+public class PersonV3Check extends AbstractNaisIsReadyTest {
 	public static final String PERSONV3_LABEL = "PersonV3";
 	private final PersonV3 personV3;
 

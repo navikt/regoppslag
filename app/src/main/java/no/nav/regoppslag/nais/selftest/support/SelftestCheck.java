@@ -1,6 +1,5 @@
 package no.nav.regoppslag.nais.selftest.support;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,23 +29,8 @@ public class SelftestCheck {
 		this.result = result;
 	}
 	
-	@JsonProperty("result")
-	public Integer getResultVal() {
-		return result.auraCode;
-	}
-	
-	@JsonIgnore
-	public Long getResponseTime() {
-		return responseTime;
-	}
-	
 	public void setResponseTime(Long responseTime) {
 		this.responseTime = responseTime;
-	}
-	
-	@JsonProperty("responseTime")
-	public String getResponseTimeString() {
-		return responseTime + " ms";
 	}
 	
 	public Ping.Type getType() {
