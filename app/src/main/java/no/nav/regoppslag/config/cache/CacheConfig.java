@@ -3,6 +3,7 @@ package no.nav.regoppslag.config.cache;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
+import com.lambdaworks.redis.ClientOptions;
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -67,19 +68,13 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		
+	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		factory.setShareNativeConnection(false);
-		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
-		factory.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.exponential(0, 100, TimeUnit.MILLISECONDS, 2))
-				.build());
 		return factory;
 	}
 	
+	@Bean
 	public LettucePool lettucePool() {
 		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
@@ -88,7 +83,14 @@ public class CacheConfig extends CachingConfigurerSupport {
 		lettucePool.setPoolConfig(poolConfig());
 		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
 		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(10, TimeUnit.MILLISECONDS))
+				.reconnectDelay(Delay.exponential(0, 200, TimeUnit.MILLISECONDS, 2))
+				.build());
+		
+		lettucePool.getClient().setOptions(ClientOptions.builder()
+				.autoReconnect(true)
+				.cancelCommandsOnReconnectFailure(true)
+				.pingBeforeActivateConnection(true)
+				.suspendReconnectOnProtocolFailure(true)
 				.build());
 		return lettucePool;
 	}
@@ -98,7 +100,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setMaxIdle(128);
 		genericObjectPoolConfig.setMaxTotal(128);
 		genericObjectPoolConfig.setMaxWaitMillis(100);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(1000);
 		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setTestOnCreate(false);
