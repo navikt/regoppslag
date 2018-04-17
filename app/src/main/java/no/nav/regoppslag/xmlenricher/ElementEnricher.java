@@ -1,11 +1,8 @@
 package no.nav.regoppslag.xmlenricher;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-import groovy.lang.ParameterArray;
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
 import io.reactivex.exceptions.CompositeException;
-import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -31,7 +28,7 @@ import java.util.Set;
  */
 @Slf4j
 public class ElementEnricher {
-	
+
 	private ElementEnricherPluginRegistry registry;
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
@@ -41,7 +38,7 @@ public class ElementEnricher {
 	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
 		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
-	
+
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
@@ -51,7 +48,7 @@ public class ElementEnricher {
 		for (XPathExpression xpath : supportedElements) {
 			Node node = findSingleNode(xpath, document);
 			if (node != null) {
-				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath),node));
+				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath), node));
 			}
 		}
 
@@ -90,7 +87,7 @@ public class ElementEnricher {
 		orgElem.getParentNode().insertBefore(importNode, orgElem);
 		orgElem.getParentNode().removeChild(orgElem);
 	}
-	
+
 	private void handleException(Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
 			throw new RegOppslagFunctionalException(e);
