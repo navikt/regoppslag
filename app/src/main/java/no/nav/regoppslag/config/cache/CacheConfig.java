@@ -85,7 +85,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		lettucePool.setPoolConfig(poolConfig());
 		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
 		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
+				.reconnectDelay(Delay.constant(10, TimeUnit.MILLISECONDS))
 				.build());
 		return lettucePool;
 	}
@@ -95,7 +95,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setMaxIdle(128);
 		genericObjectPoolConfig.setMaxTotal(128);
 		genericObjectPoolConfig.setMaxWaitMillis(100);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(200);
 		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setTestOnCreate(false);
