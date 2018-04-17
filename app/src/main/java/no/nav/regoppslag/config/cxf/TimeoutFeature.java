@@ -5,7 +5,6 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.feature.AbstractFeature;
 import org.apache.cxf.transport.Conduit;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transport.http.asyncclient.AsyncHTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 /**
@@ -45,7 +44,6 @@ public class TimeoutFeature extends AbstractFeature {
 				httpConduit.getClient().setConnectionTimeout(connectionTimeout);
 			}
 		}
-		bus.setProperty(AsyncHTTPConduit.USE_ASYNC, Boolean.TRUE);
 		super.initialize(client, bus);
 	}
 }

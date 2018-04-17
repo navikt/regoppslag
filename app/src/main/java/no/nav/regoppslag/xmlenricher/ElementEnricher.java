@@ -1,8 +1,11 @@
 package no.nav.regoppslag.xmlenricher;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import groovy.lang.ParameterArray;
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.exceptions.CompositeException;
+import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -56,7 +59,7 @@ public class ElementEnricher {
 
 		Flowable.fromIterable(processingList)
 				.parallel()
-				.runOn(Schedulers.computation())
+				.runOn(Schedulers.io())
 				.map(payload -> new Aggregate(payload.getPlugin().processElement(payload.getElement(), dokumentTypeId, prefixMapper), payload.getElement()))
 				.sequential()
 				.blockingSubscribe(
