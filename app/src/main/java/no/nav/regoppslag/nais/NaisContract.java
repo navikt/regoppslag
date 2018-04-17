@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
-import no.nav.regoppslag.nais.checks.RedisCacheCheck;
 import no.nav.regoppslag.nais.selftest.support.Result;
 import no.nav.regoppslag.nais.selftest.support.SelftestCheck;
 import org.apache.cxf.ws.security.trust.STSClient;
@@ -50,17 +49,15 @@ public class NaisContract {
 	private final PersonV3Check personV3Check;
 	private final OrganisasjonV4Check organisasjonV4Check;
 	private final OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check;
-	private final RedisCacheCheck redisCacheCheck;
 
 	@Inject
 	private STSClient stsClient;
 	
 	@Inject
-	public NaisContract(PersonV3Check personV3Check, OrganisasjonV4Check organisasjonV4Check, OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check, RedisCacheCheck redisCacheCheck) {
+	public NaisContract(PersonV3Check personV3Check, OrganisasjonV4Check organisasjonV4Check, OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check) {
 		this.personV3Check = personV3Check;
 		this.organisasjonV4Check = organisasjonV4Check;
 		this.organisasjonEnhetKontaktinformasjonV1Check = organisasjonEnhetKontaktinformasjonV1Check;
-		this.redisCacheCheck = redisCacheCheck;
 	}
 
 	@GetMapping("/isAlive")
@@ -82,12 +79,6 @@ public class NaisContract {
 			results.add(organisasjonV4Check.check());
 			results.add(organisasjonEnhetKontaktinformasjonV1Check.check());
 			
-			if (redisCacheCheck.check().getResult().equals(Result.ERROR)) {
-				isReady.labels("REDIS").set(0);
-			} else {
-				isReady.labels("REDIS").set(1);
-			}
-
 			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
 				isReady.labels("APP").dec();
 				String responseBody = APPLICATION_NOT_READY + "/n +  " +  results.stream().map(SelftestCheck::getErrorMessage).collect(Collectors.toList());

@@ -86,6 +86,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.reconnectDelay(Delay.exponential(0, 200, TimeUnit.MILLISECONDS, 2))
 				.build());
 		
+		lettucePool.afterPropertiesSet();
 		lettucePool.getClient().setOptions(ClientOptions.builder()
 				.autoReconnect(true)
 				.cancelCommandsOnReconnectFailure(true)
