@@ -72,7 +72,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		
-		factory.setShareNativeConnection(true);
+		factory.setShareNativeConnection(false);
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
 		factory.setClientResources(DefaultClientResources.builder()
 				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
