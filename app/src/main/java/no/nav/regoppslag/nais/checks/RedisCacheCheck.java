@@ -29,8 +29,7 @@ public class RedisCacheCheck extends AbstractNaisIsReadyTest {
 	@Override
 	protected void doCheck() {
 		try {
-			lettuceConnectionFactory.getConnection()
-					.getSubscription().isAlive();
+			lettuceConnectionFactory.getConnection();
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new ApplicationNotReadyException("Could not ping Redis cache", e);
