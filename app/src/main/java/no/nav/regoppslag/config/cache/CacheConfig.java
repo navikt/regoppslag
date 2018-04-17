@@ -4,6 +4,7 @@ import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
 import com.lambdaworks.redis.ClientOptions;
+import com.lambdaworks.redis.SocketOptions;
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -92,6 +93,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.cancelCommandsOnReconnectFailure(true)
 				.pingBeforeActivateConnection(true)
 				.suspendReconnectOnProtocolFailure(true)
+				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+				.socketOptions(SocketOptions.builder().connectTimeout(100, TimeUnit.MILLISECONDS).build())
 				.build());
 		return lettucePool;
 	}
@@ -101,7 +104,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setMaxIdle(128);
 		genericObjectPoolConfig.setMaxTotal(128);
 		genericObjectPoolConfig.setMaxWaitMillis(100);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(1000);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
 		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setTestOnCreate(false);
