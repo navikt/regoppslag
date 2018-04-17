@@ -67,15 +67,19 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
+	public LettuceConnectionFactory lettuceConnectionFactory() {
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		
 		factory.setShareNativeConnection(false);
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
+		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
+		factory.setClientResources(DefaultClientResources.builder()
+				.reconnectDelay(Delay.exponential(0, 100, TimeUnit.MILLISECONDS, 2))
+				.build());
 		return factory;
 	}
 	
-	@Bean
 	public LettucePool lettucePool() {
 		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
