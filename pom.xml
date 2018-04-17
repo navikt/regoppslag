@@ -65,6 +65,7 @@
 		<wiremock-standalone.version>2.15.0</wiremock-standalone.version>
 		<modig-testcertificates.version>1.2.0</modig-testcertificates.version>
 		<rxjava.version>2.1.9</rxjava.version>
+		<lettuce.version>4.4.4.Final</lettuce.version>
 	</properties>
 
 	<dependencyManagement>

@@ -67,19 +67,15 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
-		
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		
 		factory.setShareNativeConnection(false);
 		factory.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-		factory.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
-				.build());
 		return factory;
 	}
 	
+	@Bean
 	public LettucePool lettucePool() {
 		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
