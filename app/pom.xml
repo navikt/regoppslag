@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>no.nav.regoppslag</groupId>
 		<artifactId>regoppslag</artifactId>
-		<version>0.1.23-SNAPSHOT</version>
+		<version>0.1.24-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -36,16 +36,13 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-ldap</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+
+		<!--Redis dependencies-->
 		<dependency>
 			<groupId>biz.paluch.redis</groupId>
 			<artifactId>lettuce</artifactId>
 			<version>4.4.4.Final</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
@@ -57,14 +54,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>com.lambdaworks</groupId>
-			<artifactId>lettuce</artifactId>
-			<version>2.3.3</version>
-		</dependency>
-
-
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -98,6 +87,7 @@
 			<version>1.0.1.Final</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<!-- Prometheus client -->
 		<dependency>
 			<groupId>io.prometheus</groupId>
@@ -129,12 +119,12 @@
 			<artifactId>simpleclient_spring_web</artifactId>
 			<version>${prometheus.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.reactivex.rxjava2</groupId>
 			<artifactId>rxjava</artifactId>
 			<version>${rxjava.version}</version>
 		</dependency>
+
 		<!-- modig -->
 		<dependency>
 			<groupId>no.nav.modig</groupId>
@@ -152,6 +142,7 @@
 			<scope>runtime</scope>
 			<version>${modig-security.version}</version>
 		</dependency>
+
 		<!-- tjenester -->
 		<dependency>
 			<groupId>no.nav.tjenester</groupId>
