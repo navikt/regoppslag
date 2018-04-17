@@ -1,5 +1,6 @@
 package no.nav.regoppslag.nais.checks;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.support.Ping;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Component
+@Slf4j
 public class RedisCacheCheck extends AbstractNaisIsReadyTest {
 	
 	public static final String REDIS_LABEL = "Redis";
@@ -30,6 +32,7 @@ public class RedisCacheCheck extends AbstractNaisIsReadyTest {
 			lettuceConnectionFactory.getConnection()
 					.getSubscription().isAlive();
 		} catch (Exception e) {
+			log.error(e.getMessage());
 			throw new ApplicationNotReadyException("Could not ping Redis cache", e);
 		}
 	}
