@@ -1,0 +1,53 @@
+package no.nav.regoppslag.config.cache;
+
+import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
+ *
+ * @author Ugur Alpay Cenar, Visma Consulting.
+ */
+
+@Profile("local")
+@Configuration
+@EnableCaching
+public class LocalCacheConfig {
+	
+	
+	@Bean
+	@Primary
+	public CacheManager cacheManager() {
+		
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+				.expireAfterAccess(2, TimeUnit.DAYS)
+				.maximumSize(2000)
+				.build());
+		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
+				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder().build()),
+				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build()),
+				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().build()),
+				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().build())));
+		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build());
+		return cacheManager;
+		
+	}
+}

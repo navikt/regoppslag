@@ -67,7 +67,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		factory.setShareNativeConnection(true);
 		factory.setValidateConnection(true);
-		factory.validateConnection();
 		factory.setTimeout(100);
 		factory.afterPropertiesSet();
 		return factory;
