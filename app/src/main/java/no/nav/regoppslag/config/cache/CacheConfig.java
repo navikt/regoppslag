@@ -3,6 +3,8 @@ package no.nav.regoppslag.config.cache;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
+import com.lambdaworks.redis.resource.DefaultClientResources;
+import com.lambdaworks.redis.resource.Delay;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -48,7 +50,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
-		redisCacheManager.afterPropertiesSet();
 		return redisCacheManager;
 	}
 	
@@ -59,7 +60,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		redisTemplate.setDefaultSerializer(customRedisSerializer);
 		redisTemplate.setEnableDefaultSerializer(true);
-		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
 	}
 	
@@ -68,8 +68,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		factory.setShareNativeConnection(false);
-		factory.setValidateConnection(false); //Viktig!
-		factory.setTimeout(200);
+		factory.setValidateConnection(false);
+		factory.setTimeout(100);
+		factory.setClientResources(DefaultClientResources.builder()
+				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
+				.build());
 		factory.afterPropertiesSet();
 		return factory;
 	}
