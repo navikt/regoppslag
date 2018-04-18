@@ -3,6 +3,8 @@ package no.nav.regoppslag.config.cache;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
+import com.lambdaworks.redis.resource.DefaultClientResources;
+import com.lambdaworks.redis.resource.Delay;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -68,6 +70,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 		factory.setShareNativeConnection(true);
 		factory.setValidateConnection(true); //Viktig!
 		factory.setTimeout(100);
+		factory.setClientResources(DefaultClientResources.builder()
+				.reconnectDelay(Delay.constant(100, TimeUnit.MILLISECONDS))
+				.build());
 		factory.afterPropertiesSet();
 		return factory;
 	}
