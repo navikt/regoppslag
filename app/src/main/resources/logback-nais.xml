@@ -22,7 +22,11 @@
 			<appender-ref ref="stdout_json"/>
 		</logger>
 
-	<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
+	<logger name="com.lambdaworks.redis" additivity="false" level="DEBUG">
+		<appender-ref ref="stdout_json"/>
+	</logger>
+
+	<logger name="io.netty.channel" additivity="false" level="DEBUG">
 		<appender-ref ref="stdout_json"/>
 	</logger>
 

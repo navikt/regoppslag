@@ -22,7 +22,7 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", getConsumerId(), "Get").inc();
+		requestCounter.labels("Redis", "CacheError", getConsumerId(), "GET").inc();
 	}
 	
 	@Override
