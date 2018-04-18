@@ -23,6 +23,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
  *
+ * Redis cache krever en Redis server som for å fungere. Redis serveren som kjører på nais er ikke eksponert ut og er derfor ikke mulig å aksessere lokalt.
+ * For å slippe å starte opp Redis server lokalt så vil denne klassen configurere cachemanager som kan kjøre ved lokalt kjøring av applikasjonen.
+ *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 

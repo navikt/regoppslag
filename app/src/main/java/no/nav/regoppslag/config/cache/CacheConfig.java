@@ -66,48 +66,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		factory.setShareNativeConnection(true);
-		factory.setValidateConnection(true);
+		factory.setValidateConnection(true); //Viktig!
 		factory.setTimeout(100);
 		factory.afterPropertiesSet();
 		return factory;
 	}
-
-//	@Bean
-//	public LettucePool lettucePool() {
-//		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
-//				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-//
-//		lettucePool.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-//		lettucePool.setPoolConfig(poolConfig());
-//		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
-//		lettucePool.setClientResources(DefaultClientResources.builder()
-//				.reconnectDelay(Delay.exponential(0, 200, TimeUnit.MILLISECONDS, 2))
-//				.build());
-//		lettucePool.afterPropertiesSet();
-//		lettucePool.getClient().setOptions(ClientOptions.builder()
-//				.autoReconnect(true)
-//				.cancelCommandsOnReconnectFailure(true)
-//				.pingBeforeActivateConnection(true)
-//				.suspendReconnectOnProtocolFailure(true)
-//				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-//				.socketOptions(SocketOptions.builder().connectTimeout(100, TimeUnit.MILLISECONDS).build())
-//				.build());
-//		return lettucePool;
-//	}
-//
-//	private GenericObjectPoolConfig poolConfig() {
-//		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
-//		genericObjectPoolConfig.setMaxIdle(128);
-//		genericObjectPoolConfig.setMaxTotal(128);
-//		genericObjectPoolConfig.setMaxWaitMillis(100);
-//		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
-//		genericObjectPoolConfig.setTestWhileIdle(false);
-//		genericObjectPoolConfig.setTestOnBorrow(false);
-//		genericObjectPoolConfig.setTestOnCreate(false);
-//		genericObjectPoolConfig.setTestOnReturn(false);
-//		return genericObjectPoolConfig;
-//	}
-	
 	
 	@Bean
 	@Override
