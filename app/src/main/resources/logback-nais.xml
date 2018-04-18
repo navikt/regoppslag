@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 		<appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
-			<encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+			<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+				<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+					<maxDepthPerThrowable>30</maxDepthPerThrowable>
+					<exclude>java\.util\.concurrent\..*</exclude>
+					<exclude>org\.apache\.tomcat\..*</exclude>
+					<exclude>org\.apache\.coyote\..*</exclude>
+					<exclude>org\.apache\.catalina\..*</exclude>
+					<exclude>org\.springframework\.web\..*</exclude>
+					<exclude>sun\.net\.www\..*</exclude>
+				</throwableConverter>
+			</encoder>
 		</appender>
 
 		<root level="WARN">
@@ -11,6 +21,10 @@
 		<logger name="no.nav.regoppslag" level="INFO" additivity="false">
 			<appender-ref ref="stdout_json"/>
 		</logger>
+
+	<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
+		<appender-ref ref="stdout_json"/>
+	</logger>
 
 		<logger name="org.springframework" level="INFO"/>
 </configuration>

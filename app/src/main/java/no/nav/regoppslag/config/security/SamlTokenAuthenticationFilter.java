@@ -54,7 +54,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 			decoded = Base64.getDecoder().decode(base64Token);
 		} catch (IllegalArgumentException e) {
 			throw new BadCredentialsException(
-					"Failed to decode SAML authentication token");
+					"Kunne ikke dekode SAML authentication token");
 		}
 		
 		return new String(decoded, StandardCharsets.UTF_8);
