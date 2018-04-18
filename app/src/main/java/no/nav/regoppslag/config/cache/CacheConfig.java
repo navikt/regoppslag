@@ -67,9 +67,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public LettuceConnectionFactory lettuceConnectionFactory() {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		factory.setShareNativeConnection(true);
-		factory.setValidateConnection(true); //Viktig!
-		factory.setTimeout(500);
+		factory.setShareNativeConnection(false);
+		factory.setValidateConnection(false); //Viktig!
+		factory.setTimeout(200);
 		factory.afterPropertiesSet();
 		return factory;
 	}
