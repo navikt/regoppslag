@@ -3,11 +3,6 @@ package no.nav.regoppslag.config.cache;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
-import com.lambdaworks.redis.ClientOptions;
-import com.lambdaworks.redis.SocketOptions;
-import com.lambdaworks.redis.resource.DefaultClientResources;
-import com.lambdaworks.redis.resource.Delay;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -19,9 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePool;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
@@ -69,48 +62,52 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
-		factory.setShareNativeConnection(false);
+	public LettuceConnectionFactory lettuceConnectionFactory() {
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		factory.setShareNativeConnection(true);
+		factory.setValidateConnection(true);
+		factory.validateConnection();
+		factory.setTimeout(100);
+		factory.afterPropertiesSet();
 		return factory;
 	}
-	
-	@Bean
-	public LettucePool lettucePool() {
-		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		
-		lettucePool.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
-		lettucePool.setPoolConfig(poolConfig());
-		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
-		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.exponential(0, 200, TimeUnit.MILLISECONDS, 2))
-				.build());
-		
-		lettucePool.afterPropertiesSet();
-		lettucePool.getClient().setOptions(ClientOptions.builder()
-				.autoReconnect(true)
-				.cancelCommandsOnReconnectFailure(true)
-				.pingBeforeActivateConnection(true)
-				.suspendReconnectOnProtocolFailure(true)
-				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-				.socketOptions(SocketOptions.builder().connectTimeout(100, TimeUnit.MILLISECONDS).build())
-				.build());
-		return lettucePool;
-	}
-	
-	private GenericObjectPoolConfig poolConfig() {
-		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
-		genericObjectPoolConfig.setMaxIdle(128);
-		genericObjectPoolConfig.setMaxTotal(128);
-		genericObjectPoolConfig.setMaxWaitMillis(100);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
-		genericObjectPoolConfig.setTestWhileIdle(false);
-		genericObjectPoolConfig.setTestOnBorrow(false);
-		genericObjectPoolConfig.setTestOnCreate(false);
-		genericObjectPoolConfig.setTestOnReturn(false);
-		return genericObjectPoolConfig;
-	}
+
+//	@Bean
+//	public LettucePool lettucePool() {
+//		DefaultLettucePool lettucePool = new DefaultLettucePool(new RedisSentinelConfiguration()
+//				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+//
+//		lettucePool.setTimeout(TimeUnit.MILLISECONDS.toMillis(100));
+//		lettucePool.setPoolConfig(poolConfig());
+//		//Important. The default value is exponential delay with max reconnect delay of 30 seconds
+//		lettucePool.setClientResources(DefaultClientResources.builder()
+//				.reconnectDelay(Delay.exponential(0, 200, TimeUnit.MILLISECONDS, 2))
+//				.build());
+//		lettucePool.afterPropertiesSet();
+//		lettucePool.getClient().setOptions(ClientOptions.builder()
+//				.autoReconnect(true)
+//				.cancelCommandsOnReconnectFailure(true)
+//				.pingBeforeActivateConnection(true)
+//				.suspendReconnectOnProtocolFailure(true)
+//				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+//				.socketOptions(SocketOptions.builder().connectTimeout(100, TimeUnit.MILLISECONDS).build())
+//				.build());
+//		return lettucePool;
+//	}
+//
+//	private GenericObjectPoolConfig poolConfig() {
+//		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
+//		genericObjectPoolConfig.setMaxIdle(128);
+//		genericObjectPoolConfig.setMaxTotal(128);
+//		genericObjectPoolConfig.setMaxWaitMillis(100);
+//		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
+//		genericObjectPoolConfig.setTestWhileIdle(false);
+//		genericObjectPoolConfig.setTestOnBorrow(false);
+//		genericObjectPoolConfig.setTestOnCreate(false);
+//		genericObjectPoolConfig.setTestOnReturn(false);
+//		return genericObjectPoolConfig;
+//	}
 	
 	
 	@Bean
