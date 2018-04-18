@@ -50,6 +50,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
+		redisCacheManager.afterPropertiesSet();
 		return redisCacheManager;
 	}
 	
@@ -60,6 +61,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		
 		redisTemplate.setDefaultSerializer(customRedisSerializer);
 		redisTemplate.setEnableDefaultSerializer(true);
+		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
 	}
 	
@@ -67,8 +69,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public LettuceConnectionFactory lettuceConnectionFactory() {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
-		factory.setShareNativeConnection(true);
-		factory.setValidateConnection(true); //Viktig!
+		factory.setShareNativeConnection(false);
+		factory.setValidateConnection(false); //Viktig!
 		factory.setTimeout(100);
 		factory.setClientResources(DefaultClientResources.builder()
 				.reconnectDelay(Delay.constant(0, TimeUnit.MILLISECONDS))
