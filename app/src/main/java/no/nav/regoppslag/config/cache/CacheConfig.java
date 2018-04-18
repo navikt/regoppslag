@@ -71,7 +71,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		factory.setValidateConnection(true); //Viktig!
 		factory.setTimeout(100);
 		factory.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(100, TimeUnit.MILLISECONDS))
+				.reconnectDelay(Delay.constant(0, TimeUnit.MILLISECONDS))
 				.build());
 		factory.afterPropertiesSet();
 		return factory;
