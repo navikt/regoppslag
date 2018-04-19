@@ -79,10 +79,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 		CustomLettucePool lettucePool = new CustomLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(10, TimeUnit.MILLISECONDS))
+				.reconnectDelay(Delay.exponential(0, 500, TimeUnit.MILLISECONDS, 2))
 				.build());
 		lettucePool.setPoolConfig(poolConfig());
-		lettucePool.setTimeout(100);
+		lettucePool.setTimeout(300);
 		lettucePool.afterPropertiesSet();
 		return lettucePool;
 	}
@@ -92,12 +92,13 @@ public class CacheConfig extends CachingConfigurerSupport {
 		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
 		genericObjectPoolConfig.setTestOnReturn(false);
 		genericObjectPoolConfig.setTestOnCreate(false);
+		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setMaxTotal(128);
 		genericObjectPoolConfig.setMaxIdle(128);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
-		genericObjectPoolConfig.setEvictorShutdownTimeoutMillis(100);
-		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(100);
+		genericObjectPoolConfig.setMinIdle(0);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(30000);
+		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(60000);
 		return genericObjectPoolConfig;
 	}
 	
