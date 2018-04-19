@@ -29,6 +29,14 @@ public class SamlTokenUtils {
 		if (SecurityContextHolder.getContext().getAuthentication() == null || !SecurityContextHolder.getContext()
 				.getAuthentication()
 				.isAuthenticated()) {
+			
+			//TODO: Testkode, fjern senere
+			if (!SecurityContextHolder.getContext()
+					.getAuthentication()
+					.isAuthenticated()) {
+				log.warn("SecurityContext isAuthenticated was false");
+			}
+			
 			return null;
 		}
 		

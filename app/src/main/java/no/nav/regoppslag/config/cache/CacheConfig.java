@@ -5,6 +5,8 @@ import static no.nav.regoppslag.nais.NaisContract.STS_CACHE_NAME;
 
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -17,6 +19,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePool;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
@@ -29,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Profile("nais")
 @Configuration
 @EnableCaching
+@Slf4j
 public class CacheConfig extends CachingConfigurerSupport {
 	
 	private static final String MASTER_NAME = "mymaster";
@@ -64,17 +68,37 @@ public class CacheConfig extends CachingConfigurerSupport {
 	}
 	
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
 		factory.setShareNativeConnection(false);
-		factory.setValidateConnection(false);
-		factory.setTimeout(100);
-		factory.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(1, TimeUnit.MILLISECONDS))
-				.build());
-		factory.afterPropertiesSet();
 		return factory;
+	}
+	
+	@Bean
+	public LettucePool lettucePool() {
+		CustomLettucePool lettucePool = new CustomLettucePool(new RedisSentinelConfiguration()
+				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+		lettucePool.setClientResources(DefaultClientResources.builder()
+				.reconnectDelay(Delay.constant(10, TimeUnit.MILLISECONDS))
+				.build());
+		lettucePool.setPoolConfig(poolConfig());
+		lettucePool.setTimeout(100);
+		lettucePool.afterPropertiesSet();
+		return lettucePool;
+	}
+	
+	
+	public GenericObjectPoolConfig poolConfig() {
+		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
+		genericObjectPoolConfig.setTestOnReturn(false);
+		genericObjectPoolConfig.setTestOnCreate(false);
+		genericObjectPoolConfig.setTestOnBorrow(false);
+		genericObjectPoolConfig.setMaxTotal(128);
+		genericObjectPoolConfig.setMaxIdle(128);
+		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(100);
+		genericObjectPoolConfig.setEvictorShutdownTimeoutMillis(100);
+		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(100);
+		return genericObjectPoolConfig;
 	}
 	
 	@Bean
