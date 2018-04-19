@@ -5,7 +5,7 @@
 	<groupId>no.nav.regoppslag</groupId>
 	<artifactId>regoppslag</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.44</version>
+	<version>0.1.45-SNAPSHOT</version>
 	<name>regoppslag</name>
 
 	<prerequisites>
