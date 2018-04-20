@@ -24,10 +24,12 @@ import org.springframework.util.StringUtils;
 import java.util.concurrent.TimeUnit;
 
 /**
+ *
+ * Copy of {@Link DefaultLettucePool} with some modifications in afterPropertiesSet function
+ *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class CustomLettucePool implements LettucePool, InitializingBean {
-	
 	
 	@SuppressWarnings("rawtypes") //
 	private GenericObjectPool<StatefulConnection<byte[], byte[]>> internalPool;
@@ -102,6 +104,7 @@ public class CustomLettucePool implements LettucePool, InitializingBean {
 		} else {
 			this.client = RedisClient.create(getRedisURI());
 		}
+		
 		//Custom code
 		this.client.setOptions(ClientOptions.builder()
 				.autoReconnect(true)
