@@ -71,13 +71,12 @@ public class NaisContract {
 		try {
 			String decodedToken = requestStsToken();
 			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
-			SecurityContextHolder.getContext().setAuthentication(authRequest);
+			
 
 			List<SelftestCheck> results = new ArrayList<>();
-
-			results.add(personV3Check.check());
-			results.add(organisasjonV4Check.check());
-			results.add(organisasjonEnhetKontaktinformasjonV1Check.check());
+			results.add(personV3Check.check(authRequest));
+			results.add(organisasjonV4Check.check(null));
+			results.add(organisasjonEnhetKontaktinformasjonV1Check.check(null));
 			
 			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
 				isReady.labels("APP").dec();

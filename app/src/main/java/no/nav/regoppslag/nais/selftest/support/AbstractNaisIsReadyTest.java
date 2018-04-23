@@ -1,5 +1,7 @@
 package no.nav.regoppslag.nais.selftest.support;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StopWatch;
 
 import java.io.PrintWriter;
@@ -58,8 +60,11 @@ public abstract class AbstractNaisIsReadyTest {
 		return true;
 	}
 	
-	public SelftestCheck check() {
+	public SelftestCheck check(UsernamePasswordAuthenticationToken token) {
 		Callable<SelftestCheck> callable = () -> {
+			if (token != null){
+				SecurityContextHolder.getContext().setAuthentication(token);
+			}
 			SelftestCheck check = new SelftestCheck();
 			StopWatch stopWatch = new StopWatch();
 			stopWatch.start();
