@@ -1,5 +1,9 @@
 package no.nav.regoppslag.xmlenricher;
 
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
+
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
@@ -11,6 +15,8 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.Payload;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,7 +26,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,7 +48,10 @@ public class ElementEnricher {
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
-
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		SecurityContextHolder.clearContext();
+		
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 
 		List<Payload> processingList = new ArrayList<>();
@@ -51,17 +62,25 @@ public class ElementEnricher {
 				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath), node));
 			}
 		}
-
+		
+		
 		final List<Throwable> unhandledErrors = Collections.synchronizedList(new ArrayList<>());
-
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
-				.map(payload -> new Aggregate(payload.getPlugin().processElement(payload.getElement(), dokumentTypeId, prefixMapper), payload.getElement()))
+				.map(payload -> {
+							Map<String, Object> valueMap = new HashMap<>();
+							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
+							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
+							valueMap.put(SECURITYCONTEXT.name(), securityContext);
+							return new Aggregate(payload.getPlugin()
+									.processElement(payload.getElement(), valueMap), payload.getElement());
+						}
+				)
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
-						throwable -> unhandledErrors.add(throwable)
+						unhandledErrors::add
 				);
 
 		if (!unhandledErrors.isEmpty()) {

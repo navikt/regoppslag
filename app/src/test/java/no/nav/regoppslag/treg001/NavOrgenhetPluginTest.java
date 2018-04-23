@@ -14,6 +14,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
+import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +22,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -30,110 +33,122 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NavOrgenhetPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
-
+	
 	private static final String NAV_ENHET_NAVN = "Pensjon Inc.";
 	private static final String DOKUMENTTYPEID = "I000003";
-
+	
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
 	private PostnummerService postnummerService = new PostnummerService();
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
 	private NavOrgenhetBesoksadressePlugin norgBesoksadressePlugin;
-
+	private SecurityContext securityContext = new SecurityContextImpl();
+	private Map<String, Object> valueMap;
+	
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-
+	
 	@Before
 	public void setUp() throws Exception {
+		valueMap = new HashMap<>();
+		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
+		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
+		valueMap.put(ValueMapKeys.SECURITYCONTEXT.name(), securityContext);
+		
+		
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper);
 		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper);
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
+	
 	@Test
 	public void testOrgEnhetPostadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-
+		
 		Document document = loadDocument(xmlFile);
-
+		
 		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:postadresse";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
 		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
-
+		
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgPostadressePlugin.processElement(node, DOKUMENTTYPEID, null);
-
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
+		
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
-
+		
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
-
+	
 	@Test
 	public void testOrgEnhetBesoksadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-
+		
 		Document document = loadDocument(xmlFile);
-
+		
 		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:besoksadresse";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
 		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
-
+		
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgBesoksadressePlugin.processElement(node, DOKUMENTTYPEID, null);
+		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
-
+	
 	@Test
 	public void throwFuncErrorWhenOrgEnhetIkkeFunnetPostadressePlugin() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=TKN5427");
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
-
+		
 		Document document = loadDocument(xmlFile);
-
+		
 		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:postadresse";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
 		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
-
+		
 		Node node = findSingleNode(xPathExpression, document);
-		norgPostadressePlugin.processElement(node, DOKUMENTTYPEID, null);
+		norgPostadressePlugin.processElement(node, valueMap);
 	}
-
+	
 	@Test
 	public void throwFuncErrorWhenOrgEnhetIkkeFunnetBesoksadressePlugin() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetsId=TKN5427");
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
-
+		
 		Document document = loadDocument(xmlFile);
-
+		
 		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:besoksadresse";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
 		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
-
+		
 		Node node = findSingleNode(xPathExpression, document);
-		norgBesoksadressePlugin.processElement(node, DOKUMENTTYPEID, null);
+		norgBesoksadressePlugin.processElement(node, valueMap);
 	}
-
-
+	
+	
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
 		Organisasjonsenhet enhet = new Organisasjonsenhet();
 		enhet.setEnhetNavn(navEnhetNavn);

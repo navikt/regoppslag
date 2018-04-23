@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -18,8 +17,7 @@ import java.util.Map;
 /**
  * Source: https://www.bring.no/radgivning/sende-noe/adressetjenester/postnummer
  */
-@Service
-@Scope("singleton")
+@Component
 public class PostnummerService {
 
 	public static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);

@@ -1,6 +1,5 @@
 package no.nav.regoppslag.xmlenricher;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -9,6 +8,8 @@ import no.nav.regoppslag.xmlenricher.exceptions.MissingKeyValueException;
 import no.nav.regoppslag.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -36,6 +37,6 @@ public interface ElementEnricherPlugin {
 	 * @throws MissingKeyValueException if lookup key subelement is empty or missing
 	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 */
-	Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException;
+	Node processElement(Node content, Map<String, Object> propertyMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException;
 
 }

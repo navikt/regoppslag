@@ -1,5 +1,8 @@
 package no.nav.regoppslag.config.cache;
 
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_ERROR;
+import static no.nav.regoppslag.metrics.PrometheusLabels.REDIS_CACHE;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
@@ -19,10 +22,13 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
 	@Override
 	public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
+		if (cache.getName().equals(HENT_PERSON)) {
+			key = ((String) key).replace(((String) key).substring(0, 11), "<personident-sladdet>");
+		}
 		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		requestCounter.labels("Redis", "CacheError", getConsumerId(), "GET").inc();
+		requestCounter.labels(REDIS_CACHE, REDIS_CACHE, CACHE_ERROR, getConsumerId(), "GET").inc();
 	}
 	
 	@Override

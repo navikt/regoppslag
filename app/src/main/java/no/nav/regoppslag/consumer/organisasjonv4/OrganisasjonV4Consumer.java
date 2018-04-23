@@ -46,7 +46,7 @@ public class OrganisasjonV4Consumer {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		requestCounter.labels(serviceCode, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);

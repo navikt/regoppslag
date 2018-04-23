@@ -5,7 +5,6 @@ import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.SerializationException;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -22,7 +21,7 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	
 	@Override
 	public byte[] serialize(Object o)  {
-		ByteBufferOutput output = new ByteBufferOutput(MIN_BUFFER_SIZE, -1); //-1 means maximum possible buffer size on VM. //TODO: Juster på max buffer size hvis nødvendig
+		ByteBufferOutput output = new ByteBufferOutput(MIN_BUFFER_SIZE, -1); //-1 means maximum possible buffer size on VM.
 		Kryo kryo = kryoPool.borrow();
 		try {
 			kryo.writeClassAndObject(output, o);

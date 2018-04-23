@@ -4,9 +4,12 @@ import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasj
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +22,8 @@ import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,12 +34,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.Map;
 
 @Component
-@Scope("prototype")
 @Slf4j
 public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
-	Logger LOG = LoggerFactory.getLogger(NavOrgenhetPostadressePlugin.class);
+
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
 	public static final String ELEMENT_LOCALNAME_POST = "postadresse";
 	public static final String ELEMENT_LOCALNAME_RETUR = "returadresse";
@@ -58,20 +60,28 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
+		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
+		
+		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerId(), "NavOrgenhetPostadressePlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetPostadressePlugin", PLUGIN, getConsumerId(), RECEIVED)
+					.inc();
 
 			Postadresse adresse = unmarshal(content);
 			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s, ConsumerId=%s", adresse.getEnhetsId(), getConsumerId()));
 
 			validateAdresse(adresse);
 			
-			requestCounter.labels(HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+					.inc();
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			if (wsEnhet == null) {

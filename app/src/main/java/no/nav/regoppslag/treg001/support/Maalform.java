@@ -3,11 +3,9 @@ package no.nav.regoppslag.treg001.support;
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class Maalform {
 	public void setMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
 		if (mottaker.getSpraakkode() == null) {

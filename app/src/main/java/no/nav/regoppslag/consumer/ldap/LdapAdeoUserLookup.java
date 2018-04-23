@@ -35,7 +35,7 @@ public class LdapAdeoUserLookup {
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
 	private Histogram.Timer requestTimer;
-
+	
 	public LdapAdeoUserLookup(LdapTemplate ldapTemplate, String userBaseDn) {
 		this.ldapTemplate = ldapTemplate;
 		this.userBaseDn = userBaseDn;
@@ -48,24 +48,29 @@ public class LdapAdeoUserLookup {
 	 * @return The full name of the user or null if not found.
 	 */
 	@Cacheable(HENT_FULLT_NAVN)
-	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
 		
-		requestCounter.labels(HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
-		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "LDAP", HENT_FULLT_NAVN).startTimer();
-
-		LdapQuery cn = LdapQueryBuilder.query()
-				.base(userBaseDn)
-				.filter(new EqualsFilter("cn", adeoIdent));
-		List<String> search = doSearch(cn);
-
-		requestTimer.observeDuration();
-		if (search == null || search.isEmpty()) {
-			throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
-		} else {
-			return search.get(0);
+		try {
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "LDAP", HENT_FULLT_NAVN).startTimer();
+			
+			LdapQuery cn = LdapQueryBuilder.query()
+					.base(userBaseDn)
+					.filter(new EqualsFilter("cn", adeoIdent));
+			List<String> search = doSearch(cn);
+			
+			if (search == null || search.isEmpty()) {
+				throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent);
+			} else {
+				return search.get(0);
+			}
+			
+		} finally {
+			requestTimer.observeDuration();
 		}
+		
 	}
 	
 	private List<String> doSearch(LdapQuery cn) {

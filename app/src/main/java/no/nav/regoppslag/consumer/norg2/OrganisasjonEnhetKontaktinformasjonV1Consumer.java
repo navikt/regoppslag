@@ -44,7 +44,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		requestCounter.labels(HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
 			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk").startTimer();

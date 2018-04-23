@@ -10,9 +10,9 @@ public class PrometheusLabels {
 	
 	public static final String LABEL_EXCEPTION_NAME = "exception_name";
     public static final String LABEL_PROCESS = "process";
-	public static final String LABEL_PROCESS_CODE = "process_called";
+	public static final String LABEL_SERVICE = "service";
     public static final String LABEL_TYPE = "type";
-	public static final String LABEL_PROCESS_CALLED = "process_title";
+	public static final String LABEL_PROCESS_NAME = "process_name";
 	public static final String LABEL_CONSUMER_ID = "consumer_name";
     
     public static final String LABEL_EVENT = "event";
@@ -27,13 +27,17 @@ public class PrometheusLabels {
 	public static final String LABEL_CACHE_COUNTER = "cacheCounter";
 	public static final String CACHE_MISS = "cacheMiss";
 	public static final String CACHE_TOTAL = "cacheTotal";
+	public static final String CACHE_ERROR = "cacheError";
+	public static final String REDIS_CACHE = "redisCache";
 	
 	public static final String MOTTAKERTYPE = "mottakerType";
 	public static final String PLUGIN = "plugin";
-	public static final String CONTROLLER = "controller";
-	public static final String PERSONV3 = "personV3";
+	public static final String REST = "Rest";
+	public static final String PERSONV3 = "PersonV3";
 	public static final String ORGANISASJONV4 = "OrganisasjonV4";
 	public static final String ORGENHETKONTAKTV1 = "OrganisasjonEnhetKontaktinformasjonV1";
-	public static final String LDAP = "ldap";
+	public static final String LDAP = "LDAP";
+	public static final String RECEIVED = "received";
+	public static final String PROCESSED_OK = "processedOk";
 	
 }

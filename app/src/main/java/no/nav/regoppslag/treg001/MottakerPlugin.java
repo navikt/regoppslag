@@ -6,9 +6,13 @@ import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +33,7 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -45,17 +46,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Hans Petter Simonsen - Miles
  */
 @Component
-@Scope("prototype")
 @Slf4j
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
-	Logger LOG = LoggerFactory.getLogger(MottakerPlugin.class);
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
-	public static final String ELEMENT_LOCALNAME = "mottaker";
+	
+	private static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
+	private static final String ELEMENT_LOCALNAME = "mottaker";
 	
 	private PersonV3Consumer personV3Consumer;
 	
@@ -69,46 +70,49 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	private Maalform maalform;
 	
-	private Authentication authentication;
-	
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 	
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo, Maalform maalform) {
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
 		super(Mottaker.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
-		this.maalform = maalform;
-		this.authentication = SecurityContextHolder.getContext().getAuthentication();
+		this.maalform = new Maalform();
 	}
 	
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+		
+		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
+		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
+		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		SecurityContextHolder.getContext().setAuthentication(this.authentication);
+		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
 		
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerId(), "MottakerPlugin").inc();
-			if (dokumentTypeId == null) {
+			requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+			if (dokumenttypeId == null) {
 				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!");
 			}
 			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumentTypeId, mottaker
+			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
 					.getId(), getConsumerId()));
 			
 			validateMottaker(mottaker);
 			
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), SERVICE_CODE_TREG001);
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s ConsumerId=%s", mottaker
@@ -118,7 +122,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				personV3Mapper.map(person, mottaker);
 				
 			} else {
-				requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
@@ -127,10 +132,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
 			//Sjekker språket på malen opp mot mottakers preferanser
-			requestCounter.labels(HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
-			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumentTypeId);
+			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+					.inc();
+			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null) {
-				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumentTypeId);
+				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumenttypeId);
 			}
 			maalform.setMaalform(mottaker, sprakinfos);
 			
@@ -144,7 +150,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumentTypeId, mottaker
+			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
 					.getId(), getConsumerId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
@@ -157,7 +163,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere."));
+			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
 		}
 	}
 	

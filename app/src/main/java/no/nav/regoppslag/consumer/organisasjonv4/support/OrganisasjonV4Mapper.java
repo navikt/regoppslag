@@ -15,7 +15,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdr
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -28,9 +27,7 @@ import java.util.Optional;
  */
 
 @Component
-@Scope("prototype")
 public class OrganisasjonV4Mapper {
-	private static final boolean harPostnummer = false;
 
 	@Inject
 	private final LandkodeService landkodeService;
@@ -71,7 +68,7 @@ public class OrganisasjonV4Mapper {
 		if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
 			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
 			settAdresseledd(adresse, norskPostadresse);
-			if (harPostnummer) {
+			if (norskPostadresse.getPostnummer() != null) {
 				norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
 			}
 		} else {
@@ -95,7 +92,7 @@ public class OrganisasjonV4Mapper {
 		if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
 			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
 			settAdresseledd(adresse, norskPostadresse);
-			if (harPostnummer) {
+			if (norskPostadresse.getPostnummer() != null) {
 				norskPostadresse.setPoststed(postnummerService.finnPoststed(norskPostadresse.getPostnummer()));
 			}
 		} else {

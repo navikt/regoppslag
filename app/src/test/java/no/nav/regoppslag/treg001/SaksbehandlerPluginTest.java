@@ -15,6 +15,8 @@ import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
+import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,6 +38,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {LdapConfig.class, SaksbehandlerPluginTest.Config.class})
@@ -41,7 +47,11 @@ import java.io.File;
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
-
+	private SecurityContext securityContext = new SecurityContextImpl();
+	private Map<String, Object> valueMap;
+	
+	
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -50,6 +60,14 @@ public class SaksbehandlerPluginTest {
 
 	@Inject
 	private SaksbehandlerPlugin saksbehandlerPlugin;
+	
+	@Before
+	public void init() {
+		valueMap = new HashMap<>();
+		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
+		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
+		valueMap.put(ValueMapKeys.SECURITYCONTEXT.name(), securityContext);
+	}
 
 	@Test
 	public void testSaksbehandlerPlugin() throws Exception {
@@ -65,8 +83,8 @@ public class SaksbehandlerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-
-		Node processed = saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
+		
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
@@ -90,7 +108,7 @@ public class SaksbehandlerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		saksbehandlerPlugin.processElement(node, DOKUMENTTYPEID, null);
+		saksbehandlerPlugin.processElement(node, valueMap);
 }
 
 	@Configuration

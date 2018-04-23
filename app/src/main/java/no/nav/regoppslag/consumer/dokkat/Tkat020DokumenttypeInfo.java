@@ -65,7 +65,8 @@ public class Tkat020DokumenttypeInfo {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagFunctionalException,RegOppslagTechnicalException{
 		
-		requestCounter.labels(HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS)
+				.inc();
 		
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();

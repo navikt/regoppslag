@@ -4,9 +4,12 @@ import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
+import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +17,11 @@ import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,10 +32,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.Map;
 
 @Slf4j
 @Component
-@Scope("prototype")
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
@@ -48,13 +51,19 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	private SaksbehandlerMapper saksbehandlerMapper;
 	
 	@Override
-	public Node processElement(Node content, String dokumentTypeId, NamespacePrefixMapper prefixMapper) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException {
+		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
+		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
+		
+		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN, getConsumerId(), "SaksbehandlerPlugin").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 			
 			NavAnsatt navAnsatt = unmarshal(content);
 			
@@ -62,7 +71,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			
 			validateSaksbehandler(navAnsatt);
 			
-			requestCounter.labels(HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+					.inc();
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 			
 			if (saksbehandlerNavn == null) {
@@ -91,7 +101,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	
 	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId"));
+			throw new RegOppslagFunctionalException("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId");
 		}
 	}
 	

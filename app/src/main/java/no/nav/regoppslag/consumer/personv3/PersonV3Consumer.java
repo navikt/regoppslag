@@ -41,7 +41,6 @@ public class PersonV3Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_PERSON = "hentPerson";
-
 	
 	@Inject
 	public PersonV3Consumer(PersonV3 personV3) {
@@ -52,7 +51,7 @@ public class PersonV3Consumer {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Bruker hentPerson(final String personidentifikator, final String consumerId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
-		requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, consumerId, CACHE_MISS).inc();
+		requestCounter.labels(serviceCode, HENT_PERSON, LABEL_CACHE_COUNTER, consumerId, CACHE_MISS).inc();
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;

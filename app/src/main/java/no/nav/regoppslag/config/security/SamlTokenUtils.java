@@ -30,15 +30,21 @@ public class SamlTokenUtils {
 				.getAuthentication()
 				.isAuthenticated()) {
 			
-			//TODO: Testkode, fjern senere
-			if (!SecurityContextHolder.getContext()
+			//TODO: Testkode, fjern senere ved bekreftelse av riktig oppførsel
+			if (SecurityContextHolder.getContext().getAuthentication() != null && !SecurityContextHolder.getContext()
 					.getAuthentication()
 					.isAuthenticated()) {
-				log.warn("SecurityContext isAuthenticated was false");
+				log.error(String.format("Sikkerhetstokenet i securityContext er ugyldig fordi den har allerede blitt brukt. " +
+						"Dette er noe som ikke bør skje! (feil i kode?). ConsumerId=%s", SecurityContextHolder.getContext()
+						.getAuthentication()
+						.getName()));
 			}
 			
 			return null;
 		}
+		
+		//Securitytoken can only be used once
+		SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		
 		String credentials = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		
@@ -60,7 +66,7 @@ public class SamlTokenUtils {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is, StandardCharsets.UTF_8.name());
 		} catch (ParserConfigurationException | IOException | SAXException e) {
-			log.error(String.format("Feil ved parsing av SAML assertion token. Feilmelding=%s", e.getMessage()));
+			log.error(String.format("Feil ved parsing av SAML assertion token. Feilmelding=%s", e.getMessage()), e);
 			throw new SamlTokenInterceptorException("Feil ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
 		
@@ -72,7 +78,7 @@ public class SamlTokenUtils {
 		try {
 			return new SamlAssertionWrapper(token);
 		} catch (WSSecurityException e) {
-			log.error(String.format("Feilet ved parsing av SAML assertion element til SamlAssertionWrapper. Feilmelding=%s", e.getMessage()));
+			log.error(String.format("Feilet ved parsing av SAML assertion element til SamlAssertionWrapper. Feilmelding=%s", e.getMessage()), e);
 			throw new SamlTokenInterceptorException("Feilet ved parsing av SAML assertion token. Det kan hende tokenet er i feil format");
 		}
 		

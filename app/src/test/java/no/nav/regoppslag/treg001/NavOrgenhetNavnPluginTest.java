@@ -14,6 +14,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
+import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +22,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -30,6 +33,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NavOrgenhetNavnPluginTest {
@@ -42,12 +47,21 @@ public class NavOrgenhetNavnPluginTest {
 	private PostnummerService postnummerService = new PostnummerService();
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
-
+	private Map<String, Object> valueMap;
+	
+	private SecurityContext securityContext = new SecurityContextImpl();
+	
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
+		valueMap = new HashMap<>();
+		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
+		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
+		valueMap.put(ValueMapKeys.SECURITYCONTEXT.name(), securityContext);
+		
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
@@ -66,8 +80,8 @@ public class NavOrgenhetNavnPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-
-		Node processed = norgPlugin.processElement(node, DOKUMENTTYPEID, null);
+		
+		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -90,8 +104,8 @@ public class NavOrgenhetNavnPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-
-		norgPlugin.processElement(node, DOKUMENTTYPEID, null);
+		
+		norgPlugin.processElement(node, valueMap);
 	}
 
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {

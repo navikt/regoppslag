@@ -15,7 +15,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUt
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postboksadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -25,7 +24,6 @@ import java.util.Optional;
  * @author Ketill Fenne, Visma Consulting AS
  */
 @Component
-@Scope("prototype")
 public class PersonV3Mapper {
 	@Inject
 	private final PostnummerService postnummerService;
@@ -51,6 +49,7 @@ public class PersonV3Mapper {
 		} else {
 			mottaker.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
 		}
+		
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getBostedsadresse() != null) {

@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -19,8 +18,7 @@ import java.util.Map;
 /**
  * Source: https://unstats.un.org/unsd/methodology/m49/
  */
-@Service
-@Scope("singleton")
+@Component
 public class LandkodeService {
 
 	public static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);

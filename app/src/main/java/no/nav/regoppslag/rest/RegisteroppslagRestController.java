@@ -1,6 +1,5 @@
 package no.nav.regoppslag.rest;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CONTROLLER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SECURITY_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
@@ -19,6 +18,7 @@ import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.PrometheusLabels;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import org.springframework.http.MediaType;
@@ -61,9 +61,10 @@ public class RegisteroppslagRestController {
 				.startTimer();
 		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerId(), "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), "received")
+					.inc(); //TODO: Sjekk om dette kan fjernes
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, CONTROLLER, getConsumerId(), "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), "processed_ok").inc();
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
@@ -82,9 +83,11 @@ public class RegisteroppslagRestController {
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerId(), "received").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), "received")
+					.inc();
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, CONTROLLER, getConsumerId(), "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), "processed_ok")
+					.inc();
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);

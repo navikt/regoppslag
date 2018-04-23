@@ -1,12 +1,10 @@
 package no.nav.regoppslag.treg002;
 
-import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.ORGANISASJON;
 import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.PERSON;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.MOTTAKERTYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -63,15 +61,15 @@ public class HentMottakerOgAdresseService {
 			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s, ConsumerId=%s", request
 					.getType(), getConsumerId()));
 			if (PERSON.name().equals(request.getType())) {
-				requestCounter.labels(HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), SERVICE_CODE_TREG002);
 				personV3Mapper.map(bruker, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerId(), PERSON.name());
 			} else {
-				requestCounter.labels(HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				organisasjonV4Mapper.map(organisasjon, mottaker);
-				requestCounter.labels(SERVICE_CODE_TREG002, MOTTAKERTYPE, getConsumerId(), ORGANISASJON.name());
 			}
 			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s, ConsumerId=%s", request
 					.getType(), getConsumerId()));
