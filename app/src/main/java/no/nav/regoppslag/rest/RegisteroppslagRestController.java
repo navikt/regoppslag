@@ -3,6 +3,8 @@ package no.nav.regoppslag.rest;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SECURITY_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PROCESSED_OK;
+import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
@@ -61,10 +63,10 @@ public class RegisteroppslagRestController {
 				.startTimer();
 		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), "received")
-					.inc(); //TODO: Sjekk om dette kan fjernes
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), RECEIVED)
+					.inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), "processed_ok").inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), PROCESSED_OK).inc();
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
@@ -83,10 +85,10 @@ public class RegisteroppslagRestController {
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), "received")
+			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), RECEIVED)
 					.inc();
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), "processed_ok")
+			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
 					.inc();
 			return response;
 		} catch (Exception e) {
