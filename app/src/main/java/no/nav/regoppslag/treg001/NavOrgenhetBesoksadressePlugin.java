@@ -68,6 +68,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
+		securityContext.getAuthentication().setAuthenticated(false);
 		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
 		
 		validateElementType(content);

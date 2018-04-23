@@ -68,6 +68,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
+		securityContext.getAuthentication().setAuthenticated(false);
 		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
 		
 		validateElementType(content);

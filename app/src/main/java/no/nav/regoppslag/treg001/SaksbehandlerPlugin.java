@@ -59,6 +59,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
+		securityContext.getAuthentication().setAuthenticated(false);
 		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
 		
 		validateElementType(content);

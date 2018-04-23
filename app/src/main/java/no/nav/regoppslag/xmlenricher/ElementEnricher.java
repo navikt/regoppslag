@@ -3,6 +3,7 @@ package no.nav.regoppslag.xmlenricher;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
+import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
@@ -15,8 +16,11 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.Payload;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -72,7 +76,7 @@ public class ElementEnricher {
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
-							valueMap.put(SECURITYCONTEXT.name(), securityContext);
+					valueMap.put(SECURITYCONTEXT.name(), createNewSecurityContext(securityContext.getAuthentication()));
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getElement());
 						}
@@ -91,6 +95,14 @@ public class ElementEnricher {
 			}
 		}
 		return document;
+	}
+	
+	private SecurityContext createNewSecurityContext(Authentication oldAuthentication) {
+		SecurityContext newSecurityContext = new SecurityContextImpl();
+		UsernamePasswordAuthenticationToken newAuthentication =
+				new UsernamePasswordAuthenticationToken(oldAuthentication.getName(), oldAuthentication.getCredentials(), NO_AUTHORITIES);
+		newSecurityContext.setAuthentication(newAuthentication);
+		return newSecurityContext;
 	}
 
 	private void aggregate(Document document, Aggregate aggregate) {
