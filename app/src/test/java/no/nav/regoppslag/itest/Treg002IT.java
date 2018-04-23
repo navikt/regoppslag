@@ -256,7 +256,7 @@ public class Treg002IT extends AbstractIT {
 		assertEquals(response.getAdresse().getAdresselinje3(), null);
 		assertEquals(response.getAdresse().getLandkode(), "NO");
 		assertEquals(response.getAdresse().getPostnummer(), "0130");
-		assertEquals(response.getAdresse().getPoststed(), null);
+		assertEquals(response.getAdresse().getPoststed(), "OSLO");
 	}
 	
 	
