@@ -69,7 +69,8 @@ public class RegisteroppslagRestController {
 			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), RECEIVED)
 					.inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), PROCESSED_OK).inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
+					.inc();
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
