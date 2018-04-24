@@ -121,9 +121,11 @@ public class ElementEnricher {
 
 	private void handleException(Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
-			throw new RegOppslagFunctionalException(e);
+			throw new RegOppslagFunctionalException(e, ((RegOppslagFunctionalException) e).getShortDescription());
 		} else if (e instanceof RegOppslagSecurityException) {
-			throw new RegOppslagSecurityException(e);
+			throw new RegOppslagSecurityException(e, ((RegOppslagSecurityException) e).getShortDescription());
+		} else if (e instanceof RegOppslagTechnicalException) {
+			throw new RegOppslagTechnicalException(e, ((RegOppslagTechnicalException) e).getShortDescription());
 		} else {
 			throw new RegOppslagTechnicalException(e);
 		}

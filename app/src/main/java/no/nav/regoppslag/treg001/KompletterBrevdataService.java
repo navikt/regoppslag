@@ -70,17 +70,18 @@ public class KompletterBrevdataService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(e);
-		} catch (RegOppslagFunctionalException t) {
-			log.warn(t.getMessage(), t);
-			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t.getMessage()));
-		} catch (RegOppslagTechnicalException t) {
-			log.error(t.getMessage(), t);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), t
-					.getMessage()));
+		} catch (RegOppslagFunctionalException e) {
+			log.warn(e.getMessage(), e);
+			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+					.getMessage()), e.getShortDescription());
+		} catch (RegOppslagTechnicalException e) {
+			log.error(e.getMessage(), e);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+					.getMessage()), e.getShortDescription());
 		} catch (RegOppslagSecurityException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-					.getMessage()));
+					.getMessage()), e.getShortDescription());
 		}
 		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
 

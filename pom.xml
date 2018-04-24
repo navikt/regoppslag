@@ -65,7 +65,9 @@
 		<wiremock-standalone.version>2.15.0</wiremock-standalone.version>
 		<modig-testcertificates.version>1.2.0</modig-testcertificates.version>
 		<rxjava.version>2.1.9</rxjava.version>
-		<lettuce.version>4.4.4.Final</lettuce.version>
+		<lettuce-redis.version>4.4.4.Final</lettuce-redis.version>
+		<redis-client.version>2.9.0</redis-client.version>
+		<kryo.version>4.0.1</kryo.version>
 	</properties>
 
 	<dependencyManagement>

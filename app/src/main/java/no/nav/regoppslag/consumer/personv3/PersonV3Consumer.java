@@ -61,16 +61,17 @@ public class PersonV3Consumer {
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
-					.getMessage(), hentPersonPersonIkkeFunnet);
+					.getMessage(), hentPersonPersonIkkeFunnet, "PersonV3 - Person ikke funnet");
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
 			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + consumerId + ", message=" + hentPersonSikkerhetsbegrensning
-					.getMessage(), hentPersonSikkerhetsbegrensning);
+					.getMessage(), hentPersonSikkerhetsbegrensning, "PersonV3 - Sikkerhetsbegrensning");
 		} catch (Exception e) {
+			//Kastes SoapFaultException som også kan kastes av andre grunner enn Interceptor feil
 			if (e.getCause() instanceof SamlTokenInterceptorException){
-				throw new RegOppslagFunctionalException(e.getMessage());
+				throw new RegOppslagFunctionalException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token");
 			}
 			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson. ConsumerId=" + consumerId + ", message=" + e
-					.getMessage());
+					.getMessage(), e, "PersonV3 - Teknisk feil");
 		} finally {
 			requestTimer.observeDuration();
 		}

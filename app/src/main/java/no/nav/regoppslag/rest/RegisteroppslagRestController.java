@@ -102,11 +102,18 @@ public class RegisteroppslagRestController {
 	
 	private void incrementExceptionMetrics(Exception e, String serviceCode) {
 		if (e instanceof RegOppslagFunctionalException) {
-			requestExceptionCounter.labels(serviceCode, LABEL_FUNCTIONAL_EXCEPTION, e.getClass().getSimpleName()).inc();
+			requestExceptionCounter.labels(serviceCode, LABEL_FUNCTIONAL_EXCEPTION, e.getClass()
+					.getSimpleName(), ((RegOppslagFunctionalException) e).getShortDescription()).inc();
 		} else if (e instanceof RegOppslagSecurityException) {
-			requestExceptionCounter.labels(serviceCode, LABEL_SECURITY_EXCEPTION, e.getClass().getSimpleName()).inc();
+			requestExceptionCounter.labels(serviceCode, LABEL_SECURITY_EXCEPTION, e.getClass()
+					.getSimpleName(), ((RegOppslagSecurityException) e).getShortDescription()).inc();
+		} else if (e instanceof RegOppslagTechnicalException) {
+			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass()
+					.getSimpleName(), ((RegOppslagTechnicalException) e).getShortDescription()).inc();
 		} else {
-			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass().getSimpleName()).inc();
+			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass().getSimpleName(), e.getClass()
+					.getSimpleName()).inc();
+			
 		}
 	}
 }

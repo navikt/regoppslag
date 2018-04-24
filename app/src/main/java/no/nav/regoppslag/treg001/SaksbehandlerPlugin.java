@@ -8,6 +8,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.treg001.support.PluginUtil.updateSecurityContext;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
@@ -21,7 +22,6 @@ import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,6 +39,7 @@ import java.util.Map;
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
+	public static final String UGYLDIG_INPUT = "SaksbehandlerPlugin - Ugyldig input";
 	
 	public SaksbehandlerPlugin() {
 		super(NavAnsatt.class);
@@ -59,8 +60,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		securityContext.getAuthentication().setAuthenticated(false);
-		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
 		
 		validateElementType(content);
 		try {
@@ -78,7 +79,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			
 			if (saksbehandlerNavn == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s, ConsumerId=%s", navAnsatt
-						.getAnsattId(), getConsumerId()));
+						.getAnsattId(), getConsumerId()), "LDAP - Bruker ikke funnet");
 			}
 			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			
@@ -96,13 +97,13 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("SaksbehandlerPlugin: Feil ved parsing av XML", e);
+			throw new RegOppslagFunctionalException("SaksbehandlerPlugin: Feil ved parsing av XML", e, UGYLDIG_INPUT);
 		}
 	}
 	
 	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
-			throw new RegOppslagFunctionalException("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId");
+			throw new RegOppslagFunctionalException("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId", UGYLDIG_INPUT);
 		}
 	}
 	
@@ -110,7 +111,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}
 	

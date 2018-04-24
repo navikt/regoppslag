@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,6 +50,7 @@ public class SaksbehandlerPluginTest {
 	private static final String DOKUMENTTYPEID = "I000003";
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
+	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
 	
 	
 	
@@ -63,6 +65,7 @@ public class SaksbehandlerPluginTest {
 	
 	@Before
 	public void init() {
+		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);

@@ -29,43 +29,45 @@ import javax.inject.Inject;
 @Slf4j
 @Service
 public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
-
+	
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 	private Histogram.Timer requestTimer;
-
+	
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
-
+	
 	@Inject
 	public OrganisasjonEnhetKontaktinformasjonV1Consumer(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1) {
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;
 	}
-
+	
 	@Cacheable(HENT_ENHET_NAVN)
-	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk").startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk")
+					.startTimer();
 			
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
-			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + enhetNr + ", message=" + hentKontaktinformasjonForEnhetBolkUgyldigInput.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput);
+			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + enhetNr + ", message=" + hentKontaktinformasjonForEnhetBolkUgyldigInput
+					.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput, "NORG2 - Kunne ikke finne enhet");
 		} catch (Exception e) {
-			throw new RegOppslagTechnicalException("Noe gikk galt i kall til Norg for enhetNr=" + enhetNr + ", message=" + e.getMessage());
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til Norg for enhetNr=" + enhetNr + ", message=" + e.getMessage(), e, "NORG2 - Teknisk feil");
 		} finally {
 			requestTimer.observeDuration();
 		}
 	}
-
+	
 	private HentKontaktinformasjonForEnhetBolkRequest mapEnhetNr(String enhetNummer) {
 		HentKontaktinformasjonForEnhetBolkRequest request = new HentKontaktinformasjonForEnhetBolkRequest();
 		request.getEnhetIdListe().add(enhetNummer);
 		return request;
 	}
-
+	
 	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) throws HentKontaktinformasjonForEnhetBolkUgyldigInput {
 		if (response != null && response.getEnhetListe().size() == 1) {
 			return response.getEnhetListe().get(0);

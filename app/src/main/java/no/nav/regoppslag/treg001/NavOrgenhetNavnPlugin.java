@@ -8,6 +8,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.treg001.support.PluginUtil.updateSecurityContext;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
@@ -23,7 +24,6 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,6 +41,7 @@ import java.util.Map;
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
+	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -65,8 +66,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		securityContext.getAuthentication().setAuthenticated(false);
-		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
 		
 		validateElementType(content);
 		try {
@@ -83,7 +84,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			
 			if (wsEnhet == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", navEnhet
-						.getEnhetsId(), getConsumerId()));
+						.getEnhetsId(), getConsumerId()), "NORG2 - Kunne ikke finne enhet");
 			}
 			
 			norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
@@ -102,13 +103,13 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
 		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e);
+			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e, UGYLDIG_INPUT);
 		}
 	}
 	
 	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegOppslagFunctionalException("Feil i NavOrgenhetNavn: mangler enhetId.");
+			throw new RegOppslagFunctionalException("Feil i NavOrgenhetNavn: mangler enhetId.", UGYLDIG_INPUT);
 		}
 	}
 	
@@ -116,7 +117,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}
 }

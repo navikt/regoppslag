@@ -8,6 +8,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.treg001.support.PluginUtil.updateSecurityContext;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
@@ -23,7 +24,6 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,6 +43,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
 	public static final String ELEMENT_LOCALNAME_POST = "postadresse";
 	public static final String ELEMENT_LOCALNAME_RETUR = "returadresse";
+	public static final String UGYLDIG_INPUT = "NavOrgenhetPostAdressePlugin - Ugyldig input";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -68,8 +69,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		securityContext.getAuthentication().setAuthenticated(false);
-		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
 		
 		validateElementType(content);
 		try {
@@ -87,7 +88,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 			if (wsEnhet == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", adresse
-						.getEnhetsId(), getConsumerId()));
+						.getEnhetsId(), getConsumerId()), "NORG2 - Kunne ikke finne enhet");
 			}
 
 			norg2Mapper.mapPostadresse(wsEnhet, adresse);
@@ -107,13 +108,13 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("NavOrgenhetPostadressePlugin: Feil ved parsing av XML", e);
+			throw new RegOppslagFunctionalException("NavOrgenhetPostadressePlugin: Feil ved parsing av XML", e, UGYLDIG_INPUT);
 		}
 	}
 
 	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin: mangler enhetId."));
+			throw new RegOppslagFunctionalException("Feil i NavOrgenhetPostadressePlugin: mangler enhetId.", UGYLDIG_INPUT);
 		}
 	}
 
@@ -121,7 +122,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName())))) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST
-					+ " or {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST  + ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+					+ " or {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST + ". Found {" + element.getNamespaceURI() + "}" + element
+					.getLocalName(), UGYLDIG_INPUT);
 		}
 	}
 }

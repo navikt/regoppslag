@@ -37,8 +37,8 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			el = (Element) DOMUtils.getDomElement(el);
 			el.appendChild(wrapper.toDOM(el.getOwnerDocument()));
 			
-		} catch (WSSecurityException ex) {
-			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", ex.getMessage()));
+		} catch (WSSecurityException e) {
+			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", e.getMessage()), e);
 			throw new SamlTokenInterceptorException("Feilet ved komplettering av SAML assertion token fra header til SOAP meldingen. Det kan hende tokenet er i feil format");
 		}
 		

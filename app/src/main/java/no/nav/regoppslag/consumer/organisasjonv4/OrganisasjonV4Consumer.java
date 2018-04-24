@@ -54,9 +54,11 @@ public class OrganisasjonV4Consumer {
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
-			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + organisasjonsnummer + ", message=" + e.getMessage(), e);
+			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + organisasjonsnummer + ", message=" + e
+					.getMessage(), e, "OrganisasjonV4 - Ugyldig input");
 		} catch (Exception e) {
-			throw new RegOppslagTechnicalException("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=" + organisasjonsnummer + ", message=" + e.getMessage(), e);
+			throw new RegOppslagTechnicalException("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=" + organisasjonsnummer + ", message=" + e
+					.getMessage(), e, "OrganisasjonV4 - Teknisk feil");
 		} finally {
 			requestTimer.observeDuration();
 		}

@@ -46,7 +46,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build()),
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
 				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build())));
-		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build());
+		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterAccess(59, TimeUnit.MINUTES).build());
 		return cacheManager;
 		
 	}

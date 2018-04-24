@@ -64,7 +64,7 @@ public class HentMottakerOgAdresseService {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), SERVICE_CODE_TREG002);
-				personV3Mapper.map(bruker, mottaker);
+				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
@@ -112,9 +112,13 @@ public class HentMottakerOgAdresseService {
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.info("Sikkerhetsfeil", e);
 			throw (RegOppslagSecurityException) e;
+		} else if (e instanceof RegOppslagTechnicalException) {
+			log.error("Teknisk feil", e);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
+					.getShortDescription());
 		} else {
 			log.error("Teknisk feil", e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()));
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 		}
 	}
 	

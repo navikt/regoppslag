@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,6 +51,7 @@ public class NavOrgenhetNavnPluginTest {
 	private Map<String, Object> valueMap;
 	
 	private SecurityContext securityContext = new SecurityContextImpl();
+	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
 	
 	
 	@Rule
@@ -57,6 +59,7 @@ public class NavOrgenhetNavnPluginTest {
 
 	@Before
 	public void setUp() throws Exception {
+		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);

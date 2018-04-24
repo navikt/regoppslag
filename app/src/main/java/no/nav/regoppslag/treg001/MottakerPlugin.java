@@ -10,6 +10,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.treg001.support.PluginUtil.updateSecurityContext;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
@@ -34,7 +35,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -96,13 +96,13 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
+		updateSecurityContext(securityContext);
 		
 		validateElementType(content);
 		try {
 			requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!");
+				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", "MottakerPlugin - Ugyldig input");
 			}
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
@@ -119,7 +119,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 							.getId(), getConsumerId()));
 				}
 				
-				personV3Mapper.map(person, mottaker);
+				personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
 				
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
@@ -127,7 +127,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
-							.getId(), getConsumerId()));
+							.getId(), getConsumerId()), "PersonV3 - Person ikke funnet");
 				}
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
@@ -151,7 +151,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Element documentElement = newNode.getDocumentElement();
 			
 			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()));
+					.getId(), getConsumerId()), "OrganisasjonV4 - Ugyldig input");
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
@@ -163,7 +163,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
-			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.", "MottakerPlugin - Ugyldig input");
 		}
 	}
 	
