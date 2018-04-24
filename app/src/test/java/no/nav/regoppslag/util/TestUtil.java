@@ -56,20 +56,6 @@ public class TestUtil {
 		return node;
 	}
 
-
-	
-	public static void writeXml(Node doc) throws TransformerException {
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		//for pretty print
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		DOMSource source = new DOMSource(doc);
-		
-		StreamResult console = new StreamResult(System.out);
-
-		transformer.transform(source, console);
-	}
-	
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);

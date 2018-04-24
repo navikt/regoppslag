@@ -6,15 +6,12 @@ import static org.junit.Assert.assertThat;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import no.nav.regoppslag.util.LogbackCapturingAppender;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
@@ -27,13 +24,10 @@ public class LandkodeServiceTest {
 	@Mock
 	private Appender mockAppender;
 
-	@Captor
-	private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
-
 	private LandkodeService landkodeService = new LandkodeService();
 
 	@Before
-	public void setUp() throws IOException{
+	public void setUp() throws IOException {
 		landkodeService.init();
 	}
 
