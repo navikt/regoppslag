@@ -50,6 +50,6 @@ public class PrometheusLabels {
 	public static final String ORGENHETKONTAKTV1 = "OrganisasjonEnhetKontaktinformasjonV1";
 	public static final String LDAP = "LDAP";
 	public static final String RECEIVED = "received";
-	public static final String PROCESSED_OK = "processedOk";
+	public static final String PROCESSED_OK = "processed_ok";
 	
 }
