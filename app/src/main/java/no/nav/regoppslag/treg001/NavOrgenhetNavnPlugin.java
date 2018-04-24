@@ -65,6 +65,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
+		securityContext.getAuthentication().setAuthenticated(false);
 		SecurityContextHolder.getContext().setAuthentication(securityContext.getAuthentication());
 		
 		validateElementType(content);
@@ -107,7 +108,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	
 	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavn: mangler enhetId."));
+			throw new RegOppslagFunctionalException("Feil i NavOrgenhetNavn: mangler enhetId.");
 		}
 	}
 	

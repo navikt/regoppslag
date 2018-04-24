@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
- *
+ * <p>
  * Redis cache krever en Redis server som for å fungere. Redis serveren som kjører på nais er ikke eksponert ut og er derfor ikke mulig å aksessere lokalt.
  * For å slippe å starte opp Redis server lokalt så vil denne klassen configurere cachemanager som kan kjøre ved lokalt kjøring av applikasjonen.
  *
@@ -38,19 +38,17 @@ public class LocalCacheConfig {
 	@Bean
 	@Primary
 	public CacheManager cacheManager() {
-		
+
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
-				.expireAfterAccess(2, TimeUnit.DAYS)
-				.maximumSize(2000)
-				.build());
-		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
-				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder().build()),
+		cacheManager.setCaches(Arrays.asList(
+				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
+				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build()),
-				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().build()),
-				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().build())));
+				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
+				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build())));
 		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build());
 		return cacheManager;
 		
 	}
+	
 }
