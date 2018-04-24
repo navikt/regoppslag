@@ -1,7 +1,7 @@
 package no.nav.regoppslag.consumer.personv3;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -51,7 +51,7 @@ public class PersonV3Consumer {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Bruker hentPerson(final String personidentifikator, final String consumerId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
-		requestCounter.labels(serviceCode, HENT_PERSON, LABEL_CACHE_COUNTER, consumerId, CACHE_MISS).inc();
+		requestCounter.labels(serviceCode, HENT_PERSON, CACHE_COUNTER, consumerId, CACHE_MISS).inc();
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 		HentPersonResponse response;

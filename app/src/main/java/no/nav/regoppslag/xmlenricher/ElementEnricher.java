@@ -127,7 +127,7 @@ public class ElementEnricher {
 		} else if (e instanceof RegOppslagTechnicalException) {
 			throw new RegOppslagTechnicalException(e, ((RegOppslagTechnicalException) e).getShortDescription());
 		} else {
-			throw new RegOppslagTechnicalException(e);
+			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}
 	}
 

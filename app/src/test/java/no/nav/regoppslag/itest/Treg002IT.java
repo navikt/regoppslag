@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -48,7 +49,7 @@ public class Treg002IT extends AbstractIT {
 	@Test
 	public void shouldGetMottakerAndAdresseForPerson() throws Exception{
 		
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL +HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 		
 		assertPersonAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
@@ -61,7 +62,7 @@ public class Treg002IT extends AbstractIT {
 	@Test
 	public void shouldGetMottakerAndAdresseForOrganisasjon() throws Exception{
 		
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL +HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 		
 		assertOrgAdresse(response);
 		assertEquals(response.getIdentifikator(),"0102030405");
@@ -77,7 +78,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ugyldigInput-response.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -95,7 +96,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -114,7 +115,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -133,7 +134,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -150,7 +151,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", true);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.UNAUTHORIZED);
@@ -167,7 +168,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
 		
 		try {
-			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpClientErrorException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -184,7 +185,7 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg002/personV3/hentPerson-Tecnical-responsebody.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -198,7 +199,7 @@ public class Treg002IT extends AbstractIT {
 	public void shouldThrowWhenTypeIsIncorrect() throws Exception {
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -213,7 +214,7 @@ public class Treg002IT extends AbstractIT {
 		try {
 			HentMottakerOgAdresseRequest request = createRequest("PERSON");
 			request.setIdentifikator(null);
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -230,7 +231,7 @@ public class Treg002IT extends AbstractIT {
 		try {
 			HentMottakerOgAdresseRequest request = createRequest("PERSON");
 			request.setType(null);
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);

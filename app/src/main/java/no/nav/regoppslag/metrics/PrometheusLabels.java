@@ -34,9 +34,7 @@ public class PrometheusLabels {
 	public static final String SERVICE_CODE_TREG002="TREG002";
     
     //Cache
-	public static final String LABEL_CACHE_NAME = "name";
-	public static final String LABEL_CACHE_OPERATION = "operation";
-	public static final String LABEL_CACHE_COUNTER = "cacheCounter";
+	public static final String CACHE_COUNTER = "cacheCounter";
 	public static final String CACHE_MISS = "cacheMiss";
 	public static final String CACHE_TOTAL = "cacheTotal";
 	public static final String CACHE_ERROR = "cacheError";

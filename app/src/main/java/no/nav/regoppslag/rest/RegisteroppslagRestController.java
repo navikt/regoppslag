@@ -11,6 +11,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestExceptionCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 import io.prometheus.client.Histogram;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
@@ -27,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,12 +39,13 @@ import javax.inject.Inject;
  */
 
 @RestController
+@RequestMapping(REST)
 public class RegisteroppslagRestController {
 	
 	
-	public static final String REST = "/rest/";
-	public static final String KOMPLETTER_BREVDATA_URI_PATH = REST + "kompletterBrevdata";
-	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = REST + "hentMottakerOgAdresse";
+	public static final String REST = "rest";
+	public static final String KOMPLETTER_BREVDATA_URI_PATH = "/kompletterBrevdata";
+	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = "/hentMottakerOgAdresse";
 	
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
@@ -63,7 +66,7 @@ public class RegisteroppslagRestController {
 				.startTimer();
 		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), RECEIVED)
+			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), RECEIVED)
 					.inc();
 			ValiderOgKompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
 			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, REST, getConsumerId(), PROCESSED_OK).inc();

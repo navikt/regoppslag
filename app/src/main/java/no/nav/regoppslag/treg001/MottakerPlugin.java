@@ -3,8 +3,8 @@ package no.nav.regoppslag.treg001;
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
@@ -111,7 +111,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			validateMottaker(mottaker);
 			
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), SERVICE_CODE_TREG001);
 				if (person == null) {
@@ -122,7 +122,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
 				
 			} else {
-				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
@@ -132,7 +132,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
 			//Sjekker språket på malen opp mot mottakers preferanser
-			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 					.inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null) {

@@ -1,7 +1,7 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -35,6 +35,8 @@ public class OrganisasjonV4Consumer {
 
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
 	public static final String ORGANISASJON_V4 = "OrganisasjonV4";
+	public static final String ORGV4_UGYLDIG_INPUT = "OrganisasjonV4 - Ugyldig input";
+	public static final String ORGV4_ORG_IKKE_FUNNET = "OrganisasjonV4 - Organisasjon ikke funnet";
 
 	
 	@Inject
@@ -46,7 +48,7 @@ public class OrganisasjonV4Consumer {
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		requestCounter.labels(serviceCode, HENT_ORGANISASJON, LABEL_CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		requestCounter.labels(serviceCode, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
@@ -55,7 +57,8 @@ public class OrganisasjonV4Consumer {
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
 			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + organisasjonsnummer + ", message=" + e
-					.getMessage(), e, "OrganisasjonV4 - Ugyldig input");
+					.getMessage(), e, e.getClass()
+					.equals(HentOrganisasjonOrganisasjonIkkeFunnet.class) ? ORGV4_ORG_IKKE_FUNNET : ORGV4_UGYLDIG_INPUT);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=" + organisasjonsnummer + ", message=" + e
 					.getMessage(), e, "OrganisasjonV4 - Teknisk feil");
