@@ -23,7 +23,7 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	@Override
 	public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
 		if (cache.getName().equals(HENT_PERSON)) {
-			key = ((String) key).replace(((String) key).substring(0, 11), "<personident-sladdet>");
+			key = hidePersonIdent((String) key);
 		}
 		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
@@ -33,6 +33,9 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
 	@Override
 	public void handleCachePutError(RuntimeException exception, Cache cache, Object key, Object value) {
+		if (cache.getName().equals(HENT_PERSON)) {
+			key = hidePersonIdent((String) key);
+		}
 		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
@@ -40,6 +43,9 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
 	@Override
 	public void handleCacheEvictError(RuntimeException exception, Cache cache, Object key) {
+		if (cache.getName().equals(HENT_PERSON)) {
+			key = hidePersonIdent((String) key);
+		}
 		log.warn(String.format("Feil ved Cache Evict operasjon. CacheNavn=%s, nøkkel=%s, feilklasse=%s, feilmelding=%s", cache.getName(), key, exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
@@ -50,5 +56,9 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Clear operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
+	}
+	
+	private String hidePersonIdent(String key) {
+		return (key).replace((key).substring(0, 11), "<personident>");
 	}
 }
