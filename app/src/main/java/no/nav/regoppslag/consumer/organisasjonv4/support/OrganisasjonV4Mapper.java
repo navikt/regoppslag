@@ -1,10 +1,5 @@
 package no.nav.regoppslag.consumer.organisasjonv4.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSEMAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
@@ -46,7 +41,6 @@ public class OrganisasjonV4Mapper {
 	}
 
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) throws RegOppslagFunctionalException {
-		String serviceCode = "";
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ").trim());
 		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " ").trim());
@@ -61,10 +55,8 @@ public class OrganisasjonV4Mapper {
 
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!CollectionUtils.isEmpty(orgDet.getPostadresse())) {
-			requestCounter.labels(serviceCode, ORGANISASJONV4, ADRESSEMAPPER, getConsumerId(), "Postadresse").inc();
 			mapPostadresse(orgDet,norskPostadresse);
 		} else if (!CollectionUtils.isEmpty(orgDet.getForretningsadresse())) {
-			requestCounter.labels(serviceCode, ORGANISASJONV4, ADRESSEMAPPER, getConsumerId(), "Foretningsadresse").inc();
 			mapForretningsAdresse(orgDet,norskPostadresse);
 		}
 		validatePostadresse(norskPostadresse, mottaker);
