@@ -48,7 +48,6 @@
 		<spring.v>1.5.11.RELEASE</spring.v>
 		<spring-data.version>1.8.11.RELEASE</spring-data.version>
 		<spring-context.version>4.3.13.RELEASE</spring-context.version>
-		<spring-wiremock.version>1.2.4.RELEASE</spring-wiremock.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>

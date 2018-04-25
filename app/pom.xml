@@ -249,7 +249,7 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
-			<version>${spring-wiremock.version}</version>
+			<version>1.2.1.RELEASE</version>
 		</dependency>
 
 	</dependencies>
