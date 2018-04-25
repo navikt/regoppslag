@@ -46,6 +46,9 @@
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<spring.v>1.5.11.RELEASE</spring.v>
+		<spring-data.version>1.8.11.RELEASE</spring-data.version>
+		<spring-context.version>4.3.13.RELEASE</spring-context.version>
+		<spring-wiremock.version>1.2.4.RELEASE</spring-wiremock.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -68,6 +71,9 @@
 		<lettuce-redis.version>4.4.4.Final</lettuce-redis.version>
 		<redis-client.version>2.9.0</redis-client.version>
 		<kryo.version>4.0.1</kryo.version>
+		<caffeine.version>2.5.2</caffeine.version>
+		<httpunit.version>1.7</httpunit.version>
+		<jaxb.version>2.2.11</jaxb.version>
 	</properties>
 
 	<dependencyManagement>
@@ -168,11 +174,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.retry</groupId>
-			<artifactId>spring-retry</artifactId>
-			<version>${retry.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>

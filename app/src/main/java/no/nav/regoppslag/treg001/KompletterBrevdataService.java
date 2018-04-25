@@ -66,10 +66,10 @@ public class KompletterBrevdataService {
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error(e.getMessage(), e);
-			throw new RegOppslagTechnicalException(e);
+			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
-			throw new RegOppslagFunctionalException(e);
+			throw new RegOppslagFunctionalException(e, "Feil ved parsing av brevdata");
 		} catch (RegOppslagFunctionalException e) {
 			log.warn(e.getMessage(), e);
 			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e

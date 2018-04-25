@@ -14,6 +14,10 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 import io.prometheus.client.Histogram;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
@@ -40,6 +44,7 @@ import javax.inject.Inject;
 
 @RestController
 @RequestMapping(REST)
+@Api(value = "Registeroppslag")
 public class RegisteroppslagRestController {
 	
 	
@@ -57,6 +62,12 @@ public class RegisteroppslagRestController {
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 	
+	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med n")
+	@ApiResponses(value = {
+			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
+			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
+			@ApiResponse(code = 500, message = "Teknisk feil")
+	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	ValiderOgKompletterBrevdataResponse validerOgKompletterBrevdata(@RequestBody ValiderOgKompletterBrevdataRequest requestBody)
@@ -81,6 +92,12 @@ public class RegisteroppslagRestController {
 		}
 	}
 	
+	@ApiOperation(value = "TREG002", notes = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
+			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
+			@ApiResponse(code = 500, message = "Teknisk feil")
+	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)

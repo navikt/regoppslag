@@ -43,11 +43,12 @@ public class PrometheusLabels {
 	//Counter event and type
 	public static final String MOTTAKERTYPE = "mottakerType";
 	public static final String PLUGIN = "plugin";
+	public static final String GENERELT = "generelt";
 	public static final String ADRESSEMAPPER = "adresse_mapper";
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";
 	public static final String ORGANISASJONV4 = "OrganisasjonV4";
-	public static final String ORGENHETKONTAKTV1 = "OrganisasjonEnhetKontaktinformasjonV1";
+	public static final String NORG2 = "NORG2";
 	public static final String LDAP = "LDAP";
 	public static final String RECEIVED = "received";
 	public static final String PROCESSED_OK = "processed_ok";

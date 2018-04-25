@@ -2,6 +2,7 @@ package no.nav.regoppslag.consumer.ldap;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LDAP;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -31,6 +32,7 @@ public class LdapAdeoUserLookup {
 	public static final String DESCRIPTION = "description";
 	public static final String DISPLAYNAME = "displayname";
 	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
+	public static final String BRUKER_IKKE_FUNNET = "LDAP - Bruker ikke funnet";
 	
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
@@ -54,7 +56,7 @@ public class LdapAdeoUserLookup {
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "LDAP", HENT_FULLT_NAVN).startTimer();
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, LDAP, HENT_FULLT_NAVN).startTimer();
 			
 			LdapQuery cn = LdapQueryBuilder.query()
 					.base(userBaseDn)
@@ -62,7 +64,7 @@ public class LdapAdeoUserLookup {
 			List<String> search = doSearch(cn);
 			
 			if (search == null || search.isEmpty()) {
-				throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent, "LDAP - Bruker ikke funnet");
+				throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent, BRUKER_IKKE_FUNNET);
 			} else {
 				return search.get(0);
 			}

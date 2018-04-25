@@ -16,6 +16,12 @@
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+			<version>${retry.version}</version>
+		</dependency>
 		<!--CXF dependencies-->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -37,7 +43,19 @@
 			<artifactId>spring-security-ldap</artifactId>
 		</dependency>
 
-		<!--Redis dependencies-->
+		<!--CaffeineCache dependencies-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring-context.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>${caffeine.version}</version>
+		</dependency>
+
+		<!--Redis Cache dependencies-->
 		<dependency>
 			<groupId>biz.paluch.redis</groupId>
 			<artifactId>lettuce</artifactId>
@@ -46,7 +64,7 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
-			<version>1.8.11.RELEASE</version>
+			<version>${spring-data.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>biz.paluch.redis</groupId>
@@ -81,11 +99,17 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+
+		<!--Swagger-->
 		<dependency>
-			<groupId>org.jboss.spec.javax.ws.rs</groupId>
-			<artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-			<version>1.0.1.Final</version>
-			<scope>provided</scope>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.7.0</version>
 		</dependency>
 
 		<!-- Prometheus client -->
@@ -179,12 +203,12 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-core</artifactId>
-			<version>2.2.11</version>
+			<version>${jaxb.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>2.2.11</version>
+			<version>${jaxb.version}</version>
 		</dependency>
 
 		<!-- test -->
@@ -213,7 +237,7 @@
 		<dependency>
 			<groupId>httpunit</groupId>
 			<artifactId>httpunit</artifactId>
-			<version>1.7</version>
+			<version>${httpunit.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.servlet</groupId>
@@ -222,21 +246,12 @@
 			</exclusions>
 			<scope>test</scope>
 		</dependency>
-		<dependency><!-- lagt til for CaffeineCache-->
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>4.3.13.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-			<version>2.5.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
-			<version>1.2.1.RELEASE</version>
+			<version>${spring-wiremock.version}</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001;
 
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.BRUKER_IKKE_FUNNET;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
@@ -56,17 +57,17 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
 		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
 		
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
+		requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		//Used to get consumerId
-		updateSecurityContext(securityContext, false);
-		
 		validateElementType(content);
+		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
-			
 			NavAnsatt navAnsatt = unmarshal(content);
 			
 			log.info(String.format("Henter saksbehandler info. AnsattId=%s, ConsumerId=%s", navAnsatt.getAnsattId(), getConsumerId()));
@@ -78,8 +79,9 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 			
 			if (saksbehandlerNavn == null) {
+				//Dette bør ikke skje
 				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s, ConsumerId=%s", navAnsatt
-						.getAnsattId(), getConsumerId()), "LDAP - Bruker ikke funnet");
+						.getAnsattId(), getConsumerId()), "SaksbehandlerPlugin - " + BRUKER_IKKE_FUNNET);
 			}
 			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			

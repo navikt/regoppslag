@@ -42,6 +42,7 @@ public class Tkat020DokumenttypeInfo {
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	public static final String DOKKAT = "DOKKAT";
 	public static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
+	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
 	private Histogram.Timer requestTimer;
 
 	@Inject
@@ -81,7 +82,7 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
-				throw new RegOppslagFunctionalException("Dokkat.TKAT020 failed with bad request for dokumenttypeId:" + dokumenttypeId, e, "TKAT020 - Ugyldig input");
+				throw new RegOppslagFunctionalException("Dokkat.TKAT020 failed with bad request for dokumenttypeId:" + dokumenttypeId, e, TKAT020_UGYLDIG_INPUT);
 			} else {
 				throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed. (HttpStatus=" + e.getStatusCode() + ") for dokumenttypeId:" + dokumenttypeId, e, TKAT020_TEKNISKFEIL);
 			}

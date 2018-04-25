@@ -1,5 +1,6 @@
 package no.nav.regoppslag.common;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class HentMottakerOgAdresseResponse {
 	
+	@ApiModelProperty(example = "889640782", notes = "Fødselsnummer/Orgnummer. Samme som input")
 	private String identifikator;
+	@ApiModelProperty(example = "ARBEIDS- OG VELFERDSETATEN", notes = "Navn på personen/organisasjonen")
 	private String navn;
 	private Adresse adresse;
 }

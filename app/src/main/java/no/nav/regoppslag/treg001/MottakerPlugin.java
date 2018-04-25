@@ -2,9 +2,12 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
+import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.ORGV4_ORG_IKKE_FUNNET;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.PERSON_IKKE_FUNNET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
+import static no.nav.regoppslag.metrics.PrometheusLabels.GENERELT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
@@ -57,6 +60,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	private static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
 	private static final String ELEMENT_LOCALNAME = "mottaker";
+	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	
 	private PersonV3Consumer personV3Consumer;
 	
@@ -87,22 +91,22 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
 		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
+		
+		updateSecurityContext(securityContext);
+		requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		updateSecurityContext(securityContext);
 		
 		validateElementType(content);
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", "MottakerPlugin - Ugyldig input");
+				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
 			}
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
@@ -116,7 +120,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), SERVICE_CODE_TREG001);
 				if (person == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s ConsumerId=%s", mottaker
-							.getId(), getConsumerId()));
+							.getId(), getConsumerId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
 				}
 				
 				personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
@@ -127,7 +131,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
-							.getId(), getConsumerId()), "PersonV3 - Person ikke funnet");
+							.getId(), getConsumerId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
 				}
 				organisasjonV4Mapper.map(organisasjon, mottaker);
 			}
@@ -136,8 +140,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					.inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null) {
-				log.warn("Finner ikke språkinfo i DOKKAT for dokumenttypeid=" + dokumenttypeId);
+				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
+						.inc();
+				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s, ConsumerId=%s", dokumenttypeId, mottaker
+						.getId(), getConsumerId()));
 			}
+			
 			maalform.setMaalform(mottaker, sprakinfos);
 			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -151,19 +159,19 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Element documentElement = newNode.getDocumentElement();
 			
 			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()), "OrganisasjonV4 - Ugyldig input");
+					.getId(), getConsumerId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
 				ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException(e);
+			throw new RegOppslagFunctionalException(e, UGYLDIG_INPUT);
 		}
 		
 	}
 	
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
-			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.", "MottakerPlugin - Ugyldig input");
+			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.", UGYLDIG_INPUT);
 		}
 	}
 	
@@ -171,7 +179,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName());
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}
 }

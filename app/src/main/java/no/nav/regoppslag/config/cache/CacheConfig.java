@@ -50,10 +50,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 		//Remaining caches uses the default value
 		Map<String, Long> expiresInSeconds = new HashMap<>();
 		expiresInSeconds.put(HENT_PERSON, 10L);
-		expiresInSeconds.put(STS_CACHE_NAME, TimeUnit.MINUTES.toSeconds(59));
+		expiresInSeconds.put(STS_CACHE_NAME, TimeUnit.MINUTES.toSeconds(50));
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
+		redisCacheManager.setUsePrefix(true);
 		return redisCacheManager;
 	}
 	

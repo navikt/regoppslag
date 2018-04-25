@@ -1,5 +1,8 @@
 package no.nav.regoppslag.config.security;
 
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
 import org.apache.wss4j.common.ext.WSSecurityException;
@@ -38,6 +41,9 @@ public class SamlTokenUtils {
 						"Dette er noe som ikke bør skje! (feil i kode?). ConsumerId=%s", SecurityContextHolder.getContext()
 						.getAuthentication()
 						.getName()));
+				requestCounter.labels("SAML_TOKEN_OUT_INTERCEPTOR", "SAML_TOKEN_OUT_INTERCEPTOR", "SAML_NOT_ALLOWED", getConsumerId(), "SAML_AUTHENTICATION_FALSE")
+						.inc();
+				
 			}
 			
 			return null;

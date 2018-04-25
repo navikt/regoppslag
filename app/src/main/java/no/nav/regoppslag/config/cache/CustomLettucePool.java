@@ -105,7 +105,7 @@ public class CustomLettucePool implements LettucePool, InitializingBean {
 			this.client = RedisClient.create(getRedisURI());
 		}
 		
-		//Custom code
+		/** Custom code **/
 		this.client.setOptions(ClientOptions.builder()
 				.autoReconnect(true)
 				.cancelCommandsOnReconnectFailure(true)

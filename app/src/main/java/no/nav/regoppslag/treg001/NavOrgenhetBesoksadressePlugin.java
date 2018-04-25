@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.KUNNE_IKKE_FINNE_ENHET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
@@ -65,19 +66,18 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
 		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
 		
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
+		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetBesoksadressePlugin", PLUGIN, getConsumerId(), RECEIVED)
+				.inc();
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		//Used to get consumerId
-		updateSecurityContext(securityContext, false);
-		
 		validateElementType(content);
+		
 		try {
-			
-			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetBesoksadressePlugin", PLUGIN, getConsumerId(), RECEIVED)
-					.inc();
-			
 			Besoksadresse adresse = unmarshal(content);
 			
 			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s, ConsumerId=%s", dokumenttypeId, adresse
@@ -91,7 +91,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			
 			if (wsEnhet == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetsId=%s, ConsumerId=%s", adresse
-						.getEnhetsId(), getConsumerId()), "NORG2 - Kunne ikke finne enhet");
+						.getEnhetsId(), getConsumerId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 			
 			norg2Mapper.mapBesokadresse(wsEnhet, adresse);

@@ -29,7 +29,7 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			
 			if (wrapper == null) {
 				String msg = "Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3";
-				log.error(msg);
+				log.warn(msg);
 				throw new SamlTokenInterceptorException(msg);
 			}
 			
@@ -38,7 +38,8 @@ public class CustomSamlTokenOutInterceptor extends SamlTokenInterceptor {
 			el.appendChild(wrapper.toDOM(el.getOwnerDocument()));
 			
 		} catch (WSSecurityException e) {
-			log.error(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Feilmelding=%s", e.getMessage()), e);
+			log.warn(String.format("Feilet ved komplettering av SAML assertion token til SOAP meldingen. Det kan hende tokenet er i feil format. Feilmelding=%s", e
+					.getMessage()), e);
 			throw new SamlTokenInterceptorException("Feilet ved komplettering av SAML assertion token fra header til SOAP meldingen. Det kan hende tokenet er i feil format");
 		}
 		

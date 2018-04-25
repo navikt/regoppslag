@@ -41,12 +41,12 @@ public class LocalCacheConfig {
 
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(Arrays.asList(
-				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
-				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
-				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build()),
-				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build()),
-				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build())));
-		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterAccess(59, TimeUnit.MINUTES).build());
+				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.DAYS).build()),
+				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.DAYS).build()),
+				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build()),
+				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.DAYS).build()),
+				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.DAYS).build())));
+		new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder().expireAfterWrite(50, TimeUnit.MINUTES).build());
 		return cacheManager;
 		
 	}

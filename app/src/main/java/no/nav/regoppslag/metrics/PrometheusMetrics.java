@@ -26,7 +26,6 @@ public class PrometheusMetrics {
 			.namespace(DOK_NAMESPACE)
 			.name("app_is_ready")
 			.help("App is ready to receive traffic")
-			.labelNames(LABEL_PROCESS)
 			.register();
 	
 	public static final Counter requestCounter = Counter.build()

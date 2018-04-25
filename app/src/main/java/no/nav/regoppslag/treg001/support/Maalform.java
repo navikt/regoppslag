@@ -54,14 +54,15 @@ public class Maalform {
 			}
 		}
 	}
-
-
-	private boolean malInneholderSpraak(final List<SpraakInfoTo> list, final String spraak) {
+	
+	
+	private boolean malInneholderSpraak(final List<SpraakInfoTo> spraakInfoTos, final String spraak) {
 		if ("NB".equalsIgnoreCase(spraak)) {
 			// NO og NB skal begge bahandles som Bokmål
-			return (list.stream().filter(o -> "NO".equals(o.getSpraaklag())).findFirst().isPresent() || (list.stream().filter(o -> ("NB").equals(o.getSpraaklag())).findFirst().isPresent()));
+			return (spraakInfoTos.stream().anyMatch(o -> "NO".equals(o.getSpraaklag())) || (spraakInfoTos.stream()
+					.anyMatch(o -> ("NB").equals(o.getSpraaklag()))));
 		} else {
-			return (list.stream().filter(o -> o.getSpraaklag().equalsIgnoreCase(spraak)).findFirst().isPresent());
+			return (spraakInfoTos.stream().anyMatch(o -> o.getSpraaklag().equalsIgnoreCase(spraak)));
 		}
 	}
 }

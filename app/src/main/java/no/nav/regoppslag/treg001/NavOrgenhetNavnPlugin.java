@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.KUNNE_IKKE_FINNE_ENHET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
@@ -62,17 +63,17 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
 		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
 		
+		//Used to get consumerId
+		updateSecurityContext(securityContext, false);
+		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+		
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		//Used to get consumerId
-		updateSecurityContext(securityContext, false);
-		
 		validateElementType(content);
+		
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
-			
 			NavEnhet navEnhet = unmarshal(content);
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s, ConsumerId=%s", navEnhet.getEnhetsId(), getConsumerId()));
 			
@@ -84,7 +85,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			
 			if (wsEnhet == null) {
 				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", navEnhet
-						.getEnhetsId(), getConsumerId()), "NORG2 - Kunne ikke finne enhet");
+						.getEnhetsId(), getConsumerId()), "NavOrgenhetNavnPlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 			
 			norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);

@@ -41,6 +41,8 @@ public class PersonV3Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_PERSON = "hentPerson";
+	public static final String PERSON_IKKE_FUNNET = "PersonV3 - Person ikke funnet";
+	public static final String SIKKERHETSBEGRENSNING = "PersonV3 - Sikkerhetsbegrensning";
 	
 	@Inject
 	public PersonV3Consumer(PersonV3 personV3) {
@@ -61,10 +63,10 @@ public class PersonV3Consumer {
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
-					.getMessage(), hentPersonPersonIkkeFunnet, "PersonV3 - Person ikke funnet");
+					.getMessage(), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
 			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + consumerId + ", message=" + hentPersonSikkerhetsbegrensning
-					.getMessage(), hentPersonSikkerhetsbegrensning, "PersonV3 - Sikkerhetsbegrensning");
+					.getMessage(), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
 		} catch (Exception e) {
 			//Kastes SoapFaultException som også kan kastes av andre grunner enn Interceptor feil
 			if (e.getCause() instanceof SamlTokenInterceptorException){

@@ -2,6 +2,7 @@ package no.nav.regoppslag.consumer.norg2;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.NORG2;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -34,6 +35,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
+	public static final String KUNNE_IKKE_FINNE_ENHET = "NORG2 - Kunne ikke finne enhet";
 	
 	@Inject
 	public OrganisasjonEnhetKontaktinformasjonV1Consumer(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1) {
@@ -47,14 +49,14 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, "NORG2", "hentKontaktinformasjonForEnhetBolk")
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, NORG2, "hentKontaktinformasjonForEnhetBolk")
 					.startTimer();
 			
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
 			throw new RegOppslagFunctionalException("Nav enhet finnes ikke for enhetNr=" + enhetNr + ", message=" + hentKontaktinformasjonForEnhetBolkUgyldigInput
-					.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput, "NORG2 - Kunne ikke finne enhet");
+					.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput, KUNNE_IKKE_FINNE_ENHET);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException("Noe gikk galt i kall til Norg for enhetNr=" + enhetNr + ", message=" + e.getMessage(), e, "NORG2 - Teknisk feil");
 		} finally {

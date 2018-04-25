@@ -58,17 +58,17 @@ public class PersonV3Mapper {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getBostedsadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "BOSTEDSADRESSE").inc();
+				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "Bostedsadresse").inc();
 				mapBostedadresse(person, norskPostadresse);
 			} else if ("POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse().getUstrukturertAdresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "POSTADRESSE").inc();
+				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "Postadresse").inc();
 				mapPostadresse(person, norskPostadresse);
 			} else if ("MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MIDLERTIDIG_POSTADRESSE_UTLAND")
+				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MidlertidligPostadresseUtland")
 						.inc();
 				mapMidlertidigUtland(person, norskPostadresse);
 			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MIDLERTIDIG_POSTADRESSE_NORGE")
+				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MidlertidligPostadresseNorge")
 						.inc();
 				mapMidlertidigNorge(person, norskPostadresse);
 			}
@@ -173,7 +173,7 @@ public class PersonV3Mapper {
 
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
-			throw new RegOppslagFunctionalException("Mottaker personoppslag - mangler postnummer for bruker: " + mottaker.getId());
+			throw new RegOppslagFunctionalException("Mottaker personoppslag - mangler postnummer for bruker: " + mottaker.getId(), "Mangler postnummer for mottaker");
 		}
 	}
 }

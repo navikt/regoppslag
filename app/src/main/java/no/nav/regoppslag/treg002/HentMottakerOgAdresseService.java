@@ -44,6 +44,8 @@ public class HentMottakerOgAdresseService {
 	
 	private final AdresseMapper adresseMapper;
 	
+	private final String UGYLDIG_INPUT = "Ugyldig input";
+	
 	@Inject
 	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, AdresseMapper adresseMapper) {
 		this.personV3Consumer = personV3Consumer;
@@ -89,19 +91,19 @@ public class HentMottakerOgAdresseService {
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
 		
 		if (request == null) {
-			throw new RegOppslagFunctionalException("Input body er null");
+			throw new RegOppslagFunctionalException("Input body er null", UGYLDIG_INPUT);
 		}
 		
 		if (request.getIdentifikator() == null) {
-			throw new RegOppslagFunctionalException("Identifikator kan ikke være null");
+			throw new RegOppslagFunctionalException("Identifikator kan ikke være null", UGYLDIG_INPUT);
 		}
 		
 		if (request.getType() == null) {
-			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null");
+			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
 				.equals(request.getType()))) {
 			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
-					.getType()));
+					.getType()), UGYLDIG_INPUT);
 		}
 	}
 	

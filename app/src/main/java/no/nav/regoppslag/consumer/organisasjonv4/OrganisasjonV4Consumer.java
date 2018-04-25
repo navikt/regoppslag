@@ -2,6 +2,7 @@ package no.nav.regoppslag.consumer.organisasjonv4;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
@@ -34,7 +35,6 @@ public class OrganisasjonV4Consumer {
 	private Histogram.Timer requestTimer;
 
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
-	public static final String ORGANISASJON_V4 = "OrganisasjonV4";
 	public static final String ORGV4_UGYLDIG_INPUT = "OrganisasjonV4 - Ugyldig input";
 	public static final String ORGV4_ORG_IKKE_FUNNET = "OrganisasjonV4 - Organisasjon ikke funnet";
 
@@ -52,7 +52,7 @@ public class OrganisasjonV4Consumer {
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
-			requestTimer = requestLatency.labels(serviceCode, ORGANISASJON_V4, HENT_ORGANISASJON).startTimer();
+			requestTimer = requestLatency.labels(serviceCode, ORGANISASJONV4, HENT_ORGANISASJON).startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {

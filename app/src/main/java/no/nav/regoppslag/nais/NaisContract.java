@@ -70,7 +70,7 @@ public class NaisContract {
 	public ResponseEntity isReady() throws Exception {
 		try {
 			String decodedToken = requestStsToken();
-			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("SAMLtoken", decodedToken, NO_AUTHORITIES);
+			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("NaisIsReadySamlToken", decodedToken, NO_AUTHORITIES);
 			
 
 			List<SelftestCheck> results = new ArrayList<>();
@@ -79,12 +79,14 @@ public class NaisContract {
 			results.add(organisasjonEnhetKontaktinformasjonV1Check.check(null));
 			
 			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
-				isReady.labels("APP").dec();
-				String responseBody = APPLICATION_NOT_READY + "/n +  " +  results.stream().map(SelftestCheck::getErrorMessage).collect(Collectors.toList());
+				isReady.set(-1);
+				String responseBody = APPLICATION_NOT_READY + ". ErrorMsg=" + results.stream()
+						.map(SelftestCheck::getErrorMessage)
+						.collect(Collectors.toList());
 				return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			
-			isReady.labels("APP").set(1);
+			isReady.set(1);
 
 			return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 		} finally {
@@ -112,7 +114,7 @@ public class NaisContract {
 			transformer.transform(source, result);
 			return result.getWriter().toString();
 		} catch (TransformerException e) {
-			throw new RuntimeException(String.format("Exception when converting Element to String in RegoppslagServiceMapper. errorMsg=%s", e
+			throw new RuntimeException(String.format("Exception when converting Element to String. errorMsg=%s", e
 					.getMessage()));
 		}
 	}
