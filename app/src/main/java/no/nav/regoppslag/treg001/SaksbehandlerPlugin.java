@@ -19,6 +19,7 @@ import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	private SaksbehandlerMapper saksbehandlerMapper;
 	
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
 		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
 		
@@ -83,6 +84,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s, ConsumerId=%s", navAnsatt
 						.getAnsattId(), getConsumerId()), "SaksbehandlerPlugin - " + BRUKER_IKKE_FUNNET);
 			}
+			
 			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

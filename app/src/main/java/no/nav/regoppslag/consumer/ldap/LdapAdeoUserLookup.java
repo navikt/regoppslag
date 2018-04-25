@@ -11,7 +11,9 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.ldap.ServiceUnavailableException;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -51,7 +53,7 @@ public class LdapAdeoUserLookup {
 	 */
 	@Cacheable(HENT_FULLT_NAVN)
 	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException {
+	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
@@ -61,7 +63,18 @@ public class LdapAdeoUserLookup {
 			LdapQuery cn = LdapQueryBuilder.query()
 					.base(userBaseDn)
 					.filter(new EqualsFilter("cn", adeoIdent));
-			List<String> search = doSearch(cn);
+			
+			List<String> search;
+			
+			try {
+				search = doSearch(cn);
+			} catch (ServiceUnavailableException e) {
+				log.warn("Feil ved kall mot LDAP", e);
+				throw new RegOppslagTechnicalException(String.format("Noe gikk galt ved kall mot LDAP.hentFulltNavn. Feilmelding=%s, AdeoIdent=%s", e
+						.getMessage(), adeoIdent), "LDAP - Teknisk feil");
+				
+			}
+		
 			
 			if (search == null || search.isEmpty()) {
 				throw new RegOppslagFunctionalException("Ldap.hentFulltNavn finner ikke bruker med ident:" + adeoIdent, BRUKER_IKKE_FUNNET);

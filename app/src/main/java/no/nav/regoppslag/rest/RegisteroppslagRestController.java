@@ -1,5 +1,6 @@
 package no.nav.regoppslag.rest;
 
+import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SECURITY_EXCEPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
@@ -62,8 +63,9 @@ public class RegisteroppslagRestController {
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 	
-	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med n")
+	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
 	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
 			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
 			@ApiResponse(code = 500, message = "Teknisk feil")
@@ -92,8 +94,9 @@ public class RegisteroppslagRestController {
 		}
 	}
 	
-	@ApiOperation(value = "TREG002", notes = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.")
+	@ApiOperation(value = "TREG002", notes = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + samlTokenInfo)
 	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
 			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
 			@ApiResponse(code = 500, message = "Teknisk feil")

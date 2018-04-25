@@ -139,7 +139,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 					.inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
-			if (sprakinfos == null) {
+			if (sprakinfos == null || sprakinfos.isEmpty()) {
 				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
 						.inc();
 				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s, ConsumerId=%s", dokumenttypeId, mottaker
