@@ -11,7 +11,7 @@ Denne applikasjonen har ingen automatiske systemtester
 
 ## Hvordan kjøre lokalt med mvn spring-boot plugin
 
-Det ligger profil for t8 i `dokopp/src/main/resources`:
+Det ligger profil for t8 i `regoppslag/src/main/resources`:
 
 * application-t8.properties
 
@@ -20,7 +20,7 @@ Noen secrets må settes - se https://fasit.adeo.no/instances/4423689
 ```
 
 # Systembruker
-export SRVREGOPPSLAG_USERNAME=srvdokopp
+export SRVREGOPPSLAG_USERNAME=srvregoppslag
 export SRVREGOPPSLAG_PASSWORD=<pw>
 
 # System cert
@@ -32,7 +32,7 @@ export SRVREGOPPSLAG_CERT_PASSWORD=<certpw>
 Kjøre appen med mvn spring boot plugin. Truststore finnes på Fasit som `nav_truststore` alias. 
 
 ```
-mvn spring-boot:run -Drun.profiles=t8 -Drun.jvmArguments="-Dsrvdokopp_cert_keystore=/path/til/cert.jks -Dsrvdokopp_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>"
+mvn spring-boot:run -Drun.profiles=t8 -Drun.jvmArguments="-Dsrvregoppslag_cert_keystore=/path/til/cert.jks -Dsrvregoppslag_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>"
 ```
 ## Cache ved lokal kjøring
 
@@ -42,6 +42,8 @@ Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjøre
 ## Hvordan kjøre lokalt med IntelliJ
 
 Start `Application.java` som en Spring Boot/Java Application. På denne måten kan man kjøre lokalt og få full debug-støtte. 
+
+Skriv inn passordet for `srvregoppslag` servicebrukene i `serviceuser.password` i application-t8.properties filen. 
 
 VM Options: `-Dsrvregoppslag_cert_keystore=/path/til/cert.jks -Dsrvregoppslag_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>`
 
