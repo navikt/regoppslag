@@ -39,6 +39,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 	
 	private static final String MASTER_NAME = "mymaster";
 	
+	public static final Long DEFAULT_CACHE_EXPIRATION_SECONDS = TimeUnit.DAYS.toSeconds(2);
+	public static final Long HENT_PERSON_CACHE_EXPIRATION_SECONDS = 10L;
+	public static final Long STS_CACHE_EXPIRATION_SECONDS = TimeUnit.MINUTES.toSeconds(50);
+	
 	@Value("${app.name}")
 	private String appName;
 	
@@ -47,12 +51,12 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
 		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
-		redisCacheManager.setDefaultExpiration(TimeUnit.DAYS.toSeconds(2));
+		redisCacheManager.setDefaultExpiration(DEFAULT_CACHE_EXPIRATION_SECONDS);
 		
 		//Remaining caches uses the default value
 		Map<String, Long> expiresInSeconds = new HashMap<>();
-		expiresInSeconds.put(HENT_PERSON, 10L);
-		expiresInSeconds.put(STS_CACHE_NAME, TimeUnit.MINUTES.toSeconds(50));
+		expiresInSeconds.put(HENT_PERSON, HENT_PERSON_CACHE_EXPIRATION_SECONDS);
+		expiresInSeconds.put(STS_CACHE_NAME, STS_CACHE_EXPIRATION_SECONDS);
 		
 		redisCacheManager.setExpires(expiresInSeconds);
 		redisCacheManager.setLoadRemoteCachesOnStartup(true);
