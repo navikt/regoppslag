@@ -68,7 +68,6 @@ public class PersonV3Consumer {
 			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + consumerId + ", message=" + hentPersonSikkerhetsbegrensning
 					.getMessage(), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
 		} catch (Exception e) {
-			//Kastes SoapFaultException som også kan kastes av andre grunner enn Interceptor feil
 			if (e.getCause() instanceof SamlTokenInterceptorException){
 				throw new RegOppslagFunctionalException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token");
 			}

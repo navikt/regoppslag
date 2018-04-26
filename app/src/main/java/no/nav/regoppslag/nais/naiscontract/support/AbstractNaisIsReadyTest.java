@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.selftest.support;
+package no.nav.regoppslag.nais.naiscontract.support;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

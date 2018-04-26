@@ -1,9 +1,9 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
-import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
-import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.selftest.support.Ping;
+import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
+import no.nav.regoppslag.nais.naiscontract.support.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.naiscontract.support.Ping;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import org.springframework.stereotype.Component;
 

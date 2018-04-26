@@ -1,9 +1,9 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
-import no.nav.regoppslag.nais.selftest.support.AbstractNaisIsReadyTest;
-import no.nav.regoppslag.nais.selftest.support.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.selftest.support.Ping;
+import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
+import no.nav.regoppslag.nais.naiscontract.support.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.naiscontract.support.Ping;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import org.springframework.stereotype.Component;
 

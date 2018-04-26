@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.selftest.support;
+package no.nav.regoppslag.nais.naiscontract.support;
 
 /**
  * Created by T133804 on 15.08.2017.

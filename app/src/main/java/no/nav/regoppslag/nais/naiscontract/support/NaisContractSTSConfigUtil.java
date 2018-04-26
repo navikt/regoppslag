@@ -1,7 +1,7 @@
-package no.nav.regoppslag.nais.selftest.support;
+package no.nav.regoppslag.nais.naiscontract.support;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.cxf.BusFactory;
+import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.SecurityConstants;
 import org.apache.cxf.ws.security.trust.STSClient;
 
@@ -14,9 +14,9 @@ import java.util.HashMap;
 public class NaisContractSTSConfigUtil {
 
 	private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
-
-	public static STSClient configureStsRequestSamlToken(String stsUrl, String username, String password) {
-		STSClient stsClient = new STSClient(BusFactory.newInstance().createBus());
+	
+	public static STSClient configureStsRequestSamlToken(String stsUrl, String username, String password, Bus bus) {
+		STSClient stsClient = new STSClient(bus);
 		configureSTSClient(stsClient, stsUrl, username, password);
 		return stsClient;
 	}
@@ -32,8 +32,7 @@ public class NaisContractSTSConfigUtil {
 		HashMap<String, Object> properties = new HashMap<>();
 		properties.put(SecurityConstants.USERNAME, username);
 		properties.put(SecurityConstants.PASSWORD, password);
-		stsClient.setProperties(properties);
-
+		
 		//used for the STS client to authenticate itself to the STS provider.
 		stsClient.setPolicy(STS_CLIENT_AUTHENTICATION_POLICY);
 

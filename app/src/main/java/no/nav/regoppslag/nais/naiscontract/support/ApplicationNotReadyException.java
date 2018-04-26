@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.selftest.support;
+package no.nav.regoppslag.nais.naiscontract.support;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

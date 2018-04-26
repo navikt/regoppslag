@@ -1,14 +1,15 @@
 package no.nav.regoppslag.nais;
 
 import static no.nav.regoppslag.metrics.PrometheusMetrics.isReady;
+import static no.nav.regoppslag.nais.naiscontract.support.SelftestSTSConfig.STS_CACHE_NAME;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
 import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
-import no.nav.regoppslag.nais.selftest.support.Result;
-import no.nav.regoppslag.nais.selftest.support.SelftestCheck;
+import no.nav.regoppslag.nais.naiscontract.support.Result;
+import no.nav.regoppslag.nais.naiscontract.support.SelftestCheck;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,6 @@ public class NaisContract {
 	private static final String APPLICATION_ALIVE = "Application is alive!";
 	private static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
-	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
 
 	private final PersonV3Check personV3Check;
 	private final OrganisasjonV4Check organisasjonV4Check;
@@ -69,17 +69,17 @@ public class NaisContract {
 	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity isReady() throws Exception {
 		try {
+			
 			String decodedToken = requestStsToken();
 			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("NaisIsReadySamlToken", decodedToken, NO_AUTHORITIES);
 			
-
 			List<SelftestCheck> results = new ArrayList<>();
 			results.add(personV3Check.check(authRequest));
 			results.add(organisasjonV4Check.check(null));
 			results.add(organisasjonEnhetKontaktinformasjonV1Check.check(null));
 			
 			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
-				isReady.set(-1);
+				isReady.dec();
 				String responseBody = APPLICATION_NOT_READY + ". ErrorMsg=" + results.stream()
 						.map(SelftestCheck::getErrorMessage)
 						.collect(Collectors.toList());
@@ -99,7 +99,7 @@ public class NaisContract {
 		return results.stream().anyMatch((result) -> result.equals(Result.ERROR) || result.equals(Result.WARNING));
 	}
 	
-	@Cacheable(value = STS_CACHE_NAME)
+	@Cacheable(value = STS_CACHE_NAME, key = "#methodName")
 	public String requestStsToken() throws Exception {
 		return elementToString(stsClient.requestSecurityToken().getToken());
 	}
