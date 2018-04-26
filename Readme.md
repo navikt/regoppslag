@@ -34,7 +34,7 @@ Kjøre appen med mvn spring boot plugin. Truststore finnes på Fasit som `nav_tr
 ```
 mvn spring-boot:run -Drun.profiles=t8 -Drun.jvmArguments="-Dsrvdokopp_cert_keystore=/path/til/cert.jks -Dsrvdokopp_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>"
 ```
-##Cache ved lokal kjøring
+## Cache ved lokal kjøring
 
 Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
 Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjører lokalt på applikasjonen. Konfigurasjon av denne cachen ligger i `LokalCacheConfig` klassen og vil bare kjøres når Activeprofiles settes `local`.
