@@ -32,6 +32,7 @@ public class NaisContractSTSConfigUtil {
 		HashMap<String, Object> properties = new HashMap<>();
 		properties.put(SecurityConstants.USERNAME, username);
 		properties.put(SecurityConstants.PASSWORD, password);
+		stsClient.setProperties(properties);
 		
 		//used for the STS client to authenticate itself to the STS provider.
 		stsClient.setPolicy(STS_CLIENT_AUTHENTICATION_POLICY);

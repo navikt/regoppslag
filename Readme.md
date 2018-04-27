@@ -1,6 +1,9 @@
 Regoppslag
 ================
 
+## Swagger dokumentasjon
+Beskrivelsen av grensesnittet kan finnes ved endepunktet `/swagger-ui.html` 
+
 ## Bygge app.jar og kjøre tester
 
 `mvn clean package`

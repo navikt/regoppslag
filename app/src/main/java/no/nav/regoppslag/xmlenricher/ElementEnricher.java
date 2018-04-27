@@ -54,7 +54,6 @@ public class ElementEnricher {
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 		
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		SecurityContextHolder.clearContext();
 		
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 
@@ -77,6 +76,7 @@ public class ElementEnricher {
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
 					valueMap.put(SECURITYCONTEXT.name(), createNewSecurityContext(securityContext.getAuthentication()));
+							
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getElement());
 						}
