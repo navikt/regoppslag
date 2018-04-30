@@ -122,11 +122,11 @@ public class NaisContract {
 				.runOn(Schedulers.newThread())
 				.map(payload -> {
 					if (payload instanceof PersonV3Check) {
-						return dependencyCheck(payload, authenticationToken);
+						return dependencyCheck(payload, authenticationToken).get();
 					}
-					return dependencyCheck(payload, null);
+					return dependencyCheck(payload, null).get();
 				})
-				.sequential().blockingSubscribe(result -> results.add(result.get()));
+				.sequential().blockingSubscribe(results::add);
 	}
 	
 	private UsernamePasswordAuthenticationToken getSTSAuthenticationToken() throws Exception {
