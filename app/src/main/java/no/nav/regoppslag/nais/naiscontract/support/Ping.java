@@ -7,7 +7,7 @@ public class Ping {
 	
 	public enum Type {
 		Soap("Soap WebService"),
-		Redis("Redis cache");
+		REST("REST ping");
 		
 		private String beskrivelse;
 		

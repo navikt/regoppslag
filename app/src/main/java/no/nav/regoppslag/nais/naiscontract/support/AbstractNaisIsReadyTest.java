@@ -1,5 +1,6 @@
 package no.nav.regoppslag.nais.naiscontract.support;
 
+import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StopWatch;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by T133804 on 15.08.2017.
  */
+@Getter
 public abstract class AbstractNaisIsReadyTest {
 	protected String name;
 	protected String description;
@@ -32,22 +34,6 @@ public abstract class AbstractNaisIsReadyTest {
 	}
 	
 	protected abstract void doCheck() throws Exception;
-	
-	protected Ping.Type getType() {
-		return type;
-	}
-	
-	protected String getName() {
-		return name;
-	}
-	
-	protected String getAddress() {
-		return address;
-	}
-	
-	protected String getDescription() {
-		return description;
-	}
 	
 	/**
 	 * Override to false if test should return warning on failure
@@ -88,10 +74,11 @@ public abstract class AbstractNaisIsReadyTest {
 			check.setEndpoint(getName());
 			check.setAddress(getAddress());
 			check.setType(getType());
+			check.setName(getName());
 			return check;
 			
 		};
-		return TimeLimitedCodeBlock.runWithTimeout(callable, 10, TimeUnit.SECONDS, "check");
+		return TimeLimitedCodeBlock.runWithTimeout(callable, 5, TimeUnit.SECONDS, "check");
 	}
 	
 	private static Throwable getRootCause(Throwable throwable) {

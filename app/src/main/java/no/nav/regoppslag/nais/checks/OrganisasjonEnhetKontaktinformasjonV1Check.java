@@ -5,27 +5,31 @@ import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.naiscontract.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.naiscontract.support.Ping;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
+ * Not checked
  */
-@Component
 public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractNaisIsReadyTest {
-	public static final String PERSON_V3 = "Person_V3";
+	public static final String OrganisasjonEnhetKontaktinformasjonV1_label = "OrganisasjonEnhetKontaktinformasjonV1";
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 
 	@Inject
 	public OrganisasjonEnhetKontaktinformasjonV1Check(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1, OrganisasjonEnhetKontaktinformasjonV1Alias alias) {
 		super(Ping.Type.Soap,
-				PERSON_V3,
+				OrganisasjonEnhetKontaktinformasjonV1_label,
 				alias.getEndpointurl(),
-				alias.getDescription() == null ? PERSON_V3 : alias.getDescription());
+				alias.getDescription() == null ? OrganisasjonEnhetKontaktinformasjonV1_label : alias.getDescription());
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;
 	}
-
+	
+	@Override
+	public boolean isVital() {
+		return true;
+	}
+	
 	@Override
 	protected void doCheck() {
 		try {

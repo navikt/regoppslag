@@ -4,10 +4,11 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.isReady;
 import static no.nav.regoppslag.nais.naiscontract.support.SelftestSTSConfig.STS_CACHE_NAME;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.nais.checks.OrganisasjonEnhetKontaktinformasjonV1Check;
-import no.nav.regoppslag.nais.checks.OrganisasjonV4Check;
 import no.nav.regoppslag.nais.checks.PersonV3Check;
+import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.naiscontract.support.Result;
 import no.nav.regoppslag.nais.naiscontract.support.SelftestCheck;
 import org.apache.cxf.ws.security.trust.STSClient;
@@ -45,19 +46,14 @@ public class NaisContract {
 	private static final String APPLICATION_ALIVE = "Application is alive!";
 	private static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
-
-	private final PersonV3Check personV3Check;
-	private final OrganisasjonV4Check organisasjonV4Check;
-	private final OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check;
-
+	
+	private final List<AbstractNaisIsReadyTest> checkList;
 	@Inject
 	private STSClient stsClient;
 	
 	@Inject
-	public NaisContract(PersonV3Check personV3Check, OrganisasjonV4Check organisasjonV4Check, OrganisasjonEnhetKontaktinformasjonV1Check organisasjonEnhetKontaktinformasjonV1Check) {
-		this.personV3Check = personV3Check;
-		this.organisasjonV4Check = organisasjonV4Check;
-		this.organisasjonEnhetKontaktinformasjonV1Check = organisasjonEnhetKontaktinformasjonV1Check;
+	public NaisContract(List<AbstractNaisIsReadyTest> checks) {
+		checkList = new ArrayList<>(checks);
 	}
 
 	@GetMapping("/isAlive")
@@ -70,22 +66,19 @@ public class NaisContract {
 	public ResponseEntity isReady() throws Exception {
 		try {
 			
-			String decodedToken = requestStsToken();
-			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("NaisIsReadySamlToken", decodedToken, NO_AUTHORITIES);
-			
 			List<SelftestCheck> results = new ArrayList<>();
-			results.add(personV3Check.check(authRequest));
-			results.add(organisasjonV4Check.check(null));
-			results.add(organisasjonEnhetKontaktinformasjonV1Check.check(null));
 			
-			if (isAnyDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
+			checkDependencies(results);
+			
+			if (isAnyVitalDependencyUnhealthy(results.stream().map(SelftestCheck::getResult).collect(Collectors.toList()))) {
 				isReady.dec();
-				String responseBody = APPLICATION_NOT_READY + ". ErrorMsg=" + results.stream()
-						.map(SelftestCheck::getErrorMessage)
-						.collect(Collectors.toList());
-				return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+				log.error("IsReady check failed. ErrorMsg=" + results.stream()
+						.filter(selftestCheck -> selftestCheck.getErrorMessage() != null)
+						.map(selftestCheck -> selftestCheck.getName() + ": " + selftestCheck.getErrorMessage())
+						.collect(Collectors.toList()));
+				return new ResponseEntity<>(APPLICATION_NOT_READY, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			
+
 			isReady.set(1);
 
 			return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
@@ -93,11 +86,38 @@ public class NaisContract {
 			SecurityContextHolder.clearContext();
 		}
 	}
-
-
-	private boolean isAnyDependencyUnhealthy(List<Result> results) {
-		return results.stream().anyMatch((result) -> result.equals(Result.ERROR) || result.equals(Result.WARNING));
+	
+	private void checkDependencies(List<SelftestCheck> results) throws Exception {
+		UsernamePasswordAuthenticationToken authenticationToken = getSTSAuthenticationToken();
+		
+		Flowable.fromIterable(checkList)
+				.parallel()
+				.runOn(Schedulers.io())
+				.map(payload -> {
+							if (payload instanceof PersonV3Check) {
+								return payload.check(authenticationToken);
+							}
+							return payload.check(null);
+						}
+				).sequential().blockingSubscribe(results::add);
 	}
+	
+	private UsernamePasswordAuthenticationToken getSTSAuthenticationToken() throws Exception {
+		String decodedToken = requestStsToken();
+		return new UsernamePasswordAuthenticationToken("NaisIsReadySamlToken", decodedToken, NO_AUTHORITIES);
+	}
+	
+	
+	private boolean isAnyVitalDependencyUnhealthy(List<Result> results) {
+		return results.stream().anyMatch((result) -> result.equals(Result.ERROR));
+	}
+	
+	
+	private boolean isAnyNonVitalDependencyUnhealthy(List<Result> results) {
+		return results.stream().anyMatch((result) -> result.equals(Result.WARNING));
+	}
+	
+	
 	
 	@Cacheable(value = STS_CACHE_NAME, key = "#methodName")
 	public String requestStsToken() throws Exception {

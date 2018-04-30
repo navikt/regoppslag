@@ -5,14 +5,13 @@ import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
 import no.nav.regoppslag.nais.naiscontract.support.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.naiscontract.support.Ping;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
+ * Not checked
  */
-@Component
 public class OrganisasjonV4Check extends AbstractNaisIsReadyTest {
 	public static final String ORGANISASJON_V4 = "Organisasjon_v4";
 	private final OrganisasjonV4 organisasjonV4;
@@ -24,6 +23,11 @@ public class OrganisasjonV4Check extends AbstractNaisIsReadyTest {
 				organisasjonV4Alias.getEndpointurl(),
 				organisasjonV4Alias.getDescription() == null ? ORGANISASJON_V4 : organisasjonV4Alias.getDescription());
 		this.organisasjonV4 = organisasjonV4;
+	}
+	
+	@Override
+	public boolean isVital() {
+		return true;
 	}
 
 	@Override

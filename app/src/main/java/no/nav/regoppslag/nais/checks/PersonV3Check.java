@@ -25,6 +25,11 @@ public class PersonV3Check extends AbstractNaisIsReadyTest {
 				personV3Alias.getDescription() == null ? PERSONV3_LABEL : personV3Alias.getDescription());
 		this.personV3 = personV3;
 	}
+	
+	@Override
+	public boolean isVital() {
+		return true;
+	}
 
 	@Override
 	protected void doCheck() {
