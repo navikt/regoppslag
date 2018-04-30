@@ -2,9 +2,10 @@ package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
-import no.nav.regoppslag.nais.naiscontract.support.AbstractNaisIsReadyTest;
-import no.nav.regoppslag.nais.naiscontract.support.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.naiscontract.support.Ping;
+import no.nav.regoppslag.nais.checkcore.AbstractDependencyCheck;
+import no.nav.regoppslag.nais.checkcore.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.checkcore.DependencyType;
+import no.nav.regoppslag.nais.checkcore.Importance;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ import javax.inject.Inject;
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
-public class DokkatCheck extends AbstractNaisIsReadyTest {
+public class DokkatCheck extends AbstractDependencyCheck {
 	public static final String DOKKATV3_LABEL = "DokkatV3";
 	private final RestTemplate restTemplate;
 	
@@ -25,7 +26,7 @@ public class DokkatCheck extends AbstractNaisIsReadyTest {
 					   HttpComponentsClientHttpRequestFactory requestFactory,
 					   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,
 					   ServiceuserAlias serviceuserAlias) {
-		super(Ping.Type.REST, "DOKKAT", dokumenttypeInfoV3Alias.getUrl(), DOKKATV3_LABEL);
+		super(DependencyType.REST, Importance.CRITICAL, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl());
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory)
 				.rootUri(dokumenttypeInfoV3Alias.getUrl())
@@ -33,11 +34,6 @@ public class DokkatCheck extends AbstractNaisIsReadyTest {
 				.setConnectTimeout(dokumenttypeInfoV3Alias.getConnecttimeoutms())
 				.setReadTimeout(dokumenttypeInfoV3Alias.getReadtimeoutms())
 				.build();
-	}
-	
-	@Override
-	public boolean isVital() {
-		return true;
 	}
 	
 	@Override

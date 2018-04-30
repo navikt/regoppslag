@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
@@ -63,8 +64,7 @@ public class NavOrgenhetNavnPluginTest {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		valueMap.put(ValueMapKeys.SECURITYCONTEXT.name(), securityContext);
-		
+		SecurityContextHolder.setContext(securityContext);
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);

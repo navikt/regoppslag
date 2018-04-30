@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.naiscontract.support;
+package no.nav.regoppslag.nais.checkcore;
 
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import org.apache.cxf.Bus;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 @Component
-public class SelftestSTSConfig {
+public class NaisCheckSTSConfig {
 	
 	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
 	
@@ -22,7 +22,7 @@ public class SelftestSTSConfig {
 
 	@Bean
 	public STSClient stsClient(Bus cxf) {
-		return NaisContractSTSConfigUtil.configureStsRequestSamlToken(stsUrl, serviceuserAlias.getUsername(), serviceuserAlias.getPassword(), cxf);
+		return NaisCheckSTSConfigUtil.configureStsRequestSamlToken(stsUrl, serviceuserAlias.getUsername(), serviceuserAlias.getPassword(), cxf);
 
 	}
 }

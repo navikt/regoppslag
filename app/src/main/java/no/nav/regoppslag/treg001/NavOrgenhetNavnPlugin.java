@@ -9,9 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.treg001.support.PluginUtil.updateSecurityContext;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.SECURITYCONTEXT;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,10 +58,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
-		SecurityContext securityContext = (SecurityContext) valueMap.get(SECURITYCONTEXT.name());
-		
-		//Used to get consumerId
-		updateSecurityContext(securityContext, false);
+	
 		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 		
 		if (prefixMapper != null) {

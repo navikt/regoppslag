@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.naiscontract.support;
+package no.nav.regoppslag.nais.checkcore;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.Bus;
@@ -11,7 +11,7 @@ import java.util.HashMap;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
-public class NaisContractSTSConfigUtil {
+public class NaisCheckSTSConfigUtil {
 
 	private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
 	

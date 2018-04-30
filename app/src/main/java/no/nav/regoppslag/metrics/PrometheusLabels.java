@@ -16,6 +16,7 @@ public class PrometheusLabels {
 	public static final String LABEL_EXCEPTION_DESCRIPTION = "exception_description";
 	public static final String LABEL_EXCEPTION_NAME = "exception_name";
 	public static final String LABEL_ERROR_TYPE = "error_type";
+	public static final String LABEL_NAME = "name";
 	
 	//Request counter
 	public static final String LABEL_PROCESS = "process";

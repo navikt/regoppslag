@@ -5,6 +5,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_ERROR_TYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EVENT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_DESCRIPTION;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_EXCEPTION_NAME;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SERVICE;
@@ -27,6 +28,14 @@ public class PrometheusMetrics {
 			.name("app_is_ready")
 			.help("App is ready to receive traffic")
 			.register();
+	
+	public static final Gauge dependencyPingable = Gauge.build()
+			.namespace(DOK_NAMESPACE)
+			.name("dependency_ping")
+			.help("Dependency is pingable")
+			.labelNames(LABEL_NAME)
+			.register();
+	
 	
 	public static final Counter requestCounter = Counter.build()
 			.namespace(DOK_NAMESPACE)
