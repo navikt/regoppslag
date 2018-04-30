@@ -93,7 +93,7 @@ public class NaisContract {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
+	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_HTML_VALUE)
 	public ResponseEntity isReady() throws Exception {
 		
 		
