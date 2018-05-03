@@ -72,7 +72,6 @@ public class NaisContract {
 			.cancelRunningFuture(true).build();
 	private final TimeLimiter timeLimiter = TimeLimiter.of(timeLimiterConfig);
 	
-	
 	@Inject
 	private STSClient stsClient;
 	
@@ -119,7 +118,7 @@ public class NaisContract {
 		
 		Flowable.fromIterable(checkList)
 				.parallel()
-				.runOn(Schedulers.newThread())
+				.runOn(Schedulers.io())
 				.map(payload -> {
 					if (payload instanceof PersonV3Check) {
 						return dependencyCheck(payload, authenticationToken).get();
