@@ -46,6 +46,7 @@ fasitResources:
   - alias: srvregoppslag
     resourceType: certificate
     propertyMap:
+      keystore: SRVREGOPPSLAG_CERT_KEYSTORE
       keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
       password: SRVREGOPPSLAG_CERT_PASSWORD
   exposed:
