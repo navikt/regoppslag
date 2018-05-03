@@ -1,5 +1,11 @@
 package no.nav.regoppslag.treg002;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.PrometheusLabels.TREG002_ADRESSE_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.dok.metaforcemal.jaxb2.gen.UtenlandskPostadresse;
@@ -22,6 +28,7 @@ public class AdresseMapper {
 		
 		
 		if (mottaker.getAdresse() instanceof NorskPostadresse){
+			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, getConsumerId(), "NORSK_ADRESSE").inc();
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getAdresse();
 			return Adresse.builder()
 				.adresselinje1(norskPostadresse.getAdresselinje1())
@@ -31,6 +38,7 @@ public class AdresseMapper {
 				.postnummer(norskPostadresse.getPostnummer())
 				.poststed(norskPostadresse.getPoststed()).build();
 		} else {
+			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, getConsumerId(), "UTENLANDSK_ADRESSE").inc();
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getAdresse();
 			return Adresse.builder()
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())

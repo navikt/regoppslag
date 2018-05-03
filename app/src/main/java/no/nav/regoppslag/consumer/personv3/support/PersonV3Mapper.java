@@ -1,7 +1,9 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSEMAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
@@ -58,17 +60,17 @@ public class PersonV3Mapper {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getBostedsadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "Bostedsadresse").inc();
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "BOSTEDSADRESSE").inc();
 				mapBostedadresse(person, norskPostadresse);
 			} else if ("POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse().getUstrukturertAdresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "Postadresse").inc();
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "POSTADRESSE").inc();
 				mapPostadresse(person, norskPostadresse);
 			} else if ("MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MidlertidligPostadresseUtland")
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "MIDLERTIDIG_POSTADRESSE_UTLAND")
 						.inc();
 				mapMidlertidigUtland(person, norskPostadresse);
 			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype().getValue()) && person.getMidlertidigPostadresse() != null) {
-				requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "MidlertidligPostadresseNorge")
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "MIDLERTIDIG_POSTADRESSE_NORGE")
 						.inc();
 				mapMidlertidigNorge(person, norskPostadresse);
 			}
@@ -76,10 +78,14 @@ public class PersonV3Mapper {
 		validatePostadresse(norskPostadresse, mottaker);
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
-			requestCounter.labels(serviceCode, PERSONV3, ADRESSEMAPPER, getConsumerId(), "UKJENT").inc();
+			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "Ukjent").inc();
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 		}
+		
+		requestCounter.labels(serviceCode, PERSONV3_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand()==null?"Ukjent":norskPostadresse.getLand()).inc();
+		requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed()==null?"Ukjent":norskPostadresse.getPoststed()).inc();
+		
 		mottaker.setAdresse(norskPostadresse);
 	}
 

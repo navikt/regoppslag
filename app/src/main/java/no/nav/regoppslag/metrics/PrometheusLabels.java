@@ -45,9 +45,13 @@ public class PrometheusLabels {
 	public static final String MOTTAKERTYPE = "mottakerType";
 	public static final String PLUGIN = "plugin";
 	public static final String GENERELT = "generelt";
-	public static final String ADRESSEMAPPER = "adresse_mapper";
+	public static final String ADRESSETYPE = "adresse_type";
+	public static final String LAND = "land";
+	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";
+	public static final String PERSONV3_MAPPER = "PersonV3Mapper";
+	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
 	public static final String ORGANISASJONV4 = "OrganisasjonV4";
 	public static final String NORG2 = "NORG2";
 	public static final String LDAP = "LDAP";

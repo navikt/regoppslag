@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * @author Hans Petter Simonsen - Miles
  */
-public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
+public class PluginBeanRegistry implements ElementEnricherPluginRegistry {
 
 	private final Map<XPathExpression, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
 
@@ -23,7 +23,7 @@ public class SimplePluginRegistry implements ElementEnricherPluginRegistry {
 
 	private final NamespacePrefixMapperHelper jaxbNamspaceHelper;
 
-	public SimplePluginRegistry(ApplicationContext applicationContext, NamespacePrefixMapperHelper jaxbNamspaceHelper) {
+	public PluginBeanRegistry(ApplicationContext applicationContext, NamespacePrefixMapperHelper jaxbNamspaceHelper) {
 		this.applicationContext = applicationContext;
 		this.jaxbNamspaceHelper = jaxbNamspaceHelper;
 	}

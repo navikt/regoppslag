@@ -7,7 +7,7 @@ import no.nav.regoppslag.treg001.NavOrgenhetPostadressePlugin;
 import no.nav.regoppslag.treg001.SaksbehandlerPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
-import no.nav.regoppslag.xmlenricher.SimplePluginRegistry;
+import no.nav.regoppslag.xmlenricher.PluginBeanRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
 import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
@@ -27,7 +27,7 @@ public class ElementEnricherConfig {
 	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException, XPathExpressionException {
 		RegisteroppslagNamespaceContext context = new RegisteroppslagNamespaceContext();
 		NamespacePrefixMapperHelper jaxbhelper = new NamespacePrefixMapperHelper(context);
-		ElementEnricherPluginRegistry registry = new SimplePluginRegistry(applicationContext, jaxbhelper);
+		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext, jaxbhelper);
 		registry.registerPlugin(createExpression("//felles:mottaker", context), MottakerPlugin.class);
 		registry.registerPlugin(createExpression("//felles:behandlendeEnhet", context), NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);

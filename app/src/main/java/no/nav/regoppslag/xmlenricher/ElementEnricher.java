@@ -7,7 +7,6 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.CompositeException;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -26,7 +25,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +48,7 @@ public class ElementEnricher {
 	
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 		
@@ -64,7 +62,7 @@ public class ElementEnricher {
 		}
 		
 		
-		final List<Throwable> unhandledErrors = Collections.synchronizedList(new ArrayList<>());
+		final List<Throwable> unhandledError = new ArrayList<>();
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
@@ -80,16 +78,13 @@ public class ElementEnricher {
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
-						unhandledErrors::add
+						error->unhandledError.add(error)
 				);
 		
-		if (!unhandledErrors.isEmpty()) {
-			if (unhandledErrors.get(0) instanceof CompositeException) {
-				handleException(((CompositeException) unhandledErrors.get(0)).getExceptions().get(0));
-			} else {
-				handleException(unhandledErrors.get(0));
-			}
+		if (!unhandledError.isEmpty()) {
+			handleException(unhandledError.get(0));
 		}
+		
 		return document;
 	}
 	
