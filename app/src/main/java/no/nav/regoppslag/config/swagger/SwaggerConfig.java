@@ -9,6 +9,12 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.ModelRendering;
+import springfox.documentation.swagger.web.OperationsSorter;
+import springfox.documentation.swagger.web.TagsSorter;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
@@ -20,7 +26,7 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfig {
 	
-	@Value("${applicationVersion}")
+	@Value("${APP_VERSION}")
 	private String version;
 	
 	public static final String samlTokenInfo = "<p>Ved input som krever oppslag i personopplysninger så krever denne tjenesten SAML assertion token som authorization header. Tokenet blir da brukt ved kall mot PersonV3, og hvis brukeren ikke har tilgang vil kallet mot PersonV3 returnere sikkerhetsfeil. " +
@@ -35,6 +41,25 @@ public class SwaggerConfig {
 				.build()
 				.useDefaultResponseMessages(false)
 				.apiInfo(apiInfo());
+	}
+	
+	@Bean
+	UiConfiguration uiConfig() {
+		return UiConfigurationBuilder.builder()
+				.deepLinking(true)
+				.displayOperationId(false)
+				.defaultModelsExpandDepth(1)
+				.defaultModelExpandDepth(1)
+				.defaultModelRendering(ModelRendering.EXAMPLE)
+				.displayRequestDuration(false)
+				.docExpansion(DocExpansion.NONE)
+				.filter(false)
+				.maxDisplayedTags(null)
+				.operationsSorter(OperationsSorter.ALPHA)
+				.showExtensions(false)
+				.tagsSorter(TagsSorter.ALPHA)
+				.validatorUrl(null)
+				.build();
 	}
 	
 	private ApiInfo apiInfo() {

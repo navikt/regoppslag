@@ -17,7 +17,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValiderOgKompletterBrevdataRequest {
+public class KompletterBrevdataRequest {
 	
 	private static final String exampleBrevdata = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><brevdata><felles xmlns:felles=\"http://nav.no/dok/pesysbrev/felles/v1/PesysFelles\" xmlns:kontaktinformasjon=\"http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon\" xmlns:aktoer=\"http://nav.no/dok/pesysbrev/felles/v1/Aktoer\" xmlns:mottaker=\"http://nav.no/dok/pesysbrev/felles/v1/Mottaker\" xmlns:navEnhet=\"http://nav.no/dok/pesysbrev/felles/v1/NavEnhet\" xmlns:saksbehandler=\"http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler\"><felles:mottaker><aktoer:id>889640782</aktoer:id><aktoer:typeKode>ORGANISASJON</aktoer:typeKode></felles:mottaker><felles:signerendeSaksbehandler><saksbehandler:navAnsatt><ansattId>Z999990</ansattId></saksbehandler:navAnsatt><saksbehandler:navEnhet><enhetsId>0136</enhetsId></saksbehandler:navEnhet></felles:signerendeSaksbehandler><felles:signerendeBeslutter><saksbehandler:navAnsatt><ansattId>Z999990</ansattId></saksbehandler:navAnsatt><saksbehandler:navEnhet><enhetsId>0136</enhetsId></saksbehandler:navEnhet></felles:signerendeBeslutter><felles:kontaktinformasjon><kontaktinformasjon:postadresse><navEnhet:enhetsId>0136</navEnhet:enhetsId></kontaktinformasjon:postadresse></felles:kontaktinformasjon></felles></brevdata>";
 	

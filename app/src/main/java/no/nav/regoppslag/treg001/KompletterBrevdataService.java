@@ -1,8 +1,8 @@
 package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
+import no.nav.regoppslag.common.KompletterBrevdataRequest;
+import no.nav.regoppslag.common.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -57,7 +57,7 @@ public class KompletterBrevdataService {
 		return writer.toString();
 	}
 	
-	public ValiderOgKompletterBrevdataResponse hentBrevdataFraRegistre(ValiderOgKompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 
 		String responseBrevdata;
 		try {
@@ -83,7 +83,7 @@ public class KompletterBrevdataService {
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		}
-		return ValiderOgKompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
+		return KompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
 
 	}
 }

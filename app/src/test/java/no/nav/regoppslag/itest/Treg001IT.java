@@ -15,8 +15,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.io.Resources;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
+import no.nav.regoppslag.common.KompletterBrevdataRequest;
+import no.nav.regoppslag.common.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,10 +40,10 @@ public class Treg001IT extends AbstractIT {
 	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
 	private String expectedBrevdataFerdigUtfyltOrg = resourceUrlToString(brevdataResponseOrg_URL);
 	
-	private ValiderOgKompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
-	private ValiderOgKompletterBrevdataRequest requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
-	private ValiderOgKompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
-	private ValiderOgKompletterBrevdataRequest requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
+	private KompletterBrevdataRequest request = createRequest("__files/treg001/treg001_full_request.xml");
+	private KompletterBrevdataRequest requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
+	private KompletterBrevdataRequest requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
+	private KompletterBrevdataRequest requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
 	
 	
 	@Before
@@ -77,7 +77,7 @@ public class Treg001IT extends AbstractIT {
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws Exception {
-		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
 				.replaceAll("`\n", "")
 				.replaceAll("`\t", ""));
@@ -88,7 +88,7 @@ public class Treg001IT extends AbstractIT {
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws Exception {
-		ValiderOgKompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrgFull, ValiderOgKompletterBrevdataResponse.class);
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrgFull, KompletterBrevdataResponse.class);
 		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
 				.replaceAll("`\n", "")
 				.replaceAll("`\t", ""));
@@ -108,7 +108,7 @@ public class Treg001IT extends AbstractIT {
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4_orgIkkeFunnet.xml"))); //mottakerPlugin
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -121,7 +121,7 @@ public class Treg001IT extends AbstractIT {
 	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
 		
 		try {
-			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpClientErrorException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -138,7 +138,7 @@ public class Treg001IT extends AbstractIT {
 						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
 		
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
@@ -155,7 +155,7 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -170,7 +170,7 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
@@ -185,7 +185,7 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -199,7 +199,7 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -213,7 +213,7 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(notFound().withStatus(HttpStatus.NOT_FOUND.value())));
 		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestNorg, ValiderOgKompletterBrevdataResponse.class);
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestNorg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -221,8 +221,8 @@ public class Treg001IT extends AbstractIT {
 		}
 	}
 	
-	private ValiderOgKompletterBrevdataRequest createRequest(String path) {
-		return ValiderOgKompletterBrevdataRequest.builder()
+	private KompletterBrevdataRequest createRequest(String path) {
+		return KompletterBrevdataRequest.builder()
 				.dokumentTypeId(DOKUMENTTYPEID)
 				.brevdata(classpathToString(path))
 				.build();

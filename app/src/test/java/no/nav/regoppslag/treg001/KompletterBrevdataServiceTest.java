@@ -6,8 +6,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
+import no.nav.regoppslag.common.KompletterBrevdataRequest;
+import no.nav.regoppslag.common.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -31,10 +31,16 @@ public class KompletterBrevdataServiceTest {
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
 	
-	private ValiderOgKompletterBrevdataRequest request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
+	private KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
+			.dokumentTypeId("123")
+			.brevdata(brevdata)
+			.build();
 	ElementEnricher elementEnricher = mock(ElementEnricher.class);
 	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
-	private ValiderOgKompletterBrevdataRequest illegalRequest = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata("<ole>brumm</oleIllegal>").build();
+	private KompletterBrevdataRequest illegalRequest = KompletterBrevdataRequest.builder()
+			.dokumentTypeId("123")
+			.brevdata("<ole>brumm</oleIllegal>")
+			.build();
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -43,7 +49,7 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldValiderOgKompletterBrevdata() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
-		ValiderOgKompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
+		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
 		Mockito.verify(elementEnricher, Mockito.times(1)).process(any(),any());
 	}

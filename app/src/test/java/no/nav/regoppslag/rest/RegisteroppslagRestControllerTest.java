@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataRequest;
-import no.nav.regoppslag.common.ValiderOgKompletterBrevdataResponse;
+import no.nav.regoppslag.common.KompletterBrevdataRequest;
+import no.nav.regoppslag.common.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -22,7 +22,7 @@ import org.mockito.Mockito;
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class RegisteroppslagRestControllerTest {
-	private ValiderOgKompletterBrevdataRequest request;
+	private KompletterBrevdataRequest request;
 	private HentMottakerOgAdresseResponse responseMogA;
 	private String brevdata = "<ole>brumm</ole>";
 	HentMottakerOgAdresseRequest mottakerOgAdresseRequest = mock(HentMottakerOgAdresseRequest.class);
@@ -32,9 +32,9 @@ public class RegisteroppslagRestControllerTest {
 
 	@Before
 	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		request = ValiderOgKompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
+		request = KompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
 		String brevdataUtfylt = "<ole>brumm</ole>";
-		ValiderOgKompletterBrevdataResponse response = ValiderOgKompletterBrevdataResponse.builder()
+		KompletterBrevdataResponse response = KompletterBrevdataResponse.builder()
 				.brevdata(brevdataUtfylt)
 				.build();
 		when(kompletterBrevdataService.hentBrevdataFraRegistre(request)).thenReturn(response);
@@ -43,7 +43,7 @@ public class RegisteroppslagRestControllerTest {
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		ValiderOgKompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
+		KompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(kompletterBrevdataService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}
