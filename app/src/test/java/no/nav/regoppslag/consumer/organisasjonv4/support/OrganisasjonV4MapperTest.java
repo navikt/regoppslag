@@ -63,13 +63,14 @@ public class OrganisasjonV4MapperTest {
 	private static final String LANDKODE = "NOR";
 	private static final String LAND = "NORWAY";
 	private static final String MAALFORM = "NO";
+	private static final String SERVICECODE = "SERVICECODE";
 
 
 	@Test
 	public void simpleMapping() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
@@ -80,7 +81,7 @@ public class OrganisasjonV4MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settSemistrukturertAdresse(org, "POSTADRESSE");
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
@@ -98,7 +99,7 @@ public class OrganisasjonV4MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settSemistrukturertAdresse(org, "FORRETNINGSADRESSE");
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
@@ -116,7 +117,7 @@ public class OrganisasjonV4MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
@@ -133,7 +134,7 @@ public class OrganisasjonV4MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "FORRETNINGSADRESSE");
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
@@ -154,7 +155,7 @@ public class OrganisasjonV4MapperTest {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
-		mapper.map(org, mottaker);
+		mapper.map(org, mottaker, SERVICECODE);
 	}
 
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {

@@ -51,6 +51,7 @@ public class PrometheusLabels {
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";
 	public static final String PERSONV3_MAPPER = "PersonV3Mapper";
+	public static final String ORGANISASJONV4_MAPPER = "OrganisasjonV4Mapper";
 	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
 	public static final String ORGANISASJONV4 = "OrganisasjonV4";
 	public static final String NORG2 = "NORG2";

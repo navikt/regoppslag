@@ -128,7 +128,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
 							.getId(), getConsumerId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
 				}
-				organisasjonV4Mapper.map(organisasjon, mottaker);
+				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
 			}
 			//Sjekker språket på malen opp mot mottakers preferanser
 			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

@@ -1,5 +1,12 @@
 package no.nav.regoppslag.consumer.organisasjonv4.support;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.POSTSTED;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+
 import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
 import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
 import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
@@ -28,23 +35,26 @@ import java.util.Optional;
 
 @Component
 public class OrganisasjonV4Mapper {
-
+	
 	@Inject
 	private final LandkodeService landkodeService;
-
+	
 	@Inject
 	private final PostnummerService postnummerService;
-
+	
 	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
-
-	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker) throws RegOppslagFunctionalException {
+	
+	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ").trim());
-		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn().get(0).getNavn()).getNavnelinje(), " ").trim());
-
+		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ")
+				.trim());
+		mottaker.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
+				.get(0)
+				.getNavn()).getNavnelinje(), " ").trim());
+		
 		if (orgDet.getGjeldendeMaalform() != null) {
 			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
@@ -52,19 +62,27 @@ public class OrganisasjonV4Mapper {
 				mottaker.setSpraakkode(Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef()));
 			}
 		}
-
+		
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!CollectionUtils.isEmpty(orgDet.getPostadresse())) {
-			mapPostadresse(orgDet,norskPostadresse);
+			mapPostadresse(orgDet, norskPostadresse);
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "POSTADRESSE").inc();
 		} else if (!CollectionUtils.isEmpty(orgDet.getForretningsadresse())) {
-			mapForretningsAdresse(orgDet,norskPostadresse);
+			mapForretningsAdresse(orgDet, norskPostadresse);
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "FORRETNINGSADRESSE").inc();
 		}
+		
 		validatePostadresse(norskPostadresse, mottaker);
-
+		
+		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
+				.getLand()).inc();
+		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed() == null ? "Ukjent" : norskPostadresse
+				.getPoststed()).inc();
+		
 		mottaker.setAdresse(norskPostadresse);
 	}
-
-	private void mapPostadresse(OrganisasjonsDetaljer orgDet,NorskPostadresse norskPostadresse) {
+	
+	private void mapPostadresse(OrganisasjonsDetaljer orgDet, NorskPostadresse norskPostadresse) {
 		if (orgDet.getPostadresse().get(0) instanceof SemistrukturertAdresse) {
 			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getPostadresse().get(0);
 			settAdresseledd(adresse, norskPostadresse);
@@ -73,7 +91,9 @@ public class OrganisasjonV4Mapper {
 			}
 		} else {
 			Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
-			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
+					.orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString())
+					.orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 			if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
 				if (stedsadresseNorge.getPoststed() != null) {
@@ -87,7 +107,7 @@ public class OrganisasjonV4Mapper {
 			norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
 		}
 	}
-
+	
 	private void mapForretningsAdresse(OrganisasjonsDetaljer orgDet, NorskPostadresse norskPostadresse) {
 		if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
 			SemistrukturertAdresse adresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
@@ -97,7 +117,9 @@ public class OrganisasjonV4Mapper {
 			}
 		} else {
 			Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
-			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
+					.orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString())
+					.orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 			if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);
 				if (stedsadresseNorge.getPoststed() != null) {
@@ -110,9 +132,9 @@ public class OrganisasjonV4Mapper {
 		if (geografiskAdresse.getLandkode() != null) {
 			norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
 		}
-
+		
 	}
-
+	
 	private void settAdresseledd(SemistrukturertAdresse adresse, NorskPostadresse norskPostadresse) {
 		for (NoekkelVerdiAdresse nokler : adresse.getAdresseledd()) {
 			if ("adresselinje1".equals(nokler.getNoekkel().getKodeRef())) {
@@ -130,11 +152,11 @@ public class OrganisasjonV4Mapper {
 			}
 		}
 	}
-
+	
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
 		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId(), "Mangler postnummer for organisasjon");
 		}
 	}
-
+	
 }

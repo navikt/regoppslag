@@ -71,7 +71,7 @@ public class HentMottakerOgAdresseService {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
-				organisasjonV4Mapper.map(organisasjon, mottaker);
+				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG002);
 			}
 			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s, ConsumerId=%s", request
 					.getType(), getConsumerId()));
