@@ -82,14 +82,15 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
-				throw new RegOppslagFunctionalException("Dokkat.TKAT020 failed with bad request for dokumenttypeId:" + dokumenttypeId, e, TKAT020_UGYLDIG_INPUT);
+				throw new RegOppslagFunctionalException(String.format("Dokkat.TKAT020 failed with bad request for dokumenttypeId=%s", dokumenttypeId), e, TKAT020_UGYLDIG_INPUT);
 			} else {
-				throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed. (HttpStatus=" + e.getStatusCode() + ") for dokumenttypeId:" + dokumenttypeId, e, TKAT020_TEKNISKFEIL);
+				throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed. (HttpStatus=%s) for dokumenttypeId=%s", e
+						.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL);
 			}
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed with statusCode=" + e.getRawStatusCode(), e, TKAT020_TEKNISKFEIL);
+			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed with statusCode=%s", e.getRawStatusCode()), e, TKAT020_TEKNISKFEIL);
 		} catch (Exception e) {
-			throw new RegOppslagTechnicalException("Dokkat.TKAT020 failed with message=" + e.getMessage(), e, TKAT020_TEKNISKFEIL);
+			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed with message=%s", e.getMessage()), e, TKAT020_TEKNISKFEIL);
 		} finally {
 			requestTimer.observeDuration();
 		}

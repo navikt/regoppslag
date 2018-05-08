@@ -84,7 +84,7 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
 
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident:" + FNR);
+		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident=" + FNR);
 		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 	}
 

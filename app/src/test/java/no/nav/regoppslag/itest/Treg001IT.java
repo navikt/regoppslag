@@ -159,7 +159,7 @@ public class Treg001IT extends AbstractIT {
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident:20096828390, message=Ingen forekomster funnet"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=20096828390, message=Ingen forekomster funnet"));
 		}
 	}
 	

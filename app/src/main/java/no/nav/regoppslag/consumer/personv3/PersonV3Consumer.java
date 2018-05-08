@@ -62,17 +62,17 @@ public class PersonV3Consumer {
 			requestTimer = requestLatency.labels(serviceCode, PERSONV3, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
-					.getMessage(), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
+			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
+					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=" + hentPersonSikkerhetsbegrensning
-					.getMessage(), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
+			throw new RegOppslagSecurityException(String.format("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=%s", hentPersonSikkerhetsbegrensning
+					.getMessage()), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
 		} catch (Exception e) {
 			if (e.getCause() instanceof SamlTokenInterceptorException){
 				throw new RegOppslagFunctionalException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token");
 			}
-			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson. Message=" + e
-					.getMessage(), e, "PersonV3 - Teknisk feil");
+			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til PersonV3.hentPerson. Message=%s", e
+					.getMessage()), e, "PersonV3 - Teknisk feil");
 		} finally {
 			requestTimer.observeDuration();
 		}

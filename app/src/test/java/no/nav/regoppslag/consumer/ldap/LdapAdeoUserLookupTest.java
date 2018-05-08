@@ -40,7 +40,7 @@ public class LdapAdeoUserLookupTest {
 	@Test
 	public void shouldThrowExceptionWhenAdeoIdentNotFound() throws Exception {
 		thrown.expect(RegOppslagFunctionalException.class);
-		thrown.expectMessage("Ldap.hentFulltNavn finner ikke bruker med ident:bxxxxxx");
+		thrown.expectMessage("Ldap.hentFulltNavn finner ikke bruker med ident=bxxxxxx");
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("bxxxxxx");
 
 	}

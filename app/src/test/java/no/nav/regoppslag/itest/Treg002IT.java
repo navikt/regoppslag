@@ -138,7 +138,7 @@ public class Treg002IT extends AbstractIT {
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident:0102030405, message=Ingen forekomster funnet"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=0102030405, message=Ingen forekomster funnet"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
 		}
 		
