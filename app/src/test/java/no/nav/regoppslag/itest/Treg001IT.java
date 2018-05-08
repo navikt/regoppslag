@@ -142,7 +142,7 @@ public class Treg001IT extends AbstractIT {
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Sikkerhetsfeil: dokumenttypeId=123 feilmelding=no.nav.regoppslag.exceptions.RegOppslagSecurityException: PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=Z991006, message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Sikkerhetsfeil: dokumenttypeId=123 feilmelding=no.nav.regoppslag.exceptions.RegOppslagSecurityException: PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
 		}
 		
@@ -189,7 +189,7 @@ public class Treg001IT extends AbstractIT {
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. ConsumerId=Z991006, message=Could not send Message."));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. Message=Could not send Message."));
 		}
 	}
 	

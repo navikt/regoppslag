@@ -84,8 +84,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 			
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetsId=%s, ConsumerId=%s", adresse
-						.getEnhetsId(), getConsumerId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. EnhetsId=%s", adresse
+						.getEnhetsId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 			
 			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
