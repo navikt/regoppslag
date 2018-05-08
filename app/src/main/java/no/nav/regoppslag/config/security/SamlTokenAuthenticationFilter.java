@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.UUID;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -39,7 +40,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		
 		//In case the application have several authorization headers
 		String header = getSamlAuthHeader(request.getHeaders("Authorization"));
-		MDC.put(CALLID, getCallId(request));
+		MDC.put(CALLID, getOrCreateCallId(request));
 		
 		if (header == null || !header.startsWith("SAML ")) {
 			MDC.put(CONSUMERID, UKJENT);
@@ -116,11 +117,11 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		return consumerId;
 	}
 	
-	private String getCallId(HttpServletRequest request) {
+	private String getOrCreateCallId(HttpServletRequest request) {
 		Enumeration<String> headers = request.getHeaders(CALLID);
 		if (headers.hasMoreElements()) {
 			return headers.nextElement();
 		}
-		return UKJENT;
+		return UUID.randomUUID().toString();
 	}
 }
