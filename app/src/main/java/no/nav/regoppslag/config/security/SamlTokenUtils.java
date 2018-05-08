@@ -37,10 +37,8 @@ public class SamlTokenUtils {
 			if (SecurityContextHolder.getContext().getAuthentication() != null && !SecurityContextHolder.getContext()
 					.getAuthentication()
 					.isAuthenticated()) {
-				log.error(String.format("Sikkerhetstokenet i securityContext er ugyldig fordi den har allerede blitt brukt. " +
-						"Dette er noe som ikke bør skje! (feil i kode?). ConsumerId=%s", SecurityContextHolder.getContext()
-						.getAuthentication()
-						.getName()));
+				log.error("Sikkerhetstokenet i securityContext er ugyldig fordi den har allerede blitt brukt. " +
+						"Dette er noe som ikke bør skje! (feil i kode?).");
 				requestCounter.labels("SAML_TOKEN_OUT_INTERCEPTOR", "SAML_TOKEN_OUT_INTERCEPTOR", "SAML_NOT_ALLOWED", getConsumerId(), "SAML_AUTHENTICATION_FALSE")
 						.inc();
 				

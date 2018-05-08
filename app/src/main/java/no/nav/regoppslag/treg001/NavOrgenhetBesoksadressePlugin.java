@@ -74,8 +74,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		try {
 			Besoksadresse adresse = unmarshal(content);
 			
-			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s, ConsumerId=%s", dokumenttypeId, adresse
-					.getEnhetsId(), getConsumerId()));
+			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+					.getEnhetsId()));
 			
 			validateAdresse(adresse);
 			
@@ -100,8 +100,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s, ConsumerId=%s", dokumenttypeId, adresse
-					.getEnhetsId(), getConsumerId()));
+			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+					.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
 		} catch (JAXBException | ParserConfigurationException e) {

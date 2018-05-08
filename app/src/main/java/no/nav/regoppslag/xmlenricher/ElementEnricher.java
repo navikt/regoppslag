@@ -2,6 +2,9 @@ package no.nav.regoppslag.xmlenricher;
 
 import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
 import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
+import static no.nav.regoppslag.util.MDCConstants.CALLID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
+import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
@@ -15,6 +18,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.Payload;
+import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
@@ -49,6 +53,9 @@ public class ElementEnricher {
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 		
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final String consumerId = MDC.get(CONSUMERID);
+		final String subjectId = MDC.get(SUBJECTID);
+		final String callId = MDC.get(CALLID);
 		
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
 		
@@ -67,7 +74,12 @@ public class ElementEnricher {
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-							SecurityContextHolder.setContext(createNewSecurityContext(authentication, securityContextIsUsedForAuthentication(payload)));
+					if (securityContextIsUsedForAuthentication(payload)) {
+						SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
+					}
+					MDC.put(CONSUMERID, consumerId);
+					MDC.put(SUBJECTID, subjectId);
+					MDC.put(CALLID, callId);
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
@@ -78,7 +90,7 @@ public class ElementEnricher {
 				.sequential()
 				.blockingSubscribe(
 						onNextElement -> aggregate(document, onNextElement),
-						error->unhandledError.add(error)
+						error -> unhandledError.add(error)
 				);
 		
 		if (!unhandledError.isEmpty()) {

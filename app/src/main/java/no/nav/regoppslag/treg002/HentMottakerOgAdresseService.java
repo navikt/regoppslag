@@ -60,8 +60,8 @@ public class HentMottakerOgAdresseService {
 		validateInput(request);
 		try {
 			Mottaker mottaker = new Mottaker();
-			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s, ConsumerId=%s", request
-					.getType(), getConsumerId()));
+			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s", request
+					.getType()));
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
@@ -73,8 +73,8 @@ public class HentMottakerOgAdresseService {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG002);
 			}
-			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s, ConsumerId=%s", request
-					.getType(), getConsumerId()));
+			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s", request
+					.getType()));
 			
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())

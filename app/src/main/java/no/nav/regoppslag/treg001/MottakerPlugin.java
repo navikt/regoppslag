@@ -104,8 +104,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
 			}
 			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()));
+			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+					.getId()));
 			
 			validateMottaker(mottaker);
 			
@@ -137,8 +137,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
 				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
 						.inc();
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s, ConsumerId=%s", dokumenttypeId, mottaker
-						.getId(), getConsumerId()));
+				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s", dokumenttypeId, mottaker
+						.getId()));
 			}
 			
 			maalform.setMaalform(mottaker, sprakinfos);
@@ -153,8 +153,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()));
+			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+					.getId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |
