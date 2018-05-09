@@ -43,7 +43,7 @@ public class RegisteroppslagRestControllerTest {
 	
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		KompletterBrevdataResponse actualResponse = registeroppslagRestController.validerOgKompletterBrevdata(request);
+		KompletterBrevdataResponse actualResponse = registeroppslagRestController.kompletterBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(kompletterBrevdataService, Mockito.times(1)).hentBrevdataFraRegistre(any());
 	}

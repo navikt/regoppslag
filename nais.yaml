@@ -50,7 +50,7 @@ fasitResources:
       keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
       password: SRVREGOPPSLAG_CERT_PASSWORD
   exposed:
-  - alias: ValiderOgKompletterBrevdata
+  - alias: KompletterBrevdata
     resourceType: restservice
     path: /rest/kompletterBrevdata
   - alias: HentMottakerOgAdresse
