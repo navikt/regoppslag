@@ -29,6 +29,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.PrometheusLabels;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
+import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,6 +92,7 @@ public class RegisteroppslagRestController {
 		} finally {
 			requestTimer.observeDuration();
 			SecurityContextHolder.clearContext();
+			MDC.clear();
 		}
 	}
 	
@@ -121,6 +123,7 @@ public class RegisteroppslagRestController {
 		} finally {
 			requestTimer.observeDuration();
 			SecurityContextHolder.clearContext();
+			MDC.clear();
 		}
 	}
 	

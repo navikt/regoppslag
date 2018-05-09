@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @Component
 public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractDependencyCheck {
-	public static final String OrganisasjonEnhetKontaktinformasjonV1_label = "OrganisasjonEnhetKontaktinformasjonV1";
+	public static final String OrganisasjonEnhetKontaktinformasjonV1_label = "NORG2";
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 
 	@Inject
@@ -29,7 +29,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractDependen
 		try {
 			organisasjonEnhetKontaktinformasjonV1.ping();
 		} catch (Exception e) {
-			throw new ApplicationNotReadyException("Could not ping OrganisasjonEnhetKontaktinformasjonV1", e);
+			throw new ApplicationNotReadyException("Could not ping NORG2", e);
 		}
 	}
 }

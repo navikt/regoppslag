@@ -43,7 +43,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
@@ -52,7 +52,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
@@ -63,7 +63,7 @@ public class PersonV3ConsumerTest {
 		response.setPerson(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 
 		assertThat(person, nullValue());
 	}
@@ -74,7 +74,7 @@ public class PersonV3ConsumerTest {
 		response.getPerson().setPersonnavn(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 
 		assertThat(person.getPersonnavn(), nullValue());
 	}
@@ -84,17 +84,17 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
 
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident:" + FNR);
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident=" + FNR);
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 	}
 
 	@Test
 	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
 		expectedException.expect(RegOppslagSecurityException.class);
-		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + PRINCIPAL + ", message=Ingen adgang");
+		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen adgang");
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
 	}
 
 	private HentPersonResponse defaultResponse() {

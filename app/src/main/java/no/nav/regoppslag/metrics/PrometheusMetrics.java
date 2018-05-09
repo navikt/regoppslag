@@ -10,12 +10,14 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SERVICE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TYPE;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
+import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
+import static no.nav.regoppslag.util.MDCConstants.UKJENT;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.slf4j.MDC;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -58,11 +60,11 @@ public class PrometheusMetrics {
 			.register();
 	
 	public static String getConsumerId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || authentication.getName().equalsIgnoreCase("anonymousUser")) {
-			return "Ukjent";
-		}
-		return authentication.getName();
+		return MDC.get(CONSUMERID) == null ? UKJENT : MDC.get(CONSUMERID);
+	}
+	
+	public static String getSubjectId() {
+		return MDC.get(SUBJECTID) == null ? UKJENT : MDC.get(SUBJECTID);
 	}
 	
 }

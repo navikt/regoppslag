@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @Component
 public class PersonV3Check extends AbstractDependencyCheck {
-	public static final String PERSONV3_LABEL = "PersonV3";
+	public static final String PERSONV3_LABEL = "Person_V3";
 	private final PersonV3 personV3;
 
 	@Inject

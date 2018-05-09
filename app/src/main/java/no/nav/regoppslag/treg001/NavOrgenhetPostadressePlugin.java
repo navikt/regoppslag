@@ -73,7 +73,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		
 		try {
 			Postadresse adresse = unmarshal(content);
-			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s, ConsumerId=%s", adresse.getEnhetsId(), getConsumerId()));
+			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
 
 			validateAdresse(adresse);
 			
@@ -82,8 +82,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", adresse
-						.getEnhetsId(), getConsumerId()), "NavOrgenhetPostadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. EnhetId=%s", adresse
+						.getEnhetsId()), "NavOrgenhetPostadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 
 			norg2Mapper.mapPostadresse(wsEnhet, adresse);
@@ -98,7 +98,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("NavOrgenhet er beriket med data. EnhetsId=%s, ConsumerId=%s", adresse.getEnhetsId(), getConsumerId()));
+			log.info(String.format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 

@@ -69,7 +69,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		
 		try {
 			NavEnhet navEnhet = unmarshal(content);
-			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s, ConsumerId=%s", navEnhet.getEnhetsId(), getConsumerId()));
+			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 			
 			validateEnhet(navEnhet);
 			
@@ -78,8 +78,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 			
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. enhetId=%s, ConsumerId=%s", navEnhet
-						.getEnhetsId(), getConsumerId()), "NavOrgenhetNavnPlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. EnhetId=%s", navEnhet
+						.getEnhetsId()), "NavOrgenhetNavnPlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 			
 			norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
@@ -94,7 +94,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s, ConsumerId=%s", navEnhet.getEnhetsId(), getConsumerId()));
+			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
 		} catch (JAXBException | ParserConfigurationException e) {

@@ -23,7 +23,7 @@ public class PrometheusLabels {
 	public static final String LABEL_SERVICE = "service";
     public static final String LABEL_TYPE = "type";
 	public static final String LABEL_PROCESS_NAME = "process_name";
-	public static final String LABEL_CONSUMER_ID = "consumer_name";
+	public static final String LABEL_CONSUMER_ID = "consumer_id";
 	public static final String LABEL_EVENT = "event";
 	
 	/**

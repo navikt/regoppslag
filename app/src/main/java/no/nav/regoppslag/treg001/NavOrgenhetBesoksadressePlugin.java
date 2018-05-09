@@ -74,8 +74,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		try {
 			Besoksadresse adresse = unmarshal(content);
 			
-			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s, ConsumerId=%s", dokumenttypeId, adresse
-					.getEnhetsId(), getConsumerId()));
+			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+					.getEnhetsId()));
 			
 			validateAdresse(adresse);
 			
@@ -84,8 +84,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 			
 			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. enhetsId=%s, ConsumerId=%s", adresse
-						.getEnhetsId(), getConsumerId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. EnhetsId=%s", adresse
+						.getEnhetsId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
 			}
 			
 			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
@@ -100,8 +100,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s, ConsumerId=%s", dokumenttypeId, adresse
-					.getEnhetsId(), getConsumerId()));
+			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+					.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 			
 		} catch (JAXBException | ParserConfigurationException e) {

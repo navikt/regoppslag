@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @Component
 public class OrganisasjonV4Check extends AbstractDependencyCheck {
-	public static final String ORGANISASJON_V4 = "OrganisasjonV4";
+	public static final String ORGANISASJON_V4 = "Organisasjon_V4";
 	private final OrganisasjonV4 organisasjonV4;
 
 	@Inject

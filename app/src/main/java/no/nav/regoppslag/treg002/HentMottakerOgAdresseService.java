@@ -7,6 +7,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -60,12 +61,12 @@ public class HentMottakerOgAdresseService {
 		validateInput(request);
 		try {
 			Mottaker mottaker = new Mottaker();
-			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s, ConsumerId=%s", request
-					.getType(), getConsumerId()));
+			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s", request
+					.getType()));
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), SERVICE_CODE_TREG002);
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG002);
 				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
@@ -73,8 +74,8 @@ public class HentMottakerOgAdresseService {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG002);
 			}
-			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s, ConsumerId=%s", request
-					.getType(), getConsumerId()));
+			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s", request
+					.getType()));
 			
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())

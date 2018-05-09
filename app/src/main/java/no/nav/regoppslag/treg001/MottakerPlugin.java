@@ -12,6 +12,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
@@ -104,18 +105,18 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
 			}
 			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()));
+			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+					.getId()));
 			
 			validateMottaker(mottaker);
 			
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
-				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), SERVICE_CODE_TREG001);
+				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
 				if (person == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. mottakerId=%s ConsumerId=%s", mottaker
-							.getId(), getConsumerId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
+					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. MottakerId=%s", mottaker
+							.getId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
 				}
 				
 				personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
@@ -125,8 +126,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
 				if (organisasjon == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. mottakerId=%s, ConsumerId=%s", mottaker
-							.getId(), getConsumerId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
+					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=%s", mottaker
+							.getId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
 				}
 				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
 			}
@@ -137,8 +138,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
 				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
 						.inc();
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s, ConsumerId=%s", dokumenttypeId, mottaker
-						.getId(), getConsumerId()));
+				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s", dokumenttypeId, mottaker
+						.getId()));
 			}
 			
 			maalform.setMaalform(mottaker, sprakinfos);
@@ -153,8 +154,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s ConsumerId=%s", dokumenttypeId, mottaker
-					.getId(), getConsumerId()));
+			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+					.getId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException |

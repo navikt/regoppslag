@@ -49,9 +49,9 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 	
-	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#consumerId")
+	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Bruker hentPerson(final String personidentifikator, final String consumerId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Bruker hentPerson(final String personidentifikator, final String consumerId, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
 		requestCounter.labels(serviceCode, HENT_PERSON, CACHE_COUNTER, consumerId, CACHE_MISS).inc();
 		
@@ -62,17 +62,17 @@ public class PersonV3Consumer {
 			requestTimer = requestLatency.labels(serviceCode, PERSONV3, HENT_PERSON).startTimer();
 			response = personV3.hentPerson(request);
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagFunctionalException("PersonV3.hentPerson fant ikke person med ident:" + personidentifikator + ", message=" + hentPersonPersonIkkeFunnet
-					.getMessage(), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
+			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
+					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-			throw new RegOppslagSecurityException("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. ConsumerId=" + consumerId + ", message=" + hentPersonSikkerhetsbegrensning
-					.getMessage(), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
+			throw new RegOppslagSecurityException(String.format("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=%s", hentPersonSikkerhetsbegrensning
+					.getMessage()), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
 		} catch (Exception e) {
 			if (e.getCause() instanceof SamlTokenInterceptorException){
 				throw new RegOppslagFunctionalException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token");
 			}
-			throw new RegOppslagTechnicalException("Noe gikk galt i kall til PersonV3.hentPerson. ConsumerId=" + consumerId + ", message=" + e
-					.getMessage(), e, "PersonV3 - Teknisk feil");
+			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til PersonV3.hentPerson. Message=%s", e
+					.getMessage()), e, "PersonV3 - Teknisk feil");
 		} finally {
 			requestTimer.observeDuration();
 		}

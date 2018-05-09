@@ -62,8 +62,8 @@ public class Tkat020DokumenttypeInfoTest {
 	public void shouldThrowFunctionalExceptionWhenBadRequest() throws Exception {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
-
-		expectedException.expectMessage("Dokkat.TKAT020 failed with bad request for dokumenttypeId:");
+		
+		expectedException.expectMessage("Dokkat.TKAT020 failed with bad request for dokumenttypeId=");
 		expectedException.expect(RegOppslagFunctionalException.class);
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
@@ -73,8 +73,8 @@ public class Tkat020DokumenttypeInfoTest {
 	public void shouldThrowTechnicalExceptionWhenServiceUnavaliable() throws Exception {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE));
-
-		expectedException.expectMessage("Dokkat.TKAT020 failed. (HttpStatus=503) for dokumenttypeId:");
+		
+		expectedException.expectMessage("Dokkat.TKAT020 failed. (HttpStatus=503) for dokumenttypeId=");
 		expectedException.expect(RegOppslagTechnicalException.class);
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);

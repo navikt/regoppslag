@@ -65,7 +65,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		try {
 			NavAnsatt navAnsatt = unmarshal(content);
 			
-			log.info(String.format("Henter saksbehandler info. AnsattId=%s, ConsumerId=%s", navAnsatt.getAnsattId(), getConsumerId()));
+			log.info(String.format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
 			
 			validateSaksbehandler(navAnsatt);
 			
@@ -75,8 +75,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			
 			if (saksbehandlerNavn == null) {
 				//Dette bør ikke skje
-				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s, ConsumerId=%s", navAnsatt
-						.getAnsattId(), getConsumerId()), "SaksbehandlerPlugin - " + BRUKER_IKKE_FUNNET);
+				throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s", navAnsatt
+						.getAnsattId()), "SaksbehandlerPlugin - " + BRUKER_IKKE_FUNNET);
 			}
 			
 			navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
@@ -91,7 +91,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s, ConsumerId=%s", navAnsatt.getAnsattId(), getConsumerId()));
+			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (JAXBException | ParserConfigurationException e) {
