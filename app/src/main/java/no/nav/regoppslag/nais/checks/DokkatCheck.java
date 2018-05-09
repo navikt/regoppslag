@@ -18,7 +18,7 @@ import javax.inject.Inject;
  */
 @Component
 public class DokkatCheck extends AbstractDependencyCheck {
-	public static final String DOKKATV3_LABEL = "DokkatV3";
+	public static final String DOKKATV3_LABEL = "Dokkat_V3";
 	private final RestTemplate restTemplate;
 	
 	@Inject
