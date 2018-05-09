@@ -3,8 +3,7 @@
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>[%t, %d, %-5p, %C:%L] - %.-100000m - consumerId=%X{consumerId} subjectId=%X{subject} callId=%X{callId}%n
-			</pattern>
+			<pattern>[%t, %d, %-5p, %C:%L] - %.-100000m - consumerId=%X{consumerId} subjectId=%X{subject} callId=%X{callId}%n</pattern>
 		</encoder>
 	</appender>
 
