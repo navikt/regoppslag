@@ -112,7 +112,7 @@ public class CustomLettucePool implements LettucePool, InitializingBean {
 				.pingBeforeActivateConnection(true)
 				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
 				.suspendReconnectOnProtocolFailure(false)
-				.socketOptions(SocketOptions.builder().connectTimeout(100, TimeUnit.MILLISECONDS).build())
+				.socketOptions(SocketOptions.builder().connectTimeout(150, TimeUnit.MILLISECONDS).build())
 				.build());
 		
 		client.setDefaultTimeout(timeout, TimeUnit.MILLISECONDS);
