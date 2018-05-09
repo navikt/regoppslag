@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.io.Resources;
 import no.nav.regoppslag.common.KompletterBrevdataRequest;
 import no.nav.regoppslag.common.KompletterBrevdataResponse;
@@ -49,6 +50,10 @@ public class Treg001IT extends AbstractIT {
 	
 	@Before
 	public void runBefore() {
+		WireMock.removeAllMappings();
+		WireMock.resetAllRequests();
+		WireMock.reset();
+		
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader("Content-Type", "application/json")
@@ -71,6 +76,10 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml"))); //mottakerPlugin
 		
+		request = createRequest("__files/treg001/treg001_full_request.xml");
+		requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
+		requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
+		requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
 	}
 	
 	/**
@@ -142,9 +151,9 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Sikkerhetsfeil: dokumenttypeId=123 feilmelding=no.nav.regoppslag.exceptions.RegOppslagSecurityException: PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 		}
 		
 	}
