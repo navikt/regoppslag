@@ -86,10 +86,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 		CustomLettucePool lettucePool = new CustomLettucePool(new RedisSentinelConfiguration()
 				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
 		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(150, TimeUnit.MILLISECONDS))
+				.reconnectDelay(Delay.constant(200, TimeUnit.MILLISECONDS))
 				.build());
 		lettucePool.setPoolConfig(poolConfig());
-		lettucePool.setTimeout(150);
+		lettucePool.setTimeout(200);
 		lettucePool.afterPropertiesSet();
 		return lettucePool;
 	}
