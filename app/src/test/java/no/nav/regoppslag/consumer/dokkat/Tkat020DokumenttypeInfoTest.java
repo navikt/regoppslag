@@ -63,18 +63,29 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 		
-		expectedException.expectMessage("Dokkat.TKAT020 failed with bad request for dokumenttypeId=");
+		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=400 for dokumenttypeId=I000003");
 		expectedException.expect(RegOppslagFunctionalException.class);
 
+		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
+	}
+	
+	@Test
+	public void shouldThrowFunctionalExceptionWhenNotFound() throws Exception {
+		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		
+		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=404. Kunne ikke finne dokumenttypeInfo med dokumenttypeId=I000003.");
+		expectedException.expect(RegOppslagFunctionalException.class);
+		
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServiceUnavaliable() throws Exception {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
-				.thenThrow(new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE));
+				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 		
-		expectedException.expectMessage("Dokkat.TKAT020 failed. (HttpStatus=503) for dokumenttypeId=");
+		expectedException.expectMessage("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=I000003");
 		expectedException.expect(RegOppslagTechnicalException.class);
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
@@ -85,23 +96,12 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
-		expectedException.expectMessage("Dokkat.TKAT020 failed with statusCode=503");
+		expectedException.expectMessage("Dokkat.TKAT020 feilet teknisk med statusKode=503 for dokumenttypeId=I000003");
 		expectedException.expect(RegOppslagTechnicalException.class);
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 	}
-
-	@Test
-	public void shouldThrowTechnicalExceptionWhenRuntimeException() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
-				.thenThrow(new RuntimeException());
-
-		expectedException.expectMessage("Dokkat.TKAT020 failed with message");
-		expectedException.expect(RegOppslagTechnicalException.class);
-
-		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
-	}
-
+	
 	private DokumentTypeInfoToV3 defaultResponse(List<String> langs) {
 		DokumentTypeInfoToV3 dokumentTypeInfoToV3 = new DokumentTypeInfoToV3();
 		DokumentProduksjonsInfoToV3 dokumentProduksjonsInfo = new DokumentProduksjonsInfoToV3();

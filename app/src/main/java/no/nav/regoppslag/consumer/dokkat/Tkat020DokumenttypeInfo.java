@@ -43,6 +43,7 @@ public class Tkat020DokumenttypeInfo {
 	public static final String DOKKAT = "DOKKAT";
 	public static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
 	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
+	public static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 	private Histogram.Timer requestTimer;
 
 	@Inject
@@ -81,16 +82,14 @@ public class Tkat020DokumenttypeInfo {
 				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
 			}
 		} catch (HttpClientErrorException e) {
-			if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
-				throw new RegOppslagFunctionalException(String.format("Dokkat.TKAT020 failed with bad request for dokumenttypeId=%s", dokumenttypeId), e, TKAT020_UGYLDIG_INPUT);
+			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+				throw new RegOppslagFunctionalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Kunne ikke finne dokumenttypeInfo med dokumenttypeId=%s. ", e.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF);
 			} else {
-				throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed. (HttpStatus=%s) for dokumenttypeId=%s", e
-						.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL);
+				throw new RegOppslagFunctionalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s for dokumenttypeId=%s", e
+						.getStatusCode(), dokumenttypeId), e, TKAT020_UGYLDIG_INPUT);
 			}
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed with statusCode=%s", e.getRawStatusCode()), e, TKAT020_TEKNISKFEIL);
-		} catch (Exception e) {
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 failed with message=%s", e.getMessage()), e, TKAT020_TEKNISKFEIL);
+			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s", e.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL);
 		} finally {
 			requestTimer.observeDuration();
 		}

@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URL;
@@ -218,6 +219,54 @@ public class Treg001IT extends AbstractIT {
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
+		}
+	}
+	
+	@Test
+	public void shouldThrowFunctionalExceptionNotFoundFromDokkat() throws Exception {
+		//Stub web services:
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())
+						.withHeader("Content-Type", "application/json")
+						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+			assertFalse(Boolean.TRUE);
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet med statusKode=404. Kunne ikke finne dokumenttypeInfo med dokumenttypeId=123."));
+		}
+	}
+	
+	@Test
+	public void shouldThrowFunctionalExceptionBadRequestFromDokkat() throws Exception {
+		//Stub web services:
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+						.withHeader("Content-Type", "application/json")
+						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+			assertFalse(Boolean.TRUE);
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet med statusKode=400 for dokumenttypeId=123"));
+		}
+	}
+	
+	@Test
+	public void shouldThrowTechnicalExceptionFromDokkat() throws Exception {
+		//Stub web services:
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.withHeader("Content-Type", "application/json")
+						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+			assertFalse(Boolean.TRUE);
+		} catch (HttpServerErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=123"));
 		}
 	}
 	
