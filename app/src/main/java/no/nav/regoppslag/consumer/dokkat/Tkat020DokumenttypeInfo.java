@@ -82,7 +82,7 @@ public class Tkat020DokumenttypeInfo {
 				return dokumentTypeInfoToV3.getDokumentProduksjonsInfo().getSpraakInfos();
 			}
 		} catch (HttpClientErrorException e) {
-			//Kaster teknisk feil fordi hvis dokumenttypeId mangler i dokkat databasen i prod, så er det noe feil på vår side og må fikses.
+			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
 			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
 						.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF);
 		} catch (HttpServerErrorException e) {
