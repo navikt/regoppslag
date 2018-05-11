@@ -57,25 +57,14 @@ public class Tkat020DokumenttypeInfoTest {
 		assertThat(sprakinfos.get(0).getSpraaklag(), is(LANG1));
 		assertThat(sprakinfos.get(1).getSpraaklag(), is(LANG2));
 	}
-
-	@Test
-	public void shouldThrowFunctionalExceptionWhenBadRequest() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
-				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
-		
-		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=400 for dokumenttypeId=I000003");
-		expectedException.expect(RegOppslagFunctionalException.class);
-
-		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
-	}
 	
 	@Test
-	public void shouldThrowFunctionalExceptionWhenNotFound() throws Exception {
+	public void shouldThrowTechnicalExceptionWhenNotFound() throws Exception {
 		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		
-		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=404. Kunne ikke finne dokumenttypeInfo med dokumenttypeId=I000003.");
-		expectedException.expect(RegOppslagFunctionalException.class);
+		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003.");
+		expectedException.expect(RegOppslagTechnicalException.class);
 		
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 	}
