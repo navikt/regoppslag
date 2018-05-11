@@ -152,7 +152,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse("Test did not throw exception", Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Sikkerhetsfeil: dokumenttypeId=123 feilmelding=no.nav.regoppslag.exceptions.RegOppslagSecurityException: PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 		}
@@ -214,7 +214,7 @@ public class Treg001IT extends AbstractIT {
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString(" Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
 		}
 	}
 	
