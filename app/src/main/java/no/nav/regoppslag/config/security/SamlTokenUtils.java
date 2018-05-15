@@ -48,7 +48,7 @@ public class SamlTokenUtils {
 		}
 		
 		//Securitytoken can only be used once
-		SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+//		SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		
 		String credentials = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		

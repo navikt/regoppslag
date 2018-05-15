@@ -36,6 +36,7 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -161,6 +162,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		} catch (JAXBException |
 				ParserConfigurationException e) {
 			throw new RegOppslagFunctionalException(e, UGYLDIG_INPUT);
+		} finally {
+			invalidateSecurityContext();
+			
 		}
 		
 	}
@@ -176,6 +180,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+		}
+	}
+	
+	private void invalidateSecurityContext(){
+		if (SecurityContextHolder.getContext().getAuthentication()!=null){
+			SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		}
 	}
 }
