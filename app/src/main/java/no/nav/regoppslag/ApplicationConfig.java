@@ -20,6 +20,7 @@ import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.retry.annotation.EnableRetry;
 
 @EnableConfigurationProperties({
 		OrganisasjonV4Alias.class,
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Import;
 @EnablePrometheusEndpoint
 @EnablePrometheusTiming
 @EnableSpringBootMetricsCollector
+@EnableRetry
 @Configuration
 public class ApplicationConfig {
 }
