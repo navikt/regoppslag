@@ -13,11 +13,10 @@ import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.DokkatFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -65,8 +64,8 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
-	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException{
+	@Retryable(include = RegOppslagTechnicalException.class, exclude = {DokkatFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException, DokkatFunctionalException {
 		
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_MISS)
 				.inc();
@@ -83,7 +82,7 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
+			throw new DokkatFunctionalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
 						.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF);
 		} catch (HttpServerErrorException e) {
 			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s", e.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL);
