@@ -12,7 +12,6 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.exceptions.DokkatFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -122,8 +121,6 @@ public class ElementEnricher {
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
 			throw (RegOppslagTechnicalException) e;
-		} else if (e instanceof DokkatFunctionalException) {
-			throw new RegOppslagTechnicalException(e.getMessage(), e, ((DokkatFunctionalException) e).getShortDescription());
 		} else {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}

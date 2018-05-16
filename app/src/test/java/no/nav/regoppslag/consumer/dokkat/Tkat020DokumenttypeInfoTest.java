@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import no.nav.dokkat.api.tkat020.v3.DokumentProduksjonsInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.regoppslag.exceptions.DokkatFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +63,7 @@ public class Tkat020DokumenttypeInfoTest {
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		
 		expectedException.expectMessage("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003.");
-		expectedException.expect(DokkatFunctionalException.class);
+		expectedException.expect(RegOppslagTechnicalException.class);
 		
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 	}
