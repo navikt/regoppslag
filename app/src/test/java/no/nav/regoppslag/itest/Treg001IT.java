@@ -6,10 +6,22 @@ import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.DOKKAT;
+import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_KONTAKTINFORMASJON_FOR_ENHET;
+import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
+import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.metrics.PrometheusLabels.NORG2;
+import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
+import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -19,8 +31,8 @@ import com.google.common.io.Resources;
 import no.nav.regoppslag.common.KompletterBrevdataRequest;
 import no.nav.regoppslag.common.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -28,6 +40,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -81,6 +94,8 @@ public class Treg001IT extends AbstractIT {
 		requestNorg = createRequest("__files/treg001/treg001_norg2_request.xml");
 		requestOrg = createRequest("__files/treg001/treg001_request_orgv4.xml");
 		requestOrgFull = createRequest("__files/treg001/treg001_full_request_orgv4.xml");
+		
+		requestLatency.clear();
 	}
 	
 	/**
@@ -122,6 +137,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJONV4, HENT_ORGANISASJON)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(1)));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
 		}
@@ -169,6 +186,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(1)));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=20096828390, message=Ingen forekomster funnet"));
 		}
@@ -184,6 +203,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
+					.get().buckets[14]).intValue(), isIn(Arrays.asList(1, 2)));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
@@ -199,6 +220,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. Message=Could not send Message."));
 		}
@@ -213,6 +236,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJONV4, HENT_ORGANISASJON)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
 		}
@@ -227,6 +252,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestNorg, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
 		}
@@ -243,6 +270,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpServerErrorException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, DOKKAT, HENT_DOKKAT_SPRAAKINFO)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(1)));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=123."));
 		}
@@ -259,6 +288,8 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			assertFalse(Boolean.TRUE);
 		} catch (HttpServerErrorException e) {
+			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, DOKKAT, HENT_DOKKAT_SPRAAKINFO)
+					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=123"));
 		}

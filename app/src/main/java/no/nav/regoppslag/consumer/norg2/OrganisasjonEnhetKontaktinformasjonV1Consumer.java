@@ -35,6 +35,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	private Histogram.Timer requestTimer;
 	
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
+	public static final String HENT_KONTAKTINFORMASJON_FOR_ENHET = "hentKontaktInformasjonForEnhet";
 	public static final String KUNNE_IKKE_FINNE_ENHET = "NORG2 - Kunne ikke finne enhet";
 	
 	@Inject
@@ -49,7 +50,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, NORG2, "hentKontaktinformasjonForEnhetBolk")
+			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
 					.startTimer();
 			
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
