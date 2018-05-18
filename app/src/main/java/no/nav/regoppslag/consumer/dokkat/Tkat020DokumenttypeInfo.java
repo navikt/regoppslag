@@ -63,7 +63,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
-	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{message.contains('statusKode=500')}", maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!message.contains('statusKode=404')}", maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_MISS)
