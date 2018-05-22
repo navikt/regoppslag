@@ -2,13 +2,19 @@ package no.nav.regoppslag.consumer.personv3;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -18,13 +24,25 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {PersonV3Consumer.class, PersonV3ConsumerTest.Config.class})
 public class PersonV3ConsumerTest {
 
 	private static final String FNR = "99999999999";
@@ -32,12 +50,21 @@ public class PersonV3ConsumerTest {
 	private static final String MELLOMNAVN = "MARVOLO";
 	private static final String ETTERNAVN = "RIDDLE";
 	private static final String PRINCIPAL = "RIDDLE";
-
-	private PersonV3 personV3 = mock(PersonV3.class);
-	private PersonV3Consumer personV3Consumer = new PersonV3Consumer(personV3);
+	
+	@Inject
+	private PersonV3Consumer personV3Consumer;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+	
+	@Inject
+	private PersonV3 personV3;
+	
+	@Before
+	public void setUp() {
+		reset(personV3);
+		
+	}
 
 	@Test
 	public void shouldHentPersonnavn() throws Exception{
@@ -82,21 +109,42 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldThrowFunctionalExceptionWhenPersonIkkeFunnet() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
-
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("PersonV3.hentPerson fant ikke person med ident=" + FNR);
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		
+		try {
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+			assertFalse("Should throw exception", true);
+		} catch (RegOppslagFunctionalException e) {
+			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson fant ikke person med ident=" + FNR + ", message=Fant ikke person")));
+			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
+		}
 	}
 
 	@Test
 	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
-		expectedException.expect(RegOppslagSecurityException.class);
-		expectedException.expectMessage("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen adgang");
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		try {
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+			assertFalse("Should throw exception", true);
+		} catch (RegOppslagSecurityException e) {
+			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen adgang")));
+			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
+		}
 	}
-
+	
+	@Test
+	public void shouldRetryWhenTechnicalExceptionThrown() throws Exception {
+		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new RuntimeException());
+		
+		try {
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+			assertFalse("Should throw exception", true);
+		} catch (RegOppslagTechnicalException e) {
+			verify(personV3, times(5)).hentPerson(any(HentPersonRequest.class));
+		}
+	}
+	
+	
 	private HentPersonResponse defaultResponse() {
 		return createResponse(FORNAVN, MELLOMNAVN, ETTERNAVN);
 	}
@@ -116,5 +164,23 @@ public class PersonV3ConsumerTest {
 		person.setPersonnavn(personnavn);
 		response.setPerson(person);
 		return response;
+	}
+	
+	@EnableRetry
+	@Configuration
+	static class Config {
+		
+		@Bean
+		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+			
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+		
+		@Bean
+		public PersonV3 personV3() {
+			return mock(PersonV3.class);
+		}
+		
+		
 	}
 }
