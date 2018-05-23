@@ -63,7 +63,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
-	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!message.contains('statusKode=404')}", maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		
 		requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_MISS)
@@ -82,9 +82,10 @@ public class Tkat020DokumenttypeInfo {
 		} catch (HttpClientErrorException e) {
 			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
 			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
-						.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF);
+					.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s", e.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL);
+			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s", e
+					.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
 		} finally {
 			requestTimer.observeDuration();
 		}

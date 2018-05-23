@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class RegOppslagTechnicalException extends Exception {
 	
 	private String shortDescription = "RegOppslagTechnicalException";
+	private HttpStatus httpStatus;
 	
 	public RegOppslagTechnicalException() {
 	}
@@ -28,6 +29,13 @@ public class RegOppslagTechnicalException extends Exception {
 	public RegOppslagTechnicalException(String message, Throwable cause, String shortDescription) {
 		super(message, cause);
 		this.shortDescription = shortDescription;
+	}
+	
+	
+	public RegOppslagTechnicalException(String message, Throwable cause, String shortDescription, HttpStatus httpStatus) {
+		super(message, cause);
+		this.shortDescription = shortDescription;
+		this.httpStatus = httpStatus;
 	}
 	
 	public RegOppslagTechnicalException(String message, Throwable cause) {
