@@ -94,10 +94,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.retry</groupId>
-			<artifactId>spring-retry</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 		</dependency>
@@ -269,6 +265,7 @@
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.13.2</version>
 				<executions>
 					<execution>
 						<id>generate-jaxb-xsd-test.felles</id>
