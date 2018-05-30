@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> implements ElementEnricherPlugin {
 
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
+	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Kontaktinformasjon";
 	public static final String ELEMENT_LOCALNAME = "besoksadresse";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetBesokAdressePlugin - Ugyldig input";
 	

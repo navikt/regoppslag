@@ -2,11 +2,11 @@
 <xs:schema attributeFormDefault="unqualified"
 		   elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Postadresse"
-		   xmlns="http://nav.no/dok/pesysbrev/felles/v1/Postadresse"
-		   xmlns:adresseenhet="http://nav.no/dok/pesysbrev/felles/v1/AdresseEnhet">
+		   targetNamespace="http://nav.no/dok/felles/v1/Postadresse"
+		   xmlns="http://nav.no/dok/felles/v1/Postadresse"
+		   xmlns:adresseenhet="http://nav.no/dok/felles/v1/AdresseEnhet">
 
-	<xs:import schemaLocation="v1.AdresseEnhet.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/AdresseEnhet"/>
+	<xs:import schemaLocation="v1.AdresseEnhet.xsd" namespace="http://nav.no/dok/felles/v1/AdresseEnhet"/>
 
 	<xs:complexType name="Postadresse">
 		<xs:annotation>

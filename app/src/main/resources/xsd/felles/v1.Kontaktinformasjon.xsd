@@ -2,15 +2,15 @@
 <xs:schema	attributeFormDefault="unqualified"
 			  elementFormDefault="qualified"
 			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-			  targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-			  xmlns="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-			  xmlns:returadresse="http://nav.no/dok/pesysbrev/felles/v1/Returadresse"
-			  xmlns:besoksadresse="http://nav.no/dok/pesysbrev/felles/v1/Besoksadresse"
-			  xmlns:postadresse="http://nav.no/dok/pesysbrev/felles/v1/Postadresse">
+			  targetNamespace="http://nav.no/dok/felles/v1/Kontaktinformasjon"
+			  xmlns="http://nav.no/dok/felles/v1/Kontaktinformasjon"
+			  xmlns:returadresse="http://nav.no/dok/felles/v1/Returadresse"
+			  xmlns:besoksadresse="http://nav.no/dok/felles/v1/Besoksadresse"
+			  xmlns:postadresse="http://nav.no/dok/felles/v1/Postadresse">
 
-	<xs:import schemaLocation="v1.Returadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Returadresse"/>
-	<xs:import schemaLocation="v1.Postadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Postadresse"/>
-	<xs:import schemaLocation="v1.Besoksadresse.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Besoksadresse"/>
+	<xs:import schemaLocation="v1.Returadresse.xsd" namespace="http://nav.no/dok/felles/v1/Returadresse"/>
+	<xs:import schemaLocation="v1.Postadresse.xsd" namespace="http://nav.no/dok/felles/v1/Postadresse"/>
+	<xs:import schemaLocation="v1.Besoksadresse.xsd" namespace="http://nav.no/dok/felles/v1/Besoksadresse"/>
 
 
 	<xs:complexType name="Kontaktinformasjon">

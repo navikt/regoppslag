@@ -36,7 +36,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
+	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
 	public static final String UGYLDIG_INPUT = "SaksbehandlerPlugin - Ugyldig input";
 	

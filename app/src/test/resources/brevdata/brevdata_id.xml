@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata xmlns="http://nav.no/dok/pesysbrev/v1/000073">
 	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:felles="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
-			xmlns:aktoer="http://nav.no/dok/pesysbrev/felles/v1/Aktoer"
-			xmlns:sakspart="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
-			xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
-			xmlns:norskPostadresse="http://nav.no/dok/pesysbrev/felles/v1/NorskPostadresse"
-			xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
-			xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-			xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"
-			xmlns:navAnsatt="http://nav.no/dok/pesysbrev/felles/v1/NavAnsatt">
+			xmlns:felles="http://nav.no/dok/felles/v1/NavFelles"
+			xmlns:aktoer="http://nav.no/dok/felles/v1/Aktoer"
+			xmlns:sakspart="http://nav.no/dok/felles/v1/Sakspart"
+			xmlns:mottaker="http://nav.no/dok/felles/v1/Mottaker"
+			xmlns:norskPostadresse="http://nav.no/dok/felles/v1/NorskPostadresse"
+			xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler"
+			xmlns:kontaktinformasjon="http://nav.no/dok/felles/v1/Kontaktinformasjon"
+			xmlns:navEnhet="http://nav.no/dok/felles/v1/NavEnhet"
+			xmlns:navAnsatt="http://nav.no/dok/felles/v1/NavAnsatt">
 		<felles:spraakkode>NB</felles:spraakkode>
 		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>

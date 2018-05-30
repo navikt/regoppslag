@@ -2,21 +2,21 @@
 <xs:schema	attributeFormDefault="unqualified"
               elementFormDefault="qualified"
               xmlns:xs="http://www.w3.org/2001/XMLSchema"
-              targetNamespace="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
-              xmlns="http://nav.no/dok/pesysbrev/felles/v1/PesysFelles"
-              xmlns:st="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"
-              xmlns:sakspart="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"
-              xmlns:mottaker="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"
-              xmlns:saksbehandler="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"
-              xmlns:kontaktinformasjon="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"
-              xmlns:navEnhet="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet">
+              targetNamespace="http://nav.no/dok/felles/v1/NavFelles"
+              xmlns="http://nav.no/dok/felles/v1/NavFelles"
+              xmlns:st="http://nav.no/dok/felles/v1/SimpleTypes"
+              xmlns:sakspart="http://nav.no/dok/felles/v1/Sakspart"
+              xmlns:mottaker="http://nav.no/dok/felles/v1/Mottaker"
+              xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler"
+              xmlns:kontaktinformasjon="http://nav.no/dok/felles/v1/Kontaktinformasjon"
+              xmlns:navEnhet="http://nav.no/dok/felles/v1/NavEnhet">
 
-    <xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/SimpleTypes"/>
-    <xs:import schemaLocation="v1.Sakspart.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Sakspart"/>
-    <xs:import schemaLocation="v1.Mottaker.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Mottaker"/>
-    <xs:import schemaLocation="v1.Saksbehandler.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler"/>
-    <xs:import schemaLocation="v1.Kontaktinformasjon.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon"/>
-    <xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/pesysbrev/felles/v1/NavEnhet"/>
+    <xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/felles/v1/SimpleTypes"/>
+    <xs:import schemaLocation="v1.Sakspart.xsd" namespace="http://nav.no/dok/felles/v1/Sakspart"/>
+    <xs:import schemaLocation="v1.Mottaker.xsd" namespace="http://nav.no/dok/felles/v1/Mottaker"/>
+    <xs:import schemaLocation="v1.Saksbehandler.xsd" namespace="http://nav.no/dok/felles/v1/Saksbehandler"/>
+    <xs:import schemaLocation="v1.Kontaktinformasjon.xsd" namespace="http://nav.no/dok/felles/v1/Kontaktinformasjon"/>
+    <xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/felles/v1/NavEnhet"/>
 
     <xs:complexType name="Felles">
         <xs:annotation>

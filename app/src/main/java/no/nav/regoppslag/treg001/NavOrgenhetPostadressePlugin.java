@@ -38,7 +38,7 @@ import java.util.Map;
 @Slf4j
 public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
 
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Kontaktinformasjon";
+	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Kontaktinformasjon";
 	public static final String ELEMENT_LOCALNAME_POST = "postadresse";
 	public static final String ELEMENT_LOCALNAME_RETUR = "returadresse";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetPostAdressePlugin - Ugyldig input";

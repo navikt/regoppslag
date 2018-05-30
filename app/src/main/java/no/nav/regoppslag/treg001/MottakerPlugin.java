@@ -57,7 +57,7 @@ import java.util.Map;
 @Slf4j
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 	
-	private static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/PesysFelles";
+	private static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/NavFelles";
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	

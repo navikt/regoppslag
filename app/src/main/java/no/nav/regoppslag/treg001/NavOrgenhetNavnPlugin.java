@@ -37,7 +37,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/pesysbrev/felles/v1/Saksbehandler";
+	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Saksbehandler";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	
