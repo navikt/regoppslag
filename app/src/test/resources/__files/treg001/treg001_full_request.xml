@@ -2,6 +2,7 @@
 <brevdata>
 	<felles xmlns:f="http://nav.no/dok/felles/v1/NavFelles"
 			xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler"
+			xmlns:behandlendeEnhet="http://nav.no/dok/felles/v1/BehandlendeEnhet"
 			xmlns:kontaktinformasjon="http://nav.no/dok/felles/v1/Kontaktinformasjon"
 			xmlns:navEnhet="http://nav.no/dok/felles/v1/NavEnhet"
 			xmlns:aktoer="http://nav.no/dok/felles/v1/Aktoer">
@@ -25,6 +26,11 @@
 				<enhetsId>0136</enhetsId>
 			</saksbehandler:navEnhet>
 		</f:signerendeBeslutter>
+		<f:behandlendeEnhet>
+			<behandlendeEnhet:navEnhet>
+				<enhetsId>0136</enhetsId>
+			</behandlendeEnhet:navEnhet>
+		</f:behandlendeEnhet>
 		<f:kontaktinformasjon>
 			<kontaktinformasjon:postadresse>
 				<navEnhet:enhetsId>0136</navEnhet:enhetsId>

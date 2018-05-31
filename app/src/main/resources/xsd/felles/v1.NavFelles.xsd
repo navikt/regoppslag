@@ -9,13 +9,14 @@
               xmlns:mottaker="http://nav.no/dok/felles/v1/Mottaker"
               xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler"
               xmlns:kontaktinformasjon="http://nav.no/dok/felles/v1/Kontaktinformasjon"
-              xmlns:navEnhet="http://nav.no/dok/felles/v1/NavEnhet">
+              xmlns:behandlendeEnhet="http://nav.no/dok/felles/v1/BehandlendeEnhet">
 
     <xs:import schemaLocation="v1.SimpleTypes.xsd" namespace="http://nav.no/dok/felles/v1/SimpleTypes"/>
     <xs:import schemaLocation="v1.Sakspart.xsd" namespace="http://nav.no/dok/felles/v1/Sakspart"/>
     <xs:import schemaLocation="v1.Mottaker.xsd" namespace="http://nav.no/dok/felles/v1/Mottaker"/>
     <xs:import schemaLocation="v1.Saksbehandler.xsd" namespace="http://nav.no/dok/felles/v1/Saksbehandler"/>
     <xs:import schemaLocation="v1.Kontaktinformasjon.xsd" namespace="http://nav.no/dok/felles/v1/Kontaktinformasjon"/>
+    <xs:import schemaLocation="v1.BehandlendeEnhet.xsd" namespace="http://nav.no/dok/felles/v1/BehandlendeEnhet"/>
     <xs:import schemaLocation="v1.NavEnhet.xsd" namespace="http://nav.no/dok/felles/v1/NavEnhet"/>
 
     <xs:complexType name="Felles">
@@ -31,11 +32,6 @@
             <xs:element name="fagsaksnummer" type="st:NonEmptyString">
                 <xs:annotation>
                     <xs:documentation>Saksnummer som skal presenteres i dokumentet</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="navnAvsenderEnhet" type="st:NonEmptyString">
-                <xs:annotation>
-                    <xs:documentation>Navn på kontor som behandler saken</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="automatiskBehandlet" type="xs:boolean">
@@ -56,6 +52,11 @@
             <xs:element name="mottaker" type="mottaker:Mottaker">
                 <xs:annotation>
                     <xs:documentation>Mottaker viser til personen/organisasjonen som vedtaket skal sendes til. Trenger ikke å være lik sakspart. Eks. advokat, verge.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="behandlendeEnhet" type="behandlendeEnhet:BehandlendeEnhet">
+                <xs:annotation>
+                    <xs:documentation>Navn på kontor som behandler saken</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="signerendeSaksbehandler" type="saksbehandler:Saksbehandler" minOccurs="0">

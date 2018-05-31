@@ -65,7 +65,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			setNamespacePrefixMapper(prefixMapper);
 		}
 		
-		validateElementType(content);
+//		validateElementType(content);
 		
 		try {
 			NavEnhet navEnhet = unmarshal(content);

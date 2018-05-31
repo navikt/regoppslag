@@ -29,7 +29,7 @@ public class ElementEnricherConfig {
 		NamespacePrefixMapperHelper jaxbhelper = new NamespacePrefixMapperHelper(context);
 		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext, jaxbhelper);
 		registry.registerPlugin(createExpression("//felles:mottaker", context), MottakerPlugin.class);
-		registry.registerPlugin(createExpression("//felles:behandlendeEnhet", context), NavOrgenhetNavnPlugin.class);
+		registry.registerPlugin(createExpression("//felles:behandlendeEnhet/behandlendeEnhet:navEnhet", context), NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);
 		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navEnhet", context), NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin(createExpression("//felles:signerendeSaksbehandler/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);

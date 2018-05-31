@@ -19,6 +19,7 @@ public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 		prefix2Uri.put("mottaker", "http://nav.no/dok/felles/v1/Mottaker");
 		prefix2Uri.put("navEnhet", "http://nav.no/dok/felles/v1/NavEnhet");
 		prefix2Uri.put("saksbehandler", "http://nav.no/dok/felles/v1/Saksbehandler");
+		prefix2Uri.put("behandlendeEnhet", "http://nav.no/dok/felles/v1/BehandlendeEnhet");
 		prefix2Uri.put("sakspart", "http://nav.no/dok/felles/v1/Sakspart");
 		prefix2Uri.put("navAnsatt", "http://nav.no/dok/felles/v1/NavAnsatt");
 		prefix2Uri.put("kontaktinformasjon", "http://nav.no/dok/felles/v1/Kontaktinformasjon");
