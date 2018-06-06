@@ -3,8 +3,9 @@ package no.nav.regoppslag.treg001.support;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerMatcher() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NB);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN", "NN"));
 		maalform.setMaalform(mottaker, list);
@@ -36,7 +37,7 @@ public class MaalformTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherSprakNO() {
 		// NO og NB skal behandles likt
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NB);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		maalform.setMaalform(mottaker, list);
@@ -45,7 +46,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgNB() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NB);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NN", "EN"));
 		maalform.setMaalform(mottaker, list);
@@ -54,7 +55,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgNN() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NN);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 		maalform.setMaalform(mottaker, list);
@@ -63,7 +64,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgEN() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NN);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN"));
 		maalform.setMaalform(mottaker, list);
@@ -72,7 +73,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgUkjentSpråk() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NN);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("FR"));
 		maalform.setMaalform(mottaker, list);
@@ -81,7 +82,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalErTomBrukerHarSattMaalform() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NN);
 		maalform.setMaalform(mottaker, null);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
@@ -90,7 +91,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_NB() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NB"));
 		maalform.setMaalform(mottaker, list);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
@@ -98,7 +99,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_EN() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN"));
 		maalform.setMaalform(mottaker, list);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.EN));
@@ -106,7 +107,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_NN() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NN"));
 		maalform.setMaalform(mottaker, list);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
@@ -114,7 +115,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_UGYLDIGSPRAAK() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("HOHO"));
 		maalform.setMaalform(mottaker, list);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));
@@ -123,7 +124,7 @@ public class MaalformTest {
 
 	@Test
 	public void spraakIkkesatt() {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = null;
 		maalform.setMaalform(mottaker, list);
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NB));

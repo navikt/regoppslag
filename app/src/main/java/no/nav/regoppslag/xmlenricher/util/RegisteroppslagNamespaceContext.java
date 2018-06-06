@@ -15,19 +15,19 @@ public  class RegisteroppslagNamespaceContext implements NamespaceContext {
 	private void init() {
 		prefix2Uri = new HashMap();
 		prefix2Uri.put("schema", "http://www.w3.org/2001/XMLSchema-instance");
-		prefix2Uri.put("felles", "http://nav.no/dok/felles/v1/NavFelles");
-		prefix2Uri.put("mottaker", "http://nav.no/dok/felles/v1/Mottaker");
-		prefix2Uri.put("navEnhet", "http://nav.no/dok/felles/v1/NavEnhet");
-		prefix2Uri.put("saksbehandler", "http://nav.no/dok/felles/v1/Saksbehandler");
-		prefix2Uri.put("behandlendeEnhet", "http://nav.no/dok/felles/v1/BehandlendeEnhet");
-		prefix2Uri.put("sakspart", "http://nav.no/dok/felles/v1/Sakspart");
-		prefix2Uri.put("navAnsatt", "http://nav.no/dok/felles/v1/NavAnsatt");
-		prefix2Uri.put("kontaktinformasjon", "http://nav.no/dok/felles/v1/Kontaktinformasjon");
-		prefix2Uri.put("aktoer", "http://nav.no/dok/felles/v1/Aktoer");
-		prefix2Uri.put("utenlandskPostadresse", "http://nav.no/dok/felles/v1/UtenlandskPostadresse");
-		prefix2Uri.put("postadresse", "http://nav.no/dok/felles/v1/Postadresse");
-		prefix2Uri.put("adresseenhet", "http://nav.no/dok/felles/v1/AdresseEnhet");
-		prefix2Uri.put("norskPostadresse", "http://nav.no/dok/felles/v1/NorskPostadresse");
+		prefix2Uri.put("felles", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("mottaker", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("navEnhet", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("saksbehandler", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("behandlendeEnhet", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("sakspart", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("navAnsatt", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("kontaktinformasjon", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("aktoer", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("utenlandskPostadresse", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("postadresse", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("adresseenhet", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
+		prefix2Uri.put("norskPostadresse", "http://nav.no/dok/brevdata/felles/v1/NAVFelles");
 
 		uri2Prefix = new HashMap();
 		for (String prefix : prefix2Uri.keySet()) {

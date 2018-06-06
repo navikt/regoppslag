@@ -4,7 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import org.junit.Test;
 
 public class SaksbehandlerMapperTest {

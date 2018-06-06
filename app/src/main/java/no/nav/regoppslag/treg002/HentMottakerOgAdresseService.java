@@ -1,6 +1,6 @@
 package no.nav.regoppslag.treg002;
 
-import static no.nav.dok.metaforcemal.jaxb2.gen.AktoerType.PERSON;
+import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
@@ -11,8 +11,9 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
@@ -60,7 +61,7 @@ public class HentMottakerOgAdresseService {
 		
 		validateInput(request);
 		try {
-			Mottaker mottaker = new Mottaker();
+			Mottaker mottaker = new Person();
 			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s", request
 					.getType()));
 			if (PERSON.name().equals(request.getType())) {
@@ -125,6 +126,4 @@ public class HentMottakerOgAdresseService {
 					.getSimpleName());
 		}
 	}
-	
-	
 }

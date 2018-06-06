@@ -14,7 +14,7 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.Besoksadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Besoksadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> implements ElementEnricherPlugin {
 
-	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Kontaktinformasjon";
+	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "besoksadresse";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetBesokAdressePlugin - Ugyldig input";
 	

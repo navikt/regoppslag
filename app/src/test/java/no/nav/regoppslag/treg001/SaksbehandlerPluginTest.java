@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;

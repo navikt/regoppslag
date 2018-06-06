@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles xmlns:f="http://nav.no/dok/felles/v1/NavFelles"
-			xmlns:aktoer="http://nav.no/dok/felles/v1/Aktoer">
-		<f:mottaker>
+	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:aktoer="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+		<f:mottaker xsi:type="f:Person">
 			<aktoer:id>20096828390</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>
 		</f:mottaker>

@@ -6,9 +6,9 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.TREG002_ADRESSE_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.UtenlandskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.common.Adresse;
 import no.nav.regoppslag.service.LandkodeService;
 import org.springframework.stereotype.Component;
@@ -27,9 +27,9 @@ public class AdresseMapper {
 	public Adresse map(Mottaker mottaker){
 		
 		
-		if (mottaker.getAdresse() instanceof NorskPostadresse){
+		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){
 			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, getConsumerId(), "NORSK_ADRESSE").inc();
-			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getAdresse();
+			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 			return Adresse.builder()
 				.adresselinje1(norskPostadresse.getAdresselinje1())
 				.adresselinje2(norskPostadresse.getAdresselinje2())
@@ -39,7 +39,7 @@ public class AdresseMapper {
 				.poststed(norskPostadresse.getPoststed()).build();
 		} else {
 			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, getConsumerId(), "UTENLANDSK_ADRESSE").inc();
-			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getAdresse();
+			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 			return Adresse.builder()
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())

@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;

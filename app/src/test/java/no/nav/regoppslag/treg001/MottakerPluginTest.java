@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;

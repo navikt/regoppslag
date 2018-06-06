@@ -1,7 +1,7 @@
 package no.nav.regoppslag.treg001.support;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 
 import java.util.List;

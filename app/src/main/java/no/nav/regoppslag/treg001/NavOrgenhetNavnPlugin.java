@@ -13,7 +13,7 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -37,7 +37,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Saksbehandler";
+	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	

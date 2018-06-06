@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles xmlns:f="http://nav.no/dok/felles/v1/NavFelles"
-			xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler">
+	<felles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:saksbehandler="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 		<f:signerendeSaksbehandler>
 			<saksbehandler:navEnhet>
 				<enhetsId>0136</enhetsId>

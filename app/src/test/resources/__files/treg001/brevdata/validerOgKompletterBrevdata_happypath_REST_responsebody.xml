@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
 	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:f="http://nav.no/dok/felles/v1/NavFelles"
-			xmlns:mottaker="http://nav.no/dok/felles/v1/Mottaker"
-			xmlns:norskPostadresse="http://nav.no/dok/felles/v1/NorskPostadresse"
-			xmlns:aktoer="http://nav.no/dok/felles/v1/Aktoer"
-			xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler">
+			xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:mottaker="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:norskPostadresse="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:aktoer="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:saksbehandler="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 		<f:mottaker>
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode>PERSON</aktoer:typeKode>

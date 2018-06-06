@@ -3,8 +3,8 @@ package no.nav.regoppslag.consumer.norg2.support;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.Postadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
+import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.KontaktinformasjonForOrganisasjonsenhet;

@@ -19,8 +19,8 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
@@ -57,7 +57,7 @@ import java.util.Map;
 @Slf4j
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 	
-	private static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/NavFelles";
+	private static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	

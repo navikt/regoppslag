@@ -8,9 +8,9 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -86,7 +86,7 @@ public class PersonV3Mapper {
 		requestCounter.labels(serviceCode, PERSONV3_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand()==null?"Ukjent":norskPostadresse.getLand()).inc();
 		requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed()==null?"Ukjent":norskPostadresse.getPoststed()).inc();
 		
-		mottaker.setAdresse(norskPostadresse);
+		mottaker.setMottakeradresse(norskPostadresse);
 	}
 
 	private void mapBostedadresse(Bruker person, NorskPostadresse norskPostadresse) {

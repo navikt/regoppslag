@@ -216,6 +216,11 @@
 			<artifactId>jaxb-impl</artifactId>
 			<version>${jaxb.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dok.metaforcemal</groupId>
+			<artifactId>brevdata-felles</artifactId>
+			<version>${brevdata-felles.version}</version>
+		</dependency>
 
 		<!-- test -->
 		<dependency>
@@ -257,76 +262,5 @@
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
 			<version>1.2.1.RELEASE</version>
 		</dependency>
-
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.13.2</version>
-				<executions>
-					<execution>
-						<id>generate-jaxb-xsd-test.felles</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/main/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/main/resources/bindings/felles/</bindingDirectory>
-							<generateDirectory>${project.build.directory}/generated-test-sources/xjc-xsd/felles</generateDirectory>
-							<strict>false</strict>
-							<plugins>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics-annotate</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-							</plugins>
-							<args>
-								<arg>-Xannotate</arg>
-							</args>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-jaxb-xsd.felles</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<generatePackage>no.nav.dok.metaforcemal.jaxb2.gen</generatePackage>
-							<schemaDirectory>${project.basedir}/src/main/resources/xsd/felles/</schemaDirectory>
-							<bindingDirectory>${project.basedir}/src/main/resources/bindings/felles/</bindingDirectory>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc-xsd/felles</generateDirectory>
-							<strict>false</strict>
-							<plugins>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-								<plugin>
-									<groupId>org.jvnet.jaxb2_commons</groupId>
-									<artifactId>jaxb2-basics-annotate</artifactId>
-									<version>0.6.5</version>
-								</plugin>
-							</plugins>
-							<args>
-								<arg>-Xannotate</arg>
-							</args>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

@@ -1,6 +1,6 @@
 package no.nav.regoppslag.consumer.ldap.support;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import org.springframework.stereotype.Component;
 
 /**

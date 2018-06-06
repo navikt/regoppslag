@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<brevdata xmlns="http://nav.no/dok/pesysbrev/v1/000073">
+<brevdata>
 	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:felles="http://nav.no/dok/felles/v1/NavFelles"
-			xmlns:aktoer="http://nav.no/dok/felles/v1/Aktoer"
-			xmlns:sakspart="http://nav.no/dok/felles/v1/Sakspart"
-			xmlns:mottaker="http://nav.no/dok/felles/v1/Mottaker"
-			xmlns:norskPostadresse="http://nav.no/dok/felles/v1/NorskPostadresse"
-			xmlns:saksbehandler="http://nav.no/dok/felles/v1/Saksbehandler"
-			xmlns:kontaktinformasjon="http://nav.no/dok/felles/v1/Kontaktinformasjon"
-			xmlns:navEnhet="http://nav.no/dok/felles/v1/NavEnhet"
-			xmlns:navAnsatt="http://nav.no/dok/felles/v1/NavAnsatt">
+			xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:aktoer="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:sakspart="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:mottaker="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:norskPostadresse="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:saksbehandler="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:kontaktinformasjon="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:navEnhet="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:navAnsatt="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 		<felles:spraakkode>NB</felles:spraakkode>
 		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
@@ -21,7 +22,7 @@
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>
 			<sakspart:diskresjonskode>true</sakspart:diskresjonskode>
 		</felles:sakspart>
-		<felles:mottaker>
+		<felles:mottaker xsi:type="felles:Person">
 			<aktoer:id>30085849677</aktoer:id>
 			<aktoer:typeKode></aktoer:typeKode>
 			<aktoer:navn>Her Majesty The Duchess of York: Queen Latifa</aktoer:navn>

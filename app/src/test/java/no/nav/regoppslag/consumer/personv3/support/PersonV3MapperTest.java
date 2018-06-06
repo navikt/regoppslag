@@ -3,10 +3,11 @@ package no.nav.regoppslag.consumer.personv3.support;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -85,10 +86,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -100,10 +101,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(EIENDOMSNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(EIENDOMSNAVN));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -115,10 +116,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(POSTBOKS));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -130,12 +131,12 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(NORSK_ADRESSELINJE1));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(NORSK_ADRESSELINJE2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(NORSK_ADRESSELINJE3));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(NORSK_ADRESSELINJE1));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(NORSK_ADRESSELINJE2));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(NORSK_ADRESSELINJE3));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -147,12 +148,12 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is("UKJENT/UNKNOWN"));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND_UTLAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
 	}
 
 	@Test
@@ -164,10 +165,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -179,10 +180,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(EIENDOMSNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(EIENDOMSNAVN));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -194,10 +195,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(POSTBOKS));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 
@@ -435,7 +436,7 @@ public class PersonV3MapperTest {
 	}
 
 	private Mottaker createMottaker(String fnr) {
-		Mottaker mottaker = new Mottaker();
+		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NB);
 		mottaker.setId(fnr);
 		mottaker.setTypeKode(AktoerType.PERSON);

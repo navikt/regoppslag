@@ -1,8 +1,9 @@
 package no.nav.regoppslag.util;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.UtenlandskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -22,17 +23,14 @@ public class TestDataUtil {
 	}
 	
 	public static Mottaker createMottaker(boolean withNorskPostedAdresse){
-		
-		Mottaker mottaker = new Mottaker();
+		Person person = new Person();
 		if(!withNorskPostedAdresse) {
-			mottaker.setAdresse(createUtenlandsPostadresse());
+			person.setMottakeradresse(createUtenlandsPostadresse());
 			
 		} else {
-			mottaker.setAdresse(createNorskPostadresse());
-			
+			person.setMottakeradresse(createNorskPostadresse());
 		}
-		
-		return mottaker;
+		return person;
 	}
 	
 	public static NorskPostadresse createNorskPostadresse(){

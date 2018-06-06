@@ -74,6 +74,7 @@
 		<caffeine.version>2.5.2</caffeine.version>
 		<httpunit.version>1.7</httpunit.version>
 		<jaxb.version>2.2.11</jaxb.version>
+		<brevdata-felles.version>0.0.2-SNAPSHOT</brevdata-felles.version>
 	</properties>
 
 	<dependencyManagement>
@@ -140,8 +141,6 @@
 				<version>${hamcrest.version}</version>
 				<scope>test</scope>
 			</dependency>
-
-
 
 			<!--CXF dependencies-->
 			<dependency>

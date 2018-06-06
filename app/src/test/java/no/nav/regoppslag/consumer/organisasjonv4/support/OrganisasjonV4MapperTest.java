@@ -4,9 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.AktoerType;
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -85,13 +86,12 @@ public class OrganisasjonV4MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(SEMIADR1));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(SEMIADR2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(SEMIADR3));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje4()), is(SEMIADR4));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -103,13 +103,12 @@ public class OrganisasjonV4MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(SEMIADR1));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), is(SEMIADR2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), is(SEMIADR3));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje4()), is(SEMIADR4));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -121,12 +120,12 @@ public class OrganisasjonV4MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -138,13 +137,12 @@ public class OrganisasjonV4MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje2()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje3()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getAdresselinje4()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getAdresse()).getLand()), is(LAND));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
 	@Test
@@ -275,7 +273,7 @@ public class OrganisasjonV4MapperTest {
 	}
 
 	private Mottaker createMottaker(String orgnr) {
-		Mottaker mottaker = new Mottaker();
+		Person mottaker = new Person();
 		mottaker.setId(orgnr);
 		mottaker.setTypeKode(AktoerType.ORGANISASJON);
 		return mottaker;

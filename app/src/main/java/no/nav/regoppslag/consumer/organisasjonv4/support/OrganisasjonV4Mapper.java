@@ -7,9 +7,9 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.Mottaker;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
-import no.nav.dok.metaforcemal.jaxb2.gen.Spraakkode;
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -79,7 +79,7 @@ public class OrganisasjonV4Mapper {
 		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed() == null ? "Ukjent" : norskPostadresse
 				.getPoststed()).inc();
 		
-		mottaker.setAdresse(norskPostadresse);
+		mottaker.setMottakeradresse(norskPostadresse);
 	}
 	
 	private void mapPostadresse(OrganisasjonsDetaljer orgDet, NorskPostadresse norskPostadresse) {
@@ -143,8 +143,6 @@ public class OrganisasjonV4Mapper {
 				norskPostadresse.setAdresselinje2(nokler.getVerdi());
 			} else if ("Adresse 3 split 1".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setAdresselinje3(nokler.getVerdi());
-			} else if ("Adresse 3 split 2".equals(nokler.getNoekkel().getKodeRef())) {
-				norskPostadresse.setAdresselinje4(nokler.getVerdi());
 			} else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
 				norskPostadresse.setPostnummer(nokler.getVerdi());
 			} else if ("poststed".equals(nokler.getNoekkel().getKodeRef())) {

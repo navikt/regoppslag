@@ -13,7 +13,7 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavAnsatt;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -36,7 +36,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/felles/v1/Saksbehandler";
+	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
 	public static final String UGYLDIG_INPUT = "SaksbehandlerPlugin - Ugyldig input";
 	

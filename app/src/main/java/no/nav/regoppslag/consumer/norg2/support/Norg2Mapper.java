@@ -1,8 +1,8 @@
 package no.nav.regoppslag.consumer.norg2.support;
 
-import no.nav.dok.metaforcemal.jaxb2.gen.AdresseEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.NavEnhet;
-import no.nav.dok.metaforcemal.jaxb2.gen.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.AdresseEnhet;
+import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
