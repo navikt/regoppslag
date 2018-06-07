@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
 	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+			   xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:test="test">
 		<felles:spraakkode>NB</felles:spraakkode>
 		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
 		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
 		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
-		<felles:sakspart>
+		<test:sakspart>
 			<felles:id>974727854</felles:id>
 			<felles:typeKode>ORGANISASJON</felles:typeKode>
 			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>
-		</felles:sakspart>
-		<felles:mottaker xsi:type="felles:Organisasjon">
+		</test:sakspart>
+		<test:mottaker xsi:type="felles:Organisasjon">
 			<felles:id>974727854</felles:id>
 			<felles:typeKode>ORGANISASJON</felles:typeKode>
 			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
@@ -27,8 +28,8 @@
 				<felles:poststed>Oslo</felles:poststed>
 				<felles:land>NORGE</felles:land>
 			</felles:adresse>
-		</felles:mottaker>
-		<felles:signerendeSaksbehandler>
+		</test:mottaker>
+		<test:signerendeSaksbehandler>
 			<felles:navAnsatt>
 				<felles:ansattId>O837534</felles:ansattId>
 				<felles:navn>KOKO</felles:navn>
@@ -36,16 +37,16 @@
 			<felles:navEnhet>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
 			</felles:navEnhet>
-		</felles:signerendeSaksbehandler>
-		<felles:signerendeBeslutter>
+		</test:signerendeSaksbehandler>
+		<test:signerendeBeslutter>
 			<felles:navAnsatt>
 				<felles:ansattId>O837534</felles:ansattId>
 			</felles:navAnsatt>
 			<felles:navEnhet>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
 			</felles:navEnhet>
-		</felles:signerendeBeslutter>
-		<felles:kontaktinformasjon>
+		</test:signerendeBeslutter>
+		<test:kontaktinformasjon>
 			<felles:postadresse>
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
@@ -54,9 +55,9 @@
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
 			</felles:besoksadresse>
-		</felles:kontaktinformasjon>
-		<felles:returadresse>
+		</test:kontaktinformasjon>
+		<test:returadresse>
 			<felles:enhetsId>TKN6675</felles:enhetsId>
-		</felles:returadresse>
+		</test:returadresse>
 	</NAVFelles>
 </brevdata>

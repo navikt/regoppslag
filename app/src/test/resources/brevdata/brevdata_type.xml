@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
 	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
-		<felles:mottaker xsi:type="felles:Person">
+			   xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:test="test">
+		<test:mottaker xsi:type="felles:Person">
 			<felles:id>30085849677</felles:id>
 			<felles:typeKode></felles:typeKode>
-		</felles:mottaker>
+		</test:mottaker>
 	</NAVFelles>
 </brevdata>
