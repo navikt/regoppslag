@@ -35,19 +35,19 @@ import javax.inject.Inject;
 @Component
 @Slf4j
 public class HentMottakerOgAdresseService {
-	
-	
+
+
 	private final PersonV3Consumer personV3Consumer;
-	
+
 	private final PersonV3Mapper personV3Mapper;
-	
+
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
-	
+
 	private final AdresseMapper adresseMapper;
-	
+
 	private final String UGYLDIG_INPUT = "Ugyldig input";
-	
+
 	@Inject
 	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, AdresseMapper adresseMapper) {
 		this.personV3Consumer = personV3Consumer;
@@ -56,14 +56,12 @@ public class HentMottakerOgAdresseService {
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.adresseMapper = adresseMapper;
 	}
-	
+
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		
+
 		validateInput(request);
 		try {
 			Mottaker mottaker = new Person();
-			log.info(String.format("Mottat hentMottakerOgAdresse kall. MottakerType=%s", request
-					.getType()));
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
@@ -75,9 +73,6 @@ public class HentMottakerOgAdresseService {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG002);
 			}
-			log.info(String.format("HentMottakerOgAdresse kall behandlet ferdig. MottakerType=%s", request
-					.getType()));
-			
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())
 					.navn(mottaker.getNavn())
@@ -86,20 +81,20 @@ public class HentMottakerOgAdresseService {
 		} catch (Exception e) {
 			logAndRethrowException(e);
 		}
-		
+
 		return null;
 	}
-	
+
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
-		
+
 		if (request == null) {
 			throw new RegOppslagFunctionalException("Input body er null", UGYLDIG_INPUT);
 		}
-		
+
 		if (request.getIdentifikator() == null) {
 			throw new RegOppslagFunctionalException("Identifikator kan ikke være null", UGYLDIG_INPUT);
 		}
-		
+
 		if (request.getType() == null) {
 			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
@@ -108,7 +103,7 @@ public class HentMottakerOgAdresseService {
 					.getType()), UGYLDIG_INPUT);
 		}
 	}
-	
+
 	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
 			log.info("Funksjonell feil", e);
