@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.common.KompletterBrevdataRequest;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 @RestController
 @RequestMapping(REST)
 @Api(value = "Registeroppslag")
+@Slf4j
 public class RegisteroppslagRestController {
 	
 	
@@ -111,11 +113,14 @@ public class RegisteroppslagRestController {
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 		
 		try {
+			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
 			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), RECEIVED)
 					.inc();
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
 			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
 					.inc();
+			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody
+					.getType()));
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);
