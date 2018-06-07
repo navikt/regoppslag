@@ -39,7 +39,6 @@ import java.util.Map;
 @Slf4j
 public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> implements ElementEnricherPlugin {
 
-	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "besoksadresse";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetBesokAdressePlugin - Ugyldig input";
 	
@@ -116,9 +115,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
+		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}

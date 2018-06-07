@@ -176,9 +176,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
+			if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}

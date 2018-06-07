@@ -39,26 +39,26 @@ import java.util.Set;
  */
 @Slf4j
 public class ElementEnricher {
-	
+
 	private ElementEnricherPluginRegistry registry;
-	
+
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
 	}
-	
+
 	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
 		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
-	
+
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
-		
+
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMERID);
 		final String subjectId = MDC.get(SUBJECTID);
 		final String callId = MDC.get(CALLID);
-		
+
 		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
-		
+
 		List<Payload> processingList = new ArrayList<>();
 		Set<XPathExpression> supportedElements = registry.getSupportedElements();
 		for (XPathExpression xpath : supportedElements) {
@@ -67,19 +67,19 @@ public class ElementEnricher {
 				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath), node));
 			}
 		}
-		
-		
+
+
 		final List<Throwable> unhandledError = new ArrayList<>();
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-					if (securityContextIsUsedForAuthentication(payload)) {
-						SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
-					}
-					MDC.put(CONSUMERID, consumerId);
-					MDC.put(SUBJECTID, subjectId);
-					MDC.put(CALLID, callId);
+							if (securityContextIsUsedForAuthentication(payload)) {
+								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
+							}
+							MDC.put(CONSUMERID, consumerId);
+							MDC.put(SUBJECTID, subjectId);
+							MDC.put(CALLID, callId);
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
@@ -92,14 +92,14 @@ public class ElementEnricher {
 						onNextElement -> aggregate(document, onNextElement),
 						error -> unhandledError.add(error)
 				);
-		
+
 		if (!unhandledError.isEmpty()) {
 			handleException(unhandledError.get(0));
 		}
-		
+
 		return document;
 	}
-	
+
 	private void aggregate(Document document, Aggregate aggregate) {
 		// Find element in original XML, only one of each supported
 		Node orgElem = aggregate.getOrigNode();
@@ -113,7 +113,7 @@ public class ElementEnricher {
 		orgElem.getParentNode().insertBefore(importNode, orgElem);
 		orgElem.getParentNode().removeChild(orgElem);
 	}
-	
+
 	private void handleException(Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
 			throw (RegOppslagFunctionalException) e;
@@ -125,5 +125,5 @@ public class ElementEnricher {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}
 	}
-	
+
 }

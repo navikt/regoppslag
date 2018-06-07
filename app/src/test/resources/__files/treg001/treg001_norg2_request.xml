@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:saksbehandler="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
-		<f:signerendeSaksbehandler>
-			<saksbehandler:navEnhet>
+	<NAVFelles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:test="test">
+		<test:signerendeSaksbehandler>
+			<f:navEnhet>
 				<enhetsId>0136</enhetsId>
-			</saksbehandler:navEnhet>
-		</f:signerendeSaksbehandler>
-	</felles>
+			</f:navEnhet>
+		</test:signerendeSaksbehandler>
+	</NAVFelles>
 </brevdata>

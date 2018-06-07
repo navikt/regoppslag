@@ -76,11 +76,9 @@ public class NavOrgenhetPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		
 		Document document = loadDocument(xmlFile);
-		
-		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:postadresse";
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 		
 		Node node = findSingleNode(xPathExpression, document);
@@ -97,11 +95,9 @@ public class NavOrgenhetPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		
 		Document document = loadDocument(xmlFile);
-		
-		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:besoksadresse";
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 		
 		Node node = findSingleNode(xPathExpression, document);
@@ -120,10 +116,8 @@ public class NavOrgenhetPluginTest {
 		
 		Document document = loadDocument(xmlFile);
 		
-		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:postadresse";
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 		
 		Node node = findSingleNode(xPathExpression, document);
@@ -138,11 +132,9 @@ public class NavOrgenhetPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		
 		Document document = loadDocument(xmlFile);
-		
-		String expression1 = "//felles:kontaktinformasjon/kontaktinformasjon:besoksadresse";
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 		
 		Node node = findSingleNode(xPathExpression, document);

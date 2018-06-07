@@ -1,43 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<felles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:saksbehandler="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:behandlendeEnhet="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:kontaktinformasjon="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:navEnhet="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:aktoer="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 		<f:mottaker xsi:type="f:Person">
-			<aktoer:id>20096828390</aktoer:id>
-			<aktoer:typeKode>PERSON</aktoer:typeKode>
+			<f:id>20096828390</f:id>
+			<f:typeKode>PERSON</f:typeKode>
 		</f:mottaker>
 		<f:signerendeSaksbehandler>
-			<saksbehandler:navAnsatt>
+			<f:navAnsatt>
 				<ansattId>Z991006</ansattId>
-			</saksbehandler:navAnsatt>
-			<saksbehandler:navEnhet>
+			</f:navAnsatt>
+			<f:navEnhet>
 				<enhetsId>0136</enhetsId>
-			</saksbehandler:navEnhet>
+			</f:navEnhet>
 		</f:signerendeSaksbehandler>
 		<f:signerendeBeslutter>
-			<saksbehandler:navAnsatt>
+			<f:navAnsatt>
 				<ansattId>Z991006</ansattId>
-			</saksbehandler:navAnsatt>
-			<saksbehandler:navEnhet>
+			</f:navAnsatt>
+			<f:navEnhet>
 				<enhetsId>0136</enhetsId>
-			</saksbehandler:navEnhet>
+			</f:navEnhet>
 		</f:signerendeBeslutter>
 		<f:behandlendeEnhet>
-			<behandlendeEnhet:navEnhet>
+			<f:navEnhet>
 				<enhetsId>0136</enhetsId>
-			</behandlendeEnhet:navEnhet>
+			</f:navEnhet>
 		</f:behandlendeEnhet>
 		<f:kontaktinformasjon>
-			<kontaktinformasjon:postadresse>
-				<navEnhet:enhetsId>0136</navEnhet:enhetsId>
-			</kontaktinformasjon:postadresse>
-			<kontaktinformasjon:besoksadresse>
-				<navEnhet:enhetsId>0136</navEnhet:enhetsId>
-			</kontaktinformasjon:besoksadresse></f:kontaktinformasjon>
-	</felles>
+			<f:postadresse>
+				<f:enhetsId>0136</f:enhetsId>
+			</f:postadresse>
+			<f:besoksadresse>
+				<f:enhetsId>0136</f:enhetsId>
+			</f:besoksadresse></f:kontaktinformasjon>
+	</NAVFelles>
 </brevdata>

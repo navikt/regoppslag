@@ -81,10 +81,8 @@ public class SaksbehandlerPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		String expression1 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
@@ -106,10 +104,8 @@ public class SaksbehandlerPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
-		String expression1 = "//felles:signerendeSaksbehandler/saksbehandler:navAnsatt";
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
-		NamespaceContext namespaceContext = new RegisteroppslagNamespaceContext();
-		xPath.setNamespaceContext(namespaceContext);
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
