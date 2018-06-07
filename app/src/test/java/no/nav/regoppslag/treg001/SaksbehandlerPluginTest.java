@@ -14,7 +14,6 @@ import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +34,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -48,6 +46,7 @@ import java.util.Map;
 @TestPropertySource("classpath:ldap.properties")
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
@@ -93,6 +92,27 @@ public class SaksbehandlerPluginTest {
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(navAnsatt.getNavn(), is("Test Testesen"));
+	}
+
+	@Test
+	public void testSaksbehandlerPluginIkkeBerik() throws Exception {
+		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn("Test Testesen");
+
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
+
+		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
+		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
+
+		assertThat(navAnsatt.getNavn(), is("Ikke Berik"));
 	}
 
 	@Test

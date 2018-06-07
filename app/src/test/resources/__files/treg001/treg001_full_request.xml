@@ -3,7 +3,7 @@
 	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 			   xmlns:test="test">
-		<test:mottaker xsi:type="f:Person">
+		<test:mottaker xsi:type="f:Person" f:berik="true">
 			<f:id>20096828390</f:id>
 			<f:typeKode>PERSON</f:typeKode>
 		</test:mottaker>

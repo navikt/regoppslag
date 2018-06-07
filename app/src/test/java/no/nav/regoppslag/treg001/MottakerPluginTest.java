@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
@@ -56,10 +57,13 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MottakerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
 	public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
 	public static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
+	private static final String IKKE_BERIK_FORNAVN = "Ikke";
+	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
 	private static final String FORNAVN = "TOM";
 	private static final String ETTERNAVN = "RIDDLE";
 	private static final String ORGNAVN = "Orgnavn 1";
@@ -115,7 +119,27 @@ public class MottakerPluginTest {
 		
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
-	
+
+	@Test
+	public void testMottakerPluginPersonIkkeBerik() throws Exception {
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'mottaker']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, valueMap);
+
+		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+
+		assertThat(mottaker.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
+		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is("ikkeberiket linje1"));
+	}
+
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
 		File xmlFile = new File(BREVDATA_ORG);

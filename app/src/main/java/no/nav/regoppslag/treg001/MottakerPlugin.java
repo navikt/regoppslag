@@ -98,8 +98,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		if (prefixMapper != null) {
 			setNamespacePrefixMapper(prefixMapper);
 		}
-		
-		
+
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
@@ -108,30 +107,34 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
 					.getId()));
-			
-			validateMottaker(mottaker);
-			
-			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-						.inc();
-				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
-				if (person == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. MottakerId=%s", mottaker
-							.getId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
+
+			//Skal elementet berikes?
+			if (mottaker.isBerik() == null || (mottaker.isBerik())) {
+				validateMottaker(mottaker);
+
+				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
+					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+							.inc();
+					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
+					if (person == null) {
+						throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. MottakerId=%s", mottaker
+								.getId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
+					}
+
+					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
+
+				} else {
+					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+							.inc();
+					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
+					if (organisasjon == null) {
+						throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=%s", mottaker
+								.getId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
+					}
+					organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
 				}
-				
-				personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
-				
-			} else {
-				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-						.inc();
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
-				if (organisasjon == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=%s", mottaker
-							.getId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
-				}
-				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
 			}
+
 			//Sjekker språket på malen opp mot mottakers preferanser
 			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 					.inc();

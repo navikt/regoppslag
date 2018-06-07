@@ -41,6 +41,7 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NavOrgenhetNavnPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
 	private static final String DOKUMENTTYPEID = "I000003";
@@ -88,6 +89,25 @@ public class NavOrgenhetNavnPluginTest {
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+	}
+
+	@Test
+	public void testNavOrgenhetNavnPluginIkkeBerik() throws Exception {
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = norgPlugin.processElement(node, valueMap);
+
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
 	}
 
 	@Test

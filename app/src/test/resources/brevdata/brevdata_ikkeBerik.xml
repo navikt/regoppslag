@@ -15,26 +15,27 @@
 			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>
 		</test:sakspart>
-		<test:mottaker xsi:type="felles:Person" felles:berik="true">
+		<test:mottaker xsi:type="felles:Person" felles:berik="false">
 			<felles:id>30085849677</felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
-			<felles:navn>string</felles:navn>
-			<felles:kortNavn>string</felles:kortNavn>
+			<felles:navn>Ikke Berik</felles:navn>
+			<felles:kortNavn>Ikke Berik</felles:kortNavn>
 			<felles:spraakkode>NN</felles:spraakkode>
 			<felles:mottakeradresse xsi:type="felles:NorskPostadresse">
-				<felles:adresselinje1>jsfasjfø</felles:adresselinje1>
+				<felles:adresselinje1>ikkeberiket linje1</felles:adresselinje1>
 				<felles:postnummer>0123</felles:postnummer>
 				<felles:poststed>Oslo</felles:poststed>
 				<felles:land>no</felles:land>
 			</felles:mottakeradresse>
 		</test:mottaker>
 		<test:signerendeSaksbehandler>
-			<felles:navAnsatt>
+			<felles:navAnsatt felles:berik="false">
 				<felles:ansattId>O837534</felles:ansattId>
-				<felles:navn>KOKO</felles:navn>
+				<felles:navn>Ikke Berik</felles:navn>
 			</felles:navAnsatt>
-			<felles:navEnhet>
+			<felles:navEnhet felles:berik="false">
 				<felles:enhetsId>TKN5427</felles:enhetsId>
+				<felles:enhetsNavn>Ikke berik</felles:enhetsNavn>
 			</felles:navEnhet>
 		</test:signerendeSaksbehandler>
 		<test:signerendeBeslutter>
