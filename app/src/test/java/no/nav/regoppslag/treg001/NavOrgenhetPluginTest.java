@@ -40,7 +40,8 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NavOrgenhetPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
-	
+	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
+
 	private static final String NAV_ENHET_NAVN = "Pensjon Inc.";
 	private static final String DOKUMENTTYPEID = "I000003";
 	
@@ -89,7 +90,66 @@ public class NavOrgenhetPluginTest {
 		
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
-	
+
+	@Test
+	public void testOrgEnhetPostadresseIkkeBerikPlugin() throws Exception {
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
+
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke berik"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket linje1"));
+	}
+
+	@Test
+	public void testOrgEnhetReturadressePlugin() throws Exception {
+		File xmlFile = new File(BREVDATA1);
+
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
+
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+	}
+
+	@Test
+	public void testOrgEnhetReturadresseIkkeBerikPlugin() throws Exception {
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
+
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket returadresse"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket returadresse linje1"));
+	}
+
 	@Test
 	public void testOrgEnhetBesoksadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
@@ -106,7 +166,25 @@ public class NavOrgenhetPluginTest {
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
-	
+
+	@Test
+	public void testOrgEnhetBesoksadresseIkkeBerikPlugin() throws Exception {
+		File xmlFile = new File(BREVDATA_IKKE_BERIK);
+
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
+	}
+
 	@Test
 	public void throwFuncErrorWhenOrgEnhetIkkeFunnetPostadressePlugin() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);

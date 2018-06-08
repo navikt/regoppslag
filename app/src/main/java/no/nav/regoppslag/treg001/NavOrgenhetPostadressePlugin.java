@@ -75,18 +75,21 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Postadresse adresse = unmarshal(content);
 			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
 
-			validateAdresse(adresse);
-			
-			requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-					.inc();
-			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
+			//Skal elementet berikes?
+			if (adresse.isBerik() == null || (adresse.isBerik())) {
+				validateAdresse(adresse);
 
-			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. EnhetId=%s", adresse
-						.getEnhetsId()), "NavOrgenhetPostadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
+				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
+
+				if (wsEnhet == null) {
+					throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. EnhetId=%s", adresse
+							.getEnhetsId()), "NavOrgenhetPostadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				}
+
+				norg2Mapper.mapPostadresse(wsEnhet, adresse);
 			}
-
-			norg2Mapper.mapPostadresse(wsEnhet, adresse);
 
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
@@ -114,10 +117,9 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName())))) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST
-					+ " or {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME_POST + ". Found {" + element.getNamespaceURI() + "}" + element
+		if (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName()))) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
+					+ " or " + ELEMENT_LOCALNAME_RETUR + ". Found {" + element.getNamespaceURI() + "}" + element
 					.getLocalName(), UGYLDIG_INPUT);
 		}
 	}

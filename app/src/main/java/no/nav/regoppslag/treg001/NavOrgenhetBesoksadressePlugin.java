@@ -75,20 +75,23 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			
 			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
 					.getEnhetsId()));
-			
-			validateAdresse(adresse);
-			
-			requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-					.inc();
-			Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
-			
-			if (wsEnhet == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. EnhetsId=%s", adresse
-						.getEnhetsId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+
+			//Skal elementet berikes?
+			if (adresse.isBerik() == null || (adresse.isBerik())) {
+				validateAdresse(adresse);
+
+				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+						.inc();
+				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
+
+				if (wsEnhet == null) {
+					throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. EnhetsId=%s", adresse
+							.getEnhetsId()), "NavOrgenhetBesoksadressePlugin - " + KUNNE_IKKE_FINNE_ENHET);
+				}
+
+				norg2Mapper.mapBesokadresse(wsEnhet, adresse);
 			}
-			
-			norg2Mapper.mapBesokadresse(wsEnhet, adresse);
-			
+
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
 			

@@ -15,7 +15,7 @@
 			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>
 		</test:sakspart>
-		<test:mottaker xsi:type="felles:Person" felles:berik="true">
+		<test:mottaker xsi:type="felles:Person">
 			<felles:id>30085849677</felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
 			<felles:navn>string</felles:navn>
@@ -46,17 +46,17 @@
 			</felles:navEnhet>
 		</test:signerendeBeslutter>
 		<test:kontaktinformasjon>
-			<felles:postadresse>
+			<felles:postadresse felles:berik="true">
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
 			</felles:postadresse>
-			<felles:besoksadresse>
+			<felles:besoksadresse felles:berik="true">
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
 			</felles:besoksadresse>
+			<felles:returadresse felles:berik="true">
+				<felles:enhetsId>TKN6675</felles:enhetsId>
+			</felles:returadresse>
 		</test:kontaktinformasjon>
-		<test:returadresse>
-			<felles:enhetsId>TKN6675</felles:enhetsId>
-		</test:returadresse>
 	</NAVFelles>
 </brevdata>

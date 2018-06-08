@@ -2,8 +2,8 @@
 <brevdata>
 	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			   xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-			xmlns:test="test">
+			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:test="test">
 		<felles:spraakkode>NB</felles:spraakkode>
 		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
@@ -47,17 +47,38 @@
 			</felles:navEnhet>
 		</test:signerendeBeslutter>
 		<test:kontaktinformasjon>
-			<felles:postadresse>
+			<felles:postadresse felles:berik="false">
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
+				<felles:enhetsNavn>Ikke berik</felles:enhetsNavn>
+				<felles:adresse xsi:type="felles:NorskPostadresse">
+					<felles:adresselinje1>ikkeberiket linje1</felles:adresselinje1>
+					<felles:postnummer>0123</felles:postnummer>
+					<felles:poststed>Oslo</felles:poststed>
+					<felles:land>no</felles:land>
+				</felles:adresse>
 			</felles:postadresse>
-			<felles:besoksadresse>
+			<felles:besoksadresse felles:berik="false">
 				<kontaktTelefonnummer></kontaktTelefonnummer>
 				<felles:enhetsId>TKN5427</felles:enhetsId>
+				<felles:enhetsNavn>Ikke beriket besøksadresse</felles:enhetsNavn>
+				<felles:adresse xsi:type="felles:NorskPostadresse">
+					<felles:adresselinje1>ikkeberiket besøksadresse linje1</felles:adresselinje1>
+					<felles:postnummer>0123</felles:postnummer>
+					<felles:poststed>Oslo</felles:poststed>
+					<felles:land>no</felles:land>
+				</felles:adresse>
 			</felles:besoksadresse>
+			<test:returadresse felles:berik="false">
+				<felles:enhetsId>TKN6675</felles:enhetsId>
+				<felles:enhetsNavn>Ikke beriket returadresse</felles:enhetsNavn>
+				<felles:adresse xsi:type="felles:NorskPostadresse">
+					<felles:adresselinje1>ikkeberiket returadresse linje1</felles:adresselinje1>
+					<felles:postnummer>0123</felles:postnummer>
+					<felles:poststed>Oslo</felles:poststed>
+					<felles:land>no</felles:land>
+				</felles:adresse>
+			</test:returadresse>
 		</test:kontaktinformasjon>
-		<test:returadresse>
-			<felles:enhetsId>TKN6675</felles:enhetsId>
-		</test:returadresse>
 	</NAVFelles>
 </brevdata>
