@@ -204,7 +204,7 @@ public class Treg001IT extends AbstractIT {
 			assertFalse(Boolean.TRUE);
 		} catch (HttpStatusCodeException e) {
 			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
-					.get().buckets[14]).intValue(), isIn(Arrays.asList(1, 2)));
+					.get().buckets[14]).intValue(), isIn(Arrays.asList(1, 2, 3, 4)));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
