@@ -6,9 +6,7 @@ import static no.nav.regoppslag.util.MDCConstants.CALLID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
 import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +55,6 @@ public class ElementEnricher {
 		final String subjectId = MDC.get(SUBJECTID);
 		final String callId = MDC.get(CALLID);
 
-		NamespacePrefixMapper prefixMapper = registry.getJaxbNamespaceHelper();
-
 		List<Payload> processingList = new ArrayList<>();
 		Set<XPathExpression> supportedElements = registry.getSupportedElements();
 		for (XPathExpression xpath : supportedElements) {
@@ -82,7 +78,6 @@ public class ElementEnricher {
 							MDC.put(CALLID, callId);
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-							valueMap.put(PREFIXMAPPER.name(), prefixMapper);
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getElement());
 						}

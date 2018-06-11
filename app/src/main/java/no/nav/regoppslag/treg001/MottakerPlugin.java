@@ -15,9 +15,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
@@ -91,14 +89,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
-		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
-		
+
 		requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
 		
-		if (prefixMapper != null) {
-			setNamespacePrefixMapper(prefixMapper);
-		}
-
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {

@@ -3,7 +3,6 @@ package no.nav.regoppslag.xmlenricher;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
 import org.w3c.dom.TypeInfo;
 
 import javax.xml.xpath.XPathExpression;
@@ -40,5 +39,4 @@ public interface ElementEnricherPluginRegistry {
 	 */
 	Set<XPathExpression> getSupportedElements();
 
-	NamespacePrefixMapperHelper getJaxbNamespaceHelper();
 }

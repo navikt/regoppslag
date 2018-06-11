@@ -9,8 +9,6 @@ import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.PluginBeanRegistry;
 import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
-import no.nav.regoppslag.xmlenricher.util.NamespacePrefixMapperHelper;
-import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -25,42 +23,22 @@ import javax.xml.xpath.XPathFactory;
 public class ElementEnricherConfig {
 	@Bean
 	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException, XPathExpressionException {
-		RegisteroppslagNamespaceContext context = new RegisteroppslagNamespaceContext();
-		NamespacePrefixMapperHelper jaxbhelper = new NamespacePrefixMapperHelper(context);
-		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext, jaxbhelper);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='mottaker']", context), MottakerPlugin.class);
-
-
-//		registry.registerPlugin(createExpression("//felles:behandlendeEnhet/behandlendeEnhet:navEnhet", context), NavOrgenhetNavnPlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']/*[local-name()='navEnhet']", context), NavOrgenhetNavnPlugin.class);
-
-//		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navAnsatt']", context), SaksbehandlerPlugin.class);
-
-//		registry.registerPlugin(createExpression("//felles:signerendeBeslutter/saksbehandler:navEnhet", context), NavOrgenhetNavnPlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navEnhet']", context), NavOrgenhetNavnPlugin.class);
-
-//		registry.registerPlugin(createExpression("//felles:signerendeSaksbehandler/saksbehandler:navAnsatt", context), SaksbehandlerPlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']", context), SaksbehandlerPlugin.class);
-
-//		registry.registerPlugin(createExpression("//felles:signerendeSaksbehandler/saksbehandler:navEnhet", context), NavOrgenhetNavnPlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']", context), NavOrgenhetNavnPlugin.class);
-
-//		registry.registerPlugin(createExpression("//kontaktinformasjon:postadresse", context), NavOrgenhetPostadressePlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']", context), NavOrgenhetPostadressePlugin.class);
-
-//		registry.registerPlugin(createExpression("//kontaktinformasjon:returadresse", context), NavOrgenhetPostadressePlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']", context), NavOrgenhetPostadressePlugin.class);
-
-//		registry.registerPlugin(createExpression("//kontaktinformasjon:besoksadresse", context), NavOrgenhetBesoksadressePlugin.class);
-		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']", context), NavOrgenhetBesoksadressePlugin.class);
+		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='mottaker']"), MottakerPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']/*[local-name()='navEnhet']"), NavOrgenhetNavnPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navAnsatt']"), SaksbehandlerPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navEnhet']"), NavOrgenhetNavnPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']"), SaksbehandlerPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']"), NavOrgenhetNavnPlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']"), NavOrgenhetPostadressePlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']"), NavOrgenhetPostadressePlugin.class);
+		registry.registerPlugin(createExpression("/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']"), NavOrgenhetBesoksadressePlugin.class);
 
 		return registry;
 	}
 
-	private XPathExpression createExpression(String expression, RegisteroppslagNamespaceContext context) throws XPathExpressionException {
+	private XPathExpression createExpression(String expression) throws XPathExpressionException {
 		XPath xPath = XPathFactory.newInstance().newXPath();
-//		xPath.setNamespaceContext(context);
 		return xPath.compile(expression);
 	}
 

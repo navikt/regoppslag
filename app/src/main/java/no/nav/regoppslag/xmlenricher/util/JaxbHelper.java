@@ -1,6 +1,5 @@
 package no.nav.regoppslag.xmlenricher.util;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.springframework.util.Assert;
 import org.w3c.dom.Node;
 
@@ -20,12 +19,6 @@ public class JaxbHelper<T>{
 
 	private final Class<T> jaxbClass;
 
-	private NamespacePrefixMapper namespacePrefixMapper;
-
-	public void setNamespacePrefixMapper(NamespacePrefixMapper namespacePrefixMapper) {
-		this.namespacePrefixMapper = namespacePrefixMapper;
-	}
-
 	public JaxbHelper(Class<T> jaxbClass) {
 		this.jaxbClass = jaxbClass;
 	}
@@ -42,9 +35,6 @@ public class JaxbHelper<T>{
 		String contextPath = jaxbClass.getPackage().getName();
 		JAXBContext context = JAXBContext.newInstance(contextPath);
 		Marshaller marshaller = context.createMarshaller();
-		if (namespacePrefixMapper != null) {
-			marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", namespacePrefixMapper);
-		}
 		JAXBElement<T> jaxbElement = (JAXBElement<T>) getJaxbElement(jaxbObject, jaxbClass);
 		marshaller.marshal(jaxbElement, node);
 		return node;

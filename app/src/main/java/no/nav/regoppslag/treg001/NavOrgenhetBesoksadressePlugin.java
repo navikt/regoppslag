@@ -10,9 +10,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Besoksadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -59,15 +57,10 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
-		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
-	
+
 		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetBesoksadressePlugin", PLUGIN, getConsumerId(), RECEIVED)
 				.inc();
-		
-		if (prefixMapper != null) {
-			setNamespacePrefixMapper(prefixMapper);
-		}
-		
+
 		validateElementType(content);
 		
 		try {

@@ -23,7 +23,6 @@ import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.Maalform;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.xmlenricher.util.RegisteroppslagNamespaceContext;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
@@ -43,7 +42,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;

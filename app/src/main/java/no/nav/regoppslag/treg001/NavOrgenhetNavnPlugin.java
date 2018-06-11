@@ -9,9 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -57,15 +55,10 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
-	
+
 		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
-		
-		if (prefixMapper != null) {
-			setNamespacePrefixMapper(prefixMapper);
-		}
-		
-//		validateElementType(content);
+
+		validateElementType(content);
 		
 		try {
 			NavEnhet navEnhet = unmarshal(content);
@@ -112,10 +105,9 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
-		if (!ELEMENT_NS.equals(element.getNamespaceURI())
-				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found " + element.getLocalName(), UGYLDIG_INPUT);
 		}
 	}
 }

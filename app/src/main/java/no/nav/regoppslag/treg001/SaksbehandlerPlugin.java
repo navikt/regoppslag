@@ -52,13 +52,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		NamespacePrefixMapper prefixMapper = (NamespacePrefixMapper) valueMap.get(PREFIXMAPPER.name());
-
 		requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
-
-		if (prefixMapper != null) {
-			setNamespacePrefixMapper(prefixMapper);
-		}
 
 		validateElementType(content);
 
