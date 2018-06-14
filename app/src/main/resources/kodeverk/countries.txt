@@ -161,7 +161,7 @@ Nigeria	566	NGA
 Niue	570	NIU
 Norfolk Island	574	NFK
 Northern Mariana Islands	580	MNP
-Norway	578	NOR
+Norge	578	NOR
 Oman	512	OMN
 Pakistan	586	PAK
 Palau	585	PLW
@@ -411,7 +411,7 @@ Nigeria		NG
 Niue		NU
 Norfolk Island		NF
 Northern Mariana Islands		MP
-Norway		NO
+Norge		NO
 Oman		OM
 Pakistan		PK
 Palau		PW

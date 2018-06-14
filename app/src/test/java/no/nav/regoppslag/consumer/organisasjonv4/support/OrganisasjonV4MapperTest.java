@@ -62,7 +62,7 @@ public class OrganisasjonV4MapperTest {
 	private static final String POSTNR = "5460";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LANDKODE = "NOR";
-	private static final String LAND = "NORWAY";
+	private static final String LAND = "NORGE";
 	private static final String MAALFORM = "NO";
 	private static final String SERVICECODE = "SERVICECODE";
 

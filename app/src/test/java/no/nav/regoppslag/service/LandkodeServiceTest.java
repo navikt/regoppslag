@@ -40,20 +40,20 @@ public class LandkodeServiceTest {
 
 	@Test
 	public void testFinnLandkode() throws Exception {
-		String landKode = landkodeService.finnLandkode("NORWAY");
+		String landKode = landkodeService.finnLandkode("NORGE");
 		assertThat(landKode, is("NO"));
 	}
 
 	@Test
 	public void testFinnLandNavn() throws Exception {
 		String landNavn = landkodeService.finnLandnavn("NO");
-		assertThat(landNavn, is("NORWAY"));
+		assertThat(landNavn, is("NORGE"));
 	}
 
 	@Test
 	public void testFinnLandNavnKode3() throws Exception {
 		String landNavn = landkodeService.finnLandnavn("NOR");
-		assertThat(landNavn, is("NORWAY"));
+		assertThat(landNavn, is("NORGE"));
 	}
 
 	@Test

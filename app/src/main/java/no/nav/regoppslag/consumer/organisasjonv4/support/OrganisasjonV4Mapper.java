@@ -152,7 +152,7 @@ public class OrganisasjonV4Mapper {
 	}
 	
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
-		if ("Norway".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
+		if ("Norge".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId(), "Mangler postnummer for organisasjon");
 		}
 	}
