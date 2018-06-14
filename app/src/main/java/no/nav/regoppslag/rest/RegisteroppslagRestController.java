@@ -80,7 +80,9 @@ public class RegisteroppslagRestController {
 		
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "kompletterBrevdata")
 				.startTimer();
-		
+
+		log.info("TREG001: Mottatt request. Klar for å kalle kompletterBrevdataService.");
+
 		try {
 			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), RECEIVED)
 					.inc();
