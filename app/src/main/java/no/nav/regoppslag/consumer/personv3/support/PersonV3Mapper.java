@@ -10,6 +10,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
@@ -41,7 +42,15 @@ public class PersonV3Mapper {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
-	
+
+	public void map(Bruker person, Sakspart sakspart) {
+		if (person.getPersonnavn().getMellomnavn() == null) {
+			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn());
+		} else {
+			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
+		}
+	}
+
 	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
 		if (person.getMaalform() != null) {
 			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {

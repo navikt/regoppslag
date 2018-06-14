@@ -219,7 +219,8 @@
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
 			<artifactId>brevdata-felles</artifactId>
-			<version>${brevdata-felles.version}</version>
+			<version>0.0.10</version>
+			<!--<version>${brevdata-felles.version}</version>-->
 		</dependency>
 
 		<!-- test -->

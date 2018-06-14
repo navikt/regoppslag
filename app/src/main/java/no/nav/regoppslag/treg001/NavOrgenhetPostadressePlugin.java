@@ -68,7 +68,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
 
 			//Skal elementet berikes?
-			if (adresse.isBerik() == null || (adresse.isBerik())) {
+			if (adresse.isBerik()) {
 				validateAdresse(adresse);
 
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

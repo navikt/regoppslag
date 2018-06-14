@@ -65,7 +65,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 
 			//Skal elementet berikes?
-			if (navEnhet.isBerik() == null || (navEnhet.isBerik())) {
+			if (navEnhet.isBerik()) {
 				validateEnhet(navEnhet);
 
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

@@ -18,6 +18,7 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
@@ -53,31 +54,31 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
-	
+public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnricherPlugin {
+
 	private static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
-	private static final String ELEMENT_LOCALNAME = "mottaker";
-	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
-	
+	private static final String ELEMENT_LOCALNAME = "sakspart";
+	private static final String UGYLDIG_INPUT = "SaksportPlugin - Ugyldig input";
+
 	private PersonV3Consumer personV3Consumer;
-	
+
 	private PersonV3Mapper personV3Mapper;
-	
+
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
-	
+
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
-	
+
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
-	
+
 	private Maalform maalform;
-	
-	public MottakerPlugin() {
-		super(Mottaker.class);
+
+	public SakspartPlugin() {
+		super(Sakspart.class);
 	}
-	
+
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
-		super(Mottaker.class);
+	public SakspartPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
+		super(Sakspart.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
@@ -90,68 +91,55 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
-		requestCounter.labels(SERVICE_CODE_TREG001, "MottakerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
-		
+		requestCounter.labels(SERVICE_CODE_TREG001, "SakspartPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException("Feil i mottakerPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
+				throw new RegOppslagFunctionalException("Feil i SakspartPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
 			}
-			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+			Sakspart sakspart = unmarshal(content);
+			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
 					.getId()));
 
 			//Skal elementet berikes?
-			if (mottaker.isBerik()) {
-				validateMottaker(mottaker);
+			if (sakspart.isBerik()) {
+				validateMottaker(sakspart);
 
-				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
+				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
 					if (person == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne person. MottakerId=%s", mottaker
-								.getId()), "MottakerPlugin - " + PERSON_IKKE_FUNNET);
+						throw new RegOppslagFunctionalException(String.format("Feil i sakspartPlugin:  Kunne ikke finne person. SakspartId=%s", sakspart
+								.getId()), "SakspartPlugin - " + PERSON_IKKE_FUNNET);
 					}
 
-					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
+					personV3Mapper.map(person, sakspart);
 
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
+					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
 					if (organisasjon == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=%s", mottaker
-								.getId()), "MottakerPlugin - " + ORGV4_ORG_IKKE_FUNNET);
+						throw new RegOppslagFunctionalException(String.format("Feil i SakspartPlugin:  Kunne ikke finne organisasjon. SakspartId=%s", sakspart
+								.getId()), "SakspartPlugin - " + ORGV4_ORG_IKKE_FUNNET);
 					}
-					organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
+					organisasjonV4Mapper.map(organisasjon, sakspart);
 				}
 			}
 
-			//Sjekker språket på malen opp mot mottakers preferanser
-			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-					.inc();
-			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
-			if (sprakinfos == null || sprakinfos.isEmpty()) {
-				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
-						.inc();
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s", dokumenttypeId, mottaker
-						.getId()));
-			}
-			
-			maalform.setMaalform(mottaker, sprakinfos);
-			
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			builderFactory.setNamespaceAware(true);
 			
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 			Document document = builder.newDocument();
 			
-			Node node = marshal(mottaker, document);
+			Node node = marshal(sakspart, document);
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 			
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
+			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
 					.getId()));
 			
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
@@ -165,9 +153,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		
 	}
 	
-	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
-		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
-			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.", UGYLDIG_INPUT);
+	private void validateMottaker(Sakspart sakspart) throws RegOppslagFunctionalException {
+		if (sakspart.getTypeKode() == null || StringUtils.isEmpty(sakspart.getId())) {
+			throw new RegOppslagFunctionalException("Feil i sakspartPlugin: Sakspart mangler påkrevde parametere.", UGYLDIG_INPUT);
 		}
 	}
 	

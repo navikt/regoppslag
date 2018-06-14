@@ -3,6 +3,7 @@ package no.nav.regoppslag.treg001.support;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import no.nav.regoppslag.treg001.MottakerPlugin;
+import no.nav.regoppslag.treg001.SakspartPlugin;
 import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +36,7 @@ public class PluginUtil {
 	}
 	
 	public static boolean securityContextIsUsedForAuthentication(Payload payload) {
-		return payload.getPlugin() instanceof MottakerPlugin;
+		return payload.getPlugin() instanceof MottakerPlugin || payload.getPlugin() instanceof SakspartPlugin;
 	}
 	
 }

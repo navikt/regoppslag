@@ -70,7 +70,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 					.getEnhetsId()));
 
 			//Skal elementet berikes?
-			if (adresse.isBerik() == null || (adresse.isBerik())) {
+			if (adresse.isBerik()) {
 				validateAdresse(adresse);
 
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

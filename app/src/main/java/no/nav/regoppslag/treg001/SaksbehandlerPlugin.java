@@ -62,7 +62,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			log.info(String.format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
 
 			//Skal elementet berikes?
-			if (navAnsatt.isBerik() == null || (navAnsatt.isBerik())) {
+			if (navAnsatt.isBerik()) {
 				validateSaksbehandler(navAnsatt);
 
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

@@ -9,6 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
@@ -46,7 +47,15 @@ public class OrganisasjonV4Mapper {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
 	}
-	
+
+	public void map(Organisasjon wsOrganisasjon, Sakspart sakspart)  {
+		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
+		sakspart.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
+				.get(0)
+				.getNavn()).getNavnelinje(), " ").trim());
+	}
+
+
 	public void map(Organisasjon wsOrganisasjon, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		mottaker.setKortNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ")

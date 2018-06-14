@@ -5,6 +5,7 @@ import no.nav.regoppslag.treg001.NavOrgenhetBesoksadressePlugin;
 import no.nav.regoppslag.treg001.NavOrgenhetNavnPlugin;
 import no.nav.regoppslag.treg001.NavOrgenhetPostadressePlugin;
 import no.nav.regoppslag.treg001.SaksbehandlerPlugin;
+import no.nav.regoppslag.treg001.SakspartPlugin;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.xmlenricher.PluginBeanRegistry;
@@ -25,6 +26,7 @@ public class ElementEnricherConfig {
 	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException, XPathExpressionException {
 		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext);
 		registry.registerPlugin(createExpression("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']"), MottakerPlugin.class);
+		registry.registerPlugin(createExpression("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='sakspart']"), SakspartPlugin.class);
 		registry.registerPlugin(createExpression("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']/*[local-name()='navEnhet']"), NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin(createExpression("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navAnsatt']"), SaksbehandlerPlugin.class);
 		registry.registerPlugin(createExpression("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navEnhet']"), NavOrgenhetNavnPlugin.class);
