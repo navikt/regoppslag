@@ -111,7 +111,7 @@ public class NavOrgenhetNavnPluginTest {
 	@Test
 	public void throwFuncErrorWhenNavOrgenhentIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. EnhetId=");
+		expectedException.expectMessage("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. EnhetsId=");
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);

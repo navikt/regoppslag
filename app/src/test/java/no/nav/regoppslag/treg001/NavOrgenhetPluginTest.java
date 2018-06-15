@@ -186,7 +186,7 @@ public class NavOrgenhetPluginTest {
 	@Test
 	public void throwFuncErrorWhenOrgEnhetIkkeFunnetPostadressePlugin() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet. EnhetId=TKN5427");
+		expectedException.expectMessage("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet med enhetId=TKN5427");
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		
@@ -203,7 +203,7 @@ public class NavOrgenhetPluginTest {
 	@Test
 	public void throwFuncErrorWhenOrgEnhetIkkeFunnetBesoksadressePlugin() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet. EnhetsId=TKN5427");
+		expectedException.expectMessage("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet med enhetsId=TKN5427");
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		
