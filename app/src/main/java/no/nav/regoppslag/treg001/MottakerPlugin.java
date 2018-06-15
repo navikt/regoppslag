@@ -166,9 +166,15 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 	
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
-		if (mottaker.getTypeKode() == null || StringUtils.isEmpty(mottaker.getId())) {
+
+		if (mottaker.getTypeKode() == null) {
 			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.", UGYLDIG_INPUT);
 		}
+
+		if (StringUtils.isEmpty(mottaker.getId())) {
+			throw new RegOppslagFunctionalException("Feil i mottakerPlugin: Mottakerdata mangler mottakerId", UGYLDIG_INPUT);
+		}
+
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {

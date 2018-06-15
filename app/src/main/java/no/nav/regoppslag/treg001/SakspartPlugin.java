@@ -1,13 +1,11 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.ORGV4_ORG_IKKE_FUNNET;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.PERSON_IKKE_FUNNET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.GENERELT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
@@ -17,10 +15,8 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
@@ -46,7 +42,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,7 +91,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException("Feil i SakspartPlugin, dokumentTypeId må ha verdi!", UGYLDIG_INPUT);
+				throw new RegOppslagFunctionalException("Feil i SakspartPlugin, dokumentTypeId kan ikke være tom", UGYLDIG_INPUT);
 			}
 			Sakspart sakspart = unmarshal(content);
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
@@ -154,9 +149,17 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	}
 	
 	private void validateMottaker(Sakspart sakspart) throws RegOppslagFunctionalException {
-		if (sakspart.getTypeKode() == null || StringUtils.isEmpty(sakspart.getId())) {
-			throw new RegOppslagFunctionalException("Feil i sakspartPlugin: Sakspart mangler påkrevde parametere.", UGYLDIG_INPUT);
+
+		if (sakspart.getTypeKode() == null) {
+			throw new RegOppslagFunctionalException("Feil i sakspartPlugin: Sakspart mangler AktoerTypeKode.", UGYLDIG_INPUT);
+
 		}
+
+		if (StringUtils.isEmpty(sakspart.getId())) {
+			throw new RegOppslagFunctionalException("Feil i sakspartPlugin: Sakspart mangler id", UGYLDIG_INPUT);
+
+		}
+
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
