@@ -115,7 +115,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 								.getId()), PLUGIN_NAME + " - " + PERSON_IKKE_FUNNET);
 					}
 
-					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
+					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001, true);
 
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

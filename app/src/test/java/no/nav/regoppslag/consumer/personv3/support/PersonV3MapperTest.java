@@ -54,14 +54,14 @@ public class PersonV3MapperTest {
 	private static final String LAND_UTLAND = "DENMARK";
 
 	private PostnummerService postnummerService = new PostnummerService();
-	private LandkodeService landkodeService= new LandkodeService();
+	private LandkodeService landkodeService = new LandkodeService();
 	private PersonV3Mapper mapper;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
-	public	void initPostnummer() throws Exception {
+	public void initPostnummer() throws Exception {
 		landkodeService.init();
 		postnummerService.init();
 		mapper = new PersonV3Mapper(postnummerService, landkodeService);
@@ -71,7 +71,7 @@ public class PersonV3MapperTest {
 	public void simpleMapping() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -82,7 +82,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedGateadresse(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -97,7 +97,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedMatrikkeladresse(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -112,7 +112,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedPostboksadresse(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -127,7 +127,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -144,7 +144,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseUtland(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -161,7 +161,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseGste(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -176,7 +176,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseMatrikkel(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -191,7 +191,7 @@ public class PersonV3MapperTest {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -210,7 +210,7 @@ public class PersonV3MapperTest {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("");
-		mapper.map(person, mottaker, "");
+		mapper.map(person, mottaker, "", true);
 	}
 
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
@@ -263,7 +263,7 @@ public class PersonV3MapperTest {
 		postadressetyper.setValue("BOSTEDSADRESSE");
 		person.setGjeldendePostadressetype(postadressetyper);
 
-		Matrikkeladresse matrikkeladresse= new Matrikkeladresse();
+		Matrikkeladresse matrikkeladresse = new Matrikkeladresse();
 		matrikkeladresse.setEiendomsnavn(EIENDOMSNAVN);
 
 		Postnummer postnummer = new Postnummer();
@@ -290,7 +290,7 @@ public class PersonV3MapperTest {
 		postadressetyper.setValue("BOSTEDSADRESSE");
 		person.setGjeldendePostadressetype(postadressetyper);
 
-		PostboksadresseNorsk postboksadresse= new PostboksadresseNorsk();
+		PostboksadresseNorsk postboksadresse = new PostboksadresseNorsk();
 		postboksadresse.setPostboksnummer(POSTBOKS);
 
 		Postnummer postnummer = new Postnummer();
@@ -341,7 +341,7 @@ public class PersonV3MapperTest {
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_UTLAND");
 		person.setGjeldendePostadressetype(postadressetyper);
 
-		UstrukturertAdresse ustrukturertAdresse= new UstrukturertAdresse();
+		UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
 		ustrukturertAdresse.setAdresselinje1(UTLAND_ADRESSELINJE1);
 		ustrukturertAdresse.setAdresselinje2(UTLAND_ADRESSELINJE2);
 		ustrukturertAdresse.setAdresselinje3(UTLAND_ADRESSELINJE3);
@@ -391,7 +391,7 @@ public class PersonV3MapperTest {
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
 		person.setGjeldendePostadressetype(postadressetyper);
 
-		Matrikkeladresse matrikkeladresse= new Matrikkeladresse();
+		Matrikkeladresse matrikkeladresse = new Matrikkeladresse();
 		matrikkeladresse.setEiendomsnavn(EIENDOMSNAVN);
 
 		Postnummer postnummer = new Postnummer();
@@ -416,7 +416,7 @@ public class PersonV3MapperTest {
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
 		person.setGjeldendePostadressetype(postadressetyper);
 
-		PostboksadresseNorsk postboksadresse= new PostboksadresseNorsk();
+		PostboksadresseNorsk postboksadresse = new PostboksadresseNorsk();
 		postboksadresse.setPostboksnummer(POSTBOKS);
 
 		Postnummer postnummer = new Postnummer();

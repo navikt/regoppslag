@@ -51,7 +51,7 @@ public class PersonV3Mapper {
 		}
 	}
 
-	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
+	public void map(Bruker person, Mottaker mottaker, String serviceCode, boolean shouldValidatePostnummer) throws RegOppslagFunctionalException {
 		if (person.getMaalform() != null) {
 			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
@@ -84,7 +84,10 @@ public class PersonV3Mapper {
 				mapMidlertidigNorge(person, norskPostadresse);
 			}
 		}
-		validatePostadresse(norskPostadresse, mottaker);
+
+		if (shouldValidatePostnummer) {
+			validatePostadresse(norskPostadresse, mottaker);
+		}
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "Ukjent").inc();
