@@ -59,9 +59,10 @@ public class HentMottakerOgAdresseService {
 
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 
-		validateInput(request);
 		try {
+			validateInput(request);
 			Mottaker mottaker = new Person();
+			mottaker.setId(request.getIdentifikator());
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
@@ -88,15 +89,15 @@ public class HentMottakerOgAdresseService {
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
 
 		if (request == null) {
-			throw new RegOppslagFunctionalException("TREG002: Request body er tom", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("Request body er tom", UGYLDIG_INPUT);
 		}
 
 		if (request.getIdentifikator() == null) {
-			throw new RegOppslagFunctionalException("TREG002: Identifikator kan ikke være null", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("Identifikator kan ikke være null", UGYLDIG_INPUT);
 		}
 
 		if (request.getType() == null) {
-			throw new RegOppslagFunctionalException("TREG002: Mottakertype kan ikke være null", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
 				.equals(request.getType()))) {
 			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
@@ -106,17 +107,17 @@ public class HentMottakerOgAdresseService {
 
 	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
-			log.info("Funksjonell feil", e);
+			log.info(String.format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
 			throw (RegOppslagFunctionalException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
-			log.info("Sikkerhetsfeil", e);
+			log.info(String.format("TREG002 Sikkerhetsfeil: %s", e.getMessage()), e);
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
-			log.error("Teknisk feil", e);
+			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
 					.getShortDescription());
 		} else {
-			log.error("Teknisk feil", e);
+			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()
 					.getSimpleName());
 		}
