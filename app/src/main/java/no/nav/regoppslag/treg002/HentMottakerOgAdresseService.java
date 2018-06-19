@@ -88,15 +88,15 @@ public class HentMottakerOgAdresseService {
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
 
 		if (request == null) {
-			throw new RegOppslagFunctionalException("Input body er null", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("TREG002: Request body er tom", UGYLDIG_INPUT);
 		}
 
 		if (request.getIdentifikator() == null) {
-			throw new RegOppslagFunctionalException("Identifikator kan ikke være null", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("TREG002: Identifikator kan ikke være null", UGYLDIG_INPUT);
 		}
 
 		if (request.getType() == null) {
-			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException("TREG002: Mottakertype kan ikke være null", UGYLDIG_INPUT);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
 				.equals(request.getType()))) {
 			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request

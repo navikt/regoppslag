@@ -159,7 +159,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i mottakerPlugin:  Kunne ikke finne person. MottakerId=");
+		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne person. MottakerId=");
 		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -176,7 +176,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenOrganisasjonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i mottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=");
+		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);
@@ -193,7 +193,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i mottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler påkrevde parametere.");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
@@ -209,7 +209,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i mottakerPlugin: Mottakerdata mangler mottakerId");
+		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);

@@ -1,5 +1,6 @@
 package no.nav.regoppslag.xmlenricher.util;
 
+import no.nav.regoppslag.exceptions.MarshallerException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Node;
 
@@ -24,20 +25,30 @@ public class JaxbHelper<T>{
 	}
 
 
-	public T unmarshal(Node node) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(jaxbClass);
-		Unmarshaller unmarshaller = context.createUnmarshaller();
-		JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
-		return unmarshal.getValue();
+	public T unmarshal(Node node) throws MarshallerException {
+		try {
+			JAXBContext context = JAXBContext.newInstance(jaxbClass);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
+			return unmarshal.getValue();
+		} catch (JAXBException | IllegalArgumentException e) {
+			throw new MarshallerException("Feilet ved unmarshalling. Sjekk stacktrace for detaljer", e);
+		}
+
 	}
 
-	public <T> Node marshal(T jaxbObject, Node node) throws JAXBException {
-		String contextPath = jaxbClass.getPackage().getName();
-		JAXBContext context = JAXBContext.newInstance(contextPath);
-		Marshaller marshaller = context.createMarshaller();
-		JAXBElement<T> jaxbElement = (JAXBElement<T>) getJaxbElement(jaxbObject, jaxbClass);
-		marshaller.marshal(jaxbElement, node);
-		return node;
+	public <T> Node marshal(T jaxbObject, Node node) throws MarshallerException {
+		try {
+			String contextPath = jaxbClass.getPackage().getName();
+			JAXBContext context = JAXBContext.newInstance(contextPath);
+			Marshaller marshaller = context.createMarshaller();
+			JAXBElement<T> jaxbElement = (JAXBElement<T>) getJaxbElement(jaxbObject, jaxbClass);
+			marshaller.marshal(jaxbElement, node);
+			return node;
+		} catch (JAXBException | IllegalArgumentException e) {
+			throw new MarshallerException("Feilet ved marshalling. Sjekk stacktrace for detaljer", e);
+		}
+
 	}
 
 	/**

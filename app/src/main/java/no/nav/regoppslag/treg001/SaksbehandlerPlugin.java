@@ -9,13 +9,12 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.PREFIXMAPPER;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
+import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
@@ -27,7 +26,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,6 +37,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
 	public static final String UGYLDIG_INPUT = "SaksbehandlerPlugin - Ugyldig input";
+	public static final String PLUGIN_NAME = "SaksbehandlerPlugin";
 
 	public SaksbehandlerPlugin() {
 		super(NavAnsatt.class);
@@ -52,7 +51,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		requestCounter.labels(SERVICE_CODE_TREG001, "SaksbehandlerPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
 
 		validateElementType(content);
 
@@ -71,8 +70,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 				if (saksbehandlerNavn == null) {
 					//Dette bør ikke skje
-					throw new RegOppslagFunctionalException(String.format("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=%s", navAnsatt
-							.getAnsattId()), "SaksbehandlerPlugin - " + BRUKER_IKKE_FUNNET);
+					throw new RegOppslagFunctionalException(String.format("Feil i %s: Fant ikke saksbehandlernavn. AnsattId=%s", PLUGIN_NAME, navAnsatt
+							.getAnsattId()), PLUGIN_NAME + " - " + BRUKER_IKKE_FUNNET);
 				}
 
 				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
@@ -90,14 +89,14 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
-		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("SaksbehandlerPlugin: Feil ved parsing av XML", e, UGYLDIG_INPUT);
+		} catch (ParserConfigurationException | MarshallerException e) {
+			throw new RegOppslagFunctionalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 
 	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
-			throw new RegOppslagFunctionalException("Feil i SaksbehandlerPlugin: Saksbehandlerdata mangler ansattId", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException(String.format("Feil i %s: Saksbehandlerdata mangler ansattId", PLUGIN_NAME), UGYLDIG_INPUT);
 		}
 	}
 

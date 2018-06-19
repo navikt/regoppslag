@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
@@ -26,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,7 +38,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
-	
+	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
+
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
 	
@@ -56,7 +57,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 
-		requestCounter.labels(SERVICE_CODE_TREG001, "NavOrgenhetNavnPlugin", PLUGIN, getConsumerId(), RECEIVED).inc();
+		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
 
 		validateElementType(content);
 		
@@ -73,8 +74,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
 				if (wsEnhet == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. EnhetsId=%s", navEnhet
-							.getEnhetsId()), "NavOrgenhetNavnPlugin - " + KUNNE_IKKE_FINNE_ENHET);
+					throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne enhet. EnhetsId=%s", PLUGIN_NAME, navEnhet
+							.getEnhetsId()), PLUGIN_NAME + " - " + KUNNE_IKKE_FINNE_ENHET);
 				}
 
 				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
@@ -92,15 +93,15 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			
 			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
-			
-		} catch (JAXBException | ParserConfigurationException e) {
-			throw new RegOppslagFunctionalException("NavOrgenhetNavn: Feil ved parsing av XML", e, UGYLDIG_INPUT);
+
+		} catch (ParserConfigurationException | MarshallerException e) {
+			throw new RegOppslagFunctionalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 	
 	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegOppslagFunctionalException("Feil i NavOrgenhetNavn: Mangler enhetdId.", UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mangler enhetdId.", PLUGIN_NAME), UGYLDIG_INPUT);
 		}
 	}
 	
