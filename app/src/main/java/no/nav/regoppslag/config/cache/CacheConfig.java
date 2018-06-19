@@ -77,7 +77,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
 		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
-		factory.setShareNativeConnection(false);
+		factory.setShareNativeConnection(true);
 		return factory;
 	}
 	
