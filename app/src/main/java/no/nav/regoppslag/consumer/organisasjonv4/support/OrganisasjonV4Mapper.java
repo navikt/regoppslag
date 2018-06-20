@@ -3,7 +3,6 @@ package no.nav.regoppslag.consumer.organisasjonv4.support;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
@@ -85,8 +84,6 @@ public class OrganisasjonV4Mapper {
 		
 		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
 				.getLand()).inc();
-		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed() == null ? "Ukjent" : norskPostadresse
-				.getPoststed()).inc();
 		
 		mottaker.setMottakeradresse(norskPostadresse);
 	}

@@ -6,6 +6,7 @@ import static no.nav.regoppslag.util.MDCConstants.CALLID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
 import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.treg001.support.Maalform;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.Payload;
@@ -78,6 +80,7 @@ public class ElementEnricher {
 							MDC.put(CALLID, callId);
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
+					valueMap.put(MAALFORM.name(), new Maalform());
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getElement());
 						}

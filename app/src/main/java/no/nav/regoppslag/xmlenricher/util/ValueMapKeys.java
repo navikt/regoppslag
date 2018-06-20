@@ -6,6 +6,7 @@ package no.nav.regoppslag.xmlenricher.util;
 public enum ValueMapKeys {
 	
 	DOKUMENTTYPEID,
-	PREFIXMAPPER
+	PREFIXMAPPER,
+	MAALFORM
 	
 }

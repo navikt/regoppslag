@@ -26,7 +26,6 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.treg001.support.Maalform;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -64,10 +63,6 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 
-	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
-
-	private Maalform maalform;
-
 	public SakspartPlugin() {
 		super(Sakspart.class);
 	}
@@ -79,8 +74,6 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
-		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
-		this.maalform = new Maalform();
 	}
 
 	@Override

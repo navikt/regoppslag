@@ -15,6 +15,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -70,7 +71,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 
-	private Maalform maalform;
 
 	public MottakerPlugin() {
 		super(Mottaker.class);
@@ -84,13 +84,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
-		this.maalform = new Maalform();
 	}
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
-
+		Maalform maalform = (Maalform) valueMap.get(MAALFORM.name());
 		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
 
 		validateElementType(content);
@@ -114,8 +113,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. MottakerId=%s", PLUGIN_NAME, mottaker
 								.getId()), PLUGIN_NAME + " - " + PERSON_IKKE_FUNNET);
 					}
-
-					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001, true);
+					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
 
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

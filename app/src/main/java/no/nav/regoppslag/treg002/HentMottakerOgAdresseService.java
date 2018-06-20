@@ -67,7 +67,7 @@ public class HentMottakerOgAdresseService {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG002);
-				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002, false);
+				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();

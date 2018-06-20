@@ -3,7 +3,6 @@ package no.nav.regoppslag.consumer.personv3.support;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
@@ -51,7 +50,7 @@ public class PersonV3Mapper {
 		}
 	}
 
-	public void map(Bruker person, Mottaker mottaker, String serviceCode, boolean shouldValidatePostnummer) throws RegOppslagFunctionalException {
+	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
 		if (person.getMaalform() != null) {
 			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
@@ -85,10 +84,6 @@ public class PersonV3Mapper {
 			}
 		}
 
-		if (shouldValidatePostnummer) {
-			validatePostadresse(norskPostadresse, mottaker);
-		}
-
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "Ukjent").inc();
 			norskPostadresse.setPostnummer("0000");
@@ -96,8 +91,7 @@ public class PersonV3Mapper {
 		}
 		
 		requestCounter.labels(serviceCode, PERSONV3_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand()==null?"Ukjent":norskPostadresse.getLand()).inc();
-		requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTSTED, getConsumerId(), norskPostadresse.getPoststed()==null?"Ukjent":norskPostadresse.getPoststed()).inc();
-		
+
 		mottaker.setMottakeradresse(norskPostadresse);
 	}
 
@@ -189,9 +183,4 @@ public class PersonV3Mapper {
 		}
 	}
 
-	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
-		if ("Norge".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
-			throw new RegOppslagFunctionalException("Mottaker personoppslag - mangler postnummer for bruker: " + mottaker.getId(), "Mangler postnummer for mottaker");
-		}
-	}
 }
