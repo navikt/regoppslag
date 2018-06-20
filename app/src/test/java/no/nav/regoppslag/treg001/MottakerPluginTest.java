@@ -91,6 +91,7 @@ public class MottakerPluginTest {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
+		valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
 		SecurityContextHolder.setContext(securityContext);
 		
 		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
