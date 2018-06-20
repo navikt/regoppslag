@@ -87,7 +87,11 @@ public class ElementEnricher {
 				)
 				.sequential()
 				.blockingSubscribe(
-						onNextElement -> aggregate(document, onNextElement),
+						onNextElement -> {
+							synchronized (document) {
+								aggregate(document, onNextElement);
+							}
+						},
 						error -> unhandledError.add(error)
 				);
 
