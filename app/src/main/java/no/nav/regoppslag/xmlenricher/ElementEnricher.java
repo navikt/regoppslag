@@ -49,9 +49,14 @@ public class ElementEnricher {
 	}
 
 	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException {
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(xpathExpression);
-		return (Node) xPathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+
+		{
+			synchronized (XPathFactory.class) {
+				XPath xPath = XPathFactory.newInstance().newXPath();
+				XPathExpression xPathExpression = xPath.compile(xpathExpression);
+				return (Node) xPathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+			}
+		}
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
