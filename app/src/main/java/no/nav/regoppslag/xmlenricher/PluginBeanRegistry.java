@@ -6,7 +6,6 @@ import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
-import javax.xml.xpath.XPathExpression;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +15,7 @@ import java.util.Set;
  */
 public class PluginBeanRegistry implements ElementEnricherPluginRegistry {
 
-	private final Map<XPathExpression, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
+	private final Map<String, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();
 
 	private final ApplicationContext applicationContext;
 
@@ -25,25 +24,25 @@ public class PluginBeanRegistry implements ElementEnricherPluginRegistry {
 	}
 
 	@Override
-	public void registerPlugin(XPathExpression supportedElement, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
-		pluginMap.put(supportedElement, plugin);
+	public void registerPlugin(String xpathExpression, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
+		pluginMap.put(xpathExpression, plugin);
 	}
 
 	@Override
-	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(XPathExpression supportedElement) throws MissingPluginException, RegOppslagTechnicalException {
-		if (pluginMap.containsKey(supportedElement)) {
+	public ElementEnricherPlugin getOrCreateElementEnricherPlugin(String xpathExpression) throws MissingPluginException, RegOppslagTechnicalException {
+		if (pluginMap.containsKey(xpathExpression)) {
 			try {
-				return applicationContext.getBean(pluginMap.get(supportedElement));
+				return applicationContext.getBean(pluginMap.get(xpathExpression));
 			} catch (BeansException e) {
-				throw new RegOppslagTechnicalException("Error getting bean for " + supportedElement, e);
+				throw new RegOppslagTechnicalException("Error getting bean for " + xpathExpression, e);
 			}
 		} else {
-			throw new MissingPluginException("Missing plugin for xpath " + supportedElement);
+			throw new MissingPluginException("Missing plugin for xpath " + xpathExpression);
 		}
 	}
 
 	@Override
-	public Set<XPathExpression> getSupportedElements() {
+	public Set<String> getSupportedElements() {
 		return pluginMap.keySet();
 	}
 }

@@ -25,9 +25,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,8 +48,10 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private Node findSingleNode(XPathExpression xpathExpression, Document xmlDocument) throws XPathExpressionException {
-		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(xpathExpression);
+		return (Node) xPathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
@@ -58,11 +62,11 @@ public class ElementEnricher {
 		final String callId = MDC.get(CALLID);
 
 		List<Payload> processingList = new ArrayList<>();
-		Set<XPathExpression> supportedElements = registry.getSupportedElements();
-		for (XPathExpression xpath : supportedElements) {
-			Node node = findSingleNode(xpath, document);
+		Set<String> supportedElementsXpathExpressions = registry.getSupportedElements();
+		for (String xpathExpression : supportedElementsXpathExpressions) {
+			Node node = findSingleNode(xpathExpression, document);
 			if (node != null) {
-				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpath), node));
+				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
 
@@ -75,12 +79,15 @@ public class ElementEnricher {
 							if (securityContextIsUsedForAuthentication(payload)) {
 								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
 							}
+
 							MDC.put(CONSUMERID, consumerId);
 							MDC.put(SUBJECTID, subjectId);
 							MDC.put(CALLID, callId);
-							Map<String, Object> valueMap = new HashMap<>();
+
+					Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 					valueMap.put(MAALFORM.name(), new Maalform());
+
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getElement());
 						}

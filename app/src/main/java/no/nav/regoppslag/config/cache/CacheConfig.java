@@ -103,7 +103,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setTestOnBorrow(false);
 		genericObjectPoolConfig.setMaxTotal(512);
 		genericObjectPoolConfig.setMaxIdle(512);
-		genericObjectPoolConfig.setMinIdle(10);
+		genericObjectPoolConfig.setMinIdle(0);
 		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(3000);
 		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(6000);
 		return genericObjectPoolConfig;
