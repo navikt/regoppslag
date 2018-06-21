@@ -32,7 +32,8 @@ public class JaxbHelper<T>{
 			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 			return unmarshal.getValue();
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException("Feilet ved unmarshalling. Sjekk stacktrace for detaljer", e);
+			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s", node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName()), e);
 		}
 
 	}
@@ -46,7 +47,8 @@ public class JaxbHelper<T>{
 			marshaller.marshal(jaxbElement, node);
 			return node;
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException("Feilet ved marshalling. Sjekk stacktrace for detaljer", e);
+			throw new MarshallerException(String.format("Feilet ved marshalling. Localname=%s, namespaceUri=%s, nodeName=%s", node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName()), e);
 		}
 
 	}

@@ -222,7 +222,11 @@
 			<version>0.0.10</version>
 			<!--<version>${brevdata-felles.version}</version>-->
 		</dependency>
-
+		<dependency>
+			<groupId>com.neovisionaries</groupId>
+			<artifactId>nv-i18n</artifactId>
+			<version>1.23</version>
+		</dependency>
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

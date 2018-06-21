@@ -1,5 +1,6 @@
 package no.nav.regoppslag.service;
 
+import com.neovisionaries.i18n.CountryCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,17 +50,34 @@ public class LandkodeService {
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
 
+	//TODO: Fiks dette før prod
 	public String finnLandnavn(String landkode) {
-		if (landkodeTable.get(landkode) == null) {
-			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om ny landkoder.txt må lastes ned/endres.");
+//		if (landkodeTable.get(landkode) == null) {
+//			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om ny landkoder.txt må lastes ned/endres.");
+//			return null;
+//		} else {
+//			return landkodeTable.get(landkode).getNavn();
+//		}
+
+		if (CountryCode.getByCode(landkode) == null) {
+			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries avhengigheten må oppdateres");
 			return null;
 		} else {
-			return landkodeTable.get(landkode).getNavn();
+			return CountryCode.getByCode(landkode).getName();
 		}
 	}
 
 	public String finnLandkode(String landnavn) {
-		return landTable.get(landnavn);
+		//return landTable.get(landnavn);
+		if (landnavn == null) {
+			return null;
+		}
+
+		List<CountryCode> countryCodeList = CountryCode.findByName(landnavn);
+		if (countryCodeList.size() == 0) {
+			return null;
+		}
+		return countryCodeList.get(0).getAlpha2();
 	}
 
 	@Setter
