@@ -6,14 +6,12 @@ import no.nav.regoppslag.nais.checkcore.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.checkcore.DependencyType;
 import no.nav.regoppslag.nais.checkcore.Importance;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@Component
 public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractDependencyCheck {
 	public static final String OrganisasjonEnhetKontaktinformasjonV1_label = "NORG2";
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;

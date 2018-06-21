@@ -7,12 +7,15 @@ import static no.nav.regoppslag.util.TestDataUtil.LANDKODE;
 import static no.nav.regoppslag.util.TestDataUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.TestDataUtil.POSTSTED;
 import static no.nav.regoppslag.util.TestDataUtil.createMottaker;
+import static no.nav.regoppslag.util.TestDataUtil.createNorskPostadresse;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
+import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.common.Adresse;
 import no.nav.regoppslag.service.LandkodeService;
 import org.junit.Before;
@@ -61,6 +64,23 @@ public class AdresseMapperTest {
 		assertThat(adresse.getLandkode(), is(LANDKODE));
 		assertThat(adresse.getPostnummer(), nullValue());
 		assertThat(adresse.getPoststed(), nullValue());
+	}
+
+	@Test
+	public void shouldMapWhenLandkodeIsNull() {
+		when(landkodeService.finnLandkode(null)).thenReturn(null);
+		Mottaker mottaker = createMottaker();
+		NorskPostadresse norskPostadresse = createNorskPostadresse();
+		norskPostadresse.setLand(null);
+		mottaker.setMottakeradresse(norskPostadresse);
+		Adresse adresse = adresseMapper.map(mottaker);
+
+		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is("???"));
+		assertThat(adresse.getPostnummer(), is(POSTNUMMER));
+		assertThat(adresse.getPoststed(), is(POSTSTED));
 	}
 
 	

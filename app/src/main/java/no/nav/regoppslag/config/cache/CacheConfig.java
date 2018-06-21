@@ -89,7 +89,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.reconnectDelay(Delay.constant(200, TimeUnit.MILLISECONDS))
 				.build());
 		lettucePool.setPoolConfig(poolConfig());
-		lettucePool.setTimeout(200);
+		lettucePool.setTimeout(300);
 		lettucePool.afterPropertiesSet();
 		return lettucePool;
 	}
@@ -101,9 +101,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 		genericObjectPoolConfig.setTestOnCreate(false);
 		genericObjectPoolConfig.setTestWhileIdle(false);
 		genericObjectPoolConfig.setTestOnBorrow(false);
-		genericObjectPoolConfig.setMaxTotal(256);
-		genericObjectPoolConfig.setMaxIdle(256);
-		genericObjectPoolConfig.setMinIdle(0);
+		genericObjectPoolConfig.setMaxTotal(512);
+		genericObjectPoolConfig.setMaxIdle(512);
+		genericObjectPoolConfig.setMinIdle(10);
 		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(3000);
 		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(6000);
 		return genericObjectPoolConfig;
