@@ -84,7 +84,7 @@ public class OrganisasjonV4Mapper {
 		
 		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
 				.getLand()).inc();
-		
+
 		mottaker.setMottakeradresse(norskPostadresse);
 	}
 	
@@ -98,7 +98,8 @@ public class OrganisasjonV4Mapper {
 		} else {
 			Gateadresse gateadresse = (Gateadresse) orgDet.getPostadresse().get(0);
 			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
-					.orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString())
+					.orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer() == null ? null : gateadresse.getHusnummer()
+					.toString())
 					.orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 			if (orgDet.getPostadresse().get(0) instanceof StrukturertAdresse) {
 				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getPostadresse().get(0);
@@ -124,7 +125,8 @@ public class OrganisasjonV4Mapper {
 		} else {
 			Gateadresse gateadresse = (Gateadresse) orgDet.getForretningsadresse().get(0);
 			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
-					.orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString())
+					.orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer() == null ? null : gateadresse.getHusnummer()
+					.toString())
 					.orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 			if (orgDet.getForretningsadresse().get(0) instanceof StrukturertAdresse) {
 				StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) orgDet.getForretningsadresse().get(0);

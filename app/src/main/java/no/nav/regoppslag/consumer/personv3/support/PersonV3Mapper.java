@@ -6,6 +6,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
+import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
@@ -31,6 +32,7 @@ import java.util.Optional;
  * @author Ketill Fenne, Visma Consulting AS
  */
 @Component
+@Slf4j
 public class PersonV3Mapper {
 	@Inject
 	private final PostnummerService postnummerService;
@@ -86,6 +88,7 @@ public class PersonV3Mapper {
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "Ukjent").inc();
+			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\"", serviceCode));
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 		}
@@ -98,7 +101,9 @@ public class PersonV3Mapper {
 	private void mapBostedadresse(Bruker person, NorskPostadresse norskPostadresse) {
 		if (person.getBostedsadresse().getStrukturertAdresse() instanceof Gateadresse) {
 			Gateadresse gateadresse = (Gateadresse) person.getBostedsadresse().getStrukturertAdresse();
-			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
+					.orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer() == null ? null : gateadresse.getHusnummer()
+					.toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 		} else if (person.getBostedsadresse().getStrukturertAdresse() instanceof Matrikkeladresse) {
 			Matrikkeladresse matrikkeladresse = (Matrikkeladresse) person.getBostedsadresse().getStrukturertAdresse();
 			norskPostadresse.setAdresselinje1(matrikkeladresse.getEiendomsnavn());
@@ -157,7 +162,9 @@ public class PersonV3Mapper {
 	private void mapMidlertidigNorge(Bruker person, NorskPostadresse norskPostadresse) {
 		if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Gateadresse) {
 			Gateadresse gateadresse = (Gateadresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse();
-			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.of(gateadresse.getHusnummer().toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
+			norskPostadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
+					.orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer() == null ? null : gateadresse.getHusnummer()
+					.toString()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
 		} else if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Matrikkeladresse) {
 			Matrikkeladresse matrikkeladresse = (Matrikkeladresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse();
 			norskPostadresse.setAdresselinje1(matrikkeladresse.getEiendomsnavn());
