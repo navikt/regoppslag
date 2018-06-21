@@ -31,8 +31,7 @@ public class AdresseMapper {
 	private final String UNKNOWN_LANDKODE = "???";
 	
 	public Adresse map(Mottaker mottaker){
-		
-		
+
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){
 			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, getConsumerId(), "NORSK_ADRESSE").inc();
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();

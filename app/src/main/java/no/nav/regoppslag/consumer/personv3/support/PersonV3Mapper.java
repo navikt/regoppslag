@@ -87,7 +87,7 @@ public class PersonV3Mapper {
 		}
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "Ukjent").inc();
+			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT").inc();
 			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\"", serviceCode));
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
