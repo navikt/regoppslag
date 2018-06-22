@@ -40,20 +40,20 @@ public class LandkodeServiceTest {
 
 	@Test
 	public void testFinnLandkode() throws Exception {
-		String landKode = landkodeService.finnLandkode("NORGE");
+		String landKode = landkodeService.finnLandkode("Norway");
 		assertThat(landKode, is("NO"));
 	}
 
 	@Test
 	public void testFinnLandNavn() throws Exception {
 		String landNavn = landkodeService.finnLandnavn("NO");
-		assertThat(landNavn, is("NORGE"));
+		assertThat(landNavn, is("Norway"));
 	}
 
 	@Test
 	public void testFinnLandNavnKode3() throws Exception {
 		String landNavn = landkodeService.finnLandnavn("NOR");
-		assertThat(landNavn, is("NORGE"));
+		assertThat(landNavn, is("Norway"));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class LandkodeServiceTest {
 		LogbackCapturingAppender.Factory.cleanUp();
 
 		assertThat(landNavn, isEmptyOrNullString());
-		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om ny landkoder.txt må lastes ned/endres."));
+		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries avhengigheten må oppdateres"));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}
 }
