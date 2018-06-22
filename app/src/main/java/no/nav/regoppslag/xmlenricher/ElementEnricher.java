@@ -53,8 +53,24 @@ public class ElementEnricher {
 		{
 			synchronized (XPathFactory.class) {
 				XPath xPath = XPathFactory.newInstance().newXPath();
+
 				XPathExpression xPathExpression = xPath.compile(xpathExpression);
-				return (Node) xPathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+				Node xpathResult = (Node) xPathExpression.evaluate(xmlDocument, XPathConstants.NODE);
+
+				// Case of qualified attribute values, we're forced to add corresponding namespace declaration manually
+				if (xpathResult != null && xpathResult.hasAttributes()) {
+					for (int i = 0; i < xpathResult.getAttributes().getLength(); i++) {
+						Node attr = xpathResult.getAttributes().item(i);
+						int colonIdx = attr.getNodeValue().indexOf(":");
+						if (colonIdx > 0) {
+							String prefix = attr.getNodeValue().substring(0, colonIdx);
+							String attrValNs = xpathResult.lookupNamespaceURI(prefix);
+							if (attrValNs != null)
+								((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
+						}
+					}
+				}
+				return xpathResult;
 			}
 		}
 	}
