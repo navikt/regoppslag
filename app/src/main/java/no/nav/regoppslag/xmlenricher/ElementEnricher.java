@@ -69,7 +69,7 @@ public class ElementEnricher {
 							log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
 							if (attrValNs != null) {
 								Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
-								if (existingAttr == null && existingAttr.getValue().isEmpty()) {
+								if (existingAttr == null || existingAttr.getValue().isEmpty()) {
 									((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
 								}
 							}
