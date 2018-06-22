@@ -227,6 +227,23 @@
 			<artifactId>nv-i18n</artifactId>
 			<version>1.23</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>saxon-xpath</artifactId>
+			<version>8.7</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>saxon-dom</artifactId>
+			<version>8.7</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>saxon</artifactId>
+			<version>8.7</version>
+		</dependency>
+
+
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
