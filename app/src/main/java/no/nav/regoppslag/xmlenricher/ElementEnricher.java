@@ -21,6 +21,7 @@ import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,8 +66,13 @@ public class ElementEnricher {
 						if (colonIdx > 0) {
 							String prefix = attr.getNodeValue().substring(0, colonIdx);
 							String attrValNs = xpathResult.lookupNamespaceURI(prefix);
-							if (attrValNs != null)
-								((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
+							log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
+							if (attrValNs != null) {
+								Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
+								if (existingAttr == null) {
+									((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
+								}
+							}
 						}
 					}
 				}
