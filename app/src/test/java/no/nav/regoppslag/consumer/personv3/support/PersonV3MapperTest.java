@@ -49,8 +49,8 @@ public class PersonV3MapperTest {
 	private static final String POSTSTED = "HUSNES";
 	private static final String LANDKODE = "NOR";
 	private static final String LANDKODE_UTLAND = "DNK";
-	private static final String LAND = "NORGE";
-	private static final String LAND_UTLAND = "DENMARK";
+	private static final String LAND = "Norway";
+	private static final String LAND_UTLAND = "Denmark";
 
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();

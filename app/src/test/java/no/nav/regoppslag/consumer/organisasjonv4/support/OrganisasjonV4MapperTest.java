@@ -8,7 +8,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
@@ -62,7 +61,7 @@ public class OrganisasjonV4MapperTest {
 	private static final String POSTNR = "5460";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LANDKODE = "NOR";
-	private static final String LAND = "NORGE";
+	private static final String LAND = "Norway";
 	private static final String MAALFORM = "NO";
 	private static final String SERVICECODE = "SERVICECODE";
 
@@ -147,13 +146,13 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void mapPersonPostadresseUtenPostnr() throws Exception {
-		thrown.expect(RegOppslagFunctionalException.class);
-		thrown.expectMessage("Mottaker orgoppslag - mangler postnummer for organisasjon:");
 		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 		mapper.map(org, mottaker, SERVICECODE);
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
 	}
 
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {

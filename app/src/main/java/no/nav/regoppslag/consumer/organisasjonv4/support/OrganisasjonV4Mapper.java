@@ -6,6 +6,8 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
+import com.neovisionaries.i18n.CountryCode;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
@@ -34,8 +36,9 @@ import java.util.Optional;
  */
 
 @Component
+@Slf4j
 public class OrganisasjonV4Mapper {
-	
+
 	@Inject
 	private final LandkodeService landkodeService;
 	
@@ -79,9 +82,15 @@ public class OrganisasjonV4Mapper {
 			mapForretningsAdresse(orgDet, norskPostadresse);
 			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "FORRETNINGSADRESSE").inc();
 		}
-		
-		validatePostadresse(norskPostadresse, mottaker);
-		
+
+		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT").inc();
+			log.info(String.format("%s Mottaker med type=ORGANISASJON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\"", serviceCode));
+			norskPostadresse.setPostnummer("0000");
+			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
+		}
+
+
 		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
 				.getLand()).inc();
 
@@ -160,7 +169,8 @@ public class OrganisasjonV4Mapper {
 	}
 	
 	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
-		if ("Norge".equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
+		if (CountryCode.NO.getName()
+				.equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
 			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId(), "Mangler postnummer for organisasjon");
 		}
 	}
