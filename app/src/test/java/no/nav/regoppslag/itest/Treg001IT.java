@@ -104,9 +104,8 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws Exception {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
-				.replaceAll("`\n", "")
-				.replaceAll("`\t", ""));
+		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
 	}
 	
 	/**
@@ -115,9 +114,8 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws Exception {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrgFull, KompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("`\n", "").replaceAll("`\t", ""), actualResponse.getBrevdata()
-				.replaceAll("`\n", "")
-				.replaceAll("`\t", ""));
+		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
 	}
 	
 	
