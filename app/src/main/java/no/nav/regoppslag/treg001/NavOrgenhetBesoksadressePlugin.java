@@ -101,7 +101,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 

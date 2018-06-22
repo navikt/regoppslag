@@ -155,7 +155,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
 
@@ -169,7 +169,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler påkrevde parametere.", PLUGIN_NAME), UGYLDIG_INPUT);
 		}
 
-		if (StringUtils.isEmpty(mottaker.getId())) {
+		if (StringUtils.isEmpty(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
 			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler mottakerId", PLUGIN_NAME), UGYLDIG_INPUT);
 		}
 

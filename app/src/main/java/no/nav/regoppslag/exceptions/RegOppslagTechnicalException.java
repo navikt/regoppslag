@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class RegOppslagTechnicalException extends Exception {
 	
 	private String shortDescription = "RegOppslagTechnicalException";
-	private HttpStatus httpStatus;
+	private HttpStatus httpStatus = HttpStatus.OK;
 	
 	public RegOppslagTechnicalException() {
 	}

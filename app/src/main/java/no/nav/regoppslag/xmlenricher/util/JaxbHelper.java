@@ -1,5 +1,6 @@
 package no.nav.regoppslag.xmlenricher.util;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Node;
@@ -12,10 +13,16 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 
 /**
  * @author Hans Petter Simonsen - Miles
  */
+@Slf4j
 public class JaxbHelper<T>{
 
 	private final Class<T> jaxbClass;
@@ -24,7 +31,6 @@ public class JaxbHelper<T>{
 		this.jaxbClass = jaxbClass;
 	}
 
-
 	public T unmarshal(Node node) throws MarshallerException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(jaxbClass);
@@ -32,8 +38,8 @@ public class JaxbHelper<T>{
 			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 			return unmarshal.getValue();
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s", node
-					.getLocalName(), node.getNamespaceURI(), node.getNodeName()), e);
+			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
 	}
@@ -47,10 +53,23 @@ public class JaxbHelper<T>{
 			marshaller.marshal(jaxbElement, node);
 			return node;
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException(String.format("Feilet ved marshalling. Localname=%s, namespaceUri=%s, nodeName=%s", node
-					.getLocalName(), node.getNamespaceURI(), node.getNodeName()), e);
+			throw new MarshallerException(String.format("Feilet ved marshalling. Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
+	}
+
+	//Only used for logging when exception occurs
+	public static String documentToString(Node xmlDocument) {
+		try {
+			StringWriter writer = new StringWriter();
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.transform(new DOMSource(xmlDocument), new StreamResult(writer));
+			return writer.toString();
+		} catch (Exception e) {
+		}
+
+		return "Feilet ved konverting av dokument til String";
 	}
 
 	/**

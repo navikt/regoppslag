@@ -50,16 +50,8 @@ public class LandkodeService {
 		LOG.info("Har importert landkoder fra " + FILENAME);
 	}
 
-	//TODO: Fiks dette før prod
 	public String finnLandnavn(String landkode) {
-//		if (landkodeTable.get(landkode) == null) {
-//			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om ny landkoder.txt må lastes ned/endres.");
-//			return null;
-//		} else {
-//			return landkodeTable.get(landkode).getNavn();
-//		}
-
-		if (CountryCode.getByCode(landkode) == null) {
+		if (CountryCode.getByCode(landkode) == null || CountryCode.getByCode(landkode).equals(CountryCode.UNDEFINED)) {
 			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries avhengigheten må oppdateres");
 			return null;
 		} else {
@@ -68,15 +60,12 @@ public class LandkodeService {
 	}
 
 	public String finnLandkode(String landnavn) {
-		//return landTable.get(landnavn);
-		if (landnavn == null) {
+
+		if (landnavn == null || CountryCode.findByName(landnavn).size() == 0) {
 			return null;
 		}
 
 		List<CountryCode> countryCodeList = CountryCode.findByName(landnavn);
-		if (countryCodeList.size() == 0) {
-			return null;
-		}
 		return countryCodeList.get(0).getAlpha2();
 	}
 

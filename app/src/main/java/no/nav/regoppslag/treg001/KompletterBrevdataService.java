@@ -56,9 +56,8 @@ public class KompletterBrevdataService {
 		transformer.transform(new DOMSource(xmlDocument), new StreamResult(writer));
 		return writer.toString();
 	}
-	
+
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		//TODO: Fjern all logg med brevdata!
 		String responseBrevdata;
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
@@ -66,25 +65,21 @@ public class KompletterBrevdataService {
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error(e.getMessage(), e);
-			log.warn(String.format("Brevdata som førte til feil: %s", request.getBrevdata()));
 			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn(e.getMessage(), e);
-			log.warn(String.format("Brevdata som førte til feil: %s", request.getBrevdata()));
 			throw new RegOppslagFunctionalException(e, "Feil ved parsing av brevdata");
 		} catch (RegOppslagFunctionalException e) {
 			log.warn(e.getMessage(), e);
-			log.warn(String.format("Brevdata som førte til feil: %s", request.getBrevdata()));
 			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		} catch (RegOppslagTechnicalException e) {
 			log.error(e.getMessage(), e);
-			log.warn(String.format("Brevdata som førte til feil: %s", request.getBrevdata()));
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-					.getMessage()), e.getShortDescription());
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s originale-brevdata=%s", request
+					.getDokumentTypeId(), e
+					.getMessage(), request.getBrevdata()), e.getShortDescription());
 		} catch (RegOppslagSecurityException e) {
 			log.warn(e.getMessage(), e);
-			log.warn(String.format("Brevdata som førte til feil: %s", request.getBrevdata()));
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		}

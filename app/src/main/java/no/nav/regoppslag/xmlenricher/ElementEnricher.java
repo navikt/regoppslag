@@ -77,6 +77,7 @@ public class ElementEnricher {
 
 
 		final List<Throwable> unhandledError = new ArrayList<>();
+		List<Aggregate> aggregateList = new ArrayList<>();
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
@@ -99,24 +100,21 @@ public class ElementEnricher {
 				)
 				.sequential()
 				.blockingSubscribe(
-						onNextElement -> {
-							synchronized (document) {
-								aggregate(document, onNextElement);
-							}
-						},
+						onNextElement -> aggregateList.add(onNextElement),
 						error -> unhandledError.add(error)
 				);
+
 
 		if (!unhandledError.isEmpty()) {
 			handleException(unhandledError.get(0));
 		}
 
+		aggregateList.forEach(element -> aggregate(document, element));
+
 		return document;
 	}
 
 	private void aggregate(Document document, Aggregate aggregate) {
-		log.info(String.format("Aggregerer element med original localname=%s, namespaceUri=%s og nodeName=%s ", aggregate.getNewNode()
-				.getLocalName(), aggregate.getNewNode().getNamespaceURI(), aggregate.getNewNode().getNodeName()));
 		// Find element in original XML, only one of each supported
 		Node orgElem = aggregate.getOrigNode();
 		// If plugin does in-place mutation, no aggregation is necessary.
