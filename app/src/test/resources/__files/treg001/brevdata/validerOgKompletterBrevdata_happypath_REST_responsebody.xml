@@ -17,7 +17,7 @@
 				<norskPostadresse:adresselinje3>adresselinje3</norskPostadresse:adresselinje3>
 				<norskPostadresse:postnummer>0130</norskPostadresse:postnummer>
 				<norskPostadresse:poststed>Oslo</norskPostadresse:poststed>
-				<norskPostadresse:land>NORGE</norskPostadresse:land>
+				<norskPostadresse:land>Norway</norskPostadresse:land>
 			</mottaker:adresse>
 		</f:mottaker>
 		<f:signerendeSaksbehandler>

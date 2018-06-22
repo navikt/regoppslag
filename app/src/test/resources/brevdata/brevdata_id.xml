@@ -26,7 +26,7 @@
 				<felles:adresselinje3>adresselinje3</felles:adresselinje3>
 				<felles:postnummer>0130</felles:postnummer>
 				<felles:poststed>Oslo</felles:poststed>
-				<felles:land>NORGE</felles:land>
+				<felles:land>Norway</felles:land>
 			</felles:adresse>
 		</test:mottaker>
 		<test:signerendeSaksbehandler>
