@@ -45,7 +45,6 @@ public class Application {
 		RegoppslagConfigSetter configSetter = new RegoppslagConfigSetter();
 		configSetter.configureSsl();
 		configSetter.setAppConfig();
-		System.setProperty("javax.xml.xpath.XPathFactory:http://java.sun.com/jaxp/xpath/dom","net.sf.saxon.xpath.XPathFactoryImpl");
 		SpringApplication.run(Application.class, args);
 	}
 
