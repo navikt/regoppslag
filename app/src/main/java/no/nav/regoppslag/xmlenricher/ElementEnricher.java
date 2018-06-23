@@ -31,6 +31,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,10 +50,9 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException {
+	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException, XPathFactoryConfigurationException {
 
-		{
-			synchronized (XPathFactory.class) {
+
 				XPath xPath = XPathFactory.newInstance().newXPath();
 
 				XPathExpression xPathExpression = xPath.compile(xpathExpression);
@@ -66,7 +66,7 @@ public class ElementEnricher {
 						if (colonIdx > 0) {
 							String prefix = attr.getNodeValue().substring(0, colonIdx);
 							String attrValNs = xpathResult.lookupNamespaceURI(prefix);
-							log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
+							//log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
 							if (attrValNs != null) {
 								Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
 								if (existingAttr == null || existingAttr.getValue().isEmpty()) {
@@ -77,11 +77,9 @@ public class ElementEnricher {
 					}
 				}
 				return xpathResult;
-			}
-		}
 	}
 
-	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
+	public Document process(Document document, String dokumentTypeId) throws XPathFactoryConfigurationException, XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMERID);
@@ -93,7 +91,8 @@ public class ElementEnricher {
 		for (String xpathExpression : supportedElementsXpathExpressions) {
 			Node node = findSingleNode(xpathExpression, document);
 			if (node != null) {
-				processingList.add(new Payload(node, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
+				Node clonedNode=node.cloneNode(true);
+				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
 
@@ -117,7 +116,7 @@ public class ElementEnricher {
 					valueMap.put(MAALFORM.name(), new Maalform());
 
 							return new Aggregate(payload.getPlugin()
-									.processElement(payload.getElement(), valueMap), payload.getElement());
+									.processElement(payload.getElement(), valueMap), payload.getOrgNode());
 						}
 				)
 				.sequential()
