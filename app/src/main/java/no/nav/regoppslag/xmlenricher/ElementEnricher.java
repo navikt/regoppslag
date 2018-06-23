@@ -50,7 +50,7 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException, XPathFactoryConfigurationException {
+	private Node findSingleNode(String xpathExpression, Document xmlDocument) throws XPathExpressionException {
 
 
 				XPath xPath = XPathFactory.newInstance().newXPath();
@@ -79,7 +79,7 @@ public class ElementEnricher {
 				return xpathResult;
 	}
 
-	public Document process(Document document, String dokumentTypeId) throws XPathFactoryConfigurationException, XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMERID);
