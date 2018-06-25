@@ -64,27 +64,31 @@ public class ElementEnricher {
 						int colonIdx = attr.getNodeValue().indexOf(":");
 						if (colonIdx > 0) {
 							String prefix = attr.getNodeValue().substring(0, colonIdx);
+							Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
 
-							String attrValNsElement = xpathResult.lookupNamespaceURI(prefix);
-							updateOrAddAttributeNSToElement(attrValNsElement, xpathResult, prefix, attr);
+							if (existingAttr == null || existingAttr.getValue().isEmpty()) {
+								String attrValNsElement = xpathResult.lookupNamespaceURI(prefix);
 
-							String attrValNsDokument = xpathResult.lookupNamespaceURI(prefix);
-							updateOrAddAttributeNSToElement(attrValNsDokument, xpathResult, prefix, attr);
+								if (attrValNsElement == null ){
+									log.info("Fant ikke namespace på element med prefix={}. Prøver å søke globalt i dokumentet", prefix);
+									attrValNsElement = xmlDocument.lookupNamespaceURI(prefix);
+								}
+								updateOrAddAttributeNSToElement(attrValNsElement, xpathResult, prefix, attr);
+							}
+
 						}
 					}
 				}
+
 				return xpathResult;
 	}
 
 	private void updateOrAddAttributeNSToElement(String attrValNs, Node xpathResult, String prefix, Node attr){
 		if (attrValNs != null) {
-			Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
-			if (existingAttr == null || existingAttr.getValue().isEmpty()) {
-				log.info("Lagt til xmlns attributt for prefix={} og namespace={}", prefix, attrValNs);
-				((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
-			}
+			((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
+			log.debug("Lagt til xmlns attributt for prefix={} og namespace={}", prefix, attrValNs);
 		} else {
-			log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
+			log.warn("Kunne ikke finne namespace med prefix {} på elementet {} med attributt {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
 		}
 
 	}
