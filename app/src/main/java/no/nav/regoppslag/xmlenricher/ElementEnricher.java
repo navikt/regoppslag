@@ -126,7 +126,7 @@ public class ElementEnricher {
 							MDC.put(CALLID, callId);
 
 							Map<String, Object> valueMap = new HashMap<>();
-									valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
+							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(MAALFORM.name(), new Maalform());
 
 							return new Aggregate(payload.getPlugin()

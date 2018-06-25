@@ -1,7 +1,7 @@
 image: "docker.adeo.no:5000/dok/regoppslag"
 replicas:
   min: 2
-  max: 4
+  max: 5
   cpuThresholdPercentage: 50
 port: 8080
 healthcheck:

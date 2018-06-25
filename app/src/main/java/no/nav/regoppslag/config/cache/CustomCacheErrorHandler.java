@@ -22,10 +22,6 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 	
 	@Override
 	public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
-		if (cache.getName().equals(HENT_PERSON)) {
-			key = hidePersonIdent((String) key);
-			//TODO: Fjern dette senere hvis det ikke er nødvendig
-		}
 		log.warn(String.format("Feil ved Cache Get operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
