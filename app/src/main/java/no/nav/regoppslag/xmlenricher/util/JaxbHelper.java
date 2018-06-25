@@ -39,7 +39,7 @@ public class JaxbHelper<T>{
 			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 			return unmarshal.getValue();
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", node
+			throw new MarshallerException(String.format("Feilet ved unmarshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
@@ -54,7 +54,7 @@ public class JaxbHelper<T>{
 			marshaller.marshal(jaxbElement, node);
 			return node;
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException(String.format("Feilet ved marshalling. Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", node
+			throw new MarshallerException(String.format("Feilet ved marshalling. Feilmelding=%s,  Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
