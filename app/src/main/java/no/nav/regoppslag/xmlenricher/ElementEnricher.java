@@ -2,9 +2,9 @@ package no.nav.regoppslag.xmlenricher;
 
 import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
 import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
-import static no.nav.regoppslag.util.MDCConstants.CALLID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
-import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 
@@ -96,9 +96,9 @@ public class ElementEnricher {
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		final String consumerId = MDC.get(CONSUMERID);
-		final String subjectId = MDC.get(SUBJECTID);
-		final String callId = MDC.get(CALLID);
+		final String consumerId = MDC.get(CONSUMER_ID);
+		final String userId = MDC.get(USER_ID);
+		final String callId = MDC.get(CALL_ID);
 
 		List<Payload> processingList = new ArrayList<>();
 		Set<String> supportedElementsXpathExpressions = registry.getSupportedElements();
@@ -121,9 +121,9 @@ public class ElementEnricher {
 								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
 							}
 
-							MDC.put(CONSUMERID, consumerId);
-							MDC.put(SUBJECTID, subjectId);
-							MDC.put(CALLID, callId);
+							MDC.put(CONSUMER_ID, consumerId);
+							MDC.put(USER_ID, userId);
+							MDC.put(CALL_ID, callId);
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);

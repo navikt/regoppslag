@@ -12,7 +12,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getUserId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
@@ -107,7 +107,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getUserId(), SERVICE_CODE_TREG001);
 					if (person == null) {
 						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. MottakerId=%s", PLUGIN_NAME, mottaker
 								.getId()), PLUGIN_NAME + " - " + PERSON_IKKE_FUNNET);

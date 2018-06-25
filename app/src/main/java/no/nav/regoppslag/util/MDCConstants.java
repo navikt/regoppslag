@@ -5,9 +5,9 @@ package no.nav.regoppslag.util;
  */
 public class MDCConstants {
 	
-	public static final String CONSUMERID = "consumerId";
-	public static final String CALLID = "callId";
-	public static final String SUBJECTID = "subjectId";
+	public static final String CONSUMER_ID = "consumerId";
+	public static final String CALL_ID = "callId";
+	public static final String USER_ID = "userId";
 	public static final String UKJENT = "Ukjent";
 	
 }

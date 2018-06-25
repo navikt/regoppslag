@@ -7,7 +7,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getSubjectId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getUserId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +66,7 @@ public class HentMottakerOgAdresseService {
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), getSubjectId(), SERVICE_CODE_TREG002);
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getConsumerId(), getUserId(), SERVICE_CODE_TREG002);
 				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)

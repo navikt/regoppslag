@@ -2,9 +2,9 @@ package no.nav.regoppslag.config.security;
 
 import static no.nav.regoppslag.config.security.SamlTokenUtils.elementToSamlAssertionWrapper;
 import static no.nav.regoppslag.config.security.SamlTokenUtils.samlTokenToElement;
-import static no.nav.regoppslag.util.MDCConstants.CALLID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
-import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static no.nav.regoppslag.util.MDCConstants.UKJENT;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
@@ -40,11 +40,11 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		
 		//In case the application have several authorization headers
 		String header = getSamlAuthHeader(request.getHeaders("Authorization"));
-		MDC.put(CALLID, getOrCreateCallId(request));
+		MDC.put(CALL_ID, getOrCreateCallId(request));
 		
 		if (header == null || !header.startsWith("SAML ")) {
-			MDC.put(CONSUMERID, UKJENT);
-			MDC.put(SUBJECTID, UKJENT);
+			MDC.put(CONSUMER_ID, UKJENT);
+			MDC.put(USER_ID, UKJENT);
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -53,8 +53,8 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(getConsumerId(decodedToken), decodedToken, NO_AUTHORITIES);
 		SecurityContextHolder.getContext().setAuthentication(authRequest);
 		
-		MDC.put(CONSUMERID, authRequest.getName());
-		MDC.put(SUBJECTID, getSubjectName(decodedToken));
+		MDC.put(CONSUMER_ID, authRequest.getName());
+		MDC.put(USER_ID, getUserId(decodedToken));
 		
 		filterChain.doFilter(request, response);
 	}
@@ -88,7 +88,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 	
-	private String getSubjectName(String decodedToken) {
+	private String getUserId(String decodedToken) {
 		Element element = samlTokenToElement(decodedToken);
 		return elementToSamlAssertionWrapper(element).getSubjectName();
 	}
@@ -100,7 +100,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		try {
 			consumerId = (String) SAMLUtils.getClaims(elementToSamlAssertionWrapper(element))
 					.stream()
-					.filter(claim -> claim.getClaimType().getPath().equalsIgnoreCase(CONSUMERID))
+					.filter(claim -> claim.getClaimType().getPath().equalsIgnoreCase(CONSUMER_ID))
 					.findAny()
 					.orElse(new Claim())
 					.getValues()
@@ -118,7 +118,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 	}
 	
 	private String getOrCreateCallId(HttpServletRequest request) {
-		Enumeration<String> headers = request.getHeaders(CALLID);
+		Enumeration<String> headers = request.getHeaders(CALL_ID);
 		if (headers.hasMoreElements()) {
 			return headers.nextElement();
 		}

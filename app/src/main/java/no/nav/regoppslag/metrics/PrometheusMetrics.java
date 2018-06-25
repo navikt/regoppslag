@@ -10,8 +10,8 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_PROCESS_NAME;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SERVICE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TYPE;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMERID;
-import static no.nav.regoppslag.util.MDCConstants.SUBJECTID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static no.nav.regoppslag.util.MDCConstants.UKJENT;
 
 import io.prometheus.client.Counter;
@@ -60,11 +60,11 @@ public class PrometheusMetrics {
 			.register();
 	
 	public static String getConsumerId() {
-		return MDC.get(CONSUMERID) == null ? UKJENT : MDC.get(CONSUMERID);
+		return MDC.get(CONSUMER_ID) == null ? UKJENT : MDC.get(CONSUMER_ID);
 	}
 	
-	public static String getSubjectId() {
-		return MDC.get(SUBJECTID) == null ? UKJENT : MDC.get(SUBJECTID);
+	public static String getUserId() {
+		return MDC.get(USER_ID) == null ? UKJENT : MDC.get(USER_ID);
 	}
 	
 }
