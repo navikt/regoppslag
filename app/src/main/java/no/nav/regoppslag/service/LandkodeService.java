@@ -4,6 +4,7 @@ import com.neovisionaries.i18n.CountryCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,35 +25,10 @@ import java.util.Map;
 public class LandkodeService {
 
 	public static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
-	private static final String FILENAME = "/kodeverk/countries.txt";
-
-	private final Map<String, LandData> landkodeTable;
-	private final Map<String, String> landTable;
-
-	public LandkodeService() {
-		landkodeTable = new HashMap<>();
-		landTable = new HashMap<>();
-	}
-
-	@PostConstruct
-	public void init() throws IOException {
-		InputStream in = getClass().getResourceAsStream(FILENAME);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		String line;
-		String csvSplitBy = "\t";
-
-		while ((line = br.readLine()) != null) {
-			String[] postArray = line.split(csvSplitBy);
-			LandData data = new LandData(postArray[2], postArray[0].toUpperCase());
-			landkodeTable.put(data.getLandkode(), data);
-			landTable.put(data.getNavn(), data.getLandkode());
-		}
-		LOG.info("Har importert landkoder fra " + FILENAME);
-	}
 
 	public String finnLandnavn(String landkode) {
 		if (CountryCode.getByCode(landkode) == null || CountryCode.getByCode(landkode).equals(CountryCode.UNDEFINED)) {
-			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries avhengigheten må oppdateres");
+			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon");
 			return null;
 		} else {
 			return CountryCode.getByCode(landkode).getName();
@@ -67,14 +43,6 @@ public class LandkodeService {
 
 		List<CountryCode> countryCodeList = CountryCode.findByName(landnavn);
 		return countryCodeList.get(0).getAlpha2();
-	}
-
-	@Setter
-	@Getter
-	@AllArgsConstructor
-	static class LandData {
-		private String landkode;
-		private String navn;
 	}
 
 }

@@ -61,7 +61,6 @@ public class PersonV3MapperTest {
 
 	@Before
 	public void initPostnummer() throws Exception {
-		landkodeService.init();
 		postnummerService.init();
 		mapper = new PersonV3Mapper(postnummerService, landkodeService);
 	}

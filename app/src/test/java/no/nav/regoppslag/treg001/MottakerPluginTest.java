@@ -160,7 +160,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne person. MottakerId=");
+		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne person. ");
 		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -177,7 +177,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenOrganisasjonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne organisasjon. MottakerId=");
+		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne organisasjon. ");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);
@@ -194,7 +194,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler påkrevde parametere.");
+		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);

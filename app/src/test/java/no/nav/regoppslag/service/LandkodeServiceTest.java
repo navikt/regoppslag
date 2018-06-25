@@ -28,7 +28,6 @@ public class LandkodeServiceTest {
 
 	@Before
 	public void setUp() throws IOException {
-		landkodeService.init();
 	}
 
 	@After
@@ -69,7 +68,7 @@ public class LandkodeServiceTest {
 		LogbackCapturingAppender.Factory.cleanUp();
 
 		assertThat(landNavn, isEmptyOrNullString());
-		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries avhengigheten må oppdateres"));
+		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon"));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}
 }

@@ -13,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -38,7 +39,7 @@ public class JaxbHelper<T>{
 			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 			return unmarshal.getValue();
 		} catch (JAXBException | IllegalArgumentException e) {
-			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", node
+			throw new MarshallerException(String.format("Feilet ved unmarshalling. Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 

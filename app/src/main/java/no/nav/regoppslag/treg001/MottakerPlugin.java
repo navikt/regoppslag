@@ -98,8 +98,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
 			}
 			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
-					.getId()));
+			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
 			//Skal elementet berikes?
 			if (mottaker.isBerik()) {
@@ -134,8 +133,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
 				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
 						.inc();
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s. MottakerId=%s", dokumenttypeId, mottaker
-						.getId()));
+				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
 			maalform.setMaalform(mottaker, sprakinfos);
@@ -150,8 +148,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = (Document) node;
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s, MottakerId=%s", dokumenttypeId, mottaker
-					.getId()));
+			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
@@ -166,7 +163,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 
 		if (mottaker.getTypeKode() == null) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler påkrevde parametere.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), UGYLDIG_INPUT);
 		}
 
 		if (StringUtils.isEmpty(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {

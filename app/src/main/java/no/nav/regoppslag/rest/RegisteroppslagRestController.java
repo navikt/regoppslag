@@ -81,7 +81,7 @@ public class RegisteroppslagRestController {
 		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "kompletterBrevdata")
 				.startTimer();
 
-		log.info("TREG001 Har mottatt kall om å komplettere brevdata");
+		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 
 		try {
 			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), RECEIVED)
@@ -89,7 +89,8 @@ public class RegisteroppslagRestController {
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
 			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
 					.inc();
-			log.info("TREG001 Er ferdig med å komplettere brevdata");
+
+			log.info(String.format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 			return response;
 		} catch (Exception e) {
 			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);

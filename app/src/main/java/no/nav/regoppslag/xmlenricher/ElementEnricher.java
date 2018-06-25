@@ -31,7 +31,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,18 +64,29 @@ public class ElementEnricher {
 						int colonIdx = attr.getNodeValue().indexOf(":");
 						if (colonIdx > 0) {
 							String prefix = attr.getNodeValue().substring(0, colonIdx);
-							String attrValNs = xpathResult.lookupNamespaceURI(prefix);
-							//log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
-							if (attrValNs != null) {
-								Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
-								if (existingAttr == null || existingAttr.getValue().isEmpty()) {
-									((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
-								}
-							}
+
+							String attrValNsElement = xpathResult.lookupNamespaceURI(prefix);
+							updateOrAddAttributeNSToElement(attrValNsElement, xpathResult, prefix, attr);
+
+							String attrValNsDokument = xpathResult.lookupNamespaceURI(prefix);
+							updateOrAddAttributeNSToElement(attrValNsDokument, xpathResult, prefix, attr);
 						}
 					}
 				}
 				return xpathResult;
+	}
+
+	private void updateOrAddAttributeNSToElement(String attrValNs, Node xpathResult, String prefix, Node attr){
+		if (attrValNs != null) {
+			Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
+			if (existingAttr == null || existingAttr.getValue().isEmpty()) {
+				log.info("Lagt til xmlns attributt for prefix={} og namespace={}", prefix, attrValNs);
+				((Element) xpathResult).setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, attrValNs);
+			}
+		} else {
+			log.warn("Could not locate namespace for prefix {} on element {} attribute {}", prefix, xpathResult.getLocalName(), attr.getLocalName());
+		}
+
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
@@ -111,9 +121,9 @@ public class ElementEnricher {
 							MDC.put(SUBJECTID, subjectId);
 							MDC.put(CALLID, callId);
 
-					Map<String, Object> valueMap = new HashMap<>();
-							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-					valueMap.put(MAALFORM.name(), new Maalform());
+							Map<String, Object> valueMap = new HashMap<>();
+									valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
+							valueMap.put(MAALFORM.name(), new Maalform());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getOrgNode());

@@ -41,7 +41,6 @@ public class OrganisasjonV4MapperTest {
 
 	@Before
 	public	void initPostnummer() throws Exception {
-		landkodeService.init();
 		postnummerService.init();
 		mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
 	}
