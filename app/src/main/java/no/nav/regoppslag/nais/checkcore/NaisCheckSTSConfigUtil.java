@@ -35,11 +35,6 @@ public class NaisCheckSTSConfigUtil {
 		properties.put(SecurityConstants.PASSWORD, password);
 		stsClient.setProperties(properties);
 
-		LoggingOutInterceptor loggingOutInterceptor=new LoggingOutInterceptor();
-		loggingOutInterceptor.setPrettyLogging(true);
-		loggingOutInterceptor.setLimit(-1);
-		stsClient.getOutInterceptors().add(loggingOutInterceptor);
-		
 		//used for the STS client to authenticate itself to the STS provider.
 		stsClient.setPolicy(STS_CLIENT_AUTHENTICATION_POLICY);
 
