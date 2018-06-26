@@ -4,6 +4,10 @@
 			   xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 			   xmlns:test="test">
+		<test:sakspart>
+			<felles:id>30085849677</felles:id>
+			<felles:typeKode></felles:typeKode>
+		</test:sakspart>
 		<test:mottaker xsi:type="felles:Person">
 			<felles:id>30085849677</felles:id>
 			<felles:typeKode></felles:typeKode>

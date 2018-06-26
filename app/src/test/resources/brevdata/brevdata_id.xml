@@ -10,7 +10,7 @@
 		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
 		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
 		<test:sakspart>
-			<felles:id>30085849677</felles:id>
+			<felles:id></felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
 			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>

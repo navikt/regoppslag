@@ -219,8 +219,7 @@
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
 			<artifactId>brevdata-felles</artifactId>
-			<version>0.0.10</version>
-			<!--<version>${brevdata-felles.version}</version>-->
+			<version>${brevdata-felles.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.neovisionaries</groupId>

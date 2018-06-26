@@ -9,10 +9,10 @@
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
 		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
 		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
-		<test:sakspart>
+		<test:sakspart xsi:type="felles:Person" felles:berik="false">
 			<felles:id>30085849677</felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
-			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
+			<felles:navn>Ikke Berik</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>
 		</test:sakspart>
 		<test:mottaker xsi:type="felles:Person" felles:berik="false">
