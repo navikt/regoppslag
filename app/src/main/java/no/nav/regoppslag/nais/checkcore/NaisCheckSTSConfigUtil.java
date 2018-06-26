@@ -2,6 +2,7 @@ package no.nav.regoppslag.nais.checkcore;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.Bus;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.ws.security.SecurityConstants;
 import org.apache.cxf.ws.security.trust.STSClient;
 
@@ -33,6 +34,11 @@ public class NaisCheckSTSConfigUtil {
 		properties.put(SecurityConstants.USERNAME, username);
 		properties.put(SecurityConstants.PASSWORD, password);
 		stsClient.setProperties(properties);
+
+		LoggingOutInterceptor loggingOutInterceptor=new LoggingOutInterceptor();
+		loggingOutInterceptor.setPrettyLogging(true);
+		loggingOutInterceptor.setLimit(-1);
+		stsClient.getOutInterceptors().add(loggingOutInterceptor);
 		
 		//used for the STS client to authenticate itself to the STS provider.
 		stsClient.setPolicy(STS_CLIENT_AUTHENTICATION_POLICY);
