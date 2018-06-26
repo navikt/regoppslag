@@ -33,7 +33,7 @@ public class NaisCheckSTSTokenRetriever {
 
 	@Cacheable(value = STS_CACHE_NAME, key="#root.methodName")
 	public String requestStsToken() throws Exception {
-		log.info("Henter SAML security token fra STS");
+		log.info("Henter SAML security token fra STS for bruk i NAIS isReady check");
 		return elementToString(stsClient.requestSecurityToken().getToken());
 	}
 
