@@ -1,8 +1,5 @@
 package no.nav.regoppslag.config.security;
 
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
 import org.apache.wss4j.common.ext.WSSecurityException;
@@ -33,22 +30,8 @@ public class SamlTokenUtils {
 				.getAuthentication()
 				.isAuthenticated()) {
 			
-			//TODO: Testkode, fjern senere ved bekreftelse av riktig oppførsel
-			if (SecurityContextHolder.getContext().getAuthentication() != null && !SecurityContextHolder.getContext()
-					.getAuthentication()
-					.isAuthenticated()) {
-				log.error("Sikkerhetstokenet i securityContext er ugyldig fordi den har allerede blitt brukt. " +
-						"Dette er noe som ikke bør skje! (feil i kode?).");
-				requestCounter.labels("SAML_TOKEN_OUT_INTERCEPTOR", "SAML_TOKEN_OUT_INTERCEPTOR", "SAML_NOT_ALLOWED", getConsumerId(), "SAML_AUTHENTICATION_FALSE")
-						.inc();
-				
-			}
-			
 			return null;
 		}
-		
-		//Securitytoken can only be used once. Wont work when retry enabled
-		//SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		
 		String credentials = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		
