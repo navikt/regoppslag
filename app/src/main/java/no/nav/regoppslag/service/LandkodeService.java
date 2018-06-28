@@ -1,22 +1,11 @@
 package no.nav.regoppslag.service;
 
 import com.neovisionaries.i18n.CountryCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Source: https://unstats.un.org/unsd/methodology/m49/
@@ -31,12 +20,19 @@ public class LandkodeService {
 			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon");
 			return null;
 		} else {
-			return CountryCode.getByCode(landkode).getName();
+			String landNavn = CountryCode.getByCode(landkode).getName();
+			if ("Norway".equalsIgnoreCase(landNavn)) {
+				return "Norge";
+			}
+			return landNavn;
 		}
 	}
 
 	public String finnLandkode(String landnavn) {
 
+		if (landnavn.equalsIgnoreCase("Norge")) {
+			landnavn = "Norway";
+		}
 		if (landnavn == null || CountryCode.findByName(landnavn).size() == 0) {
 			return null;
 		}

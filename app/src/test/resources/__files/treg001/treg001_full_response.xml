@@ -13,7 +13,7 @@
 				<ns1:adresselinje1>Bak Gate 10</ns1:adresselinje1>
 				<ns1:postnummer>0350</ns1:postnummer>
 				<ns1:poststed>OSLO</ns1:poststed>
-				<ns1:land>Norway</ns1:land>
+				<ns1:land>Norge</ns1:land>
 			</ns1:mottakeradresse>
 		</mottaker>
 		<test:signerendeSaksbehandler>
