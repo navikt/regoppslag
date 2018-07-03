@@ -45,6 +45,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 	
 	@Value("${app.name}")
 	private String appName;
+
+	@Value("${REDIS_HOST}")
+	private String redisHost;
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
 	
@@ -84,12 +87,12 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	public LettucePool lettucePool() {
 		CustomLettucePool lettucePool = new CustomLettucePool(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode("rfs-" + appName, 26379)));
+				.master(MASTER_NAME).sentinel(new RedisNode(redisHost, 26379)));
 		lettucePool.setClientResources(DefaultClientResources.builder()
 				.reconnectDelay(Delay.constant(200, TimeUnit.MILLISECONDS))
 				.build());
 		lettucePool.setPoolConfig(poolConfig());
-		lettucePool.setTimeout(300);
+		lettucePool.setTimeout(400);
 		lettucePool.afterPropertiesSet();
 		return lettucePool;
 	}
