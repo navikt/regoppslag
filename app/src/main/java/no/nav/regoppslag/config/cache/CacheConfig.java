@@ -42,11 +42,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public static final Long DEFAULT_CACHE_EXPIRATION_SECONDS = TimeUnit.DAYS.toSeconds(2);
 	public static final Long HENT_PERSON_CACHE_EXPIRATION_SECONDS = 10L;
 	public static final Long STS_CACHE_EXPIRATION_SECONDS = TimeUnit.MINUTES.toSeconds(50);
-	
-	@Value("${app.name}")
-	private String appName;
 
-	@Value("${REDIS_HOST}")
+	@Value("${REDIS_HOST:rfs-regoppslag}")
 	private String redisHost;
 	
 	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
