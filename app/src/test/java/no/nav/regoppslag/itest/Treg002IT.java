@@ -45,7 +45,19 @@ public class Treg002IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
 	}
-	
+
+	@Test
+	public void shouldGetMottakerAndAdresseForPersonWhenLandIsNull(){
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentperson-happypath-null-land-responsebody.xml")));
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		assertEquals(response.getIdentifikator(),"0102030405");
+		assertEquals(response.getNavn(),"Geir Appleson");
+		assertEquals(response.getAdresse().getLandkode(),"???");
+
+	}
+
 	@Test
 	public void shouldGetMottakerAndAdresseForPerson() throws Exception{
 		

@@ -30,10 +30,15 @@ public class LandkodeService {
 
 	public String finnLandkode(String landnavn) {
 
+		if (landnavn == null){
+			return null;
+		}
+
 		if (landnavn.equalsIgnoreCase("Norge")) {
 			landnavn = "Norway";
 		}
-		if (landnavn == null || CountryCode.findByName(landnavn).size() == 0) {
+
+		if (CountryCode.findByName(landnavn).size() == 0) {
 			return null;
 		}
 

@@ -88,8 +88,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
 			}
 			Sakspart sakspart = unmarshal(content);
-			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
-					.getId()));
+			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartType=%s", dokumenttypeId, sakspart
+					.getTypeKode()));
 
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
@@ -100,8 +100,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 							.inc();
 					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getConsumerId(), getUserId(), SERVICE_CODE_TREG001);
 					if (person == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. SakspartId=%s", PLUGIN_NAME, sakspart
-								.getId()), "SakspartPlugin - " + PERSON_IKKE_FUNNET);
+						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. SakspartType=%s", PLUGIN_NAME, sakspart
+								.getTypeKode()), "SakspartPlugin - " + PERSON_IKKE_FUNNET);
 					}
 
 					personV3Mapper.map(person, sakspart);
@@ -111,8 +111,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
 					if (organisasjon == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne organisasjon. SakspartId=%s", PLUGIN_NAME, sakspart
-								.getId()), "SakspartPlugin - " + ORGV4_ORG_IKKE_FUNNET);
+						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne organisasjon. SakspartType=%s", PLUGIN_NAME, sakspart
+								.getTypeKode()), "SakspartPlugin - " + ORGV4_ORG_IKKE_FUNNET);
 					}
 					organisasjonV4Mapper.map(organisasjon, sakspart);
 				}
