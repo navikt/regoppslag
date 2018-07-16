@@ -100,9 +100,9 @@ public class PersonV3Mapper {
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 
 			if ("Norge".equals(norskPostadresse.getLand())) {
-				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT.UTLAND").inc();
-			} else {
 				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT.NORGE").inc();
+			} else {
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT.UTLAND").inc();
 			}
 
 		} else {
