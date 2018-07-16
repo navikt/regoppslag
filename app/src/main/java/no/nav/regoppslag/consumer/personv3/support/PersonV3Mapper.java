@@ -138,9 +138,29 @@ public class PersonV3Mapper {
 			norskPostadresse.setPostnummer(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4());
 			norskPostadresse.setPoststed(postnummerService.finnPoststed(person.getPostadresse().getUstrukturertAdresse().getAdresselinje4()));
 		}
+
+		String addresselinje4=person.getPostadresse().getUstrukturertAdresse().getAdresselinje4();
+		if (isStartOfAdresselinjePostnummer(addresselinje4)) {
+			String postnummer = addresselinje4.substring(0,4);
+			norskPostadresse.setPostnummer(postnummer);
+			norskPostadresse.setPoststed(postnummerService.finnPoststed(postnummer));
+		}
+
+		String addresselinje3=person.getPostadresse().getUstrukturertAdresse().getAdresselinje3();
+		if (isStartOfAdresselinjePostnummer(addresselinje3)) {
+			String postnummer = addresselinje3.substring(0,4);
+			norskPostadresse.setPostnummer(postnummer);
+			norskPostadresse.setPoststed(postnummerService.finnPoststed(postnummer));
+			norskPostadresse.setAdresselinje3(null);
+		}
+
 		if (person.getPostadresse().getUstrukturertAdresse().getLandkode() != null) {
 			norskPostadresse.setLand(landkodeService.finnLandnavn(person.getPostadresse().getUstrukturertAdresse().getLandkode().getValue()));
 		}
+	}
+
+	private boolean isStartOfAdresselinjePostnummer(String adresselinje) {
+		return adresselinje != null && StringUtils.isNumeric(adresselinje.substring(0,4)) && !(StringUtils.isNumeric(adresselinje.substring(4,adresselinje.length())));
 	}
 
 	private void mapMidlertidigUtland(Bruker person, NorskPostadresse norskPostadresse) {
