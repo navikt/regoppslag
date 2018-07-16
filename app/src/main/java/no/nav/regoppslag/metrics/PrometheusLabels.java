@@ -25,7 +25,7 @@ public class PrometheusLabels {
 	public static final String LABEL_PROCESS_NAME = "process_name";
 	public static final String LABEL_CONSUMER_ID = "consumer_id";
 	public static final String LABEL_EVENT = "event";
-	
+
 	/**
 	 * Metric tags
 	 **/
@@ -46,6 +46,7 @@ public class PrometheusLabels {
 	public static final String PLUGIN = "plugin";
 	public static final String GENERELT = "generelt";
 	public static final String ADRESSETYPE = "adresse_type";
+	public static final String POSTNUMMER = "postnummer";
 	public static final String LAND = "land";
 	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
