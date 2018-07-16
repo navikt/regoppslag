@@ -105,7 +105,7 @@ public class PersonV3Mapper {
 				requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").inc();
 			}
 		} else {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), "OK").inc();
+			requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTNUMMER, getConsumerId(), "OK").inc();
 		}
 
 		requestCounter.labels(serviceCode, PERSONV3_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
