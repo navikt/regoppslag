@@ -138,6 +138,55 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
+	public void mapPersonPostadresseWhereAdresseLinje4HasPostnummer() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
+
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("AAAA 0001");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
+	}
+
+	@Test
+	public void mapPersonPostadresseWhereAdresseLinje3HasPostnummer() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
+
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("AAAA 0001");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
+	}
+
+	@Test
+	public void shouldNotMapPersonPostadressePostnummerWhenLandIsNotNorway() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
+		person.getPostadresse().getUstrukturertAdresse().getLandkode().setValue("SWE");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("AAAA 0001");
+		mapper.map(person, mottaker, "");
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+	}
+
+	@Test
 	public void mapPersonPostadresseMedMidlertidigAdresseUtland() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -151,6 +200,24 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
+	}
+
+	@Test
+	public void mapPersonPostadresseMedMidlertidigAdresseUtlandPostnummerInAdresseLinje4() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresseMedMidlertidigAresseUtland(person);
+		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
+		midlertidigPostadresseUtland.getUstrukturertAdresse().setAdresselinje4("0001 ADDDD");
+		mapper.map(person, mottaker, "");
+		assertThat(mottaker.getId(), is(FNR));
+		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
+		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
 	}
 
