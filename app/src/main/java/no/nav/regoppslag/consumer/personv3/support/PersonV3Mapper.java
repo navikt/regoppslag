@@ -167,12 +167,6 @@ public class PersonV3Mapper {
 			norskPostadresse.setPoststed(postnummerService.finnPoststed(postnummer));
 		}
 
-		postnummer = getPostnummerFromAdresselinje(person.getPostadresse().getUstrukturertAdresse().getAdresselinje3());
-		if (postnummer != null && LAND_NORGE.equals(norskPostadresse.getLand())) {
-			norskPostadresse.setPostnummer(postnummer);
-			norskPostadresse.setPoststed(postnummerService.finnPoststed(postnummer));
-			norskPostadresse.setAdresselinje3(null);
-		}
 	}
 
 	private String getPostnummerFromAdresselinje(String adresselinje) {
