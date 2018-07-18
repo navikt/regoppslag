@@ -154,22 +154,6 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseWhereAdresseLinje3HasPostnummer() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
-		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresse(person);
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
-		mapper.map(person, mottaker, "");
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
-
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("AAAA 0001");
-		mapper.map(person, mottaker, "");
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
-	}
-
-	@Test
 	public void shouldNotMapPersonPostadressePostnummerWhenLandIsNotNorway() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
