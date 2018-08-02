@@ -17,7 +17,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.support.Maalform;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
-import no.nav.regoppslag.xmlenricher.util.NamespaceResolver;
+import no.nav.regoppslag.xmlenricher.util.AttributeValueNamespaceResolver;
 import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
@@ -26,9 +26,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import java.time.Duration;
-import java.time.Instant;
+import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,10 +44,19 @@ import java.util.Set;
 public class ElementEnricher {
 
 	private ElementEnricherPluginRegistry registry;
-	private NamespaceResolver namespaceResolver = new NamespaceResolver();
+	private AttributeValueNamespaceResolver attributeValueNamespaceResolver = new AttributeValueNamespaceResolver();
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
+	}
+
+	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException{
+
+		XPath xPath = XPathFactory.newInstance().newXPath();
+
+		XPathExpression xPathExpression = xPath.compile(xpathExpression);
+		Node xpathResult = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+		return xpathResult;
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
@@ -58,7 +69,8 @@ public class ElementEnricher {
 		List<Payload> processingList = new ArrayList<>();
 		Set<String> supportedElementsXpathExpressions = registry.getSupportedElements();
 		for (String xpathExpression : supportedElementsXpathExpressions) {
-			Node node = namespaceResolver.resolveNamespace(xpathExpression, document);
+			Node node = findSingleNode(xpathExpression, document);
+			attributeValueNamespaceResolver.resolveNamespace(document, node);
 			if (node != null) {
 				Node clonedNode=node.cloneNode(true);
 				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));

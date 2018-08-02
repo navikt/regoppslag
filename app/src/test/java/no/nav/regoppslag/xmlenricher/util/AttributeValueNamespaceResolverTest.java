@@ -18,9 +18,9 @@ import javax.xml.xpath.XPathFactory;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class NamespaceResolverTest {
+public class AttributeValueNamespaceResolverTest {
 
-	NamespaceResolver resolver = new NamespaceResolver();
+	AttributeValueNamespaceResolver resolver = new AttributeValueNamespaceResolver();
 
 	String MOTTAKER_XPATH_EXPRESSION = "/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']";
 
@@ -30,11 +30,11 @@ public class NamespaceResolverTest {
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(MOTTAKER_XPATH_EXPRESSION);
-		Node xpathResult = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
-		assertThat(xpathResult.getAttributes().getNamedItem("xmlns:nav"), nullValue());
-		assertThat(xpathResult.getAttributes().getNamedItem("xsi:type").getNodeValue(), is("nav:Person"));
+		Node node = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+		assertThat(node.getAttributes().getNamedItem("xmlns:nav"), nullValue());
+		assertThat(node.getAttributes().getNamedItem("xsi:type").getNodeValue(), is("nav:Person"));
 
-		Node node = resolver.resolveNamespace(MOTTAKER_XPATH_EXPRESSION, document);
+		resolver.resolveNamespace(document, node);
 
 		assertThat(node.getAttributes().getNamedItem("xmlns:nav").getNodeValue(), is("http://nav.no/dok/brevdata/felles/v1/NAVFelles"));
 		assertThat(node.getAttributes().getNamedItem("xsi:type").getNodeValue(), is("nav:Person"));
@@ -47,11 +47,11 @@ public class NamespaceResolverTest {
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(MOTTAKER_XPATH_EXPRESSION);
-		Node xpathResult = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
-		assertThat(xpathResult.getAttributes().getNamedItem("xmlns:nav"), nullValue());
-		assertThat(xpathResult.getAttributes().getNamedItem("something_else:type").getNodeValue(), is("nav:Person"));
+		Node node = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+		assertThat(node.getAttributes().getNamedItem("xmlns:nav"), nullValue());
+		assertThat(node.getAttributes().getNamedItem("something_else:type").getNodeValue(), is("nav:Person"));
 
-		Node node = resolver.resolveNamespace(MOTTAKER_XPATH_EXPRESSION, document);
+		resolver.resolveNamespace(document, node);
 
 		assertThat(node.getAttributes().getNamedItem("xmlns:nav").getNodeValue(), is("http://nav.no/dok/brevdata/felles/v1/NAVFelles"));
 		assertThat(node.getAttributes().getNamedItem("something_else:type").getNodeValue(), is("nav:Person"));
