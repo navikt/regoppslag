@@ -38,7 +38,7 @@ public class NamespaceResolver {
 						String attrValNsElement = xpathResult.lookupNamespaceURI(prefix);
 
 						if (attrValNsElement == null ){
-							log.info("Fant ikke namespace på element med prefix={}. Prøver å søke globalt i dokumentet", prefix);
+							log.debug("Fant ikke namespace på element med prefix={}. Prøver å søke globalt i dokumentet", prefix);
 							attrValNsElement = xmlDocument.lookupNamespaceURI(prefix);
 						}
 						updateOrAddAttributeNSToElement(attrValNsElement, xpathResult, prefix, attr);

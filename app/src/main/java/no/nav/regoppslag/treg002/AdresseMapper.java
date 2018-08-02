@@ -57,7 +57,7 @@ public class AdresseMapper {
 		String landkode = landkodeService.finnLandkode(land);
 		if (landkode == null) {
 			requestCounter.labels(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, "LANDKODE", getConsumerId(), "UKJENT").inc();
-			log.info(String.format("TREG002 Mottaker har ingen lankode registert. Setter landkode til \"%s\"", UNKNOWN_LANDKODE));
+			log.info(String.format("TREG002 Mottaker har ingen landkode registert. Setter landkode til \"%s\"", UNKNOWN_LANDKODE));
 			return UNKNOWN_LANDKODE;
 		}
 		return landkode;

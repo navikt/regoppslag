@@ -6,6 +6,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
@@ -120,7 +121,7 @@ public class PersonV3Mapper {
 
 	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagFunctionalException {
 
-		if (norskPostadresse.getLand()==null && (norskPostadresse.getAdresselinje1()==null || norskPostadresse.getAdresselinje1().trim().isEmpty()) && norskPostadresse.getPostnummer()==null && norskPostadresse.getPoststed()==null) {
+		if (isBlank(norskPostadresse.getLand()) && isBlank(norskPostadresse.getAdresselinje1()) && isBlank(norskPostadresse.getPostnummer()) && isBlank(norskPostadresse.getPoststed())) {
 			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()));
 		}
 
