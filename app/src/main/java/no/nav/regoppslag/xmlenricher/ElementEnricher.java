@@ -55,8 +55,7 @@ public class ElementEnricher {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 
 		XPathExpression xPathExpression = xPath.compile(xpathExpression);
-		Node xpathResult = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
-		return xpathResult;
+		return (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
 	}
 
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {

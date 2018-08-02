@@ -8,21 +8,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 /**
+ *  //TODO: VIKTIG! Legg inn doc her om hva denne klassen gjør
+ *
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
 public class AttributeValueNamespaceResolver {
 	private static final String NODE_NAME_TYPE="type";
 
-	public void resolveNamespace(Document xmlDocument, Node xpathResult) throws XPathExpressionException {
-
+	public void resolveNamespace(Document xmlDocument, Node xpathResult){
 
 		// Case of qualified attribute values, we're forced to add corresponding namespace declaration manually
 		if (xpathResult != null && xpathResult.hasAttributes()) {
