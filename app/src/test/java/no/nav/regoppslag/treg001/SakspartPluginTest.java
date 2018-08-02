@@ -93,7 +93,7 @@ public class SakspartPluginTest {
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
 		SecurityContextHolder.setContext(securityContext);
 		
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}
@@ -158,7 +158,7 @@ public class SakspartPluginTest {
 	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Feil i SakspartPlugin:  Kunne ikke finne person. ");
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(null);
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 

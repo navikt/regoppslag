@@ -1,5 +1,10 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -8,6 +13,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
@@ -69,6 +75,11 @@ public class PersonV3MapperTest {
 	public void simpleMapping() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "");
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -262,6 +273,72 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
 	}
 
+
+	@Test
+	public void shouldThrowIfMissingAdresse() throws Exception {
+		thrown.expect(RegOppslagFunctionalException.class);
+		thrown.expectMessage("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed");
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+
+		mapper.map(person, mottaker, "");
+
+	}
+
+	@Test
+	public void shouldNotThrowIfMissingNotMissingAdresseLinje1ButMissingOtherAdresseAttributes() throws Exception {
+
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
+		mapper.map(person, mottaker, "");
+		NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
+		assertThat(norskPostadresse.getAdresselinje1(), is(NORSK_ADRESSELINJE1));
+	}
+
+	/**
+	 * Remove this later
+	 */
+	@Test
+	public void testFunctionalMetrics() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
+
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
+		mapper.map(person, mottaker, "T");
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").get(), is(1.0));
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
+
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("NOR"));
+		mapper.map(person, mottaker, "T");
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.NORGE").get(), is(1.0));
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
+
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("SE"));
+		mapper.map(person, mottaker, "T");
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").get(), is(1.0));
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
+	}
+
+
+	@Test
+	public void shouldNotThrowIfMissingLandkode() throws Exception {
+
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
+		mapper.map(person, mottaker, "");
+	}
+
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
 		Personnavn personnavn = new Personnavn();
 		personnavn.setFornavn(fornavn);
@@ -304,6 +381,12 @@ public class PersonV3MapperTest {
 		bostedsadresse.setStrukturertAdresse(gateadresse);
 
 		person.setBostedsadresse(bostedsadresse);
+	}
+
+	private Landkoder createLandkode(String landkode) {
+		Landkoder landkoder = new Landkoder();
+		landkoder.setValue(landkode);
+		return landkoder;
 	}
 
 	private void settBostedadresseMedMatrikkeladresse(Bruker person) {

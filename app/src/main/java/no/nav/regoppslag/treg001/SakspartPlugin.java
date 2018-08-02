@@ -98,7 +98,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
-					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getConsumerId(), getUserId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getUserId(), SERVICE_CODE_TREG001);
 					if (person == null) {
 						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. SakspartId=%s", PLUGIN_NAME, sakspart
 								.getId()), "SakspartPlugin - " + PERSON_IKKE_FUNNET);

@@ -107,7 +107,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getConsumerId(), getUserId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getUserId(), SERVICE_CODE_TREG001);
 					if (person == null) {
 						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. MottakerId=%s", PLUGIN_NAME, mottaker
 								.getId()), PLUGIN_NAME + " - " + PERSON_IKKE_FUNNET);

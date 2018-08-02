@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:brevdata xmlns:ns="http://nav.no/dok/urbrev/000093" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nav="http://nav.no/dok/brevdata/felles/v1/NAVFelles" xmlns:urfelles="http://nav.no/dok/urbrev/felles/ur_felles">
+	<ns:NAVFelles>
+		<urfelles:sakspart>
+			<nav:id>01073945646</nav:id>
+			<nav:typeKode>PERSON</nav:typeKode>
+		</urfelles:sakspart>
+		<urfelles:mottaker xsi:type="nav:Person">
+			<nav:id>01073945646</nav:id>
+			<nav:typeKode>PERSON</nav:typeKode>
+		</urfelles:mottaker>
+		<urfelles:behandlendeEnhet>
+			<nav:enhetsId>0136</nav:enhetsId>
+		</urfelles:behandlendeEnhet>
+	</ns:NAVFelles>
+	<ns:fag>
+		<ns:utbetalingsMelding>
+			<ns:fDato>2018-06-08</ns:fDato>
+			<ns:belopUtbetalt>1000</ns:belopUtbetalt>
+			<ns:datoUtbetalt>2018-06-08</ns:datoUtbetalt>
+			<ns:tekstFelt>TestTekstFelt</ns:tekstFelt>
+			<ns:fastTekst>TestFastTekst</ns:fastTekst>
+			<ns:oppgaveType>PENSJONSUTBETALINGSMELDING</ns:oppgaveType>
+			<ns:kontonr>1231231231231</ns:kontonr>
+			<ns:utbetalingsMnd>Januar</ns:utbetalingsMnd>
+			<ns:navRefId>123</ns:navRefId>
+			<ns:kontering>
+				<ns:kontoTekst>TestKontoTekst</ns:kontoTekst>
+				<ns:belop>100</ns:belop>
+				<ns:periode>
+					<ns:periodeFom>2018-06-01</ns:periodeFom>
+					<ns:periodeTom>2018-06-08</ns:periodeTom>
+				</ns:periode>
+			</ns:kontering>
+		</ns:utbetalingsMelding>
+	</ns:fag>
+</ns:brevdata>

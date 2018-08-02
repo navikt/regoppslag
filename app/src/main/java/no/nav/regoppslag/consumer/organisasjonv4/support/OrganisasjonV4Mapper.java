@@ -3,6 +3,8 @@ package no.nav.regoppslag.consumer.organisasjonv4.support;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
@@ -44,7 +46,9 @@ public class OrganisasjonV4Mapper {
 	
 	@Inject
 	private final PostnummerService postnummerService;
-	
+
+	private static final String LAND_NORGE = "Norge";
+
 	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
@@ -77,17 +81,23 @@ public class OrganisasjonV4Mapper {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (!CollectionUtils.isEmpty(orgDet.getPostadresse())) {
 			mapPostadresse(orgDet, norskPostadresse);
-			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "POSTADRESSE").inc();
 		} else if (!CollectionUtils.isEmpty(orgDet.getForretningsadresse())) {
 			mapForretningsAdresse(orgDet, norskPostadresse);
-			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "FORRETNINGSADRESSE").inc();
 		}
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
-			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, ADRESSETYPE, getConsumerId(), "UKJENT").inc();
-			log.info(String.format("%s Mottaker med type=ORGANISASJON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\"", serviceCode));
+			log.info(String.format("%s Mottaker med type=ORGANISASJON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\". land=%s, poststed=%s", serviceCode, norskPostadresse
+					.getLand(), norskPostadresse.getPoststed()));
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
+
+			if (norskPostadresse.getLand()==null){
+				requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").inc();
+			} else if (LAND_NORGE.equals(norskPostadresse.getLand())) {
+				requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.NORGE").inc();
+			} else {
+				requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").inc();
+			}
 		}
 
 
@@ -145,6 +155,7 @@ public class OrganisasjonV4Mapper {
 				}
 			}
 		}
+
 		GeografiskAdresse geografiskAdresse = orgDet.getForretningsadresse().get(0);
 		if (geografiskAdresse.getLandkode() != null) {
 			norskPostadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
@@ -167,12 +178,6 @@ public class OrganisasjonV4Mapper {
 			}
 		}
 	}
-	
-	private void validatePostadresse(NorskPostadresse postadresse, Mottaker mottaker) throws RegOppslagFunctionalException {
-		if (CountryCode.NO.getName()
-				.equalsIgnoreCase(postadresse.getLand()) && StringUtils.isEmpty(postadresse.getPostnummer())) {
-			throw new RegOppslagFunctionalException("Mottaker orgoppslag - mangler postnummer for organisasjon: " + mottaker.getId(), "Mangler postnummer for organisasjon");
-		}
-	}
+
 	
 }

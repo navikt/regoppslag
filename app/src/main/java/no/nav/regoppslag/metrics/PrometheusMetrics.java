@@ -60,7 +60,8 @@ public class PrometheusMetrics {
 			.register();
 	
 	public static String getConsumerId() {
-		return MDC.get(CONSUMER_ID) == null ? UKJENT : MDC.get(CONSUMER_ID);
+		//Should be removed
+		return CONSUMER_ID;
 	}
 	
 	public static String getUserId() {

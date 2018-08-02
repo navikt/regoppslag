@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -70,7 +71,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL,  "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
@@ -79,7 +80,7 @@ public class PersonV3ConsumerTest {
 	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
@@ -90,7 +91,7 @@ public class PersonV3ConsumerTest {
 		response.setPerson(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
 
 		assertThat(person, nullValue());
 	}
@@ -101,7 +102,7 @@ public class PersonV3ConsumerTest {
 		response.getPerson().setPersonnavn(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
 		
-		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
+		Bruker person = personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
 
 		assertThat(person.getPersonnavn(), nullValue());
 	}
@@ -111,8 +112,8 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
 		
 		try {
-			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
-			assertFalse("Should throw exception", true);
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+			fail("Should throw exception");
 		} catch (RegOppslagFunctionalException e) {
 			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson fant ikke person med ident=" + FNR + ", message=Fant ikke person")));
 			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
@@ -124,8 +125,8 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
 		
 		try {
-			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
-			assertFalse("Should throw exception", true);
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+			fail("Should throw exception");
 		} catch (RegOppslagSecurityException e) {
 			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen adgang")));
 			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
@@ -137,8 +138,8 @@ public class PersonV3ConsumerTest {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new RuntimeException());
 		
 		try {
-			personV3Consumer.hentPerson(FNR, PRINCIPAL, "", "");
-			assertFalse("Should throw exception", true);
+			personV3Consumer.hentPerson(FNR, PRINCIPAL, "");
+			fail("Should throw exception");
 		} catch (RegOppslagTechnicalException e) {
 			verify(personV3, times(5)).hentPerson(any(HentPersonRequest.class));
 		}
