@@ -1,11 +1,12 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.POSTNUMMER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
@@ -93,26 +94,39 @@ public class PersonV3Mapper {
 			}
 		}
 
+		validateAdresse(norskPostadresse, person);
+
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
-			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\". Land=%s", serviceCode, norskPostadresse
-					.getLand()));
+			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\". land=%s, poststed=%s, gjeldendePostadresse=%s", serviceCode, norskPostadresse
+					.getLand(), norskPostadresse.getPoststed(), person.getGjeldendePostadressetype()));
 			norskPostadresse.setPostnummer("0000");
 			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
 
-			if ("Norge".equals(norskPostadresse.getLand())) {
-				requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTNUMMER, getConsumerId(), "UKJENT.NORGE").inc();
+			if (norskPostadresse.getLand()==null){
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").inc();
+			} else if (LAND_NORGE.equals(norskPostadresse.getLand())) {
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.NORGE").inc();
 			} else {
-				requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").inc();
+				requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").inc();
 			}
-		} else {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, POSTNUMMER, getConsumerId(), "OK").inc();
 		}
 
-		requestCounter.labels(serviceCode, PERSONV3_MAPPER, LAND, getConsumerId(), norskPostadresse.getLand() == null ? "Ukjent" : norskPostadresse
-				.getLand()).inc();
+		if (norskPostadresse.getLand()==null) {
+			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).inc();
+		}
+		requestCounter.labels(serviceCode, PERSONV3_MAPPER, PERSONV3_MAPPER, getConsumerId(), PERSONV3_MAPPER).inc();
 
 		mottaker.setMottakeradresse(norskPostadresse);
 	}
+
+	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagFunctionalException {
+
+		if (isBlank(norskPostadresse.getLand()) && isBlank(norskPostadresse.getAdresselinje1()) && isBlank(norskPostadresse.getPostnummer()) && isBlank(norskPostadresse.getPoststed())) {
+			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()));
+		}
+
+	}
+
 
 	private void mapBostedadresse(Bruker person, NorskPostadresse norskPostadresse) {
 		if (person.getBostedsadresse().getStrukturertAdresse() instanceof Gateadresse) {

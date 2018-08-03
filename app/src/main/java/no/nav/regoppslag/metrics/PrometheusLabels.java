@@ -47,7 +47,9 @@ public class PrometheusLabels {
 	public static final String GENERELT = "generelt";
 	public static final String ADRESSETYPE = "adresse_type";
 	public static final String POSTNUMMER = "postnummer";
+	public static final String UKJENT_POSTNUMMER = "ukjent_postnummer";
 	public static final String LAND = "land";
+	public static final String UKJENT_LAND = "ukjent_land";
 	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";

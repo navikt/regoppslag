@@ -4,8 +4,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.DOKKAT;
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_KONTAKTINFORMASJON_FOR_ENHET;
@@ -25,6 +28,7 @@ import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.io.Resources;
@@ -133,7 +137,7 @@ public class Treg001IT extends AbstractIT {
 		
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
-			assertFalse(Boolean.TRUE);
+			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJONV4, HENT_ORGANISASJON)
 					.get().buckets[14]).intValue(), is(Matchers.equalTo(1)));
@@ -141,14 +145,29 @@ public class Treg001IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
 		}
 	}
-	
+
+	@Test
+	public void shouldThrowIfPersonIsMissingAdresse() throws Exception {
+
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-mangler_adresse.xml"))); //mottakerPlugin
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+			fail("Should throw functional Exception");
+		}catch (HttpStatusCodeException e) {
+			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed"));
+		}
+	}
 	
 	@Test
 	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
 		
 		try {
 			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
-			assertFalse("Test did not throw exception", Boolean.TRUE);
+			fail("Test did not throw exception");
 		} catch (HttpClientErrorException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
@@ -165,7 +184,7 @@ public class Treg001IT extends AbstractIT {
 		
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
-			assertFalse("Test did not throw exception", Boolean.TRUE);
+			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));

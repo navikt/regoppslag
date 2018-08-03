@@ -29,7 +29,11 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetal
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,7 +98,7 @@ public class MottakerPluginTest {
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
 		SecurityContextHolder.setContext(securityContext);
 		
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
@@ -161,7 +165,7 @@ public class MottakerPluginTest {
 	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);
 		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne person. ");
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class), any(String.class))).thenReturn(null);
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -236,8 +240,24 @@ public class MottakerPluginTest {
 		personnavn.setEtternavn(etternavn);
 		Bruker person = new Bruker();
 		person.setPersonnavn(personnavn);
+		settPostadresse(person);
 		return person;
 	}
+	private void settPostadresse(Bruker person) {
+		Postadressetyper postadressetyper = new Postadressetyper();
+		postadressetyper.setKodeverksRef("POSTADRESSE");
+		postadressetyper.setValue("POSTADRESSE");
+		person.setGjeldendePostadressetype(postadressetyper);
+
+		UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
+		ustrukturertAdresse.setAdresselinje1("test");
+
+		Postadresse postadresse = new Postadresse();
+		postadresse.setUstrukturertAdresse(ustrukturertAdresse);
+
+		person.setPostadresse(postadresse);
+	}
+
 	
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
 		Organisasjon organisasjon = new Organisasjon();
