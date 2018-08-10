@@ -43,7 +43,7 @@ public class PersonV3MapperTest {
 	private static final int HUSNR = 13;
 	private static final String HUSBOKSTAV = "X";
 	private static final String EIENDOMSNAVN = "Min eiendom";
-	private static final String POSTBOKS = "Postboks 123";
+	private static final String POSTBOKS = "123";
 	private static final String NORSK_ADRESSELINJE1 = "Norsk adresse 1";
 	private static final String NORSK_ADRESSELINJE2 = "Norsk adresse 2";
 	private static final String NORSK_ADRESSELINJE3 = "Norsk adresse 3";
@@ -125,7 +125,7 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is("Postboks " + POSTBOKS));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
@@ -255,7 +255,7 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(POSTBOKS));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is("Postboks " + POSTBOKS));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));

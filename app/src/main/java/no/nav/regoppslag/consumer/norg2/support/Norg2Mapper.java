@@ -40,7 +40,7 @@ public class Norg2Mapper {
 						postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
 					} else {
 						PostboksadresseNorsk postboksadresseNorsk = (PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
-						postadresse.setAdresselinje1(Optional.ofNullable(postboksadresseNorsk.getPostboksnummer()).orElse("") + " " + Optional.ofNullable(postboksadresseNorsk.getPostboksanlegg()).orElse(""));
+						postadresse.setAdresselinje1(Optional.ofNullable("Postboks " + postboksadresseNorsk.getPostboksnummer()).orElse("") + " " + Optional.ofNullable(postboksadresseNorsk.getPostboksanlegg()).orElse(""));
 						postadresse.setPostnummer(postboksadresseNorsk.getPoststed().getValue());
 						postadresse.setPoststed(postnummerService.finnPoststed(postboksadresseNorsk.getPoststed().getValue()));
 					}

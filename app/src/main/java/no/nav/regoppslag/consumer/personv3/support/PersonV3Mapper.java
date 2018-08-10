@@ -139,7 +139,7 @@ public class PersonV3Mapper {
 			norskPostadresse.setAdresselinje1(matrikkeladresse.getEiendomsnavn());
 		} else if (person.getBostedsadresse().getStrukturertAdresse() instanceof Postboksadresse) {
 			Postboksadresse postboksadresse = (Postboksadresse) person.getBostedsadresse().getStrukturertAdresse();
-			norskPostadresse.setAdresselinje1(postboksadresse.getPostboksnummer());
+			norskPostadresse.setAdresselinje1("Postboks " + postboksadresse.getPostboksnummer());
 		}
 		if (person.getBostedsadresse().getStrukturertAdresse() instanceof StedsadresseNorge) {
 			StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) person.getBostedsadresse().getStrukturertAdresse();
@@ -229,7 +229,7 @@ public class PersonV3Mapper {
 		} else if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Postboksadresse) {
 			Postboksadresse postboksadresse = (Postboksadresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse())
 					.getStrukturertAdresse();
-			norskPostadresse.setAdresselinje1(postboksadresse.getPostboksnummer());
+			norskPostadresse.setAdresselinje1("Postboks " + postboksadresse.getPostboksnummer());
 		}
 		if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof StedsadresseNorge) {
 			StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse())

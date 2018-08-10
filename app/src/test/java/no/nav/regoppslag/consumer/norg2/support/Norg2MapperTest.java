@@ -27,7 +27,7 @@ public class Norg2MapperTest {
 	private static final String POSTNR = "5460";
 	private static final String POSTSTED = "HUSNES";
 	private static final String POSTBOKSANLEGG = "Postboksanlegg";
-	private static final String POSTBOKSNUMMER = "Boksnummer 1";
+	private static final String POSTBOKSNUMMER = "1";
 
 	@Before
 	public	void initPostnummer() throws Exception {
@@ -63,7 +63,7 @@ public class Norg2MapperTest {
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
-		assertThat(postadresse.getAdresse().getAdresselinje1(), is(POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("Postboks " + POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
 		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
 		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
