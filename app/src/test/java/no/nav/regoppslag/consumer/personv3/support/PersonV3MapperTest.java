@@ -31,6 +31,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -289,18 +290,6 @@ public class PersonV3MapperTest {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
 		((PostboksadresseNorsk)((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
-		mapper.map(person, mottaker, "");
-	}
-
-	@Test
-	public void shouldNotThrowIfNotMissingPostnrButMissingLandAndAdresseLinje1() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
-		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresse(person);
-
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
-		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "");
 	}
 
