@@ -15,6 +15,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
@@ -61,7 +62,7 @@ public class PersonV3Mapper {
 		}
 	}
 
-	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
+	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		if (person.getMaalform() != null) {
 			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
 				mottaker.setSpraakkode(Spraakkode.NB);
@@ -77,6 +78,11 @@ public class PersonV3Mapper {
 					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
 		}
 
+		/*
+		 @TODO noen grunn til at man alltid mapper om til NorskPostadresse?
+		 Modellen har støtte for utenlandsk adresse også,
+		 og da slipper man å populere postnr/poststed med fake verdier og valideringen av brevdata blir mer presis.
+		  */
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype()
@@ -93,8 +99,6 @@ public class PersonV3Mapper {
 				mapMidlertidigNorge(person, norskPostadresse);
 			}
 		}
-
-		validateAdresse(norskPostadresse, person);
 
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\". land=%s, poststed=%s, gjeldendePostadresse=%s", serviceCode, norskPostadresse
@@ -116,15 +120,20 @@ public class PersonV3Mapper {
 		}
 		requestCounter.labels(serviceCode, PERSONV3_MAPPER, PERSONV3_MAPPER, getConsumerId(), PERSONV3_MAPPER).inc();
 
+		validateAdresse(norskPostadresse, person);
+
 		mottaker.setMottakeradresse(norskPostadresse);
 	}
 
-	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagFunctionalException {
+	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagTechnicalException {
 
-		if (isBlank(norskPostadresse.getLand()) && isBlank(norskPostadresse.getAdresselinje1()) && isBlank(norskPostadresse.getPostnummer()) && isBlank(norskPostadresse.getPoststed())) {
-			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()));
+		if (isNorskOgTomPostnummer(norskPostadresse)) {
+			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Norsk adresse mangler Postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()));
 		}
+	}
 
+	private boolean isNorskOgTomPostnummer(NorskPostadresse norskPostadresse) {
+		return LAND_NORGE.equals(norskPostadresse.getLand()) && "0000".equals(norskPostadresse.getPostnummer());
 	}
 
 

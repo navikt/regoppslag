@@ -154,7 +154,7 @@ public class Treg001IT extends AbstractIT {
 						.withBodyFile("treg001/personV3/hentperson-mangler_adresse.xml"))); //mottakerPlugin
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
-			fail("Should throw functional Exception");
+			fail("Should throw techical Exception");
 		}catch (HttpStatusCodeException e) {
 			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);

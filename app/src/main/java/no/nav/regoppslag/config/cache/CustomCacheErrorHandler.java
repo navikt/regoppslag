@@ -33,6 +33,8 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
+		log.warn("Forsøker evict for å rydde eventuelle feil i cache.");
+		cache.evict(key);
 	}
 	
 	@Override
