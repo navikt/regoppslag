@@ -273,6 +273,16 @@ public class PersonV3MapperTest {
 	}
 
 	@Test(expected = RegOppslagTechnicalException.class)
+	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
+		mapper.map(person, mottaker, "");
+	}
+
+	@Test(expected = RegOppslagTechnicalException.class)
 	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);

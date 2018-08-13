@@ -47,6 +47,8 @@ public class PersonV3Mapper {
 	private static final Pattern pattern = Pattern.compile("(\\d{4})");
 
 	private static final String LAND_NORGE = "Norge";
+	private static final String POSTNUMMER_0000 = "0000";
+	private static final String POSTSTED_UKJENT = "UKJENT/UNKNOWN";
 
 	public PersonV3Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
@@ -103,8 +105,8 @@ public class PersonV3Mapper {
 		if (StringUtils.isEmpty(norskPostadresse.getPostnummer())) {
 			log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\" og poststed til \"UKJENT/UNKNOWN\". land=%s, poststed=%s, gjeldendePostadresse=%s", serviceCode, norskPostadresse
 					.getLand(), norskPostadresse.getPoststed(), person.getGjeldendePostadressetype()));
-			norskPostadresse.setPostnummer("0000");
-			norskPostadresse.setPoststed("UKJENT/UNKNOWN");
+			norskPostadresse.setPostnummer(POSTNUMMER_0000);
+			norskPostadresse.setPoststed(POSTSTED_UKJENT);
 
 			if (norskPostadresse.getLand()==null){
 				requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").inc();
@@ -127,13 +129,17 @@ public class PersonV3Mapper {
 
 	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagTechnicalException {
 
-		if (isNorskOgTomPostnummer(norskPostadresse)) {
-			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Norsk adresse mangler Postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()));
+		if (isNorskOgTomPostnummer(norskPostadresse) || isTomPostadresse(norskPostadresse)) {
+			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Norsk adresse mangler Postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
 		}
 	}
 
+	private boolean isTomPostadresse(NorskPostadresse norskPostadresse) {
+		return isBlank(norskPostadresse.getAdresselinje1()) && isBlank(norskPostadresse.getLand()) && POSTNUMMER_0000.equals(norskPostadresse.getPostnummer()) && POSTSTED_UKJENT.equals(norskPostadresse.getPoststed());
+	}
+
 	private boolean isNorskOgTomPostnummer(NorskPostadresse norskPostadresse) {
-		return LAND_NORGE.equals(norskPostadresse.getLand()) && "0000".equals(norskPostadresse.getPostnummer());
+		return LAND_NORGE.equals(norskPostadresse.getLand()) && POSTNUMMER_0000.equals(norskPostadresse.getPostnummer());
 	}
 
 

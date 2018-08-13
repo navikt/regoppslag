@@ -70,7 +70,7 @@
 		<rxjava.version>2.1.14</rxjava.version>
 		<lettuce-redis.version>4.4.5.Final</lettuce-redis.version>
 		<redis-client.version>2.9.0</redis-client.version>
-		<kryo.version>4.0.1</kryo.version>
+		<kryo.version>4.0.2</kryo.version>
 		<caffeine.version>2.5.2</caffeine.version>
 		<httpunit.version>1.7</httpunit.version>
 		<jaxb.version>2.2.11</jaxb.version>
