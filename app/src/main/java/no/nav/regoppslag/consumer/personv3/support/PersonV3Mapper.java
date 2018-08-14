@@ -142,11 +142,11 @@ public class PersonV3Mapper {
 	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagFunctionalException {
 
 		if (isNorskAndBlankPostnummer(norskPostadresse)) {
-			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Norsk adresse mangler postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
+			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Norsk adresse mangler postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()), "Ugyldig norsk postadresse");
 		}
 
 		if (isBlankPostadresse(norskPostadresse)) {
-			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler postnummer og land. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
+			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler postnummer og land. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()), "Ugyldig postadresse");
 		}
 	}
 
