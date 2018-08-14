@@ -50,7 +50,7 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 	}
 	
-	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId", sync = true)
+	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Bruker hentPerson(final String personidentifikator, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
