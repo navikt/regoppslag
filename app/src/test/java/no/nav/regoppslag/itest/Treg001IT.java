@@ -150,7 +150,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowIfPersonIsMissingAdresse() throws Exception {
+	public void shouldThrowTechnicalIfPersonIsMissingAdresse() throws Exception {
 
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -161,7 +161,23 @@ public class Treg001IT extends AbstractIT {
 		}catch (HttpStatusCodeException e) {
 			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: dokumenttypeId=123 feilmelding=Ugyldig postadresse. Norsk adresse mangler Postnummer. GjeldenePostadresseType=BOSTEDSADRESSE."));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler postnummer og land."));
+		}
+	}
+
+	@Test
+	public void shouldThrowTechnicalIfPersonIsMissingAdresseAndLandIsNorge() throws Exception {
+
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-mangler_adresse_landkode_norge.xml"))); //mottakerPlugin
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+			fail("Should throw techical Exception");
+		}catch (HttpStatusCodeException e) {
+			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Norsk adresse mangler postnummer."));
 		}
 	}
 	
@@ -206,8 +222,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
-			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON)
-					.get().buckets[14]).intValue(), is(Matchers.equalTo(1)));
+			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=20096828390, message=Ingen forekomster funnet"));
 		}
@@ -223,8 +238,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
-			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
-					.get().buckets[14]).intValue(), isIn(Arrays.asList(1, 2, 3, 4)));
+			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
@@ -240,8 +254,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
-			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, PERSONV3, HENT_PERSON)
-					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
+			verify(5, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. Message=Could not send Message."));
 		}
@@ -256,8 +269,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestOrg, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
-			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, ORGANISASJONV4, HENT_ORGANISASJON)
-					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
+			verify(5, postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJON_V4")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
 		}
@@ -272,8 +284,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, requestNorg, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
-			assertThat(((Double) requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
-					.get().buckets[14]).intValue(), is(Matchers.equalTo(5)));
+			verify(5, postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
 		}
@@ -308,7 +319,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpServerErrorException e) {
-//			verify(5, getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3(.*)")));
+			verify(5, getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=123"));
 		}

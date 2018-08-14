@@ -119,7 +119,7 @@ public class Treg002IT extends AbstractIT {
 		}catch (HttpStatusCodeException e) {
 			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilmelding=Ugyldig postadresse. Norsk adresse mangler Postnummer."));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler land og postnummer."));
 		}
 	}
 

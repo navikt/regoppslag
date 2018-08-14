@@ -1,6 +1,5 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
@@ -129,16 +128,20 @@ public class PersonV3Mapper {
 
 	private void validateAdresse(NorskPostadresse norskPostadresse, Bruker person) throws RegOppslagTechnicalException {
 
-		if (isNorskOgTomPostnummer(norskPostadresse) || isTomPostadresse(norskPostadresse)) {
-			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Norsk adresse mangler Postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
+		if (isNorskAndBlankPostnummer(norskPostadresse)) {
+			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Norsk adresse mangler postnummer. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
+		}
+
+		if (isBlankPostadresse(norskPostadresse)) {
+			throw new RegOppslagTechnicalException(String.format("Ugyldig postadresse. Adresse mangler postnummer og land. GjeldenePostadresseType=%s", person.getGjeldendePostadressetype()==null?"Ukjent":person.getGjeldendePostadressetype().getValue()));
 		}
 	}
 
-	private boolean isTomPostadresse(NorskPostadresse norskPostadresse) {
+	private boolean isBlankPostadresse(NorskPostadresse norskPostadresse) {
 		return isBlank(norskPostadresse.getAdresselinje1()) && isBlank(norskPostadresse.getLand()) && POSTNUMMER_0000.equals(norskPostadresse.getPostnummer()) && POSTSTED_UKJENT.equals(norskPostadresse.getPoststed());
 	}
 
-	private boolean isNorskOgTomPostnummer(NorskPostadresse norskPostadresse) {
+	private boolean isNorskAndBlankPostnummer(NorskPostadresse norskPostadresse) {
 		return LAND_NORGE.equals(norskPostadresse.getLand()) && POSTNUMMER_0000.equals(norskPostadresse.getPostnummer());
 	}
 
