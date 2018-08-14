@@ -14,6 +14,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
@@ -30,6 +31,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -262,27 +264,33 @@ public class PersonV3MapperTest {
 	}
 
 
-	@Test
-	public void mapPersonPostadresseUtenPostnr() throws Exception {
+	@Test(expected = RegOppslagTechnicalException.class)
+	public void shouldThrowIfPersonPostadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("");
 		mapper.map(person, mottaker, "");
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
 	}
 
-
-	@Test
-	public void shouldThrowIfMissingAdresse() throws Exception {
-		thrown.expect(RegOppslagFunctionalException.class);
-		thrown.expectMessage("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed");
+	@Test(expected = RegOppslagTechnicalException.class)
+	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-
+		settPostadresse(person);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "");
+	}
 
+	@Test(expected = RegOppslagTechnicalException.class)
+	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresseMedMidlertidigAressePostboks(person);
+		((PostboksadresseNorsk)((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
+		mapper.map(person, mottaker, "");
 	}
 
 	@Test
@@ -315,11 +323,6 @@ public class PersonV3MapperTest {
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "T");
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").get(), is(1.0));
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
-
-		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("NOR"));
-		mapper.map(person, mottaker, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.NORGE").get(), is(1.0));
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("SE"));

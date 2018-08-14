@@ -27,10 +27,8 @@ import javax.inject.Inject;
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 public abstract class AbstractIT {
-	
-	@Value("${local.server.port}")
-	protected String LOCALPORT;
-	
+
+	@Value("${local.url}")
 	protected String LOCAL_ENDPOINT_URL;
 	
 	@Inject
@@ -52,7 +50,6 @@ public abstract class AbstractIT {
 	@Before
 	public void setUp() {
 		
-		LOCAL_ENDPOINT_URL ="http://localhost:"+ LOCALPORT;
 		clearCachene();
 		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
 	}

@@ -115,11 +115,11 @@ public class Treg002IT extends AbstractIT {
 						.withBodyFile("treg001/personV3/hentperson-mangler_adresse.xml"))); //mottakerPlugin
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
-			fail("Should throw functional Exception");
+			fail("Should throw technical Exception");
 		}catch (HttpStatusCodeException e) {
 			verify(1,postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adressen mangler Land, Adresselinje1, Postnummer og Poststed"));
+			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler postnummer og land."));
 		}
 	}
 
