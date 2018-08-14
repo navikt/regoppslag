@@ -144,7 +144,7 @@ public class Treg001IT extends AbstractIT {
 			fail("Should throw techical Exception");
 		}catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler postnummer og land."));
 		}
 	}
@@ -160,7 +160,7 @@ public class Treg001IT extends AbstractIT {
 			fail("Should throw techical Exception");
 		}catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Norsk adresse mangler postnummer."));
 		}
 	}

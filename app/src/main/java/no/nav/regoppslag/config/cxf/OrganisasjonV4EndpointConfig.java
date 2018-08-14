@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
@@ -21,8 +20,7 @@ public class OrganisasjonV4EndpointConfig extends AbstractCxfEndpointConfig {
 	public static final String WSDL_URL = "wsdl/no/nav/tjeneste/virksomhet/organisasjon/v4/Binding.wsdl";
 
 	@Bean
-	public OrganisasjonV4 organisasjonV4(OrganisasjonV4Alias organisasjonV4Alias, NavAppCertAlias navAppCertAlias) {
-		navAppCertAlias.postConstruct();
+	public OrganisasjonV4 organisasjonV4(OrganisasjonV4Alias organisasjonV4Alias) {
 
 		setWsdlUrl(WSDL_URL);
 		setEndpointName(ORGANISASJON_V4_PORT_QNAME);

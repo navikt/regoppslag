@@ -12,7 +12,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
-import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -51,19 +50,18 @@ public class CacheConfig extends CachingConfigurerSupport {
 	
 	@Bean
 	public CacheManager cacheManager(RedisTemplate redisTemplate) {
-		return new NoOpCacheManager(); //FIXME: Temporary.
-//		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
-//		redisCacheManager.setDefaultExpiration(DEFAULT_CACHE_EXPIRATION_SECONDS);
-//
-//		//Remaining caches uses the default value
-//		Map<String, Long> expiresInSeconds = new HashMap<>();
-//		expiresInSeconds.put(HENT_PERSON, HENT_PERSON_CACHE_EXPIRATION_SECONDS);
-//		expiresInSeconds.put(STS_CACHE_NAME, STS_CACHE_EXPIRATION_SECONDS);
-//
-//		redisCacheManager.setExpires(expiresInSeconds);
-//		redisCacheManager.setLoadRemoteCachesOnStartup(true);
-//		redisCacheManager.setUsePrefix(true);
-//		return redisCacheManager;
+		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
+		redisCacheManager.setDefaultExpiration(DEFAULT_CACHE_EXPIRATION_SECONDS);
+
+		//Remaining caches uses the default value
+		Map<String, Long> expiresInSeconds = new HashMap<>();
+		expiresInSeconds.put(HENT_PERSON, HENT_PERSON_CACHE_EXPIRATION_SECONDS);
+		expiresInSeconds.put(STS_CACHE_NAME, STS_CACHE_EXPIRATION_SECONDS);
+
+		redisCacheManager.setExpires(expiresInSeconds);
+		redisCacheManager.setLoadRemoteCachesOnStartup(true);
+		redisCacheManager.setUsePrefix(true);
+		return redisCacheManager;
 	}
 	
 	@Bean

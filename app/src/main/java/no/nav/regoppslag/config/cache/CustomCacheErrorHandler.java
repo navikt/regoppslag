@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cache;
 
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_ERROR;
 import static no.nav.regoppslag.metrics.PrometheusLabels.REDIS_CACHE;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
@@ -33,8 +32,6 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
-		log.warn("Forsøker evict for å rydde eventuelle feil i cache.");
-		cache.evict(key);
 	}
 	
 	@Override
@@ -51,7 +48,4 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 				.getSimpleName(), exception.getMessage()));
 	}
 	
-	private String hidePersonIdent(String key) {
-		return (key).replace((key).substring(0, 11), "<personident>");
-	}
 }

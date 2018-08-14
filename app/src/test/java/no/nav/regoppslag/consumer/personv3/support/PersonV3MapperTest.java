@@ -14,7 +14,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
@@ -264,7 +263,7 @@ public class PersonV3MapperTest {
 	}
 
 
-	@Test(expected = RegOppslagTechnicalException.class)
+	@Test(expected = RegOppslagFunctionalException.class)
 	public void shouldThrowIfPersonPostadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -273,7 +272,7 @@ public class PersonV3MapperTest {
 		mapper.map(person, mottaker, "");
 	}
 
-	@Test(expected = RegOppslagTechnicalException.class)
+	@Test(expected = RegOppslagFunctionalException.class)
 	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -284,12 +283,25 @@ public class PersonV3MapperTest {
 		mapper.map(person, mottaker, "");
 	}
 
-	@Test(expected = RegOppslagTechnicalException.class)
+	@Test(expected = RegOppslagFunctionalException.class)
 	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
 		((PostboksadresseNorsk)((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
+		mapper.map(person, mottaker, "");
+	}
+
+	@Test
+	@Ignore
+	public void shouldNotThrowIfNotMissingPostnrButMissingLandAndAdresseLinje1() throws Exception {
+		Mottaker mottaker = createMottaker(FNR);
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
+		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "");
 	}
 

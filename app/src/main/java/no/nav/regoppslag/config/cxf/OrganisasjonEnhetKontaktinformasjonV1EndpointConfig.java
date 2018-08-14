@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
@@ -22,8 +21,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1EndpointConfig extends Abstrac
 	public static final String WSDL_URL = "wsdl/no/nav/tjeneste/virksomhet/organisasjonEnhetKontaktinformasjon/v1/Binding.wsdl";
 
 	@Bean
-	public OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1(OrganisasjonEnhetKontaktinformasjonV1Alias organisasjonEnhetKontaktinformasjonV1Alias, NavAppCertAlias navAppCertAlias) {
-		navAppCertAlias.postConstruct();
+	public OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1(OrganisasjonEnhetKontaktinformasjonV1Alias organisasjonEnhetKontaktinformasjonV1Alias) {
 
 		setWsdlUrl(WSDL_URL);
 		setEndpointName(ORG_KONTAKTINFO_V1_PORT_QNAME);

@@ -9,7 +9,6 @@ import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1Endpoin
 import no.nav.regoppslag.config.cxf.OrganisasjonV4EndpointConfig;
 import no.nav.regoppslag.config.cxf.PersonV3EndpointConfig;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
-import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
@@ -27,7 +26,6 @@ import org.springframework.retry.annotation.EnableRetry;
 		PersonV3Alias.class,
 		OrganisasjonEnhetKontaktinformasjonV1Alias.class,
 		DokumenttypeInfoV3Alias.class,
-		NavAppCertAlias.class,
 		ServiceuserAlias.class
 })
 @Import({

@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cxf;
 
-import no.nav.regoppslag.config.fasit.NavAppCertAlias;
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
 import no.nav.regoppslag.config.security.CustomSamlTokenOutInterceptor;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -24,9 +23,7 @@ public class PersonV3EndpointConfig extends AbstractCxfEndpointConfig {
 	public static final String WSDL_URL = "wsdl/no/nav/tjeneste/virksomhet/person/v3/Binding.wsdl";
 
 	@Bean
-	public PersonV3 personV3(PersonV3Alias personV3Alias, NavAppCertAlias navAppCertAlias) {
-		
-		navAppCertAlias.postConstruct();
+	public PersonV3 personV3(PersonV3Alias personV3Alias) {
 
 		setWsdlUrl(WSDL_URL);
 		setEndpointName(PERSON_V3_PORT_QNAME);
