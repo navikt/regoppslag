@@ -6,6 +6,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
+import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -77,20 +78,6 @@ public class PersonV3Mapper {
 		validateAdresse(person, postadresse);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand())) {
-			if (isBlank(postadresse.getPostnummer())) {
-				log.info(String.format("%s Mottaker med type=PERSON mangler postnummer. Setter postnummer til \"0000\". land=%s, poststed=%s, gjeldendePostadresse=%s", serviceCode, postadresse
-						.getLand(), postadresse.getPoststed(), person.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
-						.getValue()));
-				postadresse.setPostnummer(POSTNUMMER_0000);
-			}
-
-			if (isBlank(postadresse.getPoststed())) {
-				log.info(String.format("%s Mottaker med type=PERSON mangler poststed. Setter poststed til \"UKJENT/UNKNOWN\". land=%s, postnummer=%s, gjeldendePostadresse=%s", serviceCode, postadresse
-						.getLand(), postadresse.getPostnummer(), person.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
-						.getValue()));
-				postadresse.setPoststed(POSTSTED_UKJENT);
-			}
-
 			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
 			mottaker.setMottakeradresse(norskPostadresse);
 		} else {
@@ -151,6 +138,10 @@ public class PersonV3Mapper {
 
 		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
 			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
+		}
+
+		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
+			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
 		}
 
 		if (postadresse.getLand() == null) {

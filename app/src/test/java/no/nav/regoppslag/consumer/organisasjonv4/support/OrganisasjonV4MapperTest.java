@@ -154,8 +154,8 @@ public class OrganisasjonV4MapperTest {
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 		mapper.map(org, mottaker, SERVICECODE);
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
 	}
 
 	@Test
@@ -167,8 +167,8 @@ public class OrganisasjonV4MapperTest {
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
 
 		mapper.map(org, mottaker, SERVICECODE);
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
 	}
 
 	@Test

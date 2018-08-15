@@ -45,7 +45,7 @@ public class OrganisasjonV4Mapper {
 
 	@Inject
 	private final LandkodeService landkodeService;
-	
+
 	@Inject
 	private final PostnummerService postnummerService;
 
@@ -58,7 +58,7 @@ public class OrganisasjonV4Mapper {
 		this.postnummerService = postnummerService;
 	}
 
-	public void map(Organisasjon wsOrganisasjon, Sakspart sakspart)  {
+	public void map(Organisasjon wsOrganisasjon, Sakspart sakspart) {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 		sakspart.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
 				.get(0)
@@ -72,32 +72,26 @@ public class OrganisasjonV4Mapper {
 		mapOrganisasjonName(mottaker, orgDet, wsOrganisasjon);
 		mapSpraakkode(mottaker, orgDet);
 		Postadresse postadresse = mapAdresse(orgDet);
-
-		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), postadresse.getLand() == null ? "Ukjent" : postadresse
-				.getLand()).inc();
+		incrementFunctionalMetrics(postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
-			if (isBlank(postadresse.getPostnummer())) {
-				log.info(String.format("%s Mottaker med type=ORGANISASJON mangler postnummer. Setter postnummer til \"0000\". land=%s, poststed=%s", serviceCode, postadresse
-						.getLand(), postadresse.getPoststed()));
-				postadresse.setPostnummer(POSTNUMMER_0000);
-				requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
-			}
-
-			if (isBlank(postadresse.getPoststed())) {
-				log.info(String.format("%s Mottaker med type=ORGANISASJON mangler poststed. Setter poststed til \"UKJENT/UNKNOWN\". land=%s, postnummer=%s", serviceCode, postadresse
-						.getLand(), postadresse.getPostnummer()));
-				postadresse.setPoststed(POSTSTED_UKJENT);
-				requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
-			}
-
 			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
 			mottaker.setMottakeradresse(norskPostadresse);
-
 		} else {
 			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskadresse(postadresse);
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
+	}
+
+	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
+		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
+		}
+		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
+		}
+		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), postadresse.getLand() == null ? "Ukjent" : postadresse
+				.getLand()).inc();
 	}
 
 
@@ -155,7 +149,7 @@ public class OrganisasjonV4Mapper {
 			postadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
 		}
 	}
-	
+
 	private void mapForretningsAdresse(OrganisasjonsDetaljer orgDet, Postadresse postadresse) {
 		if (orgDet.getForretningsadresse().get(0) instanceof SemistrukturertAdresse) {
 			SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) orgDet.getForretningsadresse().get(0);
@@ -182,9 +176,9 @@ public class OrganisasjonV4Mapper {
 		if (geografiskAdresse.getLandkode() != null) {
 			postadresse.setLand(landkodeService.finnLandnavn(geografiskAdresse.getLandkode().getKodeRef()));
 		}
-		
+
 	}
-	
+
 	private void settAdresseledd(SemistrukturertAdresse semistrukturertAdresse, Postadresse postadresse) {
 		for (NoekkelVerdiAdresse nokler : semistrukturertAdresse.getAdresseledd()) {
 			if ("adresselinje1".equals(nokler.getNoekkel().getKodeRef())) {
@@ -201,5 +195,5 @@ public class OrganisasjonV4Mapper {
 		}
 	}
 
-	
+
 }
