@@ -2,10 +2,10 @@ package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
-import no.nav.regoppslag.nais.checkcore.AbstractDependencyCheck;
-import no.nav.regoppslag.nais.checkcore.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.checkcore.DependencyType;
-import no.nav.regoppslag.nais.checkcore.Importance;
+import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
+import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.selftest.DependencyType;
+import no.nav.regoppslag.nais.selftest.Importance;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class DokkatCheck extends AbstractDependencyCheck {
 					   HttpComponentsClientHttpRequestFactory requestFactory,
 					   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,
 					   ServiceuserAlias serviceuserAlias) {
-		super(DependencyType.REST, Importance.CRITICAL, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl());
+		super(DependencyType.REST, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl(), Importance.WARNING);
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory)
 				.rootUri(dokumenttypeInfoV3Alias.getUrl())
@@ -41,7 +41,7 @@ public class DokkatCheck extends AbstractDependencyCheck {
 		try {
 			restTemplate.getForObject("/ping", String.class);
 		} catch (Exception e) {
-			throw new ApplicationNotReadyException("Could not ping DokkatV3", e);
+			throw new ApplicationNotReadyException("Could not ping DokkatV3. ErrorMessage="+e.getMessage(), e);
 		}
 	}
 }

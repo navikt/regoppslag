@@ -1,10 +1,10 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.PersonV3Alias;
-import no.nav.regoppslag.nais.checkcore.AbstractDependencyCheck;
-import no.nav.regoppslag.nais.checkcore.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.checkcore.DependencyType;
-import no.nav.regoppslag.nais.checkcore.Importance;
+import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
+import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.selftest.DependencyType;
+import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class PersonV3Check extends AbstractDependencyCheck {
 
 	@Inject
 	public PersonV3Check(PersonV3 personV3, PersonV3Alias personV3Alias) {
-		super(DependencyType.SOAP, Importance.CRITICAL, PERSONV3_LABEL, personV3Alias.getEndpointurl());
+		super(DependencyType.SOAP, PERSONV3_LABEL, personV3Alias.getEndpointurl(), Importance.CRITICAL);
 		this.personV3 = personV3;
 	}
 	
@@ -30,7 +30,7 @@ public class PersonV3Check extends AbstractDependencyCheck {
 		try {
 			personV3.ping();
 		} catch (Exception e) {
-			throw new ApplicationNotReadyException("Could not ping PersonV3", e);
+			throw new ApplicationNotReadyException("Could not ping PersonV3. ErrorMessage="+e.getMessage(), e);
 		}
 	}
 }

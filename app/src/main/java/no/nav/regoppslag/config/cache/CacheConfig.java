@@ -1,7 +1,7 @@
 package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.nais.checkcore.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 
 import com.lambdaworks.redis.resource.DefaultClientResources;
 import com.lambdaworks.redis.resource.Delay;
