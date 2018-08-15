@@ -126,8 +126,7 @@ public class PersonV3Mapper {
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
 				mapMidlertidigNorge(person, postadresse);
 			} else if ("UKJENT_ADRESSE".equals(person.getGjeldendePostadressetype().getValue())) {
-				log.warn(String.format("%s Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", serviceCode));
-				throw new RegOppslagFunctionalException("Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
+				throw new RegOppslagFunctionalException(serviceCode+" Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 			}
 		}
 		return postadresse;
