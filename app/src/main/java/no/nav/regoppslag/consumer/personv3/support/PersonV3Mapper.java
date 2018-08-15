@@ -153,7 +153,7 @@ public class PersonV3Mapper {
 	private void validateAdresse(Bruker person, Postadresse postadresse) throws RegOppslagFunctionalException {
 
 		if (isBlankPostadresse(postadresse)) {
-			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler postnummer og land. GjeldenePostadresseType=%s", person
+			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
 					.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
 					.getValue()), "Ugyldig postadresse");
 		}
