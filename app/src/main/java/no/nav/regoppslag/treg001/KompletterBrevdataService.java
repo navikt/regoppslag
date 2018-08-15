@@ -1,8 +1,8 @@
 package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.common.KompletterBrevdataRequest;
-import no.nav.regoppslag.common.KompletterBrevdataResponse;
+import no.nav.regoppslag.api.KompletterBrevdataRequest;
+import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.common;
+package no.nav.regoppslag.api;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

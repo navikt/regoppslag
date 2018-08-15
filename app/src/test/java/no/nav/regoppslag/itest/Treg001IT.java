@@ -22,8 +22,8 @@ import static org.junit.Assert.fail;
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.io.Resources;
-import no.nav.regoppslag.common.KompletterBrevdataRequest;
-import no.nav.regoppslag.common.KompletterBrevdataResponse;
+import no.nav.regoppslag.api.KompletterBrevdataRequest;
+import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,22 +146,6 @@ public class Treg001IT extends AbstractIT {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
 			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler postnummer og land."));
-		}
-	}
-
-	@Test
-	public void shouldThrowTechnicalIfPersonIsMissingAdresseAndLandIsNorge() throws Exception {
-
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/personV3/hentperson-mangler_adresse_landkode_norge.xml"))); //mottakerPlugin
-		try {
-			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
-			fail("Should throw techical Exception");
-		}catch (HttpStatusCodeException e) {
-			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Norsk adresse mangler postnummer."));
 		}
 	}
 	

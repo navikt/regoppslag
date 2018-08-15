@@ -7,10 +7,12 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
+import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -166,20 +168,14 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldNotMapPersonPostadressePostnummerWhenLandIsNotNorway() throws Exception {
+	public void shouldMapToUtenlandskAdresseWhenLandIsNotNorway() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
 		person.getPostadresse().getUstrukturertAdresse().getLandkode().setValue("SWE");
 		mapper.map(person, mottaker, "");
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
-
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("AAAA 0001");
-		mapper.map(person, mottaker, "");
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
+		assertTrue(mottaker.getMottakeradresse() instanceof UtenlandskPostadresse);
 	}
 
 	@Test
@@ -191,12 +187,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
 	}
 
 	@Test
@@ -210,11 +204,10 @@ public class PersonV3MapperTest {
 		assertThat(mottaker.getId(), is(FNR));
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(UTLAND_ADRESSELINJE2));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(UTLAND_ADRESSELINJE3));
+		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND_UTLAND));
 	}
 
 	@Test
@@ -264,6 +257,7 @@ public class PersonV3MapperTest {
 
 
 	@Test(expected = RegOppslagFunctionalException.class)
+	@Ignore
 	public void shouldThrowIfPersonPostadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -284,6 +278,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test(expected = RegOppslagFunctionalException.class)
+	@Ignore
 	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -293,15 +288,14 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	@Ignore
-	public void shouldNotThrowIfNotMissingPostnrButMissingLandAndAdresseLinje1() throws Exception {
+	public void shouldNotThrowIfNotMissingPostnrButMissingAdresseLinje1() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
-		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
+		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("NOR"));
 		mapper.map(person, mottaker, "");
 	}
 
@@ -320,9 +314,6 @@ public class PersonV3MapperTest {
 		assertThat(norskPostadresse.getAdresselinje1(), is(NORSK_ADRESSELINJE1));
 	}
 
-	/**
-	 * Remove this later
-	 */
 	@Test
 	public void testFunctionalMetrics() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
@@ -334,12 +325,12 @@ public class PersonV3MapperTest {
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, mottaker, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").get(), is(1.0));
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("SE"));
 		mapper.map(person, mottaker, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").get(), is(1.0));
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
 	}
 

@@ -1,8 +1,6 @@
 package no.nav.regoppslag.consumer.organisasjonv4.support;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
@@ -28,7 +26,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -173,9 +170,7 @@ public class OrganisasjonV4MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0000"));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("UKJENT/UNKNOWN"));
 	}
-	/**
-	 * Remove this later
-	 */
+
 	@Test
 	public void testFunctionalMetrics() throws Exception {
 		Mottaker mottaker = createMottaker(FNR);
@@ -185,15 +180,11 @@ public class OrganisasjonV4MapperTest {
 		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
 
 		mapper.map(org, mottaker, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UKJENT_LAND").get(), is(1.0));
-
-		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("NOR"));
-		mapper.map(org, mottaker, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.NORGE").get(), is(1.0));
+		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 
 		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("SE"));
 		mapper.map(org, mottaker, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), "UKJENT.UTLAND").get(), is(1.0));
+		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 	}
 
 	private Landkoder createLandkode(String landkode) {

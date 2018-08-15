@@ -16,8 +16,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
