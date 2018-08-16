@@ -71,21 +71,17 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void simpleMapping() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		mapper.map(org, mottaker, SERVICECODE);
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(org, SERVICECODE);
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 	}
 
 	@Test
 	public void mapOrganisasjonSemistrukturertPostadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settSemistrukturertAdresse(org, "POSTADRESSE");
-		mapper.map(org, mottaker, SERVICECODE);
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker =mapper.map(org, SERVICECODE);
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
@@ -98,11 +94,9 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void mapOrganisasjonSemistrukturertForretningsadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settSemistrukturertAdresse(org, "FORRETNINGSADRESSE");
-		mapper.map(org, mottaker, SERVICECODE);
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(org, SERVICECODE);
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
@@ -115,11 +109,9 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void mapOrganisasjonStrukturertPostadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
-		mapper.map(org, mottaker, SERVICECODE);
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker =mapper.map(org, SERVICECODE);
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -132,11 +124,9 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void mapOrganisasjonStrukturertForretningsadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "FORRETNINGSADRESSE");
-		mapper.map(org, mottaker, SERVICECODE);
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(org, SERVICECODE);
 		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -149,41 +139,38 @@ public class OrganisasjonV4MapperTest {
 
 	@Test
 	public void mapPersonPostadresseUtenPostnr() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
-		mapper.map(org, mottaker, SERVICECODE);
+		Mottaker mottaker = mapper.map(org, SERVICECODE);
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
 	}
 
 	@Test
 	public void mapPersonPostadresseUtenPostnra() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
 
-		mapper.map(org, mottaker, SERVICECODE);
+		Mottaker mottaker = mapper.map(org, SERVICECODE);
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
 	}
 
 	@Test
 	public void testFunctionalMetrics() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
 
-		mapper.map(org, mottaker, "T");
+		mapper.map(org, "T");
 		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 
 		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("SE"));
-		mapper.map(org, mottaker, "T");
+		mapper.map(org, "T");
 		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 	}
 

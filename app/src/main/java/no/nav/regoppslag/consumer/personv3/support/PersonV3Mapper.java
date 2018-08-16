@@ -14,6 +14,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
@@ -58,19 +59,24 @@ public class PersonV3Mapper {
 		this.postnummerService = postnummerService;
 	}
 
-	public void map(Bruker person, Sakspart sakspart) {
+	public Sakspart map(Bruker person) {
+		Sakspart sakspart = new Sakspart();
 		if (person.getPersonnavn().getMellomnavn() == null) {
 			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn());
 		} else {
 			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn()
 					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
 		}
+		return sakspart;
 	}
 
-	public void map(Bruker person, Mottaker mottaker, String serviceCode) throws RegOppslagFunctionalException {
+	public Mottaker map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
+		Mottaker mottaker = new Person();
 
-		mapSpraakkode(mottaker, person);
-		mapMottakerName(mottaker, person);
+		mottaker.setSpraakkode(getSpraakkode(person));
+		mottaker.setKortNavn(getMottakerKortNavn(person));
+		mottaker.setNavn(getMottakerNavn(person));
+
 		Postadresse postadresse = mapAdresse(person, serviceCode);
 
 		incrementFunctionalMetrics(person, postadresse, serviceCode);
@@ -85,48 +91,54 @@ public class PersonV3Mapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
+		return mottaker;
+
 	}
 
-	private void mapSpraakkode(Mottaker mottaker, Bruker person) {
+	private Spraakkode getSpraakkode(Bruker person) {
 		if (person.getMaalform() != null) {
 			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
-				mottaker.setSpraakkode(Spraakkode.NB);
+				return Spraakkode.NB;
 			} else {
-				mottaker.setSpraakkode(Spraakkode.valueOf(person.getMaalform().getValue()));
+				return Spraakkode.valueOf(person.getMaalform().getValue());
 			}
 		}
+		return null;
 	}
 
 	private Postadresse mapAdresse(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
-		Postadresse postadresse = Postadresse.builder().build();
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getBostedsadresse() != null) {
-				mapBostedadresse(person, postadresse);
+				return mapBostedadresse(person);
 			} else if ("POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse()
 					.getUstrukturertAdresse() != null) {
-				mapPostadresse(person, postadresse);
+				return mapPostadresse(person);
 			} else if ("MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
-				mapMidlertidigUtland(person, postadresse);
+				return mapMidlertidigUtland(person);
 			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
-				mapMidlertidigNorge(person, postadresse);
+				return mapMidlertidigNorge(person);
 			} else if ("UKJENT_ADRESSE".equals(person.getGjeldendePostadressetype().getValue())) {
-				throw new RegOppslagFunctionalException(serviceCode+" Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
+				throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 			}
 		}
-		return postadresse;
+
+		return Postadresse.builder().build();
 	}
 
-	private void mapMottakerName(Mottaker mottaker, Bruker person) {
+	private String getMottakerKortNavn(Bruker person) {
+		return person.getPersonnavn().getSammensattNavn();
+	}
 
-		mottaker.setKortNavn(person.getPersonnavn().getSammensattNavn());
+	private String getMottakerNavn(Bruker person) {
+
 		if (person.getPersonnavn().getMellomnavn() == null) {
-			mottaker.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn());
+			return person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn();
 		} else {
-			mottaker.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn()
-					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
+			return person.getPersonnavn().getFornavn() + " " + person.getPersonnavn()
+					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn();
 		}
 	}
 
@@ -164,7 +176,9 @@ public class PersonV3Mapper {
 				.getPoststed());
 	}
 
-	private void mapBostedadresse(Bruker person, Postadresse postadresse) {
+	private Postadresse mapBostedadresse(Bruker person) {
+		Postadresse postadresse = Postadresse.builder().build();
+
 		if (person.getBostedsadresse().getStrukturertAdresse() instanceof Gateadresse) {
 			Gateadresse gateadresse = (Gateadresse) person.getBostedsadresse().getStrukturertAdresse();
 			postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
@@ -198,9 +212,13 @@ public class PersonV3Mapper {
 					.getLandkode()
 					.getValue()));
 		}
+
+		return postadresse;
 	}
 
-	private void mapPostadresse(Bruker person, Postadresse postadresse) {
+	private Postadresse mapPostadresse(Bruker person) {
+		Postadresse postadresse = Postadresse.builder().build();
+
 		postadresse.setAdresselinje1(person.getPostadresse().getUstrukturertAdresse().getAdresselinje1());
 		postadresse.setAdresselinje2(person.getPostadresse().getUstrukturertAdresse().getAdresselinje2());
 		postadresse.setAdresselinje3(person.getPostadresse().getUstrukturertAdresse().getAdresselinje3());
@@ -217,7 +235,7 @@ public class PersonV3Mapper {
 			postadresse.setPostnummer(postnummer);
 			postadresse.setPoststed(postnummerService.finnPoststed(postnummer));
 		}
-
+		return postadresse;
 	}
 
 	private String getPostnummerFromAdresselinje(String adresselinje) {
@@ -233,7 +251,9 @@ public class PersonV3Mapper {
 		}
 	}
 
-	private void mapMidlertidigUtland(Bruker person, Postadresse postadresse) {
+	private Postadresse mapMidlertidigUtland(Bruker person) {
+		Postadresse postadresse = Postadresse.builder().build();
+
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
 		if (midlertidigPostadresseUtland.getUstrukturertAdresse() != null) {
 			postadresse.setAdresselinje1(midlertidigPostadresseUtland.getUstrukturertAdresse().getAdresselinje1());
@@ -251,9 +271,13 @@ public class PersonV3Mapper {
 					.getLandkode()
 					.getValue()));
 		}
+
+		return postadresse;
 	}
 
-	private void mapMidlertidigNorge(Bruker person, Postadresse postadresse) {
+	private Postadresse mapMidlertidigNorge(Bruker person) {
+		Postadresse postadresse = Postadresse.builder().build();
+
 		if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof Gateadresse) {
 			Gateadresse gateadresse = (Gateadresse) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse();
 			postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn())
@@ -289,6 +313,8 @@ public class PersonV3Mapper {
 					.getLandkode()
 					.getValue()));
 		}
+
+		return postadresse;
 	}
 
 }

@@ -26,8 +26,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -77,13 +75,8 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 
 			}
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			builderFactory.setNamespaceAware(true);
 
-			DocumentBuilder builder = builderFactory.newDocumentBuilder();
-			Document document = builder.newDocument();
-			Node node = marshal(navAnsatt, document);
-			Document newNode = (Document) node;
+			Document newNode = convertObjectToDocument(navAnsatt);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));

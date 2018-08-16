@@ -109,8 +109,16 @@ public class Treg001IT extends AbstractIT {
 		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
-	
-	
+
+	@Test
+	public void shouldNotMapWhenIsBerikIsFalse() throws Exception {
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_is_berik_false.xml"), KompletterBrevdataResponse.class);
+		assertEquals(resourceUrlToString(Resources.getResource("__files/treg001/treg001_is_berik_false_response.xml")).replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
+
+
 	/**
 	 * Testbetingelser:
 	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement

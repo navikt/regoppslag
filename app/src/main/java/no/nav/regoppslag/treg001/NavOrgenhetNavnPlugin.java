@@ -27,8 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -81,16 +79,9 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
 			}
 
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			builderFactory.setNamespaceAware(true);
-			
-			DocumentBuilder builder = builderFactory.newDocumentBuilder();
-			Document document = builder.newDocument();
-			
-			Node node = marshal(navEnhet, document);
-			Document newNode = (Document) node;
+			Document newNode = convertObjectToDocument(navEnhet);
 			Element documentElement = newNode.getDocumentElement();
-			
+
 			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 

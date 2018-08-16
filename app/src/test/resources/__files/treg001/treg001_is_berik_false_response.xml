@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<NAVFelles xmlns:test="test"
+	<NAVFelles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles" xmlns:test="test"
 			   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		<mottaker xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="true"
-				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:Organisasjon">
-			<ns1:id>111111111</ns1:id>
-			<ns1:typeKode>ORGANISASJON</ns1:typeKode>
-			<ns1:navn>ARBEIDS- OG VELFERDSETATEN</ns1:navn>
-			<ns1:kortNavn>ARBEIDS- OG VELFERDSETATEN</ns1:kortNavn>
+		<mottaker xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="false"
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:Person">
+			<ns1:id>20096828390</ns1:id>
+			<ns1:typeKode>PERSON</ns1:typeKode>
 			<ns1:spraakkode>NB</ns1:spraakkode>
-			<ns1:mottakeradresse xsi:type="ns1:NorskPostadresse">
-				<ns1:adresselinje1>Postboks 5 St Olavs Plass</ns1:adresselinje1>
-				<ns1:postnummer>0130</ns1:postnummer>
-				<ns1:poststed>OSLO</ns1:poststed>
-				<ns1:land>Norge</ns1:land>
-			</ns1:mottakeradresse>
 		</mottaker>
-		<test:signerendeSaksbehandler>
+		<test:signerendeSaksbehandler f:berik="false">
 			<navAnsatt xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 				<ns1:ansattId>Z991006</ns1:ansattId>
@@ -28,7 +20,7 @@
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:signerendeSaksbehandler>
-		<test:signerendeBeslutter>
+		<test:signerendeBeslutter f:berik="false">
 			<navAnsatt xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 				<ns1:ansattId>Z991006</ns1:ansattId>
@@ -40,35 +32,21 @@
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:signerendeBeslutter>
-		<test:behandlendeEnhet>
+		<test:behandlendeEnhet f:berik="false">
 			<navEnhet xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					  xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 				<ns1:enhetsId>0136</ns1:enhetsId>
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:behandlendeEnhet>
-		<test:kontaktinformasjon>
+		<test:kontaktinformasjon f:berik="false">
 			<postadresse xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-						 xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+						 xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="false">
 				<ns1:enhetsId>0136</ns1:enhetsId>
-				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
-				<ns1:kontaktTelefonnummer>55553333</ns1:kontaktTelefonnummer>
-				<ns1:adresse>
-					<ns1:adresselinje1>Postboks 563</ns1:adresselinje1>
-					<ns1:postnummer>1522</ns1:postnummer>
-					<ns1:poststed>MOSS</ns1:poststed>
-				</ns1:adresse>
 			</postadresse>
 			<besoksadresse xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-						   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+						   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="false">
 				<ns1:enhetsId>0136</ns1:enhetsId>
-				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
-				<ns1:kontaktTelefonnummer>55553333</ns1:kontaktTelefonnummer>
-				<ns1:adresse>
-					<ns1:adresselinje1>Ekholtveien 114</ns1:adresselinje1>
-					<ns1:postnummer>1526</ns1:postnummer>
-					<ns1:poststed>MOSS</ns1:poststed>
-				</ns1:adresse>
 			</besoksadresse>
 		</test:kontaktinformasjon>
 	</NAVFelles>

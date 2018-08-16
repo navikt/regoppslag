@@ -29,7 +29,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetal
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
@@ -160,40 +159,7 @@ public class MottakerPluginTest {
 		
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 	}
-	
-	@Test
-	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne person. ");
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
 
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		mottakerPlugin.processElement(node, valueMap);
-	}
-	
-	@Test
-	public void shouldThrowExceptionWhenOrganisasjonIkkeFunnet() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin:  Kunne ikke finne organisasjon. ");
-		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA_ORG);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		mottakerPlugin.processElement(node, valueMap);
-	}
 	
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {

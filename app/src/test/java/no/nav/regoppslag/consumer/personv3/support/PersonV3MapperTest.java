@@ -76,26 +76,22 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void simpleMapping() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
 	public void mapPersonBostedadresseMedGateadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedGateadresse(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -106,11 +102,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonBostedadresseMedMatrikkeladresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedMatrikkeladresse(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(EIENDOMSNAVN));
@@ -121,11 +115,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonBostedadresseMedPostboksadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedPostboksadresse(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is("Postboks " + POSTBOKS));
@@ -136,11 +128,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonPostadresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(NORSK_ADRESSELINJE1));
@@ -153,38 +143,34 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonPostadresseWhereAdresseLinje4HasPostnummer() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
-		mapper.map(person, mottaker, "");
+		Mottaker mottaker =mapper.map(person, "");
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
 
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("AAAA 0001");
-		mapper.map(person, mottaker, "");
+		mottaker =mapper.map(person, "");
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is("0001"));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is("OSLO"));
 	}
 
 	@Test
 	public void shouldMapToUtenlandskAdresseWhenLandIsNotNorway() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
 		person.getPostadresse().getUstrukturertAdresse().getLandkode().setValue("SWE");
-		mapper.map(person, mottaker, "");
+		Mottaker mottaker =mapper.map(person, "");
 		assertTrue(mottaker.getMottakeradresse() instanceof UtenlandskPostadresse);
 	}
 
 	@Test
 	public void mapPersonPostadresseMedMidlertidigAdresseUtland() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseUtland(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker =mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
@@ -195,13 +181,11 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonPostadresseMedMidlertidigAdresseUtlandPostnummerInAdresseLinje4() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseUtland(person);
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
 		midlertidigPostadresseUtland.getUstrukturertAdresse().setAdresselinje4("0001 ADDDD");
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker =mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((UtenlandskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(UTLAND_ADRESSELINJE1));
@@ -212,11 +196,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonPostadresseMedMidlertidigGateAdresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseGste(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -227,11 +209,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseMatrikkel(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker =mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(EIENDOMSNAVN));
@@ -242,11 +222,9 @@ public class PersonV3MapperTest {
 
 	@Test
 	public void mapPersonBostedadresseMedMidlertidigPostboksAdresse() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
-		mapper.map(person, mottaker, "");
-		assertThat(mottaker.getId(), is(FNR));
+		Mottaker mottaker = mapper.map(person, "");
 		assertThat(mottaker.getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is("Postboks " + POSTBOKS));
@@ -259,64 +237,58 @@ public class PersonV3MapperTest {
 	@Test(expected = RegOppslagFunctionalException.class)
 	@Ignore
 	public void shouldThrowIfPersonPostadresseUtenPostnr() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("");
-		mapper.map(person, mottaker, "");
+		mapper.map(person, "");
 	}
 
 	@Test(expected = RegOppslagFunctionalException.class)
 	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, "");
 	}
 
 	@Test(expected = RegOppslagFunctionalException.class)
 	@Ignore
 	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
-		((PostboksadresseNorsk)((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
-		mapper.map(person, mottaker, "");
+		((PostboksadresseNorsk) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
+		mapper.map(person, "");
 	}
 
 	@Test
 	public void shouldNotThrowIfNotMissingPostnrButMissingAdresseLinje1() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("NOR"));
-		mapper.map(person, mottaker, "");
+		mapper.map(person, "");
 	}
 
 	@Test
 	public void shouldNotThrowIfMissingNotMissingAdresseLinje1ButMissingOtherAdresseAttributes() throws Exception {
 
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, mottaker, "");
+		Mottaker mottaker =mapper.map(person, "");
 		NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 		assertThat(norskPostadresse.getAdresselinje1(), is(NORSK_ADRESSELINJE1));
 	}
 
 	@Test
 	public void testFunctionalMetrics() throws Exception {
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
@@ -324,13 +296,15 @@ public class PersonV3MapperTest {
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, mottaker, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+		mapper.map(person, "T");
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER)
+				.get(), is(1.0));
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("SE"));
-		mapper.map(person, mottaker, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+		mapper.map(person, "T");
+		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER)
+				.get(), is(1.0));
 		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
 	}
 
@@ -338,11 +312,10 @@ public class PersonV3MapperTest {
 	@Test
 	public void shouldNotThrowIfMissingLandkode() throws Exception {
 
-		Mottaker mottaker = createMottaker(FNR);
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, mottaker, "");
+		mapper.map(person, "");
 	}
 
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
