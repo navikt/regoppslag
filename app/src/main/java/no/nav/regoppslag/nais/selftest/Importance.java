@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.checkcore;
+package no.nav.regoppslag.nais.selftest;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS

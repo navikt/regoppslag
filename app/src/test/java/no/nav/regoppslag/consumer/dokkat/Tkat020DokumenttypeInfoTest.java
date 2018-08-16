@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.dokkat;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -89,7 +90,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), is(equalTo("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003. ")));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003. "));
 			verify(restTemplate, times(1)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
@@ -103,7 +104,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), is(equalTo("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=I000003")));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=I000003"));
 			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
@@ -117,7 +118,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), is(equalTo("Dokkat.TKAT020 feilet teknisk med statusKode=503 for dokumenttypeId=I000003")));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 for dokumenttypeId=I000003"));
 			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}

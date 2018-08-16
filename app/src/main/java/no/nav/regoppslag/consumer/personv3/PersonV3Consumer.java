@@ -22,7 +22,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
@@ -57,11 +56,10 @@ public class PersonV3Consumer {
 		requestCounter.labels(serviceCode, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
-		HentPersonResponse response;
-		
+
 		try {
 			requestTimer = requestLatency.labels(serviceCode, PERSONV3, HENT_PERSON).startTimer();
-			response = personV3.hentPerson(request);
+			return (Bruker) personV3.hentPerson(request).getPerson();
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
 					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
@@ -77,11 +75,7 @@ public class PersonV3Consumer {
 		} finally {
 			requestTimer.observeDuration();
 		}
-		if (response != null && response.getPerson() != null) {
-			
-			return (Bruker) response.getPerson();
-		}
-		return null;
+
 	}
 	
 	private HentPersonRequest mapHentPersonRequest(String personidentifikator) {

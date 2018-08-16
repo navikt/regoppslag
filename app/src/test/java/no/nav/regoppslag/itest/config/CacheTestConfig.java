@@ -39,9 +39,6 @@ public class CacheTestConfig {
 	public CacheManager cacheManager() {
 
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		//TODO BRUKER
-		//TODO ORGANISASJON
-		//TODO Virksomhetsadresse EREG
 		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
 				.expireAfterAccess(2, TimeUnit.DAYS)
 				.maximumSize(2000)

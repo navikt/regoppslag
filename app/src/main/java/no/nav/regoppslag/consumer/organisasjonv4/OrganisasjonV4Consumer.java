@@ -74,9 +74,6 @@ public class OrganisasjonV4Consumer {
 	}
 	
 	private Organisasjon mapHentOrganisasjonResponse(HentOrganisasjonResponse response) {
-		if (response == null || response.getOrganisasjon() == null) {
-			return null;
-		}
 		return response.getOrganisasjon();
 	}
 }

@@ -28,8 +28,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -78,22 +76,10 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 						.inc();
 				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
 
-				if (wsEnhet == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne enhet med enhetsId=%s", PLUGIN_NAME, adresse
-							.getEnhetsId()), PLUGIN_NAME + " - " + KUNNE_IKKE_FINNE_ENHET);
-				}
-
 				norg2Mapper.mapBesokadresse(wsEnhet, adresse);
 			}
 
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			builderFactory.setNamespaceAware(true);
-
-			DocumentBuilder builder = builderFactory.newDocumentBuilder();
-			Document document = builder.newDocument();
-
-			Node node = marshal(adresse, document);
-			Document newNode = (Document) node;
+			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse

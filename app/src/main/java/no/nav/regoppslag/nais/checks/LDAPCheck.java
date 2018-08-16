@@ -1,9 +1,9 @@
 package no.nav.regoppslag.nais.checks;
 
-import no.nav.regoppslag.nais.checkcore.AbstractDependencyCheck;
-import no.nav.regoppslag.nais.checkcore.ApplicationNotReadyException;
-import no.nav.regoppslag.nais.checkcore.DependencyType;
-import no.nav.regoppslag.nais.checkcore.Importance;
+import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
+import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
+import no.nav.regoppslag.nais.selftest.DependencyType;
+import no.nav.regoppslag.nais.selftest.Importance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Component;
@@ -15,13 +15,12 @@ import javax.inject.Inject;
  */
 @Component
 public class LDAPCheck extends AbstractDependencyCheck {
-	public static final String LDAP_LABEL = "LDAP";
 	private final LdapTemplate ldapTemplate;
 	
 	@Inject
 	public LDAPCheck(LdapTemplate ldapTemplate,
 					 @Value("${ldap_url}") String ldapUrl) {
-		super(DependencyType.LDAP, Importance.CRITICAL, LDAP_LABEL, ldapUrl);
+		super(DependencyType.LDAP, "LDAP", ldapUrl, Importance.WARNING);
 		this.ldapTemplate = ldapTemplate;
 	}
 	

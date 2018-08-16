@@ -6,8 +6,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.regoppslag.common.KompletterBrevdataRequest;
-import no.nav.regoppslag.common.KompletterBrevdataResponse;
+import no.nav.regoppslag.api.KompletterBrevdataRequest;
+import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;

@@ -3,6 +3,7 @@ package no.nav.regoppslag.xmlenricher.util;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import org.springframework.util.Assert;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
@@ -13,7 +14,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -30,6 +33,18 @@ public class JaxbHelper<T>{
 
 	public JaxbHelper(Class<T> jaxbClass) {
 		this.jaxbClass = jaxbClass;
+	}
+
+
+	public Document convertObjectToDocument(T object) throws ParserConfigurationException, MarshallerException {
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+		builderFactory.setNamespaceAware(true);
+
+		DocumentBuilder builder = builderFactory.newDocumentBuilder();
+		Document document = builder.newDocument();
+
+		Node node = marshal(object, document);
+		return  (Document) node;
 	}
 
 	public T unmarshal(Node node) throws MarshallerException {

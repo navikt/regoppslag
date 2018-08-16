@@ -12,10 +12,9 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
-import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.common.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.common.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
@@ -61,18 +60,17 @@ public class HentMottakerOgAdresseService {
 
 		try {
 			validateInput(request);
-			Mottaker mottaker = new Person();
-			mottaker.setId(request.getIdentifikator());
+			Mottaker mottaker;
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getUserId(), SERVICE_CODE_TREG002);
-				personV3Mapper.map(bruker, mottaker, SERVICE_CODE_TREG002);
+				mottaker = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
-				organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG002);
+				mottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG002);
 			}
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())

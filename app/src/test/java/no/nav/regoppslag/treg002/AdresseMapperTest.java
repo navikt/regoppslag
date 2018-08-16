@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
-import no.nav.regoppslag.common.Adresse;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class AdresseMapperTest {
 	
 	@Test
 	public void shouldMapWithNorskPostAdresse(){
-		Adresse adresse = adresseMapper.map(createMottaker());
+		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(createMottaker());
 		
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
@@ -56,7 +56,7 @@ public class AdresseMapperTest {
 	
 	@Test
 	public void shouldMapWithUtenlandskPostAdresse(){
-		Adresse adresse = adresseMapper.map(createMottaker(false));
+		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(createMottaker(false));
 		
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
@@ -73,7 +73,7 @@ public class AdresseMapperTest {
 		NorskPostadresse norskPostadresse = createNorskPostadresse();
 		norskPostadresse.setLand(null);
 		mottaker.setMottakeradresse(norskPostadresse);
-		Adresse adresse = adresseMapper.map(mottaker);
+		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(mottaker);
 
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));

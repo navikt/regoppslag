@@ -1,9 +1,8 @@
-package no.nav.regoppslag.nais.checkcore;
+package no.nav.regoppslag.nais.selftest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -12,9 +11,14 @@ import java.util.List;
 @Data
 public class DependencyCheckResult {
 	private String endpoint;
+	private Result result;
 	private String address;
 	private String errorMessage;
-	private List<Importance> importance;
-	private Result result;
 	private DependencyType type;
+	private Importance importance;
+	private String responseTime;
+
+	@JsonIgnore
+	private Throwable throwable;
+
 }

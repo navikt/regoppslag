@@ -2,12 +2,9 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
-import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.ORGV4_ORG_IKKE_FUNNET;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.PERSON_IKKE_FUNNET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.GENERELT;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
 import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
 import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
@@ -43,8 +40,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +95,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
+			Mottaker mappedMottaker = mottaker;
+
 			//Skal elementet berikes?
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
@@ -108,22 +105,17 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getUserId(), SERVICE_CODE_TREG001);
-					if (person == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. MottakerId=%s", PLUGIN_NAME, mottaker
-								.getId()), PLUGIN_NAME + " - " + PERSON_IKKE_FUNNET);
-					}
-					personV3Mapper.map(person, mottaker, SERVICE_CODE_TREG001);
-
+					mappedMottaker = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
-					if (organisasjon == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne organisasjon. MottakerId=%s", PLUGIN_NAME, mottaker
-								.getId()), PLUGIN_NAME + " - " + ORGV4_ORG_IKKE_FUNNET);
-					}
-					organisasjonV4Mapper.map(organisasjon, mottaker, SERVICE_CODE_TREG001);
+					mappedMottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG001);
 				}
+
+				mappedMottaker.setTypeKode(mottaker.getTypeKode());
+				mappedMottaker.setId(mottaker.getId());
+				mappedMottaker.setBerik(mottaker.isBerik());
 			}
 
 			//Sjekker språket på malen opp mot mottakers preferanser
@@ -131,21 +123,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					.inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
-				requestCounter.labels(SERVICE_CODE_TREG001, "ManglerSpraakInfo", GENERELT, getConsumerId(), dokumenttypeId)
-						.inc();
 				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
-			maalform.setMaalform(mottaker, sprakinfos);
+			mappedMottaker.setSpraakkode(maalform.getMaalform(mappedMottaker, sprakinfos));
 
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			builderFactory.setNamespaceAware(true);
-
-			DocumentBuilder builder = builderFactory.newDocumentBuilder();
-			Document document = builder.newDocument();
-
-			Node node = marshal(mottaker, document);
-			Document newNode = (Document) node;
+			Document newNode = convertObjectToDocument(mappedMottaker);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
@@ -155,7 +138,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
-
 		}
 
 	}

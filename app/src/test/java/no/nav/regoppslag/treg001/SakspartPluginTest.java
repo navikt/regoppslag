@@ -8,8 +8,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
-import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
@@ -153,41 +151,7 @@ public class SakspartPluginTest {
 		
 		assertThat(sakspart.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 	}
-	
-	@Test
-	public void shouldThrowExceptionWhenPersonIkkeFunnet() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i SakspartPlugin:  Kunne ikke finne person. ");
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
 
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'sakspart']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		sakspartPlugin.processElement(node, valueMap);
-	}
-	
-	@Test
-	public void shouldThrowExceptionWhenOrganisasjonIkkeFunnet() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i SakspartPlugin:  Kunne ikke finne organisasjon. ");
-		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA_ORG);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'sakspart']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		sakspartPlugin.processElement(node, valueMap);
-	}
-	
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
 		expectedException.expect(RegOppslagFunctionalException.class);

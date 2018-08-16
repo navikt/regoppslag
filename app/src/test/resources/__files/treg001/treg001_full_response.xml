@@ -2,7 +2,7 @@
 <brevdata>
 	<NAVFelles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles" xmlns:test="test"
 			   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		<mottaker xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+		<mottaker xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="true"
 				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:Person">
 			<ns1:id>20096828390</ns1:id>
 			<ns1:typeKode>PERSON</ns1:typeKode>

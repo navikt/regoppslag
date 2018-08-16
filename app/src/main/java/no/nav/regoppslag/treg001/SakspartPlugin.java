@@ -1,9 +1,7 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
-import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.ORGV4_ORG_IKKE_FUNNET;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.PERSON_IKKE_FUNNET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
@@ -38,8 +36,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -91,6 +87,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
 					.getId()));
 
+			Sakspart mappedSakspart = sakspart;
+
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
 				validateMottaker(sakspart);
@@ -99,33 +97,23 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getUserId(), SERVICE_CODE_TREG001);
-					if (person == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne person. SakspartId=%s", PLUGIN_NAME, sakspart
-								.getId()), "SakspartPlugin - " + PERSON_IKKE_FUNNET);
-					}
-
-					personV3Mapper.map(person, sakspart);
+					mappedSakspart = personV3Mapper.map(person);
 
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
-					if (organisasjon == null) {
-						throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne organisasjon. SakspartId=%s", PLUGIN_NAME, sakspart
-								.getId()), "SakspartPlugin - " + ORGV4_ORG_IKKE_FUNNET);
-					}
-					organisasjonV4Mapper.map(organisasjon, sakspart);
+					mappedSakspart = organisasjonV4Mapper.map(organisasjon);
 				}
+
+				mappedSakspart.setBerik(sakspart.isBerik());
+				mappedSakspart.setId(sakspart.getId());
+				mappedSakspart.setTypeKode(sakspart.getTypeKode());
 			}
 
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			builderFactory.setNamespaceAware(true);
 
-			DocumentBuilder builder = builderFactory.newDocumentBuilder();
-			Document document = builder.newDocument();
 
-			Node node = marshal(sakspart, document);
-			Document newNode = (Document) node;
+			Document newNode = convertObjectToDocument(mappedSakspart);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart

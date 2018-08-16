@@ -7,50 +7,54 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import java.util.List;
 
 public class Maalform {
-	public void setMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
+
+	public Spraakkode getMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
 		if (mottaker.getSpraakkode() == null) {
-			setMaalFormNaarBrukerIkkeHarSattMaalform(mottaker, spraakInfoMal);
+			return getMaalFormNaarBrukerIkkeHarSattMaalform(spraakInfoMal);
 		} else { //Bruker har ikke satt språk
-			setMaalFormNaarBrukerHarSattMaalform(mottaker, spraakInfoMal);
+			return getMaalFormNaarBrukerHarSattMaalform(mottaker, spraakInfoMal);
 		}
 	}
 
-	private void setMaalFormNaarBrukerHarSattMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
+	private Spraakkode getMaalFormNaarBrukerHarSattMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
 		if (spraakInfoMal == null) {
-			mottaker.setSpraakkode(Spraakkode.NB);
+			return Spraakkode.NB;
 		} else {
 			//Dersom malen inneholder mottakers prefererte språk, ingen endring
 			if (!malInneholderSpraak(spraakInfoMal, mottaker.getSpraakkode().value())) {
 				//Malen finnes ikke på mottakers prefererte språk
 				if ((Spraakkode.NN).equals(mottaker.getSpraakkode()) && malInneholderSpraak(spraakInfoMal, "NB")) {
 					//Har bruker satt nynorsk, men malen finnes på bokmål
-					mottaker.setSpraakkode(Spraakkode.NB);
+					return Spraakkode.NB;
 				} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
 					//Malen finnes på nynorsk
-					mottaker.setSpraakkode(Spraakkode.NN);
+					return Spraakkode.NN;
 				} else if (malInneholderSpraak(spraakInfoMal, "EN")) {
 					//Malen finnes på engelsk
-					mottaker.setSpraakkode(Spraakkode.EN);
+					return Spraakkode.EN;
 				} else {
 					//når alt annet feiler
-					mottaker.setSpraakkode(Spraakkode.NB);
+					return Spraakkode.NB;
 				}
 			}
+
+			return mottaker.getSpraakkode();
 		}
+
 	}
 
-	private void setMaalFormNaarBrukerIkkeHarSattMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
+	private Spraakkode getMaalFormNaarBrukerIkkeHarSattMaalform(List<SpraakInfoTo> spraakInfoMal) {
 		if (spraakInfoMal == null) {
-			mottaker.setSpraakkode(Spraakkode.NB);
+			return Spraakkode.NB;
 		} else {
 			if (malInneholderSpraak(spraakInfoMal, "NB")) {
-				mottaker.setSpraakkode(Spraakkode.NB);
+				return Spraakkode.NB;
 			} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
-				mottaker.setSpraakkode(Spraakkode.NN);
+				return Spraakkode.NN;
 			} else if (malInneholderSpraak(spraakInfoMal, "EN")) {
-				mottaker.setSpraakkode(Spraakkode.EN);
+				return Spraakkode.EN;
 			} else {
-				mottaker.setSpraakkode(Spraakkode.NB);
+				return Spraakkode.NB;
 			}
 		}
 	}

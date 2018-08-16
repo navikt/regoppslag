@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais.checkcore;
+package no.nav.regoppslag.nais;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
@@ -6,7 +6,6 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 

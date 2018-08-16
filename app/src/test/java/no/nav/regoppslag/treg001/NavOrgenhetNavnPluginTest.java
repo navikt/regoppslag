@@ -108,23 +108,6 @@ public class NavOrgenhetNavnPluginTest {
 		assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
 	}
 
-	@Test
-	public void throwFuncErrorWhenNavOrgenhentIkkeFunnet() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetNavnPlugin:  Kunne ikke finne enhet. EnhetsId=");
-		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-
-		Node node = findSingleNode(xPathExpression, document);
-		
-		norgPlugin.processElement(node, valueMap);
-	}
-
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
 		Organisasjonsenhet enhet = new Organisasjonsenhet();
 		enhet.setEnhetNavn(navEnhetNavn);

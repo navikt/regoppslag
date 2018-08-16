@@ -1,8 +1,7 @@
-package no.nav.regoppslag.nais.checkcore;
+package no.nav.regoppslag.nais;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.Bus;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.ws.security.SecurityConstants;
 import org.apache.cxf.ws.security.trust.STSClient;
 

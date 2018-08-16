@@ -84,8 +84,8 @@ public class Tkat020DokumenttypeInfo {
 			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
 					.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s", e
-					.getStatusCode(), dokumenttypeId), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
+			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s", e
+					.getStatusCode(), dokumenttypeId, e.getMessage()), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
 		} finally {
 			requestTimer.observeDuration();
 		}
