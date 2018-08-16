@@ -110,7 +110,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
-					mappedMottaker=organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG001);
+					mappedMottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG001);
 				}
 
 				mappedMottaker.setTypeKode(mottaker.getTypeKode());
@@ -119,7 +119,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			}
 
 			//Sjekker språket på malen opp mot mottakers preferanser
-			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL).inc();
+			requestCounter.labels(SERVICE_CODE_TREG001, HENT_DOKKAT_SPRAAKINFO, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
+					.inc();
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
 				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));

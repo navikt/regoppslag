@@ -50,8 +50,6 @@ public class OrganisasjonV4Mapper {
 	private final PostnummerService postnummerService;
 
 	private static final String LAND_NORGE = "Norge";
-	private static final String POSTNUMMER_0000 = "0000";
-	private static final String POSTSTED_UKJENT = "UKJENT/UNKNOWN";
 
 	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;

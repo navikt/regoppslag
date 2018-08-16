@@ -51,8 +51,6 @@ public class PersonV3Mapper {
 	private static final Pattern pattern = Pattern.compile("(\\d{4})");
 
 	private static final String LAND_NORGE = "Norge";
-	private static final String POSTNUMMER_0000 = "0000";
-	private static final String POSTSTED_UKJENT = "UKJENT/UNKNOWN";
 
 	public PersonV3Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;

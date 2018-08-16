@@ -66,14 +66,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 						.inc();
 				String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
 
-				if (saksbehandlerNavn == null) {
-					//Dette bør ikke skje
-					throw new RegOppslagFunctionalException(String.format("Feil i %s: Fant ikke saksbehandlernavn. AnsattId=%s", PLUGIN_NAME, navAnsatt
-							.getAnsattId()), PLUGIN_NAME + " - " + BRUKER_IKKE_FUNNET);
-				}
-
 				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
-
 			}
 
 			Document newNode = convertObjectToDocument(navAnsatt);

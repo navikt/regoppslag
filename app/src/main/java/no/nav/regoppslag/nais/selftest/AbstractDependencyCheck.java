@@ -36,7 +36,7 @@ public abstract class AbstractDependencyCheck {
 	protected String address;
 	private final CircuitBreakerRegistry circuitBreakerRegistry;
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
-	private final TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(2800)).cancelRunningFuture(true).build();
+	private final TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(3200)).cancelRunningFuture(true).build();
 	private final TimeLimiter timeLimiter = TimeLimiter.of(timeLimiterConfig);
 	private AtomicInteger dependency_status = new AtomicInteger();
 

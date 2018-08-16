@@ -16,6 +16,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -114,23 +115,6 @@ public class SaksbehandlerPluginTest {
 
 		assertThat(navAnsatt.getNavn(), is("Ikke Berik"));
 	}
-
-	@Test
-	public void throwFunctionalErceptionWhenSaksbehandlerNotFound() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i SaksbehandlerPlugin: Fant ikke saksbehandlernavn. AnsattId=");
-		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn(null);
-
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-
-		Node node = findSingleNode(xPathExpression, document);
-		saksbehandlerPlugin.processElement(node, valueMap);
-}
 
 	@Configuration
 	static class Config {

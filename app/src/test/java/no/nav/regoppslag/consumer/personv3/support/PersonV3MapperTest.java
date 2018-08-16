@@ -233,16 +233,6 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
 	}
 
-
-	@Test(expected = RegOppslagFunctionalException.class)
-	@Ignore
-	public void shouldThrowIfPersonPostadresseUtenPostnr() throws Exception {
-		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresse(person);
-		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("");
-		mapper.map(person, "");
-	}
-
 	@Test(expected = RegOppslagFunctionalException.class)
 	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
@@ -250,15 +240,6 @@ public class PersonV3MapperTest {
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, "");
-	}
-
-	@Test(expected = RegOppslagFunctionalException.class)
-	@Ignore
-	public void shouldThrowIfPersonPostboksadresseUtenPostnr() throws Exception {
-		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAressePostboks(person);
-		((PostboksadresseNorsk) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse()).setPoststed(null);
 		mapper.map(person, "");
 	}
 
