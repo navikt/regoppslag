@@ -38,7 +38,6 @@ public abstract class AbstractDependencyCheck {
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(3200)).cancelRunningFuture(true).build();
 	private final TimeLimiter timeLimiter = TimeLimiter.of(timeLimiterConfig);
-	private AtomicInteger dependency_status = new AtomicInteger();
 
 	public AbstractDependencyCheck(DependencyType type, String name, String address, Importance importance) {
 		this.type = type;
@@ -90,12 +89,6 @@ public abstract class AbstractDependencyCheck {
 			Long responseTime=Duration.between(start, end).toMillis();
 			return builder.result(Result.OK).responseTime(String.valueOf(responseTime)+"ms").build();
 		};
-	}
-
-	protected String getErrorMessage(Exception e){
-		String message=e.getMessage().trim();
-		String causeMessage=e.getCause()==null?"":": "+e.getCause().getMessage();
-		return message+causeMessage;
 	}
 
 }
