@@ -182,41 +182,6 @@ public class NavOrgenhetPluginTest {
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
 	}
-
-	@Test
-	public void throwFuncErrorWhenOrgEnhetIkkeFunnetPostadressePlugin() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetPostadressePlugin:  Kunne ikke finne enhet med enhetId=TKN5427");
-		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA1);
-		
-		Document document = loadDocument(xmlFile);
-		
-		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		norgPostadressePlugin.processElement(node, valueMap);
-	}
-	
-	@Test
-	public void throwFuncErrorWhenOrgEnhetIkkeFunnetBesoksadressePlugin() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i NavOrgenhetBesoksadressePlugin:  Kunne ikke finne enhet med enhetsId=TKN5427");
-		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA1);
-		
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		norgBesoksadressePlugin.processElement(node, valueMap);
-	}
-	
 	
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
 		Organisasjonsenhet enhet = new Organisasjonsenhet();

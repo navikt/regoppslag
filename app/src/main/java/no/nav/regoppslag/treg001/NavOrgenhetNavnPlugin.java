@@ -71,11 +71,6 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 						.inc();
 				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
-				if (wsEnhet == null) {
-					throw new RegOppslagFunctionalException(String.format("Feil i %s:  Kunne ikke finne enhet. EnhetsId=%s", PLUGIN_NAME, navEnhet
-							.getEnhetsId()), PLUGIN_NAME + " - " + KUNNE_IKKE_FINNE_ENHET);
-				}
-
 				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
 			}
 

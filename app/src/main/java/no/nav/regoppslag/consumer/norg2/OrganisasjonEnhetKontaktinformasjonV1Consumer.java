@@ -73,11 +73,11 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	}
 	
 	private Organisasjonsenhet mapHentKontaktinformasjonForEnhetBolkResponse(HentKontaktinformasjonForEnhetBolkResponse response, String enhetNr) throws HentKontaktinformasjonForEnhetBolkUgyldigInput {
-		if (response != null && response.getEnhetListe().size() == 1) {
+		if (!response.getEnhetListe().isEmpty()) {
 			return response.getEnhetListe().get(0);
-		} else if (response != null && !response.getFeiletEnhetListe().isEmpty()) {
-			throw new HentKontaktinformasjonForEnhetBolkUgyldigInput("Nav enhet finnes ikke for enhetNr=" + enhetNr, null);
+		} else if (!response.getFeiletEnhetListe().isEmpty()) {
+			throw new HentKontaktinformasjonForEnhetBolkUgyldigInput("Nav enhet finnes ikke for enhetNr=" + enhetNr + " Feilmelding="+response.getFeiletEnhetListe().get(0).getFeilmelding(), null);
 		}
-		return null;
+		throw new HentKontaktinformasjonForEnhetBolkUgyldigInput("Nav enhet finnes ikke for enhetNr=" + enhetNr, null);
 	}
 }

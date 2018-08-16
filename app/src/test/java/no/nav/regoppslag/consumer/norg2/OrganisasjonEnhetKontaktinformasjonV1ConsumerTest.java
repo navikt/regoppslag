@@ -40,17 +40,6 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 	}
 
 	@Test
-	public void shouldReturnNullWhenEmptyEnhetListe() throws Exception{
-		HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
-		response.getEnhetListe().clear();
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
-
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-
-		assertThat(enhet, nullValue());
-	}
-
-	@Test
 	public void shouldReturnNullWhenNameNotInResponse() throws Exception{
 		HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
 		response.getEnhetListe().get(0).setEnhetNavn(null);
