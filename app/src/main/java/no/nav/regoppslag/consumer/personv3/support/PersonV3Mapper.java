@@ -57,15 +57,13 @@ public class PersonV3Mapper {
 		this.postnummerService = postnummerService;
 	}
 
-	public Sakspart map(Bruker person) {
-		Sakspart sakspart = new Sakspart();
+	public String getSakspartNavn(Bruker person) {
 		if (person.getPersonnavn().getMellomnavn() == null) {
-			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn());
+			return person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn();
 		} else {
-			sakspart.setNavn(person.getPersonnavn().getFornavn() + " " + person.getPersonnavn()
-					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn());
+			return person.getPersonnavn().getFornavn() + " " + person.getPersonnavn()
+					.getMellomnavn() + " " + person.getPersonnavn().getEtternavn();
 		}
-		return sakspart;
 	}
 
 	public Mottaker map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
@@ -290,6 +288,7 @@ public class PersonV3Mapper {
 					.getStrukturertAdresse();
 			postadresse.setAdresselinje1("Postboks " + postboksadresse.getPostboksnummer());
 		}
+
 		if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse() instanceof StedsadresseNorge) {
 			StedsadresseNorge stedsadresseNorge = (StedsadresseNorge) ((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse())
 					.getStrukturertAdresse();
@@ -305,6 +304,7 @@ public class PersonV3Mapper {
 				postadresse.setPoststed(postnummerService.finnPoststed(postboksadresseNorsk.getPoststed().getValue()));
 			}
 		}
+
 		if (((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse()).getStrukturertAdresse().getLandkode() != null) {
 			postadresse.setLand(landkodeService.finnLandnavn(((MidlertidigPostadresseNorge) person.getMidlertidigPostadresse())
 					.getStrukturertAdresse()

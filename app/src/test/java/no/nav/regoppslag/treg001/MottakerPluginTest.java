@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001;
 
+import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +74,9 @@ public class MottakerPluginTest {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "nb";
-	
+	private static final String SPRAAK_AA = "AA";
+	private static final String MOTTAKER_ID = "30085849677";
+
 	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
@@ -139,6 +142,8 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(mottaker.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
+		assertThat(mottaker.getId(), is(MOTTAKER_ID));
+		assertThat(mottaker.getTypeKode(), is(PERSON));
 		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is("ikkeberiket linje1"));
 	}
 

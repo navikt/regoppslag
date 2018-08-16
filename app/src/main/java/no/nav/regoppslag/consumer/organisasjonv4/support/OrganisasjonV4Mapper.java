@@ -56,13 +56,11 @@ public class OrganisasjonV4Mapper {
 		this.postnummerService = postnummerService;
 	}
 
-	public Sakspart map(Organisasjon wsOrganisasjon) {
-		Sakspart sakspart = new Sakspart();
+	public String getSakspartNavn(Organisasjon wsOrganisasjon) {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		sakspart.setNavn(StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
+		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
 				.get(0)
-				.getNavn()).getNavnelinje(), " ").trim());
-		return sakspart;
+				.getNavn()).getNavnelinje(), " ").trim();
 	}
 
 
@@ -120,10 +118,12 @@ public class OrganisasjonV4Mapper {
 		}
 		return null;
 	}
+
 	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
 		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ")
 				.trim();
 	}
+
 	private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) {
 		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
 				.get(0)

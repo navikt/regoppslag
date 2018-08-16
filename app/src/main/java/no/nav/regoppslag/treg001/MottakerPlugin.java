@@ -95,12 +95,10 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
-			Mottaker mappedMottaker = mottaker;
-
 			//Skal elementet berikes?
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
-
+				Mottaker mappedMottaker;
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
@@ -113,9 +111,12 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					mappedMottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG001);
 				}
 
-				mappedMottaker.setTypeKode(mottaker.getTypeKode());
-				mappedMottaker.setId(mottaker.getId());
-				mappedMottaker.setBerik(mottaker.isBerik());
+				mottaker.setMottakeradresse(mappedMottaker.getMottakeradresse());
+				mottaker.setKortNavn(mappedMottaker.getKortNavn());
+				mottaker.setNavn(mappedMottaker.getNavn());
+				if (mappedMottaker.getSpraakkode()!=null) {
+					mottaker.setSpraakkode(mappedMottaker.getSpraakkode());
+				}
 			}
 
 			//Sjekker språket på malen opp mot mottakers preferanser
@@ -126,9 +127,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
-			mappedMottaker.setSpraakkode(maalform.getMaalform(mappedMottaker, sprakinfos));
+			mottaker.setSpraakkode(maalform.getMaalform(mottaker, sprakinfos));
 
-			Document newNode = convertObjectToDocument(mappedMottaker);
+			Document newNode = convertObjectToDocument(mottaker);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));

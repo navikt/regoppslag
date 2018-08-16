@@ -86,9 +86,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			Sakspart sakspart = unmarshal(content);
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
 					.getId()));
-
-			Sakspart mappedSakspart = sakspart;
-
+			
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
 				validateMottaker(sakspart);
@@ -97,23 +95,17 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getUserId(), SERVICE_CODE_TREG001);
-					mappedSakspart = personV3Mapper.map(person);
+					sakspart.setNavn(personV3Mapper.getSakspartNavn(person));
 
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
-					mappedSakspart = organisasjonV4Mapper.map(organisasjon);
+					sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
 				}
-
-				mappedSakspart.setBerik(sakspart.isBerik());
-				mappedSakspart.setId(sakspart.getId());
-				mappedSakspart.setTypeKode(sakspart.getTypeKode());
 			}
 
-
-
-			Document newNode = convertObjectToDocument(mappedSakspart);
+			Document newNode = convertObjectToDocument(sakspart);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
