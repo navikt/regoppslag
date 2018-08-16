@@ -14,7 +14,57 @@
     "redigerbarMalId" : null,
     "malLogikkFil" : "Arena",
     "malXsdReferanse" : "arenabrev/Allow_Any_All.xsd",
-    "spraakInfos" : [ ],
+    "spraakInfos" : [
+      {
+        "spraaklag": "NB",
+        "changeStamp": {
+          "opprettetAv": "srvdokkat",
+          "opprettetDato": [
+            2018,
+            7,
+            3,
+            12,
+            4,
+            42,
+            602000000
+          ],
+          "endretAv": null,
+          "endretDato": null
+        }
+      },{
+      "spraaklag": "EN",
+      "changeStamp": {
+        "opprettetAv": "srvdokkat",
+        "opprettetDato": [
+          2018,
+          7,
+          3,
+          12,
+          4,
+          42,
+          602000000
+        ],
+        "endretAv": null,
+        "endretDato": null
+      }
+    },
+      {
+        "spraaklag": "NN",
+        "changeStamp": {
+          "opprettetAv": "srvdokkat",
+          "opprettetDato": [
+            2018,
+            7,
+            3,
+            12,
+            4,
+            42,
+            602000000
+          ],
+          "endretAv": null,
+          "endretDato": null
+        }
+      }],
     "distribusjonInfo" : {
       "predefinertDistKanal" : "VED_DITT_NAV_OGSA_PRINT",
       "portoklasse" : "A",

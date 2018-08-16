@@ -99,6 +99,16 @@ public class Treg001IT extends AbstractIT {
 		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
+
+	@Test
+	public void shouldGetKomplettBrevdataPersonMaalFormEN() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_en.xml"))); //mottakerPlugin
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, request, KompletterBrevdataResponse.class);
+		assertEquals(resourceUrlToString(Resources.getResource("__files/treg001/treg001_response_maalform_en.xml")).replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
 	
 	/**
 	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
