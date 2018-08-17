@@ -68,6 +68,12 @@ public class OrganisasjonV4MapperTest {
 	private static final String MAALFORM = "NO";
 	private static final String SERVICECODE = "SERVICECODE";
 
+	@Test
+	public void shouldMapSakspartnavn() {
+		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		String navn = mapper.getSakspartNavn(org);
+		assertThat(navn, is(ORGNAVN + " " + ORGNAVN_2));
+	}
 
 	@Test
 	public void simpleMapping() throws Exception {

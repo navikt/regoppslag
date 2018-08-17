@@ -71,7 +71,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new HentKontaktinformasjonForEnhetBolkUgyldigInput("Ugyldig input", new UgyldigInput()));
 
 		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Nav enhet finnes ikke for enhetNr="+ENHET_NR+", message=Ugyldig input");
+		expectedException.expectMessage("Ugyldig input");
 
 		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 

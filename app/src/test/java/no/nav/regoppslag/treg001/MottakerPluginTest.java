@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001;
 
+import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
@@ -33,6 +35,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,6 +62,7 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MottakerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_MOTTAKER_SPRAAKKODE_EN = "src/test/resources/brevdata/brevdata_mottaker_spraakkode_en.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
 	public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
@@ -73,7 +77,7 @@ public class MottakerPluginTest {
 	private static final String ORGKORTNAVN = "OrgKortnavn 1";
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
-	private static final String SPRAAK_NB = "nb";
+	private static final String SPRAAK_NB = "NB";
 	private static final String SPRAAK_AA = "AA";
 	private static final String MOTTAKER_ID = "30085849677";
 
@@ -104,6 +108,7 @@ public class MottakerPluginTest {
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
+
 	}
 
 	@Test
@@ -123,6 +128,55 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 		
 		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+	}
+
+	@Test
+	public void shouldUsePersonMaalform() throws Exception {
+		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+
+		Spraak spraak = new Spraak();
+		spraak.setValue("EN");
+		person.setMaalform(spraak);
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'mottaker']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, valueMap);
+
+		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+		assertThat(mottaker.getSpraakkode().value(), is("EN"));
+	}
+
+	@Test
+	public void shouldUseMottakerMaalform() throws Exception {
+		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+
+		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB,"EN")));
+
+		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'mottaker']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = mottakerPlugin.processElement(node, valueMap);
+
+		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+		assertThat(mottaker.getSpraakkode().value(), is("EN"));
 	}
 
 	@Test
@@ -149,6 +203,8 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList("NN")));
+
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);
 
@@ -163,6 +219,10 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 		
 		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottaker.getTypeKode(), is(ORGANISASJON));
+		assertThat(mottaker.getId(), is("974727854"));
+		assertThat(mottaker.getKortNavn(), is("OrgKortnavn 1 OrgKortnavn_2"));
+		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
 	}
 
 	
@@ -212,6 +272,7 @@ public class MottakerPluginTest {
 		Bruker person = new Bruker();
 		person.setPersonnavn(personnavn);
 		settPostadresse(person);
+
 		return person;
 	}
 	private void settPostadresse(Bruker person) {
@@ -236,7 +297,7 @@ public class MottakerPluginTest {
 		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
 		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
 		organisasjon.setNavn(organisasjonKortnavn);
-		
+
 		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
 		orgDetNavn.getNavnelinje().addAll(orgNavn);
 		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();

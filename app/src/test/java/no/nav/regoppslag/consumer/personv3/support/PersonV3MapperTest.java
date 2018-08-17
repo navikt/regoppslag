@@ -75,6 +75,20 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
+	public void shouldMapSakspartNavn() {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		String navn = mapper.getSakspartNavn(person);
+		assertThat(navn, is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
+	}
+
+	@Test
+	public void shouldMapSakspartNavnWithoutMellomNavn() {
+		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+		String navn = mapper.getSakspartNavn(person);
+		assertThat(navn, is(FORNAVN + " " + ETTERNAVN));
+	}
+
+	@Test
 	public void simpleMapping() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);

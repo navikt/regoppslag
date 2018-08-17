@@ -56,8 +56,8 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
-			throw new RegOppslagFunctionalException(String.format("Nav enhet finnes ikke for enhetNr=%s, message=%s", enhetNr, hentKontaktinformasjonForEnhetBolkUgyldigInput
-					.getMessage()), hentKontaktinformasjonForEnhetBolkUgyldigInput, KUNNE_IKKE_FINNE_ENHET);
+			throw new RegOppslagFunctionalException(hentKontaktinformasjonForEnhetBolkUgyldigInput
+					.getMessage(), hentKontaktinformasjonForEnhetBolkUgyldigInput, KUNNE_IKKE_FINNE_ENHET);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til Norg for enhetNr=%s, message=%s", enhetNr, e
 					.getMessage()), e, "NORG2 - Teknisk feil");

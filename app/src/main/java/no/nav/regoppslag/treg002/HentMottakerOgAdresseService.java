@@ -105,10 +105,10 @@ public class HentMottakerOgAdresseService {
 
 	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
-			log.info(String.format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
+			log.warn(String.format("TREG002 Funksjonell feil: %s", e.getMessage()));
 			throw (RegOppslagFunctionalException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
-			log.info(String.format("TREG002 Sikkerhetsfeil: %s", e.getMessage()), e);
+			log.warn(String.format("TREG002 Sikkerhetsfeil: %s", e.getMessage()));
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
 			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
