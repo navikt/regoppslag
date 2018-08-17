@@ -13,6 +13,7 @@
 					<exclude>org\.springframework\.retry\..*</exclude>
 					<exclude>io\.reactivex\.internal\.*</exclude>
 					<exclude>sun\.net\.www\..*</exclude>
+					<rootCauseFirst>true</rootCauseFirst>
 				</throwableConverter>
 			</encoder>
 		</appender>
