@@ -9,7 +9,8 @@
 					<exclude>org\.apache\.coyote\..*</exclude>
 					<exclude>org\.apache\.catalina\..*</exclude>
 					<exclude>org\.springframework\.web\..*</exclude>
-					<exclude>org\.springframework\.cache\.interceptor\..*</exclude>
+					<exclude>org\.springframework\.aop\..*</exclude>
+					<exclude>org\.springframework\.retry\..*</exclude>
 					<exclude>io\.reactivex\.internal\.*</exclude>
 					<exclude>sun\.net\.www\..*</exclude>
 				</throwableConverter>
@@ -24,9 +25,8 @@
 			<appender-ref ref="stdout_json"/>
 		</logger>
 
-	<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
-		<appender-ref ref="stdout_json"/>
-	</logger>
+		<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
+			<appender-ref ref="stdout_json"/>
+		</logger>
 
-		<logger name="org.springframework" level="INFO"/>
 </configuration>
