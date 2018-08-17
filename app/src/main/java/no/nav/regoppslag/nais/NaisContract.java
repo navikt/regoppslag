@@ -53,7 +53,7 @@ public class NaisContract {
 		return APPLICATION_ALIVE;
 	}
 
-	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
+	@RequestMapping(value = "/isReady")
 	public ResponseEntity isReady() throws Exception {
 		List<DependencyCheckResult> results = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class NaisContract {
 		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
 	}
 
-	@GetMapping("/internal/selftest")
+	@GetMapping(value = "/internal/selftest", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	SelftestResult selftest() throws Exception {
 		List<DependencyCheckResult> results = new ArrayList<>();
