@@ -73,11 +73,11 @@ public class PersonV3Mapper {
 		mottaker.setKortNavn(getMottakerKortNavn(person));
 		mottaker.setNavn(getMottakerNavn(person));
 
-		Postadresse postadresse = mapAdresse(person, serviceCode);
+		Postadresse postadresse = mapAdresse(person);
 
 		incrementFunctionalMetrics(person, postadresse, serviceCode);
 
-		validateAdresse(person, postadresse);
+		validateAdresse(person, postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand())) {
 			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
@@ -102,7 +102,7 @@ public class PersonV3Mapper {
 		return null;
 	}
 
-	private Postadresse mapAdresse(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
+	private Postadresse mapAdresse(Bruker person) throws RegOppslagFunctionalException {
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getBostedsadresse() != null) {
@@ -116,8 +116,6 @@ public class PersonV3Mapper {
 			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
 				return mapMidlertidigNorge(person);
-			} else if ("UKJENT_ADRESSE".equals(person.getGjeldendePostadressetype().getValue())) {
-				throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 			}
 		}
 
@@ -158,7 +156,11 @@ public class PersonV3Mapper {
 
 	}
 
-	private void validateAdresse(Bruker person, Postadresse postadresse) throws RegOppslagFunctionalException {
+	private void validateAdresse(Bruker person, Postadresse postadresse, String serviceCode) throws RegOppslagFunctionalException {
+
+		if (person.getGjeldendePostadressetype()!=null && "UKJENT_ADRESSE".equals(person.getGjeldendePostadressetype().getValue())) {
+			throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
+		}
 
 		if (isBlankPostadresse(postadresse)) {
 			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person

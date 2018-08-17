@@ -257,6 +257,16 @@ public class PersonV3MapperTest {
 		mapper.map(person, "");
 	}
 
+	@Test(expected = RegOppslagFunctionalException.class)
+	public void shouldThrowIfUkjentAdresse() throws Exception {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresse(person);
+		Postadressetyper postadressetyper = new Postadressetyper();
+		postadressetyper.setValue("UKJENT_ADRESSE");
+		person.setGjeldendePostadressetype(postadressetyper);
+		mapper.map(person, "");
+	}
+
 	@Test
 	public void shouldNotThrowIfNotMissingPostnrButMissingAdresseLinje1() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);

@@ -171,6 +171,24 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldThrowWhenPersonHasUkjentAdresse() throws Exception {
+
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-gjeldende_adresse_ukjent.xml"))); //mottakerPlugin
+
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+			fail("Test did not throw exception");
+		} catch (HttpClientErrorException e) {
+			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
+		}
+
+	}
+
+	@Test
 	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() throws Exception {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
