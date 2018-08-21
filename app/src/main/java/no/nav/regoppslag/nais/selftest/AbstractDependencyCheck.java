@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 /**
@@ -67,7 +67,7 @@ public abstract class AbstractDependencyCheck {
 						.type(getType())
 						.importance(getImportance())
 						.result(getImportance().equals(Importance.CRITICAL) ? Result.ERROR : Result.WARNING)
-						.errorMessage("Call to dependency=" + getName() +" timed out or circuitbreaker tripped. ErrorMessage="+throwable.getCause().getMessage())
+						.errorMessage("Call to dependency=" + getName() +" timed out or circuitbreaker tripped. ErrorMessage="+getErrorMessageFromThrowable(throwable))
 						.throwable(throwable)
 						.build()
 				);
@@ -89,6 +89,13 @@ public abstract class AbstractDependencyCheck {
 			Long responseTime=Duration.between(start, end).toMillis();
 			return builder.result(Result.OK).responseTime(String.valueOf(responseTime)+"ms").build();
 		};
+	}
+
+	protected String getErrorMessageFromThrowable(Throwable e) {
+		if (e instanceof TimeoutException) {
+			return "Call to dependency timed out by circuitbreaker";
+		}
+		return e.getCause()==null?e.getMessage():e.getCause().getMessage();
 	}
 
 }
