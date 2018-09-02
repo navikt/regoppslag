@@ -4,6 +4,16 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.util.TestDataUtil.GATENAVN;
+import static no.nav.regoppslag.util.TestDataUtil.HUSBOKSTAV;
+import static no.nav.regoppslag.util.TestDataUtil.HUSNR;
+import static no.nav.regoppslag.util.TestDataUtil.POSTNR;
+import static no.nav.regoppslag.util.TestDataUtil.SEMIADR1;
+import static no.nav.regoppslag.util.TestDataUtil.SEMIADR2;
+import static no.nav.regoppslag.util.TestDataUtil.SEMIADR3;
+import static no.nav.regoppslag.util.TestDataUtil.createOrganisasjon;
+import static no.nav.regoppslag.util.TestDataUtil.settSemistrukturertAdresse;
+import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -12,6 +22,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
@@ -32,282 +43,196 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class OrganisasjonV4MapperTest {
 
-	private PostnummerService postnummerService = new PostnummerService();
-	private LandkodeService landkodeService= new LandkodeService();
-	private OrganisasjonV4Mapper mapper;
+    private static final long VALID_SECONDS = 10000;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private PostnummerService postnummerService = new PostnummerService();
+    private LandkodeService landkodeService = new LandkodeService();
+    private OrganisasjonV4Mapper mapper;
 
-	@Before
-	public	void initPostnummer() throws Exception {
-		postnummerService.init();
-		mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
-	}
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private static final String FNR = "12345678901";
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
-	private static final String GATENAVN = "Gatenavn";
-	private static final int HUSNR = 13;
-	private static final String HUSBOKSTAV = "X";
-	private static final String SEMIADR1 = "Semistrukturert adresselinje 1";
-	private static final String SEMIADR2 = "Semistrukturert adresselinje 2";
-	private static final String SEMIADR3 = "Semistrukturert adresselinje 3";
-	private static final String SEMIADR4 = "Semistrukturert adresselinje 4";
-	private static final String POSTNR = "5460";
-	private static final String POSTSTED = "HUSNES";
-	private static final String LANDKODE = "NOR";
-	private static final String LAND = "Norge";
-	private static final String MAALFORM = "NO";
-	private static final String SERVICECODE = "SERVICECODE";
+    @Before
+    public void initPostnummer() throws Exception {
+        postnummerService.init();
+        mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
+    }
 
-	@Test
-	public void shouldMapSakspartnavn() {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		String navn = mapper.getSakspartNavn(org);
-		assertThat(navn, is(ORGNAVN + " " + ORGNAVN_2));
-	}
+    private static final String ORGNAVN = "Orgnavn 1";
+    private static final String ORGNAVN_2 = "Orgnavn_2";
+    private static final String ORGKORTNAVN = "OrgKortnavn 1";
+    private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+    private static final String POSTSTED = "HUSNES";
+    private static final String LAND = "Norge";
+    private static final String SERVICECODE = "SERVICECODE";
 
-	@Test
-	public void simpleMapping() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		Mottaker mottaker = mapper.map(org, SERVICECODE);
-		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-	}
+    @Test
+    public void shouldMapSakspartnavn() {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        String navn = mapper.getSakspartNavn(org);
+        assertThat(navn, is(ORGNAVN + " " + ORGNAVN_2));
+    }
 
-	@Test
-	public void mapOrganisasjonSemistrukturertPostadresse() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settSemistrukturertAdresse(org, "POSTADRESSE");
-		Mottaker mottaker =mapper.map(org, SERVICECODE);
-		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
-	}
+    @Test
+    public void shouldThrowWhenMissingAdresse() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
-	@Test
-	public void mapOrganisasjonSemistrukturertForretningsadresse() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settSemistrukturertAdresse(org, "FORRETNINGSADRESSE");
-		Mottaker mottaker = mapper.map(org, SERVICECODE);
-		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
-	}
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+    }
 
-	@Test
-	public void mapOrganisasjonStrukturertPostadresse() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
-		Mottaker mottaker =mapper.map(org, SERVICECODE);
-		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
-	}
+    @Test
+    public void shouldThrowWhenExpiredAdresse() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
-	@Test
-	public void mapOrganisasjonStrukturertForretningsadresse() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "FORRETNINGSADRESSE");
-		Mottaker mottaker = mapper.map(org, SERVICECODE);
-		assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
-	}
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settSemistrukturertAdresse(org, "POSTADRESSE", -20000);
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+    }
 
-	@Test
-	public void mapPersonPostadresseUtenPostnr() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
-		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
-		Mottaker mottaker = mapper.map(org, SERVICECODE);
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
-	}
+    @Test
+    public void shouldThrowMissingGateNavn() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Mangelfull adresse: mangler gatenavn");
 
-	@Test
-	public void mapPersonPostadresseUtenPostnra() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
-		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
-		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setGatenavn(null);
+        mapper.map(org, SERVICECODE);
+    }
 
-		Mottaker mottaker = mapper.map(org, SERVICECODE);
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
-		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
-	}
+    @Test
+    public void shouldThrowMissingHusnummer() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Mangelfull adresse: mangler husnummer");
 
-	@Test
-	public void testFunctionalMetrics() throws Exception {
-		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
-		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
-		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setHusnummer(null);
+        mapper.map(org, SERVICECODE);
+    }
 
-		mapper.map(org, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+    @Test
+    public void shouldThrowMissingPoststed() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Mangelfull adresse: mangler poststed");
 
-		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("SE"));
-		mapper.map(org, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
-	}
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(null);
+        mapper.map(org, SERVICECODE);
+    }
 
-	private Landkoder createLandkode(String landkode) {
-		Landkoder landkoder = new Landkoder();
-		landkoder.setValue(landkode);
-		landkoder.setKodeRef(landkode);
-		landkoder.setKodeverksRef(landkode);
-		return landkoder;
-	}
+    @Test
+    public void shouldThrowMissingLandkode() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Mangelfull adresse: mangler landkode");
 
-	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
-		Organisasjon organisasjon = new Organisasjon();
-		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
-		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
-		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
-		organisasjon.setNavn(organisasjonKortnavn);
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        (org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
+        mapper.map(org, SERVICECODE);
+    }
 
-		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
-		orgDetNavn.getNavnelinje().addAll(orgNavn);
-		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
-		organisasjonsnavn.setNavn(orgDetNavn);
-		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
-		Maalformer maalformer = new Maalformer();
-		maalformer.setKodeRef(MAALFORM);
-		maalformer.setValue(MAALFORM);
-		organisasjonsDetaljer.setGjeldendeMaalform(maalformer);
-		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
+    @Test
+    public void mapOrganisasjonSemistrukturertPostadresse() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settSemistrukturertAdresse(org, "POSTADRESSE", VALID_SECONDS);
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+    }
 
-		return organisasjon;
-	}
+    @Test
+    public void mapOrganisasjonSemistrukturertForretningsadresse() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settSemistrukturertAdresse(org, "FORRETNINGSADRESSE", VALID_SECONDS);
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(SEMIADR1));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(SEMIADR2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), is(SEMIADR3));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+    }
 
-	private void settSemistrukturertAdresse(Organisasjon org, String adressetype) {
-		SemistrukturertAdresse semistrukturertAdresse = new SemistrukturertAdresse();
+    @Test
+    public void mapOrganisasjonStrukturertPostadresse() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+    }
 
-		//Adresselinje1
-		NoekkelVerdiAdresse noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		NoeklerAdresseleddSemistrukturerteAdresser noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("adresselinje1");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(SEMIADR1);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+    @Test
+    public void mapOrganisasjonStrukturertForretningsadresse() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "FORRETNINGSADRESSE");
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+    }
 
-		//Adresselinje2
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("adresselinje2");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(SEMIADR2);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+    @Test
+    public void mapPersonPostadresseUtenPostnr() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        ((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
+    }
 
-		//Adresselinje3
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("Adresse 3 split 1");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(SEMIADR3);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+    @Test
+    public void testFunctionalMetrics() throws Exception {
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        ((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 
-		//Adresselinje4
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("Adresse 3 split 2");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(SEMIADR4);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+        mapper.map(org, "T");
+        assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
 
-		//Postnr
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("postnr");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(POSTNR);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+        (org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("SE"));
+        mapper.map(org, "T");
+        assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+    }
 
-		//Poststed
-		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-		noekkel.setKodeRef("poststed");
-		noekkelVerdiAdresse.setNoekkel(noekkel);
-		noekkelVerdiAdresse.setVerdi(POSTSTED);
-		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+    private Landkoder createLandkode(String landkode) {
+        Landkoder landkoder = new Landkoder();
+        landkoder.setValue(landkode);
+        landkoder.setKodeRef(landkode);
+        landkoder.setKodeverksRef(landkode);
+        return landkoder;
+    }
 
-
-		Landkoder landkoder = new Landkoder();
-		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LANDKODE);
-		semistrukturertAdresse.setLandkode(landkoder);
-
-		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
-
-		if ("POSTADRESSE".equals(adressetype)) {
-			orgdet.getPostadresse().add(semistrukturertAdresse);
-		} else {
-			orgdet.getForretningsadresse().add(semistrukturertAdresse);
-		}
-		org.setOrganisasjonDetaljer(orgdet);
-	}
-
-	private void settStrukturertAdresse(Organisasjon org, String adressetype) {
-
-		Gateadresse gateadresse = new Gateadresse();
-		gateadresse.setGatenavn(GATENAVN);
-		gateadresse.setHusnummer(HUSNR);
-		gateadresse.setHusbokstav(HUSBOKSTAV);
-
-
-		Postnummer postnummer = new Postnummer();
-		postnummer.setKodeRef(POSTNR);
-		postnummer.setValue(POSTSTED);
-		StedsadresseNorge stedsadresseNorge = gateadresse;
-		stedsadresseNorge.setPoststed(postnummer);
-
-		Landkoder landkoder = new Landkoder();
-		landkoder.setKodeRef(LANDKODE);
-		landkoder.setValue(LANDKODE);
-		stedsadresseNorge.setLandkode(landkoder);
-
-		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
-		if ("POSTADRESSE".equals(adressetype)) {
-			orgdet.getPostadresse().add(stedsadresseNorge);
-		} else {
-			orgdet.getForretningsadresse().add(stedsadresseNorge);
-		}
-		org.setOrganisasjonDetaljer(orgdet);
-	}
-
-	private Mottaker createMottaker(String orgnr) {
-		Person mottaker = new Person();
-		mottaker.setId(orgnr);
-		mottaker.setTypeKode(AktoerType.ORGANISASJON);
-		return mottaker;
-	}
 }

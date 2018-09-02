@@ -4,6 +4,26 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Landkoder;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdresse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoeklerAdresseleddSemistrukturerteAdresser;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -11,12 +31,21 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 public class TestDataUtil {
 	
 	
-	public static String ADRESSELINJE1="linje1";
-	public static String ADRESSELINJE2="linje2";
-	public static String ADRESSELINJE3="linje3";
-	public static String LANDKODE="NO";
-	public static String POSTNUMMER="3000";
-	public static String POSTSTED="HER";
+	public static final String ADRESSELINJE1="linje1";
+	public static final String ADRESSELINJE2="linje2";
+	public static final String ADRESSELINJE3="linje3";
+	public static final String LANDKODE="NO";
+	public static final String POSTNUMMER="3000";
+	public static final String POSTSTED="HER";
+	public static final String GATENAVN = "Gatenavn";
+	public static final int HUSNR = 13;
+	public static final String HUSBOKSTAV = "X";
+	public static final String POSTNR = "5460";
+	public static final String MAALFORM = "NO";
+	public static final String SEMIADR1 = "Semistrukturert adresselinje 1";
+	public static final String SEMIADR2 = "Semistrukturert adresselinje 2";
+	public static final String SEMIADR3 = "Semistrukturert adresselinje 3";
+	public static final String SEMIADR4 = "Semistrukturert adresselinje 4";
 	
 	public static Mottaker createMottaker( ) {
 		return createMottaker(true);
@@ -52,6 +81,137 @@ public class TestDataUtil {
 		utenlandskPostadresse.setLand(LANDKODE);
 		return utenlandskPostadresse;
 	}
-	
-	
+
+	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+		Organisasjon organisasjon = new Organisasjon();
+		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
+		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
+		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
+		organisasjon.setNavn(organisasjonKortnavn);
+
+		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
+		orgDetNavn.getNavnelinje().addAll(orgNavn);
+		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
+		organisasjonsnavn.setNavn(orgDetNavn);
+		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
+		Maalformer maalformer = new Maalformer();
+		maalformer.setKodeRef(MAALFORM);
+		maalformer.setValue(MAALFORM);
+		organisasjonsDetaljer.setGjeldendeMaalform(maalformer);
+		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
+
+		return organisasjon;
+	}
+
+	public static void settStrukturertAdresse(Organisasjon org, String adressetype) throws DatatypeConfigurationException {
+
+		Gateadresse gateadresse = new Gateadresse();
+		gateadresse.setGatenavn(GATENAVN);
+		gateadresse.setHusnummer(HUSNR);
+		gateadresse.setHusbokstav(HUSBOKSTAV);
+
+		gateadresse.setFomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+		gateadresse.setTomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(10000))));
+
+		gateadresse.setFomBruksperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+		gateadresse.setTomBruksperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(10000))));
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTSTED);
+		StedsadresseNorge stedsadresseNorge = gateadresse;
+		stedsadresseNorge.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		stedsadresseNorge.setLandkode(landkoder);
+
+		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
+		if ("POSTADRESSE".equals(adressetype)) {
+			orgdet.getPostadresse().add(stedsadresseNorge);
+		} else {
+			orgdet.getForretningsadresse().add(stedsadresseNorge);
+		}
+		org.setOrganisasjonDetaljer(orgdet);
+	}
+
+	public static void settSemistrukturertAdresse(Organisasjon org, String adressetype, long validSeconds) throws DatatypeConfigurationException {
+		SemistrukturertAdresse semistrukturertAdresse = new SemistrukturertAdresse();
+
+		semistrukturertAdresse.setFomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(validSeconds))));
+		semistrukturertAdresse.setTomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(validSeconds))));
+
+		semistrukturertAdresse.setFomBruksperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(validSeconds))));
+		semistrukturertAdresse.setTomBruksperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(validSeconds))));
+
+		//Adresselinje1
+		NoekkelVerdiAdresse noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		NoeklerAdresseleddSemistrukturerteAdresser noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("adresselinje1");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(SEMIADR1);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+		//Adresselinje2
+		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("adresselinje2");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(SEMIADR2);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+		//Adresselinje3
+		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("Adresse 3 split 1");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(SEMIADR3);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+		//Adresselinje4
+		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("Adresse 3 split 2");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(SEMIADR4);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+		//Postnr
+		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("postnr");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(POSTNR);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+		//Poststed
+		noekkelVerdiAdresse = new NoekkelVerdiAdresse();
+		noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
+		noekkel.setKodeRef("poststed");
+		noekkelVerdiAdresse.setNoekkel(noekkel);
+		noekkelVerdiAdresse.setVerdi(POSTSTED);
+		semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
+
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		semistrukturertAdresse.setLandkode(landkoder);
+
+		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
+
+		if ("POSTADRESSE".equals(adressetype)) {
+			orgdet.getPostadresse().add(semistrukturertAdresse);
+		} else {
+			orgdet.getForretningsadresse().add(semistrukturertAdresse);
+		}
+		org.setOrganisasjonDetaljer(orgdet);
+	}
+
+	public static XMLGregorianCalendar dateToGregorian(Date date) throws DatatypeConfigurationException {
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(date);
+		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+	}
 }

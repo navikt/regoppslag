@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
+import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,12 +26,10 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.Maalform;
+import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
@@ -49,6 +48,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -61,260 +61,247 @@ import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MottakerPluginTest {
-	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
-	public static final String BREVDATA_MOTTAKER_SPRAAKKODE_EN = "src/test/resources/brevdata/brevdata_mottaker_spraakkode_en.xml";
-	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
-	public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
-	public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
-	public static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
+    public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+    public static final String BREVDATA_MOTTAKER_SPRAAKKODE_EN = "src/test/resources/brevdata/brevdata_mottaker_spraakkode_en.xml";
+    public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
+    public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
+    public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
+    public static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
-	private static final String IKKE_BERIK_FORNAVN = "Ikke";
-	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
-	private static final String FORNAVN = "TOM";
-	private static final String ETTERNAVN = "RIDDLE";
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
-	private static final String DOKUMENTTYPEID = "I000003";
-	private static final String SPRAAK_NB = "NB";
-	private static final String SPRAAK_AA = "AA";
-	private static final String MOTTAKER_ID = "30085849677";
+    private static final String IKKE_BERIK_FORNAVN = "Ikke";
+    private static final String IKKE_BERIK_ETTERNAVN = "Berik";
+    private static final String FORNAVN = "TOM";
+    private static final String ETTERNAVN = "RIDDLE";
+    private static final String ORGNAVN = "Orgnavn 1";
+    private static final String ORGNAVN_2 = "Orgnavn_2";
+    private static final String ORGKORTNAVN = "OrgKortnavn 1";
+    private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+    private static final String DOKUMENTTYPEID = "I000003";
+    private static final String SPRAAK_NB = "NB";
+    private static final String MOTTAKER_ID = "30085849677";
 
-	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
-	private PostnummerService postnummerService = new PostnummerService();
-	private LandkodeService landkodeService = new LandkodeService();
-	private PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService);
-	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-	private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
-	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-	private Maalform malform = new Maalform();
-	private Map<String, Object> valueMap;
-	private SecurityContext securityContext = new SecurityContextImpl();
-	private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo);
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
-	@Before
-	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		valueMap = new HashMap<>();
-		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
-		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
-		SecurityContextHolder.setContext(securityContext);
-		
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
-		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon(Arrays
-				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
+    private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
+    private PostnummerService postnummerService = new PostnummerService();
+    private LandkodeService landkodeService = new LandkodeService();
+    private PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService);
+    private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+    private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
+    private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+    private Map<String, Object> valueMap;
+    private SecurityContext securityContext = new SecurityContextImpl();
+    private MottakerPlugin mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo);
 
-	}
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
-	@Test
-	public void testMottakerPluginPerson() throws Exception {
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
+    @Before
+    public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException, DatatypeConfigurationException {
+        valueMap = new HashMap<>();
+        valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
+        valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
+        valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
+        SecurityContextHolder.setContext(securityContext);
 
-		String expression1 = "//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		Node processed = mottakerPlugin.processElement(node, valueMap);
-		
-		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		
-		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
-	}
+        when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon());
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB)));
 
-	@Test
-	public void shouldUsePersonMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+    }
 
-		Spraak spraak = new Spraak();
-		spraak.setValue("EN");
-		person.setMaalform(spraak);
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+    @Test
+    public void testMottakerPluginPerson() throws Exception {
+        File xmlFile = new File(BREVDATA1);
+        Document document = loadDocument(xmlFile);
 
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
+        String expression1 = "//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
 
-		String expression1 = "//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
+        Node node = findSingleNode(xPathExpression, document);
 
-		Node node = findSingleNode(xPathExpression, document);
+        Node processed = mottakerPlugin.processElement(node, valueMap);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+        JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+        Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		assertThat(mottaker.getSpraakkode().value(), is("EN"));
-	}
+        assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+    }
 
-	@Test
-	public void shouldUseMottakerMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+    @Test
+    public void shouldUsePersonMaalform() throws Exception {
+        Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 
-		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB,"EN")));
+        Spraak spraak = new Spraak();
+        spraak.setValue("EN");
+        person.setMaalform(spraak);
+        when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
-		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
-		Document document = loadDocument(xmlFile);
+        File xmlFile = new File(BREVDATA1);
+        Document document = loadDocument(xmlFile);
 
-		String expression1 = "//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
+        String expression1 = "//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = findSingleNode(xPathExpression, document);
+        Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap);
 
-		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		assertThat(mottaker.getSpraakkode().value(), is("EN"));
-	}
+        JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+        Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+        assertThat(mottaker.getSpraakkode().value(), is("EN"));
+    }
 
-	@Test
-	public void testMottakerPluginPersonIkkeBerik() throws Exception {
-		File xmlFile = new File(BREVDATA_IKKE_BERIK);
-		Document document = loadDocument(xmlFile);
+    @Test
+    public void shouldUseMottakerMaalform() throws Exception {
+        Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 
-		String expression1 = "//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
+        when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(person);
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
-		Node node = findSingleNode(xPathExpression, document);
+        File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
+        Document document = loadDocument(xmlFile);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+        String expression1 = "//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
 
-		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+        Node node = findSingleNode(xPathExpression, document);
 
-		assertThat(mottaker.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
-		assertThat(mottaker.getId(), is(MOTTAKER_ID));
-		assertThat(mottaker.getTypeKode(), is(PERSON));
-		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is("ikkeberiket linje1"));
-	}
+        Node processed = mottakerPlugin.processElement(node, valueMap);
 
-	@Test
-	public void testMottakerPluginOrganisasjon() throws Exception {
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList("NN")));
+        JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+        Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+        assertThat(mottaker.getSpraakkode().value(), is("EN"));
+    }
 
-		File xmlFile = new File(BREVDATA_ORG);
-		Document document = loadDocument(xmlFile);
+    @Test
+    public void testMottakerPluginPersonIkkeBerik() throws Exception {
+        File xmlFile = new File(BREVDATA_IKKE_BERIK);
+        Document document = loadDocument(xmlFile);
 
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		Node processed = mottakerPlugin.processElement(node, valueMap);
-		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
-		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
-		assertThat(mottaker.getTypeKode(), is(ORGANISASJON));
-		assertThat(mottaker.getId(), is("974727854"));
-		assertThat(mottaker.getKortNavn(), is("OrgKortnavn 1 OrgKortnavn_2"));
-		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
-	}
+        String expression1 = "//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
 
-	
-	@Test
-	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
-		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA_TYPE);
-		Document document = loadDocument(xmlFile);
+        Node node = findSingleNode(xPathExpression, document);
 
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		mottakerPlugin.processElement(node, valueMap);
-	}
-	
-	@Test
-	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
-		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
-		File xmlFile = new File(BREVDATA_ID);
-		Document document = loadDocument(xmlFile);
+        Node processed = mottakerPlugin.processElement(node, valueMap);
 
-		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-		
-		Node node = findSingleNode(xPathExpression, document);
-		
-		mottakerPlugin.processElement(node, valueMap);
-	}
-	
-	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		settPostadresse(person);
+        JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+        Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		return person;
-	}
-	private void settPostadresse(Bruker person) {
-		Postadressetyper postadressetyper = new Postadressetyper();
-		postadressetyper.setKodeverksRef("POSTADRESSE");
-		postadressetyper.setValue("POSTADRESSE");
-		person.setGjeldendePostadressetype(postadressetyper);
+        assertThat(mottaker.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
+        assertThat(mottaker.getId(), is(MOTTAKER_ID));
+        assertThat(mottaker.getTypeKode(), is(PERSON));
+        assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is("ikkeberiket linje1"));
+    }
 
-		UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
-		ustrukturertAdresse.setAdresselinje1("test");
+    @Test
+    public void testMottakerPluginOrganisasjon() throws Exception {
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList("NN")));
 
-		Postadresse postadresse = new Postadresse();
-		postadresse.setUstrukturertAdresse(ustrukturertAdresse);
+        File xmlFile = new File(BREVDATA_ORG);
+        Document document = loadDocument(xmlFile);
 
-		person.setPostadresse(postadresse);
-	}
+        String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
 
-	
-	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
-		Organisasjon organisasjon = new Organisasjon();
-		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
-		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
-		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
-		organisasjon.setNavn(organisasjonKortnavn);
+        Node node = findSingleNode(xPathExpression, document);
 
-		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
-		orgDetNavn.getNavnelinje().addAll(orgNavn);
-		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
-		organisasjonsnavn.setNavn(orgDetNavn);
-		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
-		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
-		
-		return organisasjon;
-	}
-	
-	private List<SpraakInfoTo> createTkatResponse(List<String> langs) {
-		List<SpraakInfoTo> list = new ArrayList<>();
-		langs.forEach(lang -> {
-			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
-			spraakInfoTo.setSpraaklag(lang);
-			list.add(spraakInfoTo);
-		});
-		return list;
-	}
+        Node processed = mottakerPlugin.processElement(node, valueMap);
+        JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<Mottaker>(Mottaker.class);
+        Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
+
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat(mottaker.getTypeKode(), is(ORGANISASJON));
+        assertThat(mottaker.getId(), is("974727854"));
+        assertThat(mottaker.getKortNavn(), is("OrgKortnavn 1 OrgKortnavn_2"));
+        assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
+    }
+
+
+    @Test
+    public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
+        expectedException.expect(RegOppslagFunctionalException.class);
+        expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
+        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
+        File xmlFile = new File(BREVDATA_TYPE);
+        Document document = loadDocument(xmlFile);
+
+        String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
+
+        Node node = findSingleNode(xPathExpression, document);
+        mottakerPlugin.processElement(node, valueMap);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
+        expectedException.expect(RegOppslagFunctionalException.class);
+        expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
+        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(null);
+        File xmlFile = new File(BREVDATA_ID);
+        Document document = loadDocument(xmlFile);
+
+        String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'mottaker']";
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression xPathExpression = xPath.compile(expression1);
+
+        Node node = findSingleNode(xPathExpression, document);
+
+        mottakerPlugin.processElement(node, valueMap);
+    }
+
+    private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
+        Personnavn personnavn = new Personnavn();
+        personnavn.setFornavn(fornavn);
+        if (mellomnavn != null) {
+            personnavn.setMellomnavn(mellomnavn);
+            personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
+        } else {
+            personnavn.setSammensattNavn(fornavn + " " + etternavn);
+        }
+        personnavn.setEtternavn(etternavn);
+        Bruker person = new Bruker();
+        person.setPersonnavn(personnavn);
+        settPostadresse(person);
+
+        return person;
+    }
+
+    private void settPostadresse(Bruker person) {
+        Postadressetyper postadressetyper = new Postadressetyper();
+        postadressetyper.setKodeverksRef("POSTADRESSE");
+        postadressetyper.setValue("POSTADRESSE");
+        person.setGjeldendePostadressetype(postadressetyper);
+
+        UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
+        ustrukturertAdresse.setAdresselinje1("test");
+
+        Postadresse postadresse = new Postadresse();
+        postadresse.setUstrukturertAdresse(ustrukturertAdresse);
+
+        person.setPostadresse(postadresse);
+    }
+
+    private List<SpraakInfoTo> createTkatResponse(List<String> langs) {
+        List<SpraakInfoTo> list = new ArrayList<>();
+        langs.forEach(lang -> {
+            SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
+            spraakInfoTo.setSpraaklag(lang);
+            list.add(spraakInfoTo);
+        });
+        return list;
+    }
+
+    private Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
+        Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
+                .asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        settStrukturertAdresse(org, "POSTADRESSE");
+        return org;
+    }
 }
