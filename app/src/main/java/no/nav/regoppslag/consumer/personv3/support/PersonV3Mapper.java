@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
-import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.map.Postadresse;
@@ -102,7 +101,7 @@ public class PersonV3Mapper {
 		return null;
 	}
 
-	private Postadresse mapAdresse(Bruker person) throws RegOppslagFunctionalException {
+	private Postadresse mapAdresse(Bruker person) {
 		if (person.getGjeldendePostadressetype() != null) {
 			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getBostedsadresse() != null) {

@@ -10,6 +10,7 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -26,20 +27,15 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdress
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +79,7 @@ public class OrganisasjonV4Mapper {
         try {
              postadresse = mapAdresse(orgDet);
         } catch (RegOppslagFunctionalException e) {
-            log.info("Mapping av adresse feilet: " + wsOrganisasjon.getOrganisasjonDetaljer());
+            log.info(String.format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrgnummer()));
             throw e;
         }
 
@@ -119,12 +115,6 @@ public class OrganisasjonV4Mapper {
         geografiskAdresseList.addAll(orgDet.getForretningsadresse());
 
         GeografiskAdresse activeAddress = findActiveAddress(geografiskAdresseList);
-
-        try {
-            validateAddress(activeAddress);
-        } catch (Exception e) {
-            throw new RegOppslagFunctionalException(String.format("Mangelfull adresse: %s", e.getMessage()));
-        }
 
         if (activeAddress instanceof SemistrukturertAdresse) {
             SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) activeAddress;
@@ -169,35 +159,52 @@ public class OrganisasjonV4Mapper {
     private GeografiskAdresse findActiveAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
         Date now = Date.from(Instant.now());
 
-        List<GeografiskAdresse> collect = adresseList.stream()
+        GeografiskAdresse collect = adresseList.stream()
+                .findFirst()
                 .filter(a -> {
                     Date fomGyldig = a.getFomGyldighetsperiode().toGregorianCalendar().getTime();
                     Date tomGyldig = a.getTomGyldighetsperiode() != null ? a.getTomGyldighetsperiode().toGregorianCalendar().getTime() : null;
+                    Date tomBruk = a.getTomBruksperiode() != null ? a.getTomBruksperiode().toGregorianCalendar().getTime() : null;
 
-                    if (tomGyldig != null) {
-                        return fomGyldig.before(now) && tomGyldig.after(now);
-                    } else {
-                        return fomGyldig.before(now);
-                    }
-                }).collect(Collectors.toList());
+                    boolean isValid = validateAddress(a);
 
-        if (collect.size() == 0) {
-            log.info("Mangler gyldig adresse", adresseList);
+                    return fomGyldig.before(now)
+                            && (tomGyldig == null || tomGyldig.after(now))
+                            && (tomBruk == null || tomBruk.after(now))
+                            && isValid;
+                })
+                .orElse( null);
+
+        if (collect == null) {
             throw new RegOppslagFunctionalException("Ingen gyldige adresser funnet");
         }
-        //TODO Sjekk at dette er godt nok
-        return collect.get(0);
+
+        return collect;
     }
 
-    private void validateAddress(GeografiskAdresse adresse) {
+    private boolean validateAddress(GeografiskAdresse adresse) {
+        boolean valid = true;
+
         if (!(adresse instanceof SemistrukturertAdresse)) {
             Gateadresse gateadresse = (Gateadresse) adresse;
-            Assert.isTrue(isNotEmpty(gateadresse.getGatenavn()), "mangler gatenavn");
-            Assert.isTrue(gateadresse.getHusnummer() != null, "mangler husnummer");
-            Assert.isTrue(gateadresse.getPoststed() != null, "mangler poststed");
+            if (isEmpty(gateadresse.getGatenavn())) {
+                log.info("Mangelfull adresse, mangler gatenavn");
+                valid = false;
+            } else if (gateadresse.getHusnummer() == null) {
+                log.info("Mangelfull adresse, mangler husnummer");
+                valid = false;
+            } else if (gateadresse.getPoststed() == null) {
+                log.info("Mangelfull adresse, mangler poststed");
+                valid = false;
+            }
         }
 
-        Assert.isTrue(adresse.getLandkode() != null, "mangler landkode");
+        if (adresse.getLandkode() == null) {
+            log.info("Mangelfull adresse, mangler landkode");
+            valid = false;
+        }
+
+        return valid;
     }
 
     private Postadresse settAdresseledd(SemistrukturertAdresse semistrukturertAdresse) {

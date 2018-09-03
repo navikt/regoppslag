@@ -100,9 +100,9 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowMissingGateNavn() throws Exception {
+    public void shouldThrowWhenMissingGateNavn() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Mangelfull adresse: mangler gatenavn");
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settStrukturertAdresse(org, "POSTADRESSE");
@@ -111,9 +111,9 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowMissingHusnummer() throws Exception {
+    public void shouldThrowWhenMissingHusnummer() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Mangelfull adresse: mangler husnummer");
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settStrukturertAdresse(org, "POSTADRESSE");
@@ -122,9 +122,9 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowMissingPoststed() throws Exception {
+    public void shouldThrowWhenMissingPoststed() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Mangelfull adresse: mangler poststed");
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settStrukturertAdresse(org, "POSTADRESSE");
@@ -133,9 +133,9 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowMissingLandkode() throws Exception {
+    public void shouldThrowWhenMissingLandkode() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Mangelfull adresse: mangler landkode");
+        thrown.expectMessage("Ingen gyldige adresser funnet");
 
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settStrukturertAdresse(org, "POSTADRESSE");
