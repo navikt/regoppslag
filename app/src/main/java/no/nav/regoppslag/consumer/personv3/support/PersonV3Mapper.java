@@ -22,6 +22,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Doedsdato;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseNorge;
@@ -32,6 +33,8 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +45,12 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class PersonV3Mapper {
+	public static final String BOSTEDSADRESSE = "BOSTEDSADRESSE";
+	public static final String POSTADRESSE = "POSTADRESSE";
+	public static final String MIDLERTIDIG_POSTADRESSE_UTLAND = "MIDLERTIDIG_POSTADRESSE_UTLAND";
+	public static final String MIDLERTIDIG_POSTADRESSE_NORGE = "MIDLERTIDIG_POSTADRESSE_NORGE";
+	public static final String UKJENT_ADRESSE = "UKJENT_ADRESSE";
+
 	@Inject
 	private final PostnummerService postnummerService;
 	@Inject
@@ -66,6 +75,12 @@ public class PersonV3Mapper {
 	}
 
 	public Mottaker map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
+		Date now = Date.from(Instant.now());
+
+		if (person.getDoedsdato() != null && now.after(person.getDoedsdato().getDoedsdato().toGregorianCalendar().getTime())) {
+			throw new RegOppslagFunctionalException("Personen er registrert som død.");
+		}
+
 		Mottaker mottaker = new Person();
 
 		mottaker.setSpraakkode(getSpraakkode(person));
@@ -101,18 +116,18 @@ public class PersonV3Mapper {
 		return null;
 	}
 
-	private Postadresse mapAdresse(Bruker person) {
+	private Postadresse mapAdresse(Bruker person) throws RegOppslagFunctionalException {
 		if (person.getGjeldendePostadressetype() != null) {
-			if ("BOSTEDSADRESSE".equals(person.getGjeldendePostadressetype()
+			if (BOSTEDSADRESSE.equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getBostedsadresse() != null) {
 				return mapBostedadresse(person);
-			} else if ("POSTADRESSE".equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse()
+			} else if (POSTADRESSE.equals(person.getGjeldendePostadressetype().getValue()) && person.getPostadresse()
 					.getUstrukturertAdresse() != null) {
 				return mapPostadresse(person);
-			} else if ("MIDLERTIDIG_POSTADRESSE_UTLAND".equals(person.getGjeldendePostadressetype()
+			} else if (MIDLERTIDIG_POSTADRESSE_UTLAND.equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
 				return mapMidlertidigUtland(person);
-			} else if ("MIDLERTIDIG_POSTADRESSE_NORGE".equals(person.getGjeldendePostadressetype()
+			} else if (MIDLERTIDIG_POSTADRESSE_NORGE.equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getMidlertidigPostadresse() != null) {
 				return mapMidlertidigNorge(person);
 			}
@@ -157,7 +172,7 @@ public class PersonV3Mapper {
 
 	private void validateAdresse(Bruker person, Postadresse postadresse, String serviceCode) throws RegOppslagFunctionalException {
 
-		if (person.getGjeldendePostadressetype()!=null && "UKJENT_ADRESSE".equals(person.getGjeldendePostadressetype().getValue())) {
+		if (person.getGjeldendePostadressetype()!=null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype().getValue())) {
 			throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 		}
 

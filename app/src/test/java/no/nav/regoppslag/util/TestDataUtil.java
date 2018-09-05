@@ -82,7 +82,7 @@ public class TestDataUtil {
 		return utenlandskPostadresse;
 	}
 
-	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
 		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
@@ -98,6 +98,7 @@ public class TestDataUtil {
 		maalformer.setKodeRef(MAALFORM);
 		maalformer.setValue(MAALFORM);
 		organisasjonsDetaljer.setGjeldendeMaalform(maalformer);
+		organisasjonsDetaljer.setOpphoersdato(dateToGregorian(Date.from(Instant.now().plusSeconds(50000))));
 		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
 
 		return organisasjon;

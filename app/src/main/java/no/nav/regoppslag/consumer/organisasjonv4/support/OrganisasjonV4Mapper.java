@@ -9,7 +9,6 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +34,7 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -43,6 +43,12 @@ import java.util.List;
 @Component
 @Slf4j
 public class OrganisasjonV4Mapper {
+
+    public static final String ADRESSELINJE_1 = "adresselinje1";
+    public static final String ADRESSELINJE_2 = "adresselinje2";
+    public static final String ADRESSE_3_SPLIT_1 = "Adresse 3 split 1";
+    public static final String POSTNR = "postnr";
+    public static final String POSTSTED = "poststed";
 
     @Inject
     private final LandkodeService landkodeService;
@@ -107,12 +113,18 @@ public class OrganisasjonV4Mapper {
 
 
     private Postadresse mapAdresse(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+        Date now = Date.from(Instant.now());
         Postadresse postadresse = Postadresse.builder().build();
 
         List<GeografiskAdresse> geografiskAdresseList = orgDet.getPostadresse();
         geografiskAdresseList.addAll(orgDet.getForretningsadresse());
 
-        GeografiskAdresse activeAddress = findActiveAddress(geografiskAdresseList);
+        if (orgDet.getOpphoersdato() != null && now.after(orgDet.getOpphoersdato().toGregorianCalendar().getTime())) {
+            log.info("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
+            throw new RegOppslagFunctionalException("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
+        }
+
+        GeografiskAdresse activeAddress = findValidAddress(geografiskAdresseList);
 
         if (activeAddress instanceof SemistrukturertAdresse) {
             SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) activeAddress;
@@ -156,7 +168,7 @@ public class OrganisasjonV4Mapper {
                 .getNavn()).getNavnelinje(), " ").trim();
     }
 
-    private GeografiskAdresse findActiveAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
+    private GeografiskAdresse findValidAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
         Date now = Date.from(Instant.now());
 
         GeografiskAdresse collect = adresseList.stream()
@@ -183,34 +195,46 @@ public class OrganisasjonV4Mapper {
     }
 
     private boolean validateAddress(GeografiskAdresse adresse) {
-        boolean valid = true;
+        AtomicBoolean valid = new AtomicBoolean(true);
 
         if (!(adresse instanceof SemistrukturertAdresse)) {
             Gateadresse gateadresse = (Gateadresse) adresse;
             if (gateadresse.getPoststed() == null) {
                 log.info("Mangelfull adresse, mangler poststed");
-                valid = false;
+                valid.set(false);
             }
+        } else {
+            List<NoekkelVerdiAdresse> adresseledd = ((SemistrukturertAdresse) adresse).getAdresseledd();
+            adresseledd.forEach(al -> {
+                if (POSTNR.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
+                    log.info("Mangelfull adresse, mangler postnummer");
+                    valid.set(false);
+                }
+                if (POSTSTED.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
+                    log.info("Mangelfull adresse, mangler poststed");
+                    valid.set(false);
+                }
+            });
         }
 
-        return valid;
+        return valid.get();
     }
 
     private Postadresse settAdresseledd(SemistrukturertAdresse semistrukturertAdresse) {
         Postadresse postadresse = Postadresse.builder().build();
-        for (NoekkelVerdiAdresse nokler : semistrukturertAdresse.getAdresseledd()) {
-            if ("adresselinje1".equals(nokler.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje1(nokler.getVerdi());
-            } else if ("adresselinje2".equals(nokler.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje2(nokler.getVerdi());
-            } else if ("Adresse 3 split 1".equals(nokler.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje3(nokler.getVerdi());
-            } else if ("postnr".equals(nokler.getNoekkel().getKodeRef())) {
-                postadresse.setPostnummer(nokler.getVerdi());
-            } else if ("poststed".equals(nokler.getNoekkel().getKodeRef())) {
-                postadresse.setPoststed(nokler.getVerdi());
+        semistrukturertAdresse.getAdresseledd().forEach(nokkel -> {
+            if (ADRESSELINJE_1.equals(nokkel.getNoekkel().getKodeRef())) {
+                postadresse.setAdresselinje1(nokkel.getVerdi());
+            } else if (ADRESSELINJE_2.equals(nokkel.getNoekkel().getKodeRef())) {
+                postadresse.setAdresselinje2(nokkel.getVerdi());
+            } else if (ADRESSE_3_SPLIT_1.equals(nokkel.getNoekkel().getKodeRef())) {
+                postadresse.setAdresselinje3(nokkel.getVerdi());
+            } else if (POSTNR.equals(nokkel.getNoekkel().getKodeRef())) {
+                postadresse.setPostnummer(nokkel.getVerdi());
+            } else if (POSTSTED.equals(nokkel.getNoekkel().getKodeRef())) {
+                postadresse.setPoststed(nokkel.getVerdi());
             }
-        }
+        });
         return postadresse;
     }
 

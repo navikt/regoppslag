@@ -12,6 +12,7 @@ import static no.nav.regoppslag.util.TestDataUtil.SEMIADR1;
 import static no.nav.regoppslag.util.TestDataUtil.SEMIADR2;
 import static no.nav.regoppslag.util.TestDataUtil.SEMIADR3;
 import static no.nav.regoppslag.util.TestDataUtil.createOrganisasjon;
+import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestDataUtil.settSemistrukturertAdresse;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +34,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 
 public class OrganisasjonV4MapperTest {
 
@@ -61,7 +65,7 @@ public class OrganisasjonV4MapperTest {
     private static final String SERVICECODE = "SERVICECODE";
 
     @Test
-    public void shouldMapSakspartnavn() {
+    public void shouldMapSakspartnavn() throws Exception {
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         String navn = mapper.getSakspartNavn(org);
         assertThat(navn, is(ORGNAVN + " " + ORGNAVN_2));
@@ -99,6 +103,18 @@ public class OrganisasjonV4MapperTest {
         settStrukturertAdresse(org, "POSTADRESSE");
         ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(null);
         mapper.map(org, SERVICECODE);
+    }
+
+    @Test
+    public void shouldThrowWhenOpphoertOrg() throws Exception {
+        thrown.expect(RegOppslagFunctionalException.class);
+        thrown.expectMessage("Organisasjon har opphørt, orgnr");
+
+        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+        org.getOrganisasjonDetaljer().setOpphoersdato(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
+        assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
     }
 
     @Test
