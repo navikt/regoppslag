@@ -91,28 +91,6 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowWhenMissingGateNavn() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
-        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-        settStrukturertAdresse(org, "POSTADRESSE");
-        ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setGatenavn(null);
-        mapper.map(org, SERVICECODE);
-    }
-
-    @Test
-    public void shouldThrowWhenMissingHusnummer() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
-        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-        settStrukturertAdresse(org, "POSTADRESSE");
-        ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setHusnummer(null);
-        mapper.map(org, SERVICECODE);
-    }
-
-    @Test
     public void shouldThrowWhenMissingPoststed() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
         thrown.expectMessage("Ingen gyldige adresser funnet");

@@ -185,18 +185,13 @@ public class OrganisasjonV4Mapper {
 
         if (!(adresse instanceof SemistrukturertAdresse)) {
             Gateadresse gateadresse = (Gateadresse) adresse;
-            if (isEmpty(gateadresse.getGatenavn())) {
-                log.info("Mangelfull adresse, mangler gatenavn");
-                valid = false;
-            } else if (gateadresse.getHusnummer() == null) {
-                log.info("Mangelfull adresse, mangler husnummer");
-                valid = false;
-            } else if (gateadresse.getPoststed() == null) {
+            if (gateadresse.getPoststed() == null) {
                 log.info("Mangelfull adresse, mangler poststed");
                 valid = false;
             }
         }
 
+        // Er dette en tom string eller kan det være null ved norsk adresse
         if (adresse.getLandkode() == null) {
             log.info("Mangelfull adresse, mangler landkode");
             valid = false;
