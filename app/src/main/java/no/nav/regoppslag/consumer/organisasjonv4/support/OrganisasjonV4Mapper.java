@@ -127,7 +127,9 @@ public class OrganisasjonV4Mapper {
             postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
         }
 
-        postadresse.setLand(landkodeService.finnLandnavn(activeAddress.getLandkode().getKodeRef()));
+        if (activeAddress.getLandkode() != null) {
+            postadresse.setLand(landkodeService.finnLandnavn(activeAddress.getLandkode().getKodeRef()));
+        }
 
         return postadresse;
     }
@@ -189,12 +191,6 @@ public class OrganisasjonV4Mapper {
                 log.info("Mangelfull adresse, mangler poststed");
                 valid = false;
             }
-        }
-
-        // Er dette en tom string eller kan det være null ved norsk adresse
-        if (adresse.getLandkode() == null) {
-            log.info("Mangelfull adresse, mangler landkode");
-            valid = false;
         }
 
         return valid;

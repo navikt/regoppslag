@@ -102,17 +102,6 @@ public class OrganisasjonV4MapperTest {
     }
 
     @Test
-    public void shouldThrowWhenMissingLandkode() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
-        Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-        settStrukturertAdresse(org, "POSTADRESSE");
-        (org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(null);
-        mapper.map(org, SERVICECODE);
-    }
-
-    @Test
     public void mapOrganisasjonSemistrukturertPostadresse() throws Exception {
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settSemistrukturertAdresse(org, "POSTADRESSE", VALID_SECONDS);
