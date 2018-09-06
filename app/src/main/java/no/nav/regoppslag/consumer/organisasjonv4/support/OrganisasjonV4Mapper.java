@@ -74,7 +74,8 @@ public class OrganisasjonV4Mapper {
             throw new RegOppslagFunctionalException("Ingen gyldige sakspartnavn funnet");
         }
 
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ");
+        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ")
+                .trim();
     }
 
 
@@ -178,7 +179,8 @@ public class OrganisasjonV4Mapper {
             throw new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet");
         }
 
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ");
+        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ")
+                .trim();
     }
 
     private Organisasjonsnavn findValidOrgNavn(OrganisasjonsDetaljer orgDet, Date now) {

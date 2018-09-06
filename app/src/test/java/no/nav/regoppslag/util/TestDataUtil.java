@@ -21,6 +21,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -93,6 +96,8 @@ public class TestDataUtil {
 		orgDetNavn.getNavnelinje().addAll(orgNavn);
 		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
 		organisasjonsnavn.setNavn(orgDetNavn);
+		organisasjonsnavn.setFomBruksperiode(dateToGregorian(LocalDate.now().minusDays(1)));
+		organisasjonsnavn.setFomGyldighetsperiode(dateToGregorian(LocalDate.now().minusDays(1)));
 		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
 		Maalformer maalformer = new Maalformer();
 		maalformer.setKodeRef(MAALFORM);
@@ -214,5 +219,10 @@ public class TestDataUtil {
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(date);
 		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+	}
+
+	public static XMLGregorianCalendar dateToGregorian(LocalDate localDate) throws DatatypeConfigurationException {
+		GregorianCalendar gregorianCalendar = GregorianCalendar.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+		return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
 	}
 }
