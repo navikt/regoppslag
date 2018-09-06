@@ -25,6 +25,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.GeografiskAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.stereotype.Component;
@@ -63,11 +64,17 @@ public class OrganisasjonV4Mapper {
         this.postnummerService = postnummerService;
     }
 
-    public String getSakspartNavn(Organisasjon wsOrganisasjon) {
+    public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
+        Date now = Date.from(Instant.now());
         OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
-                .get(0)
-                .getNavn()).getNavnelinje(), " ").trim();
+
+        Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet, now);
+
+        if (organisasjonsnavn == null) {
+            throw new RegOppslagFunctionalException("Ingen gyldige sakspartnavn funnet");
+        }
+
+        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ");
     }
 
 
@@ -162,10 +169,31 @@ public class OrganisasjonV4Mapper {
                 .trim();
     }
 
-    private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) {
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn) orgDet.getNavn()
-                .get(0)
-                .getNavn()).getNavnelinje(), " ").trim();
+    private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+        Date now = Date.from(Instant.now());
+
+        Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet, now);
+
+        if (organisasjonsnavn == null) {
+            throw new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet");
+        }
+
+        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ");
+    }
+
+    private Organisasjonsnavn findValidOrgNavn(OrganisasjonsDetaljer orgDet, Date now) {
+        return orgDet.getNavn().stream()
+                .findFirst()
+                .filter(n -> {
+                    Date fomGyldig = n.getFomGyldighetsperiode().toGregorianCalendar().getTime();
+                    Date tomGyldig = n.getTomGyldighetsperiode() != null ? n.getTomGyldighetsperiode().toGregorianCalendar().getTime() : null;
+                    Date tomBruk = n.getTomBruksperiode() != null ? n.getTomBruksperiode().toGregorianCalendar().getTime() : null;
+
+                    return fomGyldig.before(now)
+                            && (tomGyldig == null || tomGyldig.after(now))
+                            && (tomBruk == null || tomBruk.after(now));
+                })
+                .orElse(null);
     }
 
     private GeografiskAdresse findValidAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
