@@ -32,10 +32,10 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 
 public class PersonV3MapperTest {
 	private static final String FNR = "99999999999";
@@ -75,14 +75,14 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldMapSakspartNavn() {
+	public void shouldMapSakspartNavn() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		String navn = mapper.getSakspartNavn(person);
 		assertThat(navn, is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
-	public void shouldMapSakspartNavnWithoutMellomNavn() {
+	public void shouldMapSakspartNavnWithoutMellomNavn() throws Exception {
 		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 		String navn = mapper.getSakspartNavn(person);
 		assertThat(navn, is(FORNAVN + " " + ETTERNAVN));

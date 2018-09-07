@@ -79,7 +79,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	/**
-	 * Komplertterer fullt brevdatasett der mottaker er person
+	 * Kompletterer fullt brevdatasett der mottaker er person
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws Exception {

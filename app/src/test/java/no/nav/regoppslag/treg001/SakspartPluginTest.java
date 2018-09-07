@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001;
 
+import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,6 +22,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.Maalform;
+import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -41,10 +43,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -84,7 +88,7 @@ public class SakspartPluginTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
-	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException, DatatypeConfigurationException {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
@@ -200,7 +204,7 @@ public class SakspartPluginTest {
 		return person;
 	}
 	
-	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
 		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
@@ -211,6 +215,8 @@ public class SakspartPluginTest {
 		orgDetNavn.getNavnelinje().addAll(orgNavn);
 		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
 		organisasjonsnavn.setNavn(orgDetNavn);
+		organisasjonsnavn.setFomGyldighetsperiode(dateToGregorian(LocalDate.now().minusDays(1)));
+		organisasjonsnavn.setFomBruksperiode(dateToGregorian(LocalDate.now().minusDays(1)));
 		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
 
 		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
