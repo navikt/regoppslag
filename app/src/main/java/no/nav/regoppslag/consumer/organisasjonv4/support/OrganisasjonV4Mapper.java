@@ -9,7 +9,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -22,7 +22,6 @@ import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.GeografiskAdresse;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.NoekkelVerdiAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
@@ -34,7 +33,8 @@ import org.springframework.util.StringUtils;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -50,14 +50,12 @@ public class OrganisasjonV4Mapper {
 	public static final String POSTNR = "postnr";
 	public static final String POSTSTED = "poststed";
 
-	@Inject
 	private final LandkodeService landkodeService;
-
-	@Inject
 	private final PostnummerService postnummerService;
 
 	private static final String LAND_NORGE = "Norge";
 
+	@Inject
 	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
@@ -65,12 +63,8 @@ public class OrganisasjonV4Mapper {
 
 	public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-
-		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet);
-
-		if (organisasjonsnavn == null) {
-			throw new RegOppslagFunctionalException("Ingen gyldige sakspartnavn funnet");
-		}
+		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
+				.orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer()));
 
 		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
 				.trim();
@@ -119,16 +113,13 @@ public class OrganisasjonV4Mapper {
 
 
 	private Postadresse mapAdresse(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
-
-		List<GeografiskAdresse> geografiskAdresseList = orgDet.getPostadresse();
-		geografiskAdresseList.addAll(orgDet.getForretningsadresse());
-
 		if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
 			log.info("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
 			throw new RegOppslagFunctionalException("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
 		}
 
-		GeografiskAdresse activeAddress = findValidAddress(geografiskAdresseList);
+		GeografiskAdresse activeAddress = selectActiveAddress(orgDet.getPostadresse(), orgDet.getForretningsadresse())
+				.orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige adresser funnet for orgnummer=" + orgDet.getOrgnummer()));
 
 		Postadresse postadresse = Postadresse.builder().build();
 		if (activeAddress instanceof SemistrukturertAdresse) {
@@ -168,83 +159,70 @@ public class OrganisasjonV4Mapper {
 	}
 
 	private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
-		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet);
-
-		if (organisasjonsnavn == null) {
-			throw new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet");
-		}
-
+		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
+				.orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer()));
 		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
 				.trim();
 	}
 
-	private Organisasjonsnavn findValidOrgNavn(OrganisasjonsDetaljer orgDet) {
-		final LocalDateTime now = LocalDateTime.now();
-
+	private Optional<Organisasjonsnavn> findValidOrgNavn(OrganisasjonsDetaljer orgDet) {
 		return orgDet.getNavn().stream()
-				.findFirst()
-				.filter(n -> {
-					LocalDateTime fomGyldig = n.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-					LocalDateTime tomGyldig = n.getTomGyldighetsperiode() == null ? null : n.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-					LocalDateTime tomBruk = n.getTomBruksperiode() == null ? null : n.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-
-					return fomGyldig.isBefore(now)
-							&& (tomGyldig == null || tomGyldig.isAfter(now))
-							&& (tomBruk == null || tomBruk.isAfter(now));
-				})
-				.orElse(null);
+				.filter(this::isValidGyldighetsPeriodeForOrganisasjonsnavn)
+				.findFirst();
 	}
 
-	private GeografiskAdresse findValidAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
+	private boolean isValidGyldighetsPeriodeForOrganisasjonsnavn(Organisasjonsnavn organisasjonsnavn) {
 		final LocalDateTime now = LocalDateTime.now();
 
-		GeografiskAdresse collect = adresseList.stream()
-				.findFirst()
-				.filter(a -> {
-					LocalDateTime fomGyldig = a.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-					LocalDateTime tomGyldig = a.getTomGyldighetsperiode() == null ? null : a.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-					LocalDateTime tomBruk = a.getTomBruksperiode() == null ? null : a.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+		LocalDateTime fomGyldig = organisasjonsnavn.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+		LocalDateTime tomGyldig = organisasjonsnavn.getTomGyldighetsperiode() == null ? null : organisasjonsnavn.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+		LocalDateTime tomBruk = organisasjonsnavn.getTomBruksperiode() == null ? null : organisasjonsnavn.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
 
-					boolean isValid = validateAddress(a);
-
-					return fomGyldig.isBefore(now)
-							&& (tomGyldig == null || tomGyldig.isAfter(now))
-							&& (tomBruk == null || tomBruk.isAfter(now))
-							&& isValid;
-				})
-				.orElse(null);
-
-		if (collect == null) {
-			throw new RegOppslagFunctionalException("Ingen gyldige adresser funnet");
-		}
-
-		return collect;
+		return fomGyldig.isBefore(now)
+				&& (tomGyldig == null || tomGyldig.isAfter(now))
+				&& (tomBruk == null || tomBruk.isAfter(now));
 	}
 
-	private boolean validateAddress(GeografiskAdresse adresse) {
-		AtomicBoolean valid = new AtomicBoolean(true);
+	// Postadresse skal overstyre forretningsadresse dersom den finnes
+	private Optional<GeografiskAdresse> selectActiveAddress(List<GeografiskAdresse> postadresse, List<GeografiskAdresse> forretningsadresse) {
+		// Stream.of er basert på array så rekkefølgen er ordered, gyldige postadresse vil bli funnet før forretningsadresse
+		return Stream.of(
+				selectGyldigGeografiskAdresse(postadresse), selectGyldigGeografiskAdresse(forretningsadresse))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst();
+	}
 
-		if (!(adresse instanceof SemistrukturertAdresse)) {
-			Gateadresse gateadresse = (Gateadresse) adresse;
-			if (gateadresse.getPoststed() == null) {
-				log.info("Mangelfull adresse, mangler poststed");
-				valid.set(false);
-			}
+	private Optional<GeografiskAdresse> selectGyldigGeografiskAdresse(List<GeografiskAdresse> adresser) {
+		return adresser.stream().filter(this::isValidGeografiskAdresse).findAny();
+	}
+
+	private boolean isValidGeografiskAdresse(GeografiskAdresse adresse) {
+		return isValidGyldighetsPeriodeForAdresse(adresse) && containsPostnummer(adresse);
+	}
+
+	private boolean isValidGyldighetsPeriodeForAdresse(GeografiskAdresse adresse) {
+		final LocalDateTime now = LocalDateTime.now();
+
+		LocalDateTime fomGyldig = adresse.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+		LocalDateTime tomGyldig = adresse.getTomGyldighetsperiode() == null ? null : adresse.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+		LocalDateTime tomBruk = adresse.getTomBruksperiode() == null ? null : adresse.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+
+		return fomGyldig.isBefore(now)
+				&& (tomGyldig == null || tomGyldig.isAfter(now))
+				&& (tomBruk == null || tomBruk.isAfter(now));
+	}
+
+	private boolean containsPostnummer(GeografiskAdresse adresse) {
+		if (adresse instanceof SemistrukturertAdresse) {
+			return ((SemistrukturertAdresse) adresse).getAdresseledd()
+					.stream()
+					.anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && isNotEmpty(nva.getVerdi()));
+		} else if (adresse instanceof Gateadresse) {
+			return ((Gateadresse) adresse).getPoststed() != null;
 		} else {
-			List<NoekkelVerdiAdresse> adresseledd = ((SemistrukturertAdresse) adresse).getAdresseledd();
-			adresseledd.forEach(al -> {
-				if (POSTNR.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
-					log.info("Mangelfull adresse, mangler postnummer");
-					valid.set(false);
-				}
-				if (POSTSTED.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
-					log.info("Mangelfull adresse, mangler poststed");
-					valid.set(false);
-				}
-			});
+			return false;
 		}
-
-		return valid.get();
 	}
 
 	private Postadresse settAdresseledd(SemistrukturertAdresse semistrukturertAdresse) {

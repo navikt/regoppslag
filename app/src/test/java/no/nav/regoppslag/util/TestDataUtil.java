@@ -32,14 +32,14 @@ import java.util.List;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class TestDataUtil {
-	
-	
-	public static final String ADRESSELINJE1="linje1";
-	public static final String ADRESSELINJE2="linje2";
-	public static final String ADRESSELINJE3="linje3";
-	public static final String LANDKODE="NO";
-	public static final String POSTNUMMER="3000";
-	public static final String POSTSTED="HER";
+
+
+	public static final String ADRESSELINJE1 = "linje1";
+	public static final String ADRESSELINJE2 = "linje2";
+	public static final String ADRESSELINJE3 = "linje3";
+	public static final String LANDKODE = "NO";
+	public static final String POSTNUMMER = "3000";
+	public static final String POSTSTED = "HER";
 	public static final String GATENAVN = "Gatenavn";
 	public static final int HUSNR = 13;
 	public static final String HUSBOKSTAV = "X";
@@ -49,23 +49,23 @@ public class TestDataUtil {
 	public static final String SEMIADR2 = "Semistrukturert adresselinje 2";
 	public static final String SEMIADR3 = "Semistrukturert adresselinje 3";
 	public static final String SEMIADR4 = "Semistrukturert adresselinje 4";
-	
-	public static Mottaker createMottaker( ) {
+
+	public static Mottaker createMottaker() {
 		return createMottaker(true);
 	}
-	
-	public static Mottaker createMottaker(boolean withNorskPostedAdresse){
+
+	public static Mottaker createMottaker(boolean withNorskPostedAdresse) {
 		Person person = new Person();
-		if(!withNorskPostedAdresse) {
+		if (!withNorskPostedAdresse) {
 			person.setMottakeradresse(createUtenlandsPostadresse());
-			
+
 		} else {
 			person.setMottakeradresse(createNorskPostadresse());
 		}
 		return person;
 	}
-	
-	public static NorskPostadresse createNorskPostadresse(){
+
+	public static NorskPostadresse createNorskPostadresse() {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		norskPostadresse.setAdresselinje1(ADRESSELINJE1);
 		norskPostadresse.setAdresselinje2(ADRESSELINJE2);
@@ -75,8 +75,8 @@ public class TestDataUtil {
 		norskPostadresse.setPoststed(POSTSTED);
 		return norskPostadresse;
 	}
-	
-	public static UtenlandskPostadresse createUtenlandsPostadresse(){
+
+	public static UtenlandskPostadresse createUtenlandsPostadresse() {
 		UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
 		utenlandskPostadresse.setAdresselinje1(ADRESSELINJE1);
 		utenlandskPostadresse.setAdresselinje2(ADRESSELINJE2);
@@ -140,6 +140,33 @@ public class TestDataUtil {
 			orgdet.getForretningsadresse().add(stedsadresseNorge);
 		}
 		org.setOrganisasjonDetaljer(orgdet);
+	}
+
+	public static void settKunForretningsadresse(Organisasjon org) throws DatatypeConfigurationException {
+		Gateadresse gateadresse = new Gateadresse();
+		gateadresse.setGatenavn(GATENAVN);
+		gateadresse.setHusnummer(HUSNR);
+		gateadresse.setHusbokstav(HUSBOKSTAV);
+
+		gateadresse.setFomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+		gateadresse.setFomBruksperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTSTED);
+		gateadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		gateadresse.setLandkode(landkoder);
+
+		OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
+		SemistrukturertAdresse semistrukturertAdresse = new SemistrukturertAdresse();
+		semistrukturertAdresse.setFomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+		semistrukturertAdresse.setFomBruksperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
+		orgdet.getPostadresse().add(semistrukturertAdresse);
+		orgdet.getForretningsadresse().add(gateadresse);
 	}
 
 	public static void settSemistrukturertAdresse(Organisasjon org, String adressetype, long validSeconds) throws DatatypeConfigurationException {

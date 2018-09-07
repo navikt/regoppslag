@@ -13,6 +13,7 @@ import static no.nav.regoppslag.util.TestDataUtil.SEMIADR2;
 import static no.nav.regoppslag.util.TestDataUtil.SEMIADR3;
 import static no.nav.regoppslag.util.TestDataUtil.createOrganisasjon;
 import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
+import static no.nav.regoppslag.util.TestDataUtil.settKunForretningsadresse;
 import static no.nav.regoppslag.util.TestDataUtil.settSemistrukturertAdresse;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,6 +40,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 public class OrganisasjonV4MapperTest {
@@ -171,6 +173,21 @@ public class OrganisasjonV4MapperTest {
         Mottaker mottaker = mapper.map(org, SERVICECODE);
         assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
         assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
+        assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+    }
+
+    @Test
+    public void shouldMapOrganisasjonEmptyPostAdresse() throws Exception {
+        Organisasjon org = createOrganisasjon(Collections.singletonList(ORGNAVN), Collections.singletonList(ORGKORTNAVN));
+        settKunForretningsadresse(org);
+        Mottaker mottaker = mapper.map(org, SERVICECODE);
+        assertThat(mottaker.getKortNavn(), is(ORGKORTNAVN));
+        assertThat(mottaker.getNavn(), is(ORGNAVN));
         assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
         assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), nullValue());
         assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje3()), nullValue());
