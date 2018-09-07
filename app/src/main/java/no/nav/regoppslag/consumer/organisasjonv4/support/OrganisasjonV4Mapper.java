@@ -32,8 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,228 +44,226 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class OrganisasjonV4Mapper {
 
-    public static final String ADRESSELINJE_1 = "adresselinje1";
-    public static final String ADRESSELINJE_2 = "adresselinje2";
-    public static final String ADRESSE_3_SPLIT_1 = "Adresse 3 split 1";
-    public static final String POSTNR = "postnr";
-    public static final String POSTSTED = "poststed";
+	public static final String ADRESSELINJE_1 = "adresselinje1";
+	public static final String ADRESSELINJE_2 = "adresselinje2";
+	public static final String ADRESSE_3_SPLIT_1 = "Adresse 3 split 1";
+	public static final String POSTNR = "postnr";
+	public static final String POSTSTED = "poststed";
 
-    @Inject
-    private final LandkodeService landkodeService;
+	@Inject
+	private final LandkodeService landkodeService;
 
-    @Inject
-    private final PostnummerService postnummerService;
+	@Inject
+	private final PostnummerService postnummerService;
 
-    private static final String LAND_NORGE = "Norge";
+	private static final String LAND_NORGE = "Norge";
 
-    public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
-        this.landkodeService = landkodeService;
-        this.postnummerService = postnummerService;
-    }
+	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
+		this.landkodeService = landkodeService;
+		this.postnummerService = postnummerService;
+	}
 
-    public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
-        Date now = Date.from(Instant.now());
-        OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
+	public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
+		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 
-        Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet, now);
+		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet);
 
-        if (organisasjonsnavn == null) {
-            throw new RegOppslagFunctionalException("Ingen gyldige sakspartnavn funnet");
-        }
+		if (organisasjonsnavn == null) {
+			throw new RegOppslagFunctionalException("Ingen gyldige sakspartnavn funnet");
+		}
 
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ")
-                .trim();
-    }
-
-
-    public Mottaker map(Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
-        Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
-
-        OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-
-        mottaker.setKortNavn(mapOrganisasjonKortnavn(wsOrganisasjon));
-        mottaker.setNavn(mapOrganisasjonNavn(orgDet));
-        mottaker.setSpraakkode(mapSpraakkode(orgDet));
-        Postadresse postadresse;
-        try {
-             postadresse = mapAdresse(orgDet);
-        } catch (RegOppslagFunctionalException e) {
-            log.info(String.format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrgnummer()));
-            throw e;
-        }
-
-        incrementFunctionalMetrics(postadresse, serviceCode);
-
-        if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
-            NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
-            mottaker.setMottakeradresse(norskPostadresse);
-        } else {
-            UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskadresse(postadresse);
-            mottaker.setMottakeradresse(utenlandskPostadresse);
-        }
-
-        return mottaker;
-    }
-
-    private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
-        if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-            requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
-        }
-        if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-            requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
-        }
-        requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), postadresse.getLand() == null ? "Ukjent" : postadresse
-                .getLand()).inc();
-    }
+		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
+				.trim();
+	}
 
 
-    private Postadresse mapAdresse(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
-        Date now = Date.from(Instant.now());
-        Postadresse postadresse = Postadresse.builder().build();
+	public Mottaker map(Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
+		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
-        List<GeografiskAdresse> geografiskAdresseList = orgDet.getPostadresse();
-        geografiskAdresseList.addAll(orgDet.getForretningsadresse());
+		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 
-        if (orgDet.getOpphoersdato() != null && now.after(orgDet.getOpphoersdato().toGregorianCalendar().getTime())) {
-            log.info("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
-            throw new RegOppslagFunctionalException("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
-        }
+		mottaker.setKortNavn(mapOrganisasjonKortnavn(wsOrganisasjon));
+		mottaker.setNavn(mapOrganisasjonNavn(orgDet));
+		mottaker.setSpraakkode(mapSpraakkode(orgDet));
+		Postadresse postadresse;
+		try {
+			postadresse = mapAdresse(orgDet);
+		} catch (RegOppslagFunctionalException e) {
+			log.info(String.format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrgnummer()));
+			throw e;
+		}
 
-        GeografiskAdresse activeAddress = findValidAddress(geografiskAdresseList);
+		incrementFunctionalMetrics(postadresse, serviceCode);
 
-        if (activeAddress instanceof SemistrukturertAdresse) {
-            SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) activeAddress;
-            postadresse = settAdresseledd(semistrukturertAdresse);
-            if (postadresse.getPostnummer() != null) {
-                postadresse.setPoststed(postnummerService.finnPoststed(postadresse.getPostnummer()));
-            }
-        } else {
-            Gateadresse gateadresse = (Gateadresse) activeAddress;
-            postadresse.setAdresselinje1(String.format("%s %s%s", gateadresse.getGatenavn(), gateadresse.getHusnummer(), gateadresse.getHusbokstav()));
-            postadresse.setPostnummer(gateadresse.getPoststed().getKodeRef());
-            postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
-        }
+		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
+			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
+			mottaker.setMottakeradresse(norskPostadresse);
+		} else {
+			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskadresse(postadresse);
+			mottaker.setMottakeradresse(utenlandskPostadresse);
+		}
 
-        if (activeAddress.getLandkode() != null) {
-            postadresse.setLand(landkodeService.finnLandnavn(activeAddress.getLandkode().getKodeRef()));
-        }
+		return mottaker;
+	}
 
-        return postadresse;
-    }
+	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
+		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
+		}
+		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
+			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
+		}
+		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), postadresse.getLand() == null ? "Ukjent" : postadresse
+				.getLand()).inc();
+	}
 
-    private Spraakkode mapSpraakkode(OrganisasjonsDetaljer orgDet) {
-        if (orgDet.getGjeldendeMaalform() != null) {
-            if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
-                return Spraakkode.NB;
-            } else {
-                return Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef());
-            }
-        }
-        return null;
-    }
 
-    private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ")
-                .trim();
-    }
+	private Postadresse mapAdresse(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
 
-    private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
-        Date now = Date.from(Instant.now());
+		List<GeografiskAdresse> geografiskAdresseList = orgDet.getPostadresse();
+		geografiskAdresseList.addAll(orgDet.getForretningsadresse());
 
-        Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet, now);
+		if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
+			log.info("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
+			throw new RegOppslagFunctionalException("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
+		}
 
-        if (organisasjonsnavn == null) {
-            throw new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet");
-        }
+		GeografiskAdresse activeAddress = findValidAddress(geografiskAdresseList);
 
-        return StringUtils.collectionToDelimitedString(((UstrukturertNavn)organisasjonsnavn.getNavn()).getNavnelinje(), " ")
-                .trim();
-    }
+		Postadresse postadresse = Postadresse.builder().build();
+		if (activeAddress instanceof SemistrukturertAdresse) {
+			SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) activeAddress;
+			postadresse = settAdresseledd(semistrukturertAdresse);
+			if (postadresse.getPostnummer() != null) {
+				postadresse.setPoststed(postnummerService.finnPoststed(postadresse.getPostnummer()));
+			}
+		} else {
+			Gateadresse gateadresse = (Gateadresse) activeAddress;
+			postadresse.setAdresselinje1(String.format("%s %s%s", gateadresse.getGatenavn(), gateadresse.getHusnummer(), gateadresse.getHusbokstav()));
+			postadresse.setPostnummer(gateadresse.getPoststed().getKodeRef());
+			postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
+		}
 
-    private Organisasjonsnavn findValidOrgNavn(OrganisasjonsDetaljer orgDet, Date now) {
-        return orgDet.getNavn().stream()
-                .findFirst()
-                .filter(n -> {
-                    Date fomGyldig = n.getFomGyldighetsperiode().toGregorianCalendar().getTime();
-                    Date tomGyldig = n.getTomGyldighetsperiode() != null ? n.getTomGyldighetsperiode().toGregorianCalendar().getTime() : null;
-                    Date tomBruk = n.getTomBruksperiode() != null ? n.getTomBruksperiode().toGregorianCalendar().getTime() : null;
+		if (activeAddress.getLandkode() != null) {
+			postadresse.setLand(landkodeService.finnLandnavn(activeAddress.getLandkode().getKodeRef()));
+		}
 
-                    return fomGyldig.before(now)
-                            && (tomGyldig == null || tomGyldig.after(now))
-                            && (tomBruk == null || tomBruk.after(now));
-                })
-                .orElse(null);
-    }
+		return postadresse;
+	}
 
-    private GeografiskAdresse findValidAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
-        Date now = Date.from(Instant.now());
+	private Spraakkode mapSpraakkode(OrganisasjonsDetaljer orgDet) {
+		if (orgDet.getGjeldendeMaalform() != null) {
+			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
+				return Spraakkode.NB;
+			} else {
+				return Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef());
+			}
+		}
+		return null;
+	}
 
-        GeografiskAdresse collect = adresseList.stream()
-                .findFirst()
-                .filter(a -> {
-                    Date fomGyldig = a.getFomGyldighetsperiode().toGregorianCalendar().getTime();
-                    Date tomGyldig = a.getTomGyldighetsperiode() != null ? a.getTomGyldighetsperiode().toGregorianCalendar().getTime() : null;
-                    Date tomBruk = a.getTomBruksperiode() != null ? a.getTomBruksperiode().toGregorianCalendar().getTime() : null;
+	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
+		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ")
+				.trim();
+	}
 
-                    boolean isValid = validateAddress(a);
+	private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+		Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet);
 
-                    return fomGyldig.before(now)
-                            && (tomGyldig == null || tomGyldig.after(now))
-                            && (tomBruk == null || tomBruk.after(now))
-                            && isValid;
-                })
-                .orElse( null);
+		if (organisasjonsnavn == null) {
+			throw new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet");
+		}
 
-        if (collect == null) {
-            throw new RegOppslagFunctionalException("Ingen gyldige adresser funnet");
-        }
+		return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
+				.trim();
+	}
 
-        return collect;
-    }
+	private Organisasjonsnavn findValidOrgNavn(OrganisasjonsDetaljer orgDet) {
+		final LocalDateTime now = LocalDateTime.now();
 
-    private boolean validateAddress(GeografiskAdresse adresse) {
-        AtomicBoolean valid = new AtomicBoolean(true);
+		return orgDet.getNavn().stream()
+				.findFirst()
+				.filter(n -> {
+					LocalDateTime fomGyldig = n.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+					LocalDateTime tomGyldig = n.getTomGyldighetsperiode() == null ? null : n.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+					LocalDateTime tomBruk = n.getTomBruksperiode() == null ? null : n.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
 
-        if (!(adresse instanceof SemistrukturertAdresse)) {
-            Gateadresse gateadresse = (Gateadresse) adresse;
-            if (gateadresse.getPoststed() == null) {
-                log.info("Mangelfull adresse, mangler poststed");
-                valid.set(false);
-            }
-        } else {
-            List<NoekkelVerdiAdresse> adresseledd = ((SemistrukturertAdresse) adresse).getAdresseledd();
-            adresseledd.forEach(al -> {
-                if (POSTNR.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
-                    log.info("Mangelfull adresse, mangler postnummer");
-                    valid.set(false);
-                }
-                if (POSTSTED.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
-                    log.info("Mangelfull adresse, mangler poststed");
-                    valid.set(false);
-                }
-            });
-        }
+					return fomGyldig.isBefore(now)
+							&& (tomGyldig == null || tomGyldig.isAfter(now))
+							&& (tomBruk == null || tomBruk.isAfter(now));
+				})
+				.orElse(null);
+	}
 
-        return valid.get();
-    }
+	private GeografiskAdresse findValidAddress(List<GeografiskAdresse> adresseList) throws RegOppslagFunctionalException {
+		final LocalDateTime now = LocalDateTime.now();
 
-    private Postadresse settAdresseledd(SemistrukturertAdresse semistrukturertAdresse) {
-        Postadresse postadresse = Postadresse.builder().build();
-        semistrukturertAdresse.getAdresseledd().forEach(nokkel -> {
-            if (ADRESSELINJE_1.equals(nokkel.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje1(nokkel.getVerdi());
-            } else if (ADRESSELINJE_2.equals(nokkel.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje2(nokkel.getVerdi());
-            } else if (ADRESSE_3_SPLIT_1.equals(nokkel.getNoekkel().getKodeRef())) {
-                postadresse.setAdresselinje3(nokkel.getVerdi());
-            } else if (POSTNR.equals(nokkel.getNoekkel().getKodeRef())) {
-                postadresse.setPostnummer(nokkel.getVerdi());
-            } else if (POSTSTED.equals(nokkel.getNoekkel().getKodeRef())) {
-                postadresse.setPoststed(nokkel.getVerdi());
-            }
-        });
-        return postadresse;
-    }
+		GeografiskAdresse collect = adresseList.stream()
+				.findFirst()
+				.filter(a -> {
+					LocalDateTime fomGyldig = a.getFomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+					LocalDateTime tomGyldig = a.getTomGyldighetsperiode() == null ? null : a.getTomGyldighetsperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+					LocalDateTime tomBruk = a.getTomBruksperiode() == null ? null : a.getTomBruksperiode().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+
+					boolean isValid = validateAddress(a);
+
+					return fomGyldig.isBefore(now)
+							&& (tomGyldig == null || tomGyldig.isAfter(now))
+							&& (tomBruk == null || tomBruk.isAfter(now))
+							&& isValid;
+				})
+				.orElse(null);
+
+		if (collect == null) {
+			throw new RegOppslagFunctionalException("Ingen gyldige adresser funnet");
+		}
+
+		return collect;
+	}
+
+	private boolean validateAddress(GeografiskAdresse adresse) {
+		AtomicBoolean valid = new AtomicBoolean(true);
+
+		if (!(adresse instanceof SemistrukturertAdresse)) {
+			Gateadresse gateadresse = (Gateadresse) adresse;
+			if (gateadresse.getPoststed() == null) {
+				log.info("Mangelfull adresse, mangler poststed");
+				valid.set(false);
+			}
+		} else {
+			List<NoekkelVerdiAdresse> adresseledd = ((SemistrukturertAdresse) adresse).getAdresseledd();
+			adresseledd.forEach(al -> {
+				if (POSTNR.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
+					log.info("Mangelfull adresse, mangler postnummer");
+					valid.set(false);
+				}
+				if (POSTSTED.equals(al.getNoekkel().getKodeRef()) && isEmpty(al.getVerdi())) {
+					log.info("Mangelfull adresse, mangler poststed");
+					valid.set(false);
+				}
+			});
+		}
+
+		return valid.get();
+	}
+
+	private Postadresse settAdresseledd(SemistrukturertAdresse semistrukturertAdresse) {
+		Postadresse postadresse = Postadresse.builder().build();
+		semistrukturertAdresse.getAdresseledd().forEach(nokkel -> {
+			if (ADRESSELINJE_1.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setAdresselinje1(nokkel.getVerdi());
+			} else if (ADRESSELINJE_2.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setAdresselinje2(nokkel.getVerdi());
+			} else if (ADRESSE_3_SPLIT_1.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setAdresselinje3(nokkel.getVerdi());
+			} else if (POSTNR.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setPostnummer(nokkel.getVerdi());
+			} else if (POSTSTED.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setPoststed(nokkel.getVerdi());
+			}
+		});
+		return postadresse;
+	}
 
 
 }
