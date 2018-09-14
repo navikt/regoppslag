@@ -12,47 +12,39 @@ Beskrivelsen av grensesnittet finner du på endepunktet `/swagger-ui.html`
 
 Denne applikasjonen har ingen automatiske systemtester
 
-## Hvordan kjøre lokalt med mvn spring-boot plugin
-
-Det ligger profil for t8 i `regoppslag/src/main/resources`:
-
-* application-t8.properties
-
-Noen secrets må settes - se https://fasit.adeo.no/instances/4423689
-
-```
-
-# Systembruker
-export SRVREGOPPSLAG_USERNAME=srvregoppslag
-export SRVREGOPPSLAG_PASSWORD=<pw>
-
-# System cert
-export SRVREGOPPSLAG_CERT_KEYSTORE=<keystorepath>
-export SRVREGOPPSLAG_CERT_KEYSTOREALIAS=<keystorealias>   # Default app-key
-export SRVREGOPPSLAG_CERT_PASSWORD=<certpw>
-```
-
-Kjøre appen med mvn spring boot plugin. Truststore finnes på Fasit som `nav_truststore` alias. 
-
-```
-mvn spring-boot:run -Drun.profiles=t8 -Drun.jvmArguments="-Dsrvregoppslag_cert_keystore=/path/til/cert.jks -Dsrvregoppslag_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>"
-```
-## Cache ved lokal kjøring
-
-Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
-Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjører lokalt på applikasjonen. Konfigurasjon av denne cachen ligger i `LokalCacheConfig` klassen og vil bare kjøres når Activeprofiles settes `local`.
-
 ## Hvordan kjøre lokalt med IntelliJ
 
 Start `Application.java` som en Spring Boot/Java Application. På denne måten kan man kjøre lokalt og få full debug-støtte. 
 
-Skriv inn passordet for `srvregoppslag` servicebrukene i `serviceuser.password` i application-t8.properties filen. 
+Active profiles: `t`.
 
-VM Options: `-Dsrvregoppslag_cert_keystore=/path/til/cert.jks -Dsrvregoppslag_cert_password=<certpw> -Djavax.net.ssl.trustStore=/path/til/truststore.jks -Djavax.net.ssl.trustStorePassword=<truststorepw>`
+Det ligger profil for t i `regoppslag/src/main/resources` hvor url for alle endepunkter ligger som applikasjonen henter opp ved oppstart:
 
-Active profiles: `t8`.
+* application-t.properties
 
----
+Noen secrets må settes i VM Options
+
+```
+
+# Systembruker
+-Dserviceuser.username=srvregoppslag
+-Dserviceuser.password=<pw>
+
+# System cert
+-Djavax.net.ssl.trustStore=<nav_truststore_nonproduction_ny2.jts path>
+-Djavax.net.ssl.trustStorePassword=<pw>
+
+# Ldap
+-Dldap_password=<psw>
+
+-Dnamespace=tx
+```
+
+Miljø som det ønskes å kjøre mot kan settes med `-Dnamespace=t8` feks for t8
+## Cache ved lokal kjøring
+
+Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
+Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjører lokalt på applikasjonen. Konfigurasjon av denne cachen ligger i `LokalCacheConfig` klassen og vil bare kjøres når Activeprofiles settes `local`.
 
 # Henvendelser
 
@@ -62,4 +54,4 @@ Spørsmål knyttet til koden eller prosjektet kan rettes mot:
 
 ## For NAV-ansatte
 
-Interne henvendelser kan sendes via Slack i kanalen #dokumenthåndtering.
+Interne henvendelser kan sendes via Slack i kanalen #team_dokument.
