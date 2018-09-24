@@ -25,7 +25,7 @@ public class ElementEnricherConfig {
 		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']", MottakerPlugin.class);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='sakspart']", SakspartPlugin.class);
-		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']/*[local-name()='navEnhet']", NavOrgenhetNavnPlugin.class);
+		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']", NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navAnsatt']", SaksbehandlerPlugin.class);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='signerendeBeslutter']/*[local-name()='navEnhet']", NavOrgenhetNavnPlugin.class);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']", SaksbehandlerPlugin.class);

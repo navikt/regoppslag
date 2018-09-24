@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
@@ -81,6 +80,25 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		
+		Node processed = norgPlugin.processElement(node, valueMap);
+
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+	}
+
+	@Test
+	public void testNavOrgenhetNavnPluginWithBehandlendeEnhet() throws Exception {
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
 		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
