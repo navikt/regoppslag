@@ -10,18 +10,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
-import static no.nav.regoppslag.util.TestUtil.resourceUrlToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.io.Resources;
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
@@ -32,8 +29,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import java.net.URL;
-
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  * @author Ketill Fenne, Visma Consulting
@@ -42,11 +37,6 @@ import java.net.URL;
 public class Treg001IT extends AbstractIT {
 
 	private final String DOKUMENTTYPEID = "123";
-
-	private URL brevdataResponse_URL = Resources.getResource("__files/treg001/treg001_full_response.xml");
-	private URL brevdataResponseOrg_URL = Resources.getResource("__files/treg001/treg001_full_response_orgv4.xml");
-	private String expectedBrevdataFerdigUtfylt = resourceUrlToString(brevdataResponse_URL);
-	private String expectedBrevdataFerdigUtfyltOrg = resourceUrlToString(brevdataResponseOrg_URL);
 
 	@Before
 	public void runBefore() {
@@ -84,7 +74,7 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataPerson() throws Exception {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfylt.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+		assertEquals(classpathToString("__files/treg001/treg001_full_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
@@ -94,7 +84,7 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_en.xml"))); //mottakerPlugin
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
-		assertEquals(resourceUrlToString(Resources.getResource("__files/treg001/treg001_response_maalform_en.xml")).replaceAll("[\n\t\r ]", ""), actualResponse
+		assertEquals(classpathToString("__files/treg001/treg001_response_maalform_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
@@ -105,14 +95,15 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataOrg() throws Exception {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
-		assertEquals(expectedBrevdataFerdigUtfyltOrg.replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
 	@Test
 	public void shouldNotMapWhenIsBerikIsFalse() throws Exception {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_is_berik_false.xml"), KompletterBrevdataResponse.class);
-		assertEquals(resourceUrlToString(Resources.getResource("__files/treg001/treg001_is_berik_false_response.xml")).replaceAll("[\n\t\r ]", ""), actualResponse
+		assertEquals(classpathToString("__files/treg001/treg001_is_berik_false_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}

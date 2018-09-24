@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <brevdata>
-	<NAVFelles xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles" xmlns:test="test"
+	<NAVFelles xmlns:test="test"
 			   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<mottaker xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:Organisasjon">
@@ -40,13 +40,10 @@
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:signerendeBeslutter>
-		<test:behandlendeEnhet>
-			<navEnhet xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-					  xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
-				<ns1:enhetsId>0136</ns1:enhetsId>
-				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
-			</navEnhet>
-		</test:behandlendeEnhet>
+		<behandlendeEnhet xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
+			<ns1:enhetsId>0136</ns1:enhetsId>
+			<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
+		</behandlendeEnhet>
 		<test:kontaktinformasjon>
 			<postadresse xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 						 xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">

@@ -28,6 +28,9 @@
 				<felles:land>no</felles:land>
 			</felles:mottakeradresse>
 		</test:mottaker>
+		<test:behandlendeEnhet>
+			<enhetsId>0136</enhetsId>
+		</test:behandlendeEnhet>
 		<test:signerendeSaksbehandler>
 			<felles:navAnsatt>
 				<felles:ansattId>O837534</felles:ansattId>

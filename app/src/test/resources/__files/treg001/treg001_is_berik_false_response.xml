@@ -32,13 +32,9 @@
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:signerendeBeslutter>
-		<test:behandlendeEnhet f:berik="false">
-			<navEnhet xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
-					  xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
-				<ns1:enhetsId>0136</ns1:enhetsId>
-				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
-			</navEnhet>
-		</test:behandlendeEnhet>
+		<behandlendeEnhet xmlns="test" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="false">
+			<ns1:enhetsId>0136</ns1:enhetsId>
+		</behandlendeEnhet>
 		<test:kontaktinformasjon f:berik="false">
 			<postadresse xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 						 xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles" ns1:berik="false">

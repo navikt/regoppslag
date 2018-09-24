@@ -24,9 +24,7 @@
 			</f:navEnhet>
 		</test:signerendeBeslutter>
 		<test:behandlendeEnhet>
-			<f:navEnhet>
 				<enhetsId>0136</enhetsId>
-			</f:navEnhet>
 		</test:behandlendeEnhet>
 		<test:kontaktinformasjon>
 			<f:postadresse>

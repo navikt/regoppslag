@@ -1,7 +1,6 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.KUNNE_IKKE_FINNE_ENHET;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
@@ -35,6 +34,7 @@ import java.util.Map;
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
 	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
+	public static final String ELEMENT_LOCALNAME_BEHANDLENDEENHET = "behandlendeEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
 
@@ -61,6 +61,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		
 		try {
 			NavEnhet navEnhet = unmarshal(content);
+
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 
 			//Skal elementet berikes?
@@ -92,7 +93,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 	
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
-		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
+		if (!(ELEMENT_LOCALNAME.equals(element.getLocalName()) || ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(element.getLocalName()))) {
 			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found " + element.getLocalName(), UGYLDIG_INPUT);
 		}
