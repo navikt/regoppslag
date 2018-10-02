@@ -108,6 +108,22 @@ public class Treg001IT extends AbstractIT {
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
+	@Test
+	public void shouldNotMapBehandlendeEnhetWhenEnhetIs8020() throws Exception {
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_behandlende_enhet_8020.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_behandlendeEnhet_8020.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
+	@Test
+	public void shouldNotMapBehandlendeEnhetWhenEnhetIs4819() throws Exception {
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_behandlende_enhet_4819.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_behandlendeEnhet_4819.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
 
 	/**
 	 * Testbetingelser:

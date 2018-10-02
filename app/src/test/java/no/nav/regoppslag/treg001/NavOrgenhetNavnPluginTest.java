@@ -4,6 +4,7 @@ import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +39,8 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NavOrgenhetNavnPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	public static final String BREVDATA_8020 = "src/test/resources/brevdata/brevdata_behandlendeEnhet_8020.xml";
+	public static final String BREVDATA_4819 = "src/test/resources/brevdata/brevdata_behandlendeEnhet_4819.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
@@ -125,6 +128,46 @@ public class NavOrgenhetNavnPluginTest {
 
 		assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
 	}
+
+	@Test
+	public void testNavOrgenhetNavnPluginIkkeBerikIfEnhet8020() throws Exception {
+		File xmlFile = new File(BREVDATA_8020);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = norgPlugin.processElement(node, valueMap);
+
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(navEnhet.getEnhetsNavn(), nullValue());
+	}
+
+
+	@Test
+	public void testNavOrgenhetNavnPluginIkkeBerikIfEnhet4819() throws Exception {
+		File xmlFile = new File(BREVDATA_4819);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = norgPlugin.processElement(node, valueMap);
+
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
+
+		assertThat(navEnhet.getEnhetsNavn(), nullValue());
+	}
+
 
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
 		Organisasjonsenhet enhet = new Organisasjonsenhet();

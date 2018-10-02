@@ -27,6 +27,8 @@ import org.w3c.dom.Node;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -37,6 +39,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	public static final String ELEMENT_LOCALNAME_BEHANDLENDEENHET = "behandlendeEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
+	public static final List<String> IGNORERTE_ENHETER = Arrays.asList("8020","4819");
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -61,6 +64,11 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		
 		try {
 			NavEnhet navEnhet = unmarshal(content);
+
+			if (IGNORERTE_ENHETER.contains(navEnhet.getEnhetsId()) && ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(content.getLocalName())) {
+				log.info(String.format("TREG001 NavOrgEnhetPlugin Hopper over beriking av element=%s med enhetsId=%s. Ignorerte enheter=%s", content.getLocalName(), navEnhet.getEnhetsId(), IGNORERTE_ENHETER));
+				return content;
+			}
 
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 

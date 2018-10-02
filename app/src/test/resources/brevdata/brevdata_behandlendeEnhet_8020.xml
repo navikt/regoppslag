@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata>
+	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			   xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			xmlns:test="test">
+		<felles:spraakkode>NB</felles:spraakkode>
+		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
+		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
+		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
+		<test:sakspart>
+			<felles:id>30085849677</felles:id>
+			<felles:typeKode>PERSON</felles:typeKode>
+			<felles:navn>Her Majesty The Duchess of York: Queen Latifa</felles:navn>
+			<felles:diskresjonskode>true</felles:diskresjonskode>
+		</test:sakspart>
+		<test:mottaker xsi:type="felles:Person">
+			<felles:id>30085849677</felles:id>
+			<felles:typeKode>PERSON</felles:typeKode>
+			<felles:navn>string</felles:navn>
+			<felles:kortNavn>string</felles:kortNavn>
+			<felles:spraakkode>NN</felles:spraakkode>
+			<felles:mottakeradresse xsi:type="felles:NorskPostadresse">
+				<felles:adresselinje1>jsfasjfø</felles:adresselinje1>
+				<felles:postnummer>0123</felles:postnummer>
+				<felles:poststed>Oslo</felles:poststed>
+				<felles:land>no</felles:land>
+			</felles:mottakeradresse>
+		</test:mottaker>
+		<test:behandlendeEnhet>
+			<enhetsId>8020</enhetsId>
+		</test:behandlendeEnhet>
+		<test:signerendeSaksbehandler>
+			<felles:navAnsatt>
+				<felles:ansattId>O837534</felles:ansattId>
+				<felles:navn>KOKO</felles:navn>
+			</felles:navAnsatt>
+			<felles:navEnhet>
+				<felles:enhetsId>TKN5427</felles:enhetsId>
+			</felles:navEnhet>
+		</test:signerendeSaksbehandler>
+		<test:signerendeBeslutter>
+			<felles:navAnsatt>
+				<felles:ansattId>O837534</felles:ansattId>
+			</felles:navAnsatt>
+			<felles:navEnhet>
+				<felles:enhetsId>TKN5427</felles:enhetsId>
+			</felles:navEnhet>
+		</test:signerendeBeslutter>
+		<test:kontaktinformasjon>
+			<felles:postadresse felles:berik="true">
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<felles:enhetsId>TKN5427</felles:enhetsId>
+			</felles:postadresse>
+			<felles:besoksadresse felles:berik="true">
+				<kontaktTelefonnummer></kontaktTelefonnummer>
+				<felles:enhetsId>TKN5427</felles:enhetsId>
+			</felles:besoksadresse>
+			<felles:returadresse felles:berik="true">
+				<felles:enhetsId>TKN6675</felles:enhetsId>
+			</felles:returadresse>
+		</test:kontaktinformasjon>
+	</NAVFelles>
+</brevdata>
