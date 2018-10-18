@@ -40,7 +40,7 @@
 				<ns1:enhetsNavn>NAV Rygge</ns1:enhetsNavn>
 			</navEnhet>
 		</test:signerendeBeslutter>
-		<test:behandlendeEnhet>
+		<test:behandlendeEnhet f:berik="false">
 			<f:enhetsId>8020</f:enhetsId>
 		</test:behandlendeEnhet>
 		<test:kontaktinformasjon>

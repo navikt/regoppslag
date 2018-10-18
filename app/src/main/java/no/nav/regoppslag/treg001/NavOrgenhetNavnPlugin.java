@@ -39,7 +39,6 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	public static final String ELEMENT_LOCALNAME_BEHANDLENDEENHET = "behandlendeEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
-	public static final List<String> IGNORERTE_ENHETER = Arrays.asList("8020","4819");
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
@@ -65,15 +64,11 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		try {
 			NavEnhet navEnhet = unmarshal(content);
 
-			if (IGNORERTE_ENHETER.contains(navEnhet.getEnhetsId()) && ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(content.getLocalName())) {
-				log.info(String.format("TREG001 NavOrgEnhetPlugin Hopper over beriking av element=%s med enhetsId=%s. Ignorerte enheter=%s", content.getLocalName(), navEnhet.getEnhetsId(), IGNORERTE_ENHETER));
-				return content;
-			}
-
 			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 
 			//Skal elementet berikes?
 			if (navEnhet.isBerik()) {
+
 				validateEnhet(navEnhet);
 
 				requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
@@ -81,6 +76,9 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 
 				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
+			} else {
+				log.info(String.format("TREG001 NavOrgEnhetPlugin: element-berik=%s. Hopper over beriking av element=%s med enhetsId=%s.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId()));
+				return content;
 			}
 
 			Document newNode = convertObjectToDocument(navEnhet);

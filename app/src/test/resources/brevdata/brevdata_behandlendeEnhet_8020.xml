@@ -28,7 +28,7 @@
 				<felles:land>no</felles:land>
 			</felles:mottakeradresse>
 		</test:mottaker>
-		<test:behandlendeEnhet>
+		<test:behandlendeEnhet felles:berik="false">
 			<enhetsId>8020</enhetsId>
 		</test:behandlendeEnhet>
 		<test:signerendeSaksbehandler>
