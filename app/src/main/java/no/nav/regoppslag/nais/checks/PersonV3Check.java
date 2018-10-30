@@ -20,7 +20,7 @@ public class PersonV3Check extends AbstractDependencyCheck {
 
 	@Inject
 	public PersonV3Check(PersonV3 personV3, PersonV3Alias personV3Alias) {
-		super(DependencyType.SOAP, PERSONV3_LABEL, personV3Alias.getEndpointurl(), Importance.CRITICAL);
+		super(DependencyType.SOAP, PERSONV3_LABEL, personV3Alias.getEndpointurl(), Importance.WARNING);
 		this.personV3 = personV3;
 	}
 	
