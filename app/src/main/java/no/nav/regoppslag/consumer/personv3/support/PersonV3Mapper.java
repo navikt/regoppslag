@@ -77,7 +77,7 @@ public class PersonV3Mapper {
 		Date now = Date.from(Instant.now());
 
 		if (person.getDoedsdato() != null && now.after(person.getDoedsdato().getDoedsdato().toGregorianCalendar().getTime())) {
-			throw new RegOppslagFunctionalException("Personen er registrert som død.");
+			throw new RegOppslagFunctionalException("Personen er registrert som død.", "Personen er registrert som død.");
 		}
 
 		Mottaker mottaker = new Person();

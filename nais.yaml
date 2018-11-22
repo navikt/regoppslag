@@ -4,6 +4,7 @@ replicas:
   max: 5
   cpuThresholdPercentage: 50
 port: 8080
+team: teamdokumenthandtering
 healthcheck:
   liveness:
     path: /isAlive
