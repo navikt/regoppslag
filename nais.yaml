@@ -1,4 +1,4 @@
-image: "docker.adeo.no:5000/dok/regoppslag"
+image: "repo.adeo.no:5443/dok/regoppslag"
 replicas:
   min: 2
   max: 5
@@ -21,7 +21,7 @@ prometheus:
   path: /prometheus
 resources:
   limits:
-      cpu: 6000m
+      cpu: 2000m
       memory: 1024Mi
   requests:
       cpu: 250m
