@@ -113,7 +113,7 @@ public class OrganisasjonV4MapperTest {
     @Test
     public void shouldThrowWhenOpphoertOrg() throws Exception {
         thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Organisasjon har opphørt, orgnr");
+        thrown.expectMessage("Organisasjon har opphørt");
 
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         org.getOrganisasjonDetaljer().setOpphoersdato(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
