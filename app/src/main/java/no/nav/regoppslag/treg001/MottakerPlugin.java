@@ -108,7 +108,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
-					mappedMottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG001);
+					mappedMottaker = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
 				}
 
 				mottaker.setMottakeradresse(mappedMottaker.getMottakeradresse());

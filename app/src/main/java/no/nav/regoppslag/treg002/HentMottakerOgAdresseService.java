@@ -70,7 +70,7 @@ public class HentMottakerOgAdresseService {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
-				mottaker = organisasjonV4Mapper.map(organisasjon, SERVICE_CODE_TREG002);
+				mottaker = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
 			}
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())

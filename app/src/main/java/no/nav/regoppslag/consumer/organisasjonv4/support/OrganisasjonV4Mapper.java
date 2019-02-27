@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class OrganisasjonV4Mapper {
 	}
 
 
-	public Mottaker map(Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
+	public Mottaker map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
@@ -81,7 +82,7 @@ public class OrganisasjonV4Mapper {
 		mottaker.setSpraakkode(mapSpraakkode(orgDet));
 		Postadresse postadresse;
 		try {
-			postadresse = mapAdresse(orgDet);
+			postadresse = mapAdresse(orgNummer, orgDet);
 		} catch (RegOppslagFunctionalException e) {
 			log.info(String.format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrgnummer()));
 			throw e;
@@ -112,10 +113,10 @@ public class OrganisasjonV4Mapper {
 	}
 
 
-	private Postadresse mapAdresse(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+	private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
 		if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
-			log.info("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
-			throw new RegOppslagFunctionalException("Organisasjon har opphørt, orgnr: ", orgDet.getOrgnummer());
+			String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato().toGregorianCalendar().getTime()), orgNummer);
+			throw new RegOppslagFunctionalException(message, message);
 		}
 
 		GeografiskAdresse activeAddress = selectActiveAddress(orgDet.getPostadresse(), orgDet.getForretningsadresse())
