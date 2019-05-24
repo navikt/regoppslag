@@ -1,0 +1,14 @@
+package no.nav.regoppslag.xmlenricher.exceptions;
+
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+
+/**
+ * @author Ugur Alpay Cenar, Visma Consulting.
+ */
+public class MarshallerTechnicalException extends RegOppslagTechnicalException {
+
+
+	public MarshallerTechnicalException(String message, Throwable cause, String metricMessage) {
+		super(message, cause, metricMessage);
+	}
+}

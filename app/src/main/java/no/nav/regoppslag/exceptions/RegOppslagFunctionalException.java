@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 public class RegOppslagFunctionalException extends Exception {
 	
-	private String shortDescription = "RegOppslagFunctionalException";
+	private String metricMessage = "RegOppslagFunctionalException";
 	
 	public RegOppslagFunctionalException() {
 	}
 	
-	public RegOppslagFunctionalException(String message, String shortDescription) {
+	public RegOppslagFunctionalException(String message, String metricMessage) {
 		super(message);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 	
 	public RegOppslagFunctionalException(String message) {
@@ -29,17 +29,17 @@ public class RegOppslagFunctionalException extends Exception {
 		super(message, cause);
 	}
 	
-	public RegOppslagFunctionalException(String message, Throwable cause, String shortDescription) {
+	public RegOppslagFunctionalException(String message, Throwable cause, String metricMessage) {
 		super(message, cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 	
 	public RegOppslagFunctionalException(Throwable cause) {
 		super(cause);
 	}
 	
-	public RegOppslagFunctionalException(Throwable cause, String shortDescription) {
+	public RegOppslagFunctionalException(Throwable cause, String metricMessage) {
 		super(cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 }

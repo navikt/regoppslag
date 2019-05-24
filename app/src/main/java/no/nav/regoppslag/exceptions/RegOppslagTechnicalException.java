@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 public class RegOppslagTechnicalException extends Exception {
 	
-	private String shortDescription = "RegOppslagTechnicalException";
+	private String metricMessage = "RegOppslagTechnicalException";
 	private HttpStatus httpStatus = HttpStatus.OK;
 	
 	public RegOppslagTechnicalException() {
@@ -21,20 +21,20 @@ public class RegOppslagTechnicalException extends Exception {
 		super(message);
 	}
 	
-	public RegOppslagTechnicalException(String message, String shortDescription) {
+	public RegOppslagTechnicalException(String message, String metricMessage) {
 		super(message);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 	
-	public RegOppslagTechnicalException(String message, Throwable cause, String shortDescription) {
+	public RegOppslagTechnicalException(String message, Throwable cause, String metricMessage) {
 		super(message, cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 	
 	
-	public RegOppslagTechnicalException(String message, Throwable cause, String shortDescription, HttpStatus httpStatus) {
+	public RegOppslagTechnicalException(String message, Throwable cause, String metricMessage, HttpStatus httpStatus) {
 		super(message, cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 		this.httpStatus = httpStatus;
 	}
 	
@@ -47,9 +47,9 @@ public class RegOppslagTechnicalException extends Exception {
 	}
 	
 	
-	public RegOppslagTechnicalException(Throwable cause, String shortDescription) {
+	public RegOppslagTechnicalException(Throwable cause, String metricMessage) {
 		super(cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 	
 }

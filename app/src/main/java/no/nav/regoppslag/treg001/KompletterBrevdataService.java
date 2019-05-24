@@ -7,7 +7,10 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
+import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -57,6 +60,7 @@ public class KompletterBrevdataService {
         return writer.toString();
     }
 
+    @Retryable(include = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
     public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
         String responseBrevdata;
         try {
@@ -72,12 +76,12 @@ public class KompletterBrevdataService {
         } catch (RegOppslagFunctionalException e) {
             log.warn("TREG001 Funksjonell feil: " + e.getMessage());
             throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-                    .getMessage()), e, e.getShortDescription());
+                    .getMessage()), e, e.getMetricMessage());
         } catch (RegOppslagTechnicalException e) {
             log.error("TREG001 Teknisk feil: " + e.getMessage(), e);
             throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s.", request
                     .getDokumentTypeId(), e
-                    .getMessage()), e.getShortDescription());
+                    .getMessage()), e.getMetricMessage());
         } catch (RegOppslagSecurityException e) {
             log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());
             throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
