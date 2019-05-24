@@ -70,13 +70,16 @@ public class KompletterBrevdataService {
         } catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
             log.error("Teknisk feil ved parsing av brevdata: " + e.getMessage(), e);
             throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
-        } catch (SAXException | XPathExpressionException | TransformerException e) {
+        } catch (MarshallerTechnicalException e) {
+			log.warn("TREG001 Teknisk feil: " + e.getMessage(), e);
+			throw e;
+		} catch (SAXException | XPathExpressionException | TransformerException e) {
             log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
             throw new RegOppslagFunctionalException(e, "Feil ved parsing av brevdata");
         } catch (RegOppslagFunctionalException e) {
-            log.warn("TREG001 Funksjonell feil: " + e.getMessage());
-            throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-                    .getMessage()), e, e.getMetricMessage());
+			log.warn("TREG001 Funksjonell feil: " + e.getMessage());
+			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+					.getMessage()), e, e.getMetricMessage());
         } catch (RegOppslagTechnicalException e) {
             log.error("TREG001 Teknisk feil: " + e.getMessage(), e);
             throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s.", request
