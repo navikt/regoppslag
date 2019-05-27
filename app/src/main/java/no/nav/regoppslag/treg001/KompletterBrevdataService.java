@@ -69,7 +69,7 @@ public class KompletterBrevdataService {
 
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (MarshallerTechnicalException e) {
-			log.warn("TREG001 Teknisk marshaller feil: " + e.getMessage(), e);
+			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error("Teknisk feil ved parsing av brevdata: " + e.getMessage(), e);
