@@ -20,5 +20,6 @@ testDb.properties
 APP_LOG_HOME_IS_UNDEFINED
 
 **/application-t*.properties
+**/application-q*.properties
 
-**/TestSamlTokenController.java
+**/*NoCommit*.java
