@@ -8,7 +8,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 public class MarshallerTechnicalException extends RegOppslagTechnicalException {
 
 
-	public MarshallerTechnicalException(String message, Throwable cause, String metricMessage) {
-		super(message, cause, metricMessage);
+	public MarshallerTechnicalException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

@@ -10,46 +10,46 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 @Getter
 public class RegOppslagTechnicalException extends Exception {
-	
-	private String metricMessage = "RegOppslagTechnicalException";
+
+	private final String metricMessage;
 	private HttpStatus httpStatus = HttpStatus.OK;
-	
-	public RegOppslagTechnicalException() {
-	}
-	
+
 	public RegOppslagTechnicalException(String message) {
 		super(message);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
+
 	public RegOppslagTechnicalException(String message, String metricMessage) {
 		super(message);
 		this.metricMessage = metricMessage;
 	}
-	
+
 	public RegOppslagTechnicalException(String message, Throwable cause, String metricMessage) {
 		super(message, cause);
 		this.metricMessage = metricMessage;
 	}
-	
-	
+
+
 	public RegOppslagTechnicalException(String message, Throwable cause, String metricMessage, HttpStatus httpStatus) {
 		super(message, cause);
 		this.metricMessage = metricMessage;
 		this.httpStatus = httpStatus;
 	}
-	
+
 	public RegOppslagTechnicalException(String message, Throwable cause) {
 		super(message, cause);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
+
 	public RegOppslagTechnicalException(Throwable cause) {
 		super(cause);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
-	
+
+
 	public RegOppslagTechnicalException(Throwable cause, String metricMessage) {
 		super(cause);
 		this.metricMessage = metricMessage;
 	}
-	
+
 }

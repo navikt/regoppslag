@@ -57,9 +57,9 @@ public class JaxbHelper<T> {
 		} catch (JAXBException | IllegalArgumentException e) {
 			throw new MarshallerException(String.format("Feilet ved unmarshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
-		} catch (NullPointerException e) {
+		} catch (NullPointerException e) { //NOSONAR
 			throw new MarshallerTechnicalException(String.format("Teknisk feil ved unmarshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
-					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e, "Marshaller teknisk feil");
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
 	}
@@ -75,9 +75,9 @@ public class JaxbHelper<T> {
 		} catch (JAXBException | IllegalArgumentException e) {
 			throw new MarshallerException(String.format("Feilet ved marshalling. Feilmelding=%s,  Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
-		} catch (NullPointerException e) {
+		} catch (NullPointerException e) { //NOSONAR
 			throw new MarshallerTechnicalException(String.format("Teknisk feil ved marshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
-					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e, "Marshaller teknisk feil");
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
 	}
