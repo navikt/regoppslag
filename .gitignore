@@ -18,3 +18,8 @@ atlassian-ide-plugin.xml
 *.log
 testDb.properties
 APP_LOG_HOME_IS_UNDEFINED
+
+**/application-t*.properties
+**/application-q*.properties
+
+**/*NoCommit*.java

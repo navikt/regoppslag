@@ -113,7 +113,7 @@ public class HentMottakerOgAdresseService {
 		} else if (e instanceof RegOppslagTechnicalException) {
 			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
-					.getShortDescription());
+					.getMetricMessage());
 		} else {
 			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()

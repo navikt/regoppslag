@@ -10,36 +10,36 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 @Getter
 public class RegOppslagFunctionalException extends Exception {
-	
-	private String shortDescription = "RegOppslagFunctionalException";
-	
-	public RegOppslagFunctionalException() {
-	}
-	
-	public RegOppslagFunctionalException(String message, String shortDescription) {
+
+	private final String metricMessage;
+
+	public RegOppslagFunctionalException(String message, String metricMessage) {
 		super(message);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
-	
+
 	public RegOppslagFunctionalException(String message) {
 		super(message);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
+
 	public RegOppslagFunctionalException(String message, Throwable cause) {
 		super(message, cause);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
-	public RegOppslagFunctionalException(String message, Throwable cause, String shortDescription) {
+
+	public RegOppslagFunctionalException(String message, Throwable cause, String metricMessage) {
 		super(message, cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
-	
+
 	public RegOppslagFunctionalException(Throwable cause) {
 		super(cause);
+		metricMessage = this.getClass().getSimpleName();
 	}
-	
-	public RegOppslagFunctionalException(Throwable cause, String shortDescription) {
+
+	public RegOppslagFunctionalException(Throwable cause, String metricMessage) {
 		super(cause);
-		this.shortDescription = shortDescription;
+		this.metricMessage = metricMessage;
 	}
 }
