@@ -96,6 +96,7 @@ public class PersonV3Consumer {
 		HentPersonRequest request = new HentPersonRequest();
 		request.setAktoer(personIdent);
 		request.getInformasjonsbehov().add(Informasjonsbehov.ADRESSE);
+		request.getInformasjonsbehov().add(Informasjonsbehov.KOMMUNIKASJON);
 		return request;
 	}
 }
