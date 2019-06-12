@@ -16,7 +16,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
-import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
@@ -84,7 +83,6 @@ public class PersonV3Mapper {
 
 		Mottaker mottaker = new Person();
 
-		mottaker.setSpraakkode(getSpraakkode(person));
 		mottaker.setKortNavn(getMottakerKortNavn(person));
 		mottaker.setNavn(getMottakerNavn(person));
 
@@ -104,17 +102,6 @@ public class PersonV3Mapper {
 
 		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakkodeAsString(person)).build();
 
-	}
-
-	private Spraakkode getSpraakkode(Bruker person) {
-		if (person.getMaalform() != null) {
-			if ("NO".equalsIgnoreCase(person.getMaalform().getValue())) {
-				return Spraakkode.NB;
-			} else {
-				return Spraakkode.valueOf(person.getMaalform().getValue());
-			}
-		}
-		return null;
 	}
 
 	private String getSpraakkodeAsString(Bruker person) {

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
-import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
@@ -80,7 +79,6 @@ public class OrganisasjonV4Mapper {
 
 		mottaker.setKortNavn(mapOrganisasjonKortnavn(wsOrganisasjon));
 		mottaker.setNavn(mapOrganisasjonNavn(orgDet));
-		mottaker.setSpraakkode(mapSpraakkode(orgDet));
 		Postadresse postadresse;
 		try {
 			postadresse = mapAdresse(orgNummer, orgDet);
@@ -99,7 +97,7 @@ public class OrganisasjonV4Mapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
-		return MottakerTo.builder().mottaker(mottaker).spraakKode(mapSpraakkode2(orgDet)).build();
+		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakKodeAsString(orgDet)).build();
 	}
 
 	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
@@ -144,18 +142,7 @@ public class OrganisasjonV4Mapper {
 		return postadresse;
 	}
 
-	private Spraakkode mapSpraakkode(OrganisasjonsDetaljer orgDet) {
-		if (orgDet.getGjeldendeMaalform() != null) {
-			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
-				return Spraakkode.NB;
-			} else {
-				return Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef());
-			}
-		}
-		return null;
-	}
-
-	private String mapSpraakkode2(OrganisasjonsDetaljer orgDet) {
+	private String getSpraakKodeAsString(OrganisasjonsDetaljer orgDet) {
 		if (orgDet.getGjeldendeMaalform() != null) {
 			return orgDet.getGjeldendeMaalform().getKodeRef();
 		}
