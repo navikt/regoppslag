@@ -32,9 +32,9 @@ public class SpraakKodeMapper {
 			return mapToSpraakKode(mottakerSpraakKode);
 		} else {
 			//Malen finnes ikke på mottakers prefererte språk
-			if (mottakerHarIkkeNorskSpraak(mottakerSpraakKode)) {
+			if (mottakerHarIkkeSkandinaviskSpraak(mottakerSpraakKode)) {
 				return Spraakkode.EN;
-			} else if ((Spraakkode.NN.name()).equals(mottakerSpraakKode) && malInneholderSpraak(spraakInfoMalDokkat, "NB")) {
+			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NB")) {
 				//Har bruker satt nynorsk, men malen finnes på bokmål
 				return Spraakkode.NB;
 			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NN")) {
@@ -57,7 +57,7 @@ public class SpraakKodeMapper {
 			return Spraakkode.NB;
 		} else {
 			if (malInneholderSpraak(spraakInfoMal, mottaker.getSpraakkode() == null ? null : mottaker.getSpraakkode().name())) {
-				return Spraakkode.valueOf(mottaker.getSpraakkode().name());
+				return mottaker.getSpraakkode();
 			} else if (malInneholderSpraak(spraakInfoMal, "NB")) {
 				return Spraakkode.NB;
 			} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
@@ -84,12 +84,12 @@ public class SpraakKodeMapper {
 		return spraakInfoTos.stream().anyMatch(spraakInfo -> spraakInfo.getSpraaklag().equals(forventetSpraak));
 	}
 
-	private boolean mottakerHarIkkeNorskSpraak(String mottakerSpraak) {
+	private boolean mottakerHarIkkeSkandinaviskSpraak(String mottakerSpraak) {
 		if (StringUtils.isEmpty(mottakerSpraak)) {
 			return false;
 		}
 
-		return isFalse(Stream.of(Spraakkode.NB.name(), Spraakkode.NN.name(), "NO").anyMatch(spraak -> spraak.equals(mottakerSpraak)));
+		return isFalse(Stream.of(Spraakkode.NB.name(), Spraakkode.NN.name(), "NO", "SV", "DA").anyMatch(spraak -> spraak.equalsIgnoreCase(mottakerSpraak)));
 	}
 
 	private Spraakkode mapToSpraakKode(String spraakKodeValue) throws IngenGyldigEnumVerdiForSpraakKodeException {
