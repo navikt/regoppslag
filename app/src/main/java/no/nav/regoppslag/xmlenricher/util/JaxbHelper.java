@@ -2,6 +2,7 @@ package no.nav.regoppslag.xmlenricher.util;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
+import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -27,7 +28,7 @@ import java.io.StringWriter;
  * @author Hans Petter Simonsen - Miles
  */
 @Slf4j
-public class JaxbHelper<T>{
+public class JaxbHelper<T> {
 
 	private final Class<T> jaxbClass;
 
@@ -36,7 +37,7 @@ public class JaxbHelper<T>{
 	}
 
 
-	public Document convertObjectToDocument(T object) throws ParserConfigurationException, MarshallerException {
+	public Document convertObjectToDocument(T object) throws ParserConfigurationException, MarshallerException, MarshallerTechnicalException {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
 
@@ -44,10 +45,10 @@ public class JaxbHelper<T>{
 		Document document = builder.newDocument();
 
 		Node node = marshal(object, document);
-		return  (Document) node;
+		return (Document) node;
 	}
 
-	public T unmarshal(Node node) throws MarshallerException {
+	public T unmarshal(Node node) throws MarshallerException, MarshallerTechnicalException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(jaxbClass);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -56,11 +57,14 @@ public class JaxbHelper<T>{
 		} catch (JAXBException | IllegalArgumentException e) {
 			throw new MarshallerException(String.format("Feilet ved unmarshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
+		} catch (NullPointerException e) { //NOSONAR
+			throw new MarshallerTechnicalException(String.format("Teknisk feil ved unmarshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
 	}
 
-	public <T> Node marshal(T jaxbObject, Node node) throws MarshallerException {
+	public <T> Node marshal(T jaxbObject, Node node) throws MarshallerException, MarshallerTechnicalException {
 		try {
 			String contextPath = jaxbClass.getPackage().getName();
 			JAXBContext context = JAXBContext.newInstance(contextPath);
@@ -70,6 +74,9 @@ public class JaxbHelper<T>{
 			return node;
 		} catch (JAXBException | IllegalArgumentException e) {
 			throw new MarshallerException(String.format("Feilet ved marshalling. Feilmelding=%s,  Localname=%s, namespaceUri=%s NodeName=%s brevdata=%s", e.getMessage(), node
+					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
+		} catch (NullPointerException e) { //NOSONAR
+			throw new MarshallerTechnicalException(String.format("Teknisk feil ved marshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
 
@@ -93,7 +100,7 @@ public class JaxbHelper<T>{
 	 *
 	 * @param object the object
 	 * @param tClass the class of object
-	 * @param <T>    type of object to be returned
+	 * @param <T> type of object to be returned
 	 * @return the wrapped object
 	 */
 	@SuppressWarnings("unchecked")
@@ -108,7 +115,7 @@ public class JaxbHelper<T>{
 	/**
 	 * Test if an object is an instance of a list of classes
 	 *
-	 * @param payLoad      the object
+	 * @param payLoad the object
 	 * @param validClasses the classes to check against
 	 * @return true if object is instance of any of the given classes, else true
 	 */

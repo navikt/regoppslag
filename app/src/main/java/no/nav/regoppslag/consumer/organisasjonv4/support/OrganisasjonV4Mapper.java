@@ -117,7 +117,7 @@ public class OrganisasjonV4Mapper {
 	private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
 		if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
 			String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato().toGregorianCalendar().getTime()), orgNummer);
-			throw new RegOppslagFunctionalException(message, message);
+			throw new RegOppslagFunctionalException(message, "Organisasjon har opphørt");
 		}
 
 		GeografiskAdresse activeAddress = selectActiveAddress(orgDet.getPostadresse(), orgDet.getForretningsadresse())
