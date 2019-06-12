@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001.support;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class SpraakKodeMapper {
 
 	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
@@ -33,18 +35,22 @@ public class SpraakKodeMapper {
 		} else {
 			//Malen finnes ikke på mottakers prefererte språk
 			if (mottakerHarIkkeSkandinaviskSpraak(mottakerSpraakKode)) {
+				log.info("Malet inneholder ikke mottakerens prefererte språk %s. Språket er ikke skandinavisk. Setter derfor språket til engelsk.");
 				return Spraakkode.EN;
 			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NB")) {
-				//Har bruker satt nynorsk, men malen finnes på bokmål
+				log.info("Malet inneholder ikke mottakerens prefererte språk %s. Setter språket til bokmål.");
+				//Fallback til bokmål hvis bokmål finnes
 				return Spraakkode.NB;
 			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NN")) {
+				log.info("Malet inneholder ikke mottakerens prefererte språk %s. Setter språket til nynorsk.");
 				//Malen finnes på nynorsk
 				return Spraakkode.NN;
 			} else if (malInneholderSpraak(spraakInfoMalDokkat, "EN")) {
+				log.info("Malet inneholder ikke mottakerens prefererte språk %s. Setter språket til engelsk.");
 				//Malen finnes på engelsk
 				return Spraakkode.EN;
 			} else {
-
+				log.info("Malet inneholder ikke mottakerens prefererte språk %s. Setter språket til bokmål.");
 				//når alt annet feiler
 				return Spraakkode.NB;
 			}

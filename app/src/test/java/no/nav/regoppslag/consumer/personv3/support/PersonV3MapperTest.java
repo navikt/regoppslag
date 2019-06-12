@@ -31,6 +31,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,10 +104,28 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedadresseMedGateadresse() throws Exception {
+	public void shouldMapSpraakKode() throws RegOppslagFunctionalException {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		person.setMaalform(createSpraak("NO"));
 		settBostedadresseMedGateadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
+
+		assertThat(mottakerTo.getSpraakKode(), is("NO"));
+
+		person.setMaalform(createSpraak("AA"));
+		mottakerTo = mapper.map(person, "");
+		assertThat(mottakerTo.getSpraakKode(), is("AA"));
+	}
+
+
+	@Test
+	public void mapPersonBostedadresseMedGateadresse() throws Exception {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		person.setMaalform(createSpraak("NO"));
+		settBostedadresseMedGateadresse(person);
+		MottakerTo mottakerTo = mapper.map(person, "");
+
+		assertThat(mottakerTo.getSpraakKode(), is("NO"));
 		assertThat(mottakerTo.getMottaker().getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 
@@ -581,4 +600,9 @@ public class PersonV3MapperTest {
 		return mottaker;
 	}
 
+	private Spraak createSpraak(String spraakKode) {
+		Spraak spraak = new Spraak();
+		spraak.setValue(spraakKode);
+		return spraak;
+	}
 }

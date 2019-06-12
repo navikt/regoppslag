@@ -28,6 +28,7 @@ import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Landkoder;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
@@ -36,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +68,20 @@ public class OrganisasjonV4MapperTest {
 	private static final String POSTSTED = "HUSNES";
 	private static final String LAND = "Norge";
 	private static final String SERVICECODE = "SERVICECODE";
+
+	@Test
+	public void shouldMapSpraakKode() throws RegOppslagFunctionalException, DatatypeConfigurationException {
+		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		org.getOrganisasjonDetaljer().setGjeldendeMaalform(createSpraak("NO"));
+		settSemistrukturertAdresse(org, "POSTADRESSE", VALID_SECONDS);
+		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
+
+		assertThat(mottakerTo.getSpraakKode(), is("NO"));
+
+		org.getOrganisasjonDetaljer().setGjeldendeMaalform(createSpraak("AA"));
+		mottakerTo = mapper.map(ORGID, org, SERVICECODE);
+		assertThat(mottakerTo.getSpraakKode(), is("AA"));
+	}
 
 	@Test
 	public void shouldMapSakspartnavn() throws Exception {
@@ -239,4 +255,9 @@ public class OrganisasjonV4MapperTest {
 		return landkoder;
 	}
 
+	private Maalformer createSpraak(String spraakKode) {
+		Maalformer spraak = new Maalformer();
+		spraak.setKodeRef(spraakKode);
+		return spraak;
+	}
 }
