@@ -27,7 +27,8 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.treg001.support.Maalform;
+import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
+import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -84,7 +85,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
-		Maalform maalform = (Maalform) valueMap.get(MAALFORM.name());
+		SpraakKodeMapper spraakKodeMapper = (SpraakKodeMapper) valueMap.get(MAALFORM.name());
 		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
 
 		validateElementType(content);
@@ -95,28 +96,26 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Mottaker mottaker = unmarshal(content);
 			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
+			MottakerTo mottakerTo = MottakerTo.builder().build();
 			//Skal elementet berikes?
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
-				Mottaker mappedMottaker;
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getUserId(), SERVICE_CODE_TREG001);
-					mappedMottaker = personV3Mapper.map(person, SERVICE_CODE_TREG001);
+					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 				} else {
 					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
-					mappedMottaker = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+					mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
 				}
 
-				mottaker.setMottakeradresse(mappedMottaker.getMottakeradresse());
-				mottaker.setKortNavn(mappedMottaker.getKortNavn());
-				mottaker.setNavn(mappedMottaker.getNavn());
-				if (mappedMottaker.getSpraakkode()!=null) {
-					mottaker.setSpraakkode(mappedMottaker.getSpraakkode());
-				}
+				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
+				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
+				mottaker.setNavn(mottakerTo.getMottaker().getNavn());
+
 			}
 
 			//Sjekker språket på malen opp mot mottakers preferanser
@@ -127,7 +126,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
-			mottaker.setSpraakkode(maalform.getMaalform(mottaker, sprakinfos));
+			mottaker.setSpraakkode(spraakKodeMapper.getSpraakKode(mottaker, mottakerTo.getSpraakKode(), sprakinfos));
 
 			Document newNode = convertObjectToDocument(mottaker);
 			Element documentElement = newNode.getDocumentElement();

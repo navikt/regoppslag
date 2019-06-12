@@ -20,6 +20,7 @@ import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.GeografiskAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -72,7 +73,7 @@ public class OrganisasjonV4Mapper {
 	}
 
 
-	public Mottaker map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
+	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
@@ -98,7 +99,7 @@ public class OrganisasjonV4Mapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
-		return mottaker;
+		return MottakerTo.builder().mottaker(mottaker).spraakKode(mapSpraakkode2(orgDet)).build();
 	}
 
 	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
@@ -150,6 +151,13 @@ public class OrganisasjonV4Mapper {
 			} else {
 				return Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef());
 			}
+		}
+		return null;
+	}
+
+	private String mapSpraakkode2(OrganisasjonsDetaljer orgDet) {
+		if (orgDet.getGjeldendeMaalform() != null) {
+			return orgDet.getGjeldendeMaalform().getKodeRef();
 		}
 		return null;
 	}

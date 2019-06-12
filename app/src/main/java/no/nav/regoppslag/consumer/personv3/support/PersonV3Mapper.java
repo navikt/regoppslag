@@ -21,6 +21,7 @@ import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
@@ -73,12 +74,13 @@ public class PersonV3Mapper {
 		}
 	}
 
-	public Mottaker map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
+	public MottakerTo map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
 		Date now = Date.from(Instant.now());
 
 		if (person.getDoedsdato() != null && now.after(person.getDoedsdato().getDoedsdato().toGregorianCalendar().getTime())) {
 			throw new RegOppslagFunctionalException("Personen er registrert som død.", "Personen er registrert som død.");
 		}
+
 
 		Mottaker mottaker = new Person();
 
@@ -100,7 +102,7 @@ public class PersonV3Mapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
-		return mottaker;
+		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakkodeAsString(person)).build();
 
 	}
 
@@ -111,6 +113,13 @@ public class PersonV3Mapper {
 			} else {
 				return Spraakkode.valueOf(person.getMaalform().getValue());
 			}
+		}
+		return null;
+	}
+
+	private String getSpraakkodeAsString(Bruker person) {
+		if (person.getMaalform() != null) {
+			return person.getMaalform().getValue();
 		}
 		return null;
 	}

@@ -21,8 +21,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.treg001.support.Maalform;
-import no.nav.regoppslag.util.TestDataUtil;
+import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -92,7 +91,7 @@ public class SakspartPluginTest {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
+		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 		SecurityContextHolder.setContext(securityContext);
 		
 		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));

@@ -2,7 +2,6 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
-import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -26,7 +25,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.treg001.support.Maalform;
+import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
@@ -100,7 +99,7 @@ public class MottakerPluginTest {
         valueMap = new HashMap<>();
         valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
         valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-        valueMap.put(ValueMapKeys.MAALFORM.name(), new Maalform());
+        valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
         SecurityContextHolder.setContext(securityContext);
 
         when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
