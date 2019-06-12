@@ -137,7 +137,7 @@ public class Treg001IT extends AbstractIT {
 	public void shouldGetKomplettBrevdataOrgDansk() throws Exception {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/hentperson-happypath-responsebody_maalform_dansk.xml"))); //mottakerPlugin
+						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_dansk.xml"))); //mottakerPlugin
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
