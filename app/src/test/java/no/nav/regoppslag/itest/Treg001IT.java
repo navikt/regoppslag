@@ -89,6 +89,28 @@ public class Treg001IT extends AbstractIT {
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
+	@Test
+	public void shouldGetKomplettBrevdataPersonMaalFormIkkeSkandinavisk() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_ikke_skandinavisk.xml"))); //mottakerPlugin
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_response_maalform_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
+	@Test
+	public void shouldGetKomplettBrevdataPersonMaalFormDansk() throws Exception {
+		stubFor(post("/VIRKSOMHET_PERSON_V3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_dansk.xml"))); //mottakerPlugin
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
 	/**
 	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
 	 */
@@ -99,6 +121,29 @@ public class Treg001IT extends AbstractIT {
 				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
+
+	@Test
+	public void shouldGetKomplettBrevdataOrgIkkeSkandinavisk() throws Exception {
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_ikke_skandinavisk.xml"))); //mottakerPlugin
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
+	@Test
+	public void shouldGetKomplettBrevdataOrgDansk() throws Exception {
+		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/organisasjonv4/hentperson-happypath-responsebody_maalform_dansk.xml"))); //mottakerPlugin
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
 
 	@Test
 	public void shouldNotMapWhenIsBerikIsFalse() throws Exception {
