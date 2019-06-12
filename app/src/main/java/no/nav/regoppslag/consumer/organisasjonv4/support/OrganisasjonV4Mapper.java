@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
-import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.GeografiskAdresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -72,14 +72,13 @@ public class OrganisasjonV4Mapper {
 	}
 
 
-	public Mottaker map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
+	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 
 		mottaker.setKortNavn(mapOrganisasjonKortnavn(wsOrganisasjon));
 		mottaker.setNavn(mapOrganisasjonNavn(orgDet));
-		mottaker.setSpraakkode(mapSpraakkode(orgDet));
 		Postadresse postadresse;
 		try {
 			postadresse = mapAdresse(orgNummer, orgDet);
@@ -98,7 +97,7 @@ public class OrganisasjonV4Mapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
-		return mottaker;
+		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakKodeAsString(orgDet)).build();
 	}
 
 	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
@@ -143,13 +142,9 @@ public class OrganisasjonV4Mapper {
 		return postadresse;
 	}
 
-	private Spraakkode mapSpraakkode(OrganisasjonsDetaljer orgDet) {
+	private String getSpraakKodeAsString(OrganisasjonsDetaljer orgDet) {
 		if (orgDet.getGjeldendeMaalform() != null) {
-			if ("NO".equals(orgDet.getGjeldendeMaalform().getKodeRef())) {
-				return Spraakkode.NB;
-			} else {
-				return Spraakkode.valueOf(orgDet.getGjeldendeMaalform().getKodeRef());
-			}
+			return orgDet.getGjeldendeMaalform().getKodeRef();
 		}
 		return null;
 	}

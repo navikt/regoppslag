@@ -14,9 +14,13 @@ public class RegOppslagTechnicalException extends Exception {
 	private final String metricMessage;
 	private HttpStatus httpStatus = HttpStatus.OK;
 
+	public RegOppslagTechnicalException() {
+		this.metricMessage = this.getClass().getSimpleName();
+	}
+
 	public RegOppslagTechnicalException(String message) {
 		super(message);
-		metricMessage = this.getClass().getSimpleName();
+		this.metricMessage = this.getClass().getSimpleName();
 	}
 
 	public RegOppslagTechnicalException(String message, String metricMessage) {
@@ -38,12 +42,12 @@ public class RegOppslagTechnicalException extends Exception {
 
 	public RegOppslagTechnicalException(String message, Throwable cause) {
 		super(message, cause);
-		metricMessage = this.getClass().getSimpleName();
+		this.metricMessage = this.getClass().getSimpleName();
 	}
 
 	public RegOppslagTechnicalException(Throwable cause) {
 		super(cause);
-		metricMessage = this.getClass().getSimpleName();
+		this.metricMessage = this.getClass().getSimpleName();
 	}
 
 

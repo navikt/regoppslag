@@ -11,7 +11,6 @@ import static no.nav.regoppslag.metrics.PrometheusMetrics.getUserId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
@@ -22,6 +21,7 @@ import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.springframework.stereotype.Component;
@@ -60,22 +60,22 @@ public class HentMottakerOgAdresseService {
 
 		try {
 			validateInput(request);
-			Mottaker mottaker;
+			MottakerTo mottakerTo;
 			if (PERSON.name().equals(request.getType())) {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getUserId(), SERVICE_CODE_TREG002);
-				mottaker = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
+				mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			} else {
 				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
 						.inc();
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
-				mottaker = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
+				mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
 			}
 			return HentMottakerOgAdresseResponse.builder()
 					.identifikator(request.getIdentifikator())
-					.navn(mottaker.getNavn())
-					.adresse(adresseMapper.map(mottaker))
+					.navn(mottakerTo.getMottaker().getNavn())
+					.adresse(adresseMapper.map(mottakerTo.getMottaker()))
 					.build();
 		} catch (Exception e) {
 			logAndRethrowException(e);

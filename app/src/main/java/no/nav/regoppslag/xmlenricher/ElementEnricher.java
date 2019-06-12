@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.treg001.support.Maalform;
+import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.xmlenricher.util.AttributeValueNamespaceResolver;
@@ -93,7 +93,7 @@ public class ElementEnricher {
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-							valueMap.put(MAALFORM.name(), new Maalform());
+					valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap), payload.getOrgNode());
