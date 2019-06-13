@@ -60,6 +60,14 @@ public class SpraakKodeMapperTest {
 	}
 
 	@Test
+	public void skalSetteSpraakKodeNBNaarPersonErUtenlandskMenMalManglerEngelskSpraak() throws IngenGyldigEnumVerdiForSpraakKodeException {
+		Mottaker mottaker = new Person();
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "NN"));
+		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
+		assertThat(spraakkode, is(Spraakkode.NB));
+	}
+
+	@Test
 	public void skalSetteSpraakKodeNBNaarMottakerSpraakErSvensk() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
@@ -111,7 +119,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgUkjentSpråk() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("FR"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
 		assertThat(spraakkode, is(Spraakkode.EN));
 	}
