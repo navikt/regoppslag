@@ -62,7 +62,8 @@ public class SpraakKodeMapper {
 		if (spraakInfoMal == null) {
 			return Spraakkode.NB;
 		} else {
-			if (malInneholderSpraak(spraakInfoMal, mottaker.getSpraakkode() == null ? null : mottaker.getSpraakkode().name())) {
+			String mottakerSpraakFraInput = mottaker.getSpraakkode() == null ? null : mottaker.getSpraakkode().name();
+			if (malInneholderSpraak(spraakInfoMal, mottakerSpraakFraInput)) {
 				return mottaker.getSpraakkode();
 			} else if (malInneholderSpraak(spraakInfoMal, "NB")) {
 				return Spraakkode.NB;
