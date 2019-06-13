@@ -34,7 +34,7 @@ public class SpraakKodeMapper {
 			return mapToSpraakKode(mottakerSpraakKode);
 		} else {
 			//Malen finnes ikke på mottakers prefererte språk
-			if (mottakerHarIkkeSkandinaviskSpraak(mottakerSpraakKode)) {
+			if (mottakerHarIkkeSkandinaviskSpraak(mottakerSpraakKode) && malInneholderSpraak(spraakInfoMalDokkat, "EN")) {
 				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Språket er ikke skandinavisk. Setter derfor språket til engelsk.", mottakerSpraakKode);
 				return Spraakkode.EN;
 			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NB")) {
@@ -62,7 +62,8 @@ public class SpraakKodeMapper {
 		if (spraakInfoMal == null) {
 			return Spraakkode.NB;
 		} else {
-			if (malInneholderSpraak(spraakInfoMal, mottaker.getSpraakkode() == null ? null : mottaker.getSpraakkode().name())) {
+			String mottakerSpraakFraInput = mottaker.getSpraakkode() == null ? null : mottaker.getSpraakkode().name();
+			if (malInneholderSpraak(spraakInfoMal, mottakerSpraakFraInput)) {
 				return mottaker.getSpraakkode();
 			} else if (malInneholderSpraak(spraakInfoMal, "NB")) {
 				return Spraakkode.NB;
