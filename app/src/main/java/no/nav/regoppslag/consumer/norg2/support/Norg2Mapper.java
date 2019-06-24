@@ -8,6 +8,7 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Stedsadresse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -36,8 +37,9 @@ public class Norg2Mapper {
 					if (enhet.getKontaktinformasjon().getPostadresse() instanceof Stedsadresse) {
 						Gateadresse gateadresse = (Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
 						postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
-						postadresse.setPostnummer(gateadresse.getPoststed().getKodeRef());
-						postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
+						String postnummer = mapPostnummer(gateadresse);
+						postadresse.setPostnummer(postnummer);
+						postadresse.setPoststed(postnummerService.finnPoststed(postnummer));
 					} else {
 						PostboksadresseNorsk postboksadresseNorsk = (PostboksadresseNorsk) enhet.getKontaktinformasjon().getPostadresse();
 						postadresse.setAdresselinje1(Optional.ofNullable("Postboks " + postboksadresseNorsk.getPostboksnummer()).orElse("") + " " + Optional.ofNullable(postboksadresseNorsk.getPostboksanlegg()).orElse(""));
@@ -47,6 +49,15 @@ public class Norg2Mapper {
 				}
 				adresse.setAdresse(postadresse);
 			}
+		}
+	}
+
+
+	public String mapPostnummer(Gateadresse gateadresse ){
+		if (StringUtils.isNotEmpty(gateadresse.getPoststed().getKodeRef())){
+			return gateadresse.getPoststed().getKodeRef();
+		} else {
+			return gateadresse.getPoststed().getValue();
 		}
 	}
 
