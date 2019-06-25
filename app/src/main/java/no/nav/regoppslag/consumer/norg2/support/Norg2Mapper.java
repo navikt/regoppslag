@@ -37,7 +37,7 @@ public class Norg2Mapper {
 					if (enhet.getKontaktinformasjon().getPostadresse() instanceof Stedsadresse) {
 						Gateadresse gateadresse = (Gateadresse) enhet.getKontaktinformasjon().getPostadresse();
 						postadresse.setAdresselinje1(Optional.ofNullable(gateadresse.getGatenavn()).orElse("") + " " + Optional.ofNullable(gateadresse.getHusnummer()).orElse("") + Optional.ofNullable(gateadresse.getHusbokstav()).orElse(""));
-						String postnummer = mapPostnummer(gateadresse);
+						String postnummer = gateadresse.getPoststed().getValue();
 						postadresse.setPostnummer(postnummer);
 						postadresse.setPoststed(postnummerService.finnPoststed(postnummer));
 					} else {
@@ -49,15 +49,6 @@ public class Norg2Mapper {
 				}
 				adresse.setAdresse(postadresse);
 			}
-		}
-	}
-
-
-	public String mapPostnummer(Gateadresse gateadresse ){
-		if (StringUtils.isNotEmpty(gateadresse.getPoststed().getKodeRef())){
-			return gateadresse.getPoststed().getKodeRef();
-		} else {
-			return gateadresse.getPoststed().getValue();
 		}
 	}
 
