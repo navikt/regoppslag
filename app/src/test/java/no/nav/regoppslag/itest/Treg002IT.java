@@ -226,7 +226,7 @@ public class Treg002IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilmelding=Noe gikk galt i kall til PersonV3.hentPerson. Message=Feil med server. Overbelastning?"));
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Teknisk feil: feilmelding=Noe gikk galt i kall til PersonV3.hentPerson. Message=org.apache.cxf.binding.soap.SoapFault: Feil med server. Overbelastning?"));
 			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagTechnicalException"));
 		}
 	}
