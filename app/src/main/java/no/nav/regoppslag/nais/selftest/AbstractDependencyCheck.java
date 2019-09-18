@@ -6,6 +6,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+import io.micrometer.core.instrument.Gauge;
 import io.vavr.control.Try;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -38,6 +40,8 @@ public abstract class AbstractDependencyCheck {
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(3200)).cancelRunningFuture(true).build();
 	private final TimeLimiter timeLimiter = TimeLimiter.of(timeLimiterConfig);
+	private AtomicInteger dependencyStatus = new AtomicInteger();
+	private Gauge gauge;
 
 	public AbstractDependencyCheck(DependencyType type, String name, String address, Importance importance) {
 		this.type = type;

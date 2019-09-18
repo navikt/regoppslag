@@ -2,7 +2,6 @@ package no.nav.regoppslag.consumer.dokkat;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -32,6 +31,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,6 +41,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,7 +92,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003. "));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003. "));
 			verify(restTemplate, times(1)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
@@ -104,7 +106,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 for dokumenttypeId=I000003"));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
 			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
@@ -118,7 +120,7 @@ public class Tkat020DokumenttypeInfoTest {
 			tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
-			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 for dokumenttypeId=I000003"));
+			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
 			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
@@ -155,10 +157,11 @@ public class Tkat020DokumenttypeInfoTest {
 		@Bean
 		public RestTemplateBuilder restTemplateBuilder(RestTemplate restTemplate) {
 			RestTemplateBuilder restTemplateBuilder = mock(RestTemplateBuilder.class);
-			when(restTemplateBuilder.requestFactory(any(ClientHttpRequestFactory.class))).thenReturn(restTemplateBuilder);
-			when(restTemplateBuilder.setConnectTimeout(any(Integer.class))).thenReturn(restTemplateBuilder);
-			when(restTemplateBuilder.setReadTimeout(any(Integer.class))).thenReturn(restTemplateBuilder);
-			when(restTemplateBuilder.basicAuthorization(any(String.class), any(String.class))).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.requestFactory(HttpComponentsClientHttpRequestFactory.class)).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.requestFactory(ClientHttpRequestFactory.class)).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.setConnectTimeout(any(Duration.class))).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.setReadTimeout(any(Duration.class))).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.basicAuthentication(any(String.class), any(String.class))).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.rootUri(any(String.class))).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.build()).thenReturn(restTemplate);
 			return restTemplateBuilder;

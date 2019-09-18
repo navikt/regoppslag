@@ -1,6 +1,5 @@
 package no.nav.regoppslag.nais;
 
-import static no.nav.regoppslag.metrics.PrometheusMetrics.isReady;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 import io.reactivex.Flowable;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +33,7 @@ public class NaisContract {
 	public static final String APPLICATION_ALIVE = "Application is alive!";
 	public static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
+	private static AtomicInteger isReady = new AtomicInteger(1);
 
 	private final String appName;
 	private final String version;

@@ -25,6 +25,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +39,10 @@ import java.util.Map;
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
-	public static final String DOKKAT = "DOKKAT";
-	public static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
+	private static final String DOKKAT = "DOKKAT";
+	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
 	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
-	public static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
+	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 	private Histogram.Timer requestTimer;
 
 	@Inject
@@ -50,11 +51,11 @@ public class Tkat020DokumenttypeInfo {
 								   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,
 								   ServiceuserAlias serviceuserAlias) {
 		this.restTemplate = restTemplateBuilder
-				.requestFactory(requestFactory)
+				.requestFactory(requestFactory.getClass())
 				.rootUri(dokumenttypeInfoV3Alias.getUrl())
-				.basicAuthorization(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
-				.setConnectTimeout(dokumenttypeInfoV3Alias.getConnecttimeoutms())
-				.setReadTimeout(dokumenttypeInfoV3Alias.getReadtimeoutms())
+				.basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
+				.setConnectTimeout(Duration.ofMillis(dokumenttypeInfoV3Alias.getConnecttimeoutms()))
+				.setReadTimeout(Duration.ofMillis(dokumenttypeInfoV3Alias.getReadtimeoutms()))
 				.build();
 	}
 

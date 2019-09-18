@@ -9,22 +9,22 @@
 		</test:mottaker>
 		<test:signerendeSaksbehandler f:berik="false">
 			<f:navAnsatt>
-				<ansattId>Z991006</ansattId>
+				<f:ansattId>Z991006</f:ansattId>
 			</f:navAnsatt>
 			<f:navEnhet>
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 			</f:navEnhet>
 		</test:signerendeSaksbehandler>
 		<test:signerendeBeslutter f:berik="false">
 			<f:navAnsatt>
-				<ansattId>Z991006</ansattId>
+				<f:ansattId>Z991006</f:ansattId>
 			</f:navAnsatt>
 			<f:navEnhet>
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 			</f:navEnhet>
 		</test:signerendeBeslutter>
 		<test:behandlendeEnhet f:berik="false">
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 		</test:behandlendeEnhet>
 		<test:kontaktinformasjon f:berik="false">
 			<f:postadresse f:berik="false">

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
+import java.time.Duration;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -28,11 +29,11 @@ public class DokkatCheck extends AbstractDependencyCheck {
 					   ServiceuserAlias serviceuserAlias) {
 		super(DependencyType.REST, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl(), Importance.WARNING);
 		this.restTemplate = restTemplateBuilder
-				.requestFactory(requestFactory)
+				.requestFactory(requestFactory.getClass())
 				.rootUri(dokumenttypeInfoV3Alias.getUrl())
-				.basicAuthorization(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
-				.setConnectTimeout(dokumenttypeInfoV3Alias.getConnecttimeoutms())
-				.setReadTimeout(dokumenttypeInfoV3Alias.getReadtimeoutms())
+				.basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
+				.setConnectTimeout(Duration.ofMillis(dokumenttypeInfoV3Alias.getConnecttimeoutms()))
+				.setReadTimeout(Duration.ofMillis(dokumenttypeInfoV3Alias.getReadtimeoutms()))
 				.build();
 	}
 	

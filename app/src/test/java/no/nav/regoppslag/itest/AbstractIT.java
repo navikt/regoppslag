@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 @SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
+@ImportAutoConfiguration
 public abstract class AbstractIT {
 
 	@Value("${local.url}")
@@ -49,7 +51,6 @@ public abstract class AbstractIT {
 	
 	@Before
 	public void setUp() {
-		
 		clearCachene();
 		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006","en vilkaarlig saksbehandler");
 	}

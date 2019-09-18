@@ -4,12 +4,17 @@ import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -23,6 +28,22 @@ public class AttributeValueNamespaceResolverTest {
 	AttributeValueNamespaceResolver resolver = new AttributeValueNamespaceResolver();
 
 	String MOTTAKER_XPATH_EXPRESSION = "/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']";
+
+	@Test
+	public void shouldResolveEnhet() throws Exception {
+		Document document = stringToDocument(classpathToString("__files/treg001/treg001_norg2_request.xml"));
+
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile("/*[local-name()='brevdata']/*[local-name()='NAVFelles']/*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']");
+		Node node = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
+
+		JAXBContext context = JAXBContext.newInstance(NavEnhet.class);
+		Unmarshaller unmarshaller = context.createUnmarshaller();
+		JAXBElement<NavEnhet> unmarshal = unmarshaller.unmarshal(node, NavEnhet.class);
+		NavEnhet value = unmarshal.getValue();
+		String enhetsId = value.getEnhetsId();
+		assertEquals("0136", enhetsId);
+	}
 
 	@Test
 	public void shouldReseolve() throws Exception{

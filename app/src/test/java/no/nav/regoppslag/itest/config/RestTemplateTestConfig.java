@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -16,12 +18,12 @@ import org.springframework.web.client.RestTemplate;
 @Profile("itest")
 public class RestTemplateTestConfig {
 	
-	public static final int TIMEOUT = 30_000;
+	public static final Duration TIMEOUT = Duration.ofMillis(30_000);
 	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder
-				.requestFactory(new HttpComponentsClientHttpRequestFactory())
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT)
 				.interceptors(new RestSamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
@@ -30,7 +32,7 @@ public class RestTemplateTestConfig {
 	@Bean
 	public RestTemplate restTemplateNoHeader(RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder
-				.requestFactory(new HttpComponentsClientHttpRequestFactory())
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT).build();
 	}

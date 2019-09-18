@@ -51,6 +51,7 @@ public class JaxbHelper<T> {
 	public T unmarshal(Node node) throws MarshallerException, MarshallerTechnicalException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(jaxbClass);
+
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			JAXBElement<T> unmarshal = unmarshaller.unmarshal(node, jaxbClass);
 			return unmarshal.getValue();
