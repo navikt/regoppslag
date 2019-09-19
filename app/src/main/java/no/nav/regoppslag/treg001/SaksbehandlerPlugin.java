@@ -1,14 +1,6 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.BRUKER_IKKE_FUNNET;
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
-import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
@@ -17,6 +9,7 @@ import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +40,12 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	@Inject
 	private SaksbehandlerMapper saksbehandlerMapper;
 
+	@Inject
+	private MicrometerMetrics metrics;
+
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 
@@ -61,11 +57,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			//Skal elementet berikes?
 			if (navAnsatt.isBerik()) {
 				validateSaksbehandler(navAnsatt);
-
-				requestCounter.labels(SERVICE_CODE_TREG001, HENT_FULLT_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-						.inc();
 				String saksbehandlerNavn = ldapAdeoUserLookup.hentFulltNavn(navAnsatt.getAnsattId());
-
 				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			}
 

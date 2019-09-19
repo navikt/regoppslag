@@ -4,19 +4,20 @@ import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -137,6 +138,17 @@ public class SaksbehandlerPluginTest {
 		SaksbehandlerMapper saksbehandlerMapper() {
 			return new SaksbehandlerMapper();
 		}
+
+		@Bean
+		public MeterRegistry registry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public MicrometerMetrics metrics() {
+			return new MicrometerMetrics();
+		}
+
 
 	}
 }

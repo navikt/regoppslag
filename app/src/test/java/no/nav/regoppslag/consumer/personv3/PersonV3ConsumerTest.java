@@ -3,19 +3,21 @@ package no.nav.regoppslag.consumer.personv3;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -30,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -60,11 +63,13 @@ public class PersonV3ConsumerTest {
 	
 	@Inject
 	private PersonV3 personV3;
-	
+
+	@Mock
+	private MeterRegistry registry;
+
 	@Before
 	public void setUp() {
 		reset(personV3);
-		
 	}
 
 	@Test
@@ -173,7 +178,6 @@ public class PersonV3ConsumerTest {
 		
 		@Bean
 		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-			
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 		
@@ -181,7 +185,15 @@ public class PersonV3ConsumerTest {
 		public PersonV3 personV3() {
 			return mock(PersonV3.class);
 		}
-		
-		
+
+		@Bean
+		public MicrometerMetrics metrics() {
+			return mock(MicrometerMetrics.class);
+		}
+
+		@Bean
+		public MeterRegistry registry() {
+			return mock(MeterRegistry.class);
+		}
 	}
 }

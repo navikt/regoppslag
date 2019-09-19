@@ -5,12 +5,16 @@ import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
@@ -50,10 +54,11 @@ public class NavOrgenhetNavnPluginTest {
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
 	private Map<String, Object> valueMap;
-	
+	private MeterRegistry registry;
+	private MicrometerMetrics metrics;
+
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
-	
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -65,9 +70,12 @@ public class NavOrgenhetNavnPluginTest {
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
+
+		registry = new SimpleMeterRegistry();
+		metrics = mock(MicrometerMetrics.class);
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
+		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper, metrics);
 		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 

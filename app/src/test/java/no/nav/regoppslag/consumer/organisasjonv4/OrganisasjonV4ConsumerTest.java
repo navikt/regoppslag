@@ -3,12 +3,13 @@ package no.nav.regoppslag.consumer.organisasjonv4;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.feil.OrganisasjonIkkeFunnet;
@@ -34,7 +35,8 @@ public class OrganisasjonV4ConsumerTest {
 	private static final String ORGNAVN = "NAV AS";
 	private static final String ORGNAVN_2 = "SAGENE";
 	private OrganisasjonV4 organisasjonV4 = mock(OrganisasjonV4.class);
-	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4);
+	private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
+	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4, metrics);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

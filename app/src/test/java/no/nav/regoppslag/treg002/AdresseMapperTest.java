@@ -11,19 +11,20 @@ import static no.nav.regoppslag.util.TestDataUtil.createNorskPostadresse;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -33,7 +34,10 @@ public class AdresseMapperTest {
 
 	@Mock
 	private LandkodeService landkodeService;
-	
+
+	@Mock
+	private MicrometerMetrics metrics;
+
 	@InjectMocks
 	private AdresseMapper adresseMapper;
 	

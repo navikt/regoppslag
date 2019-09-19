@@ -52,13 +52,4 @@ public class PrometheusMetrics {
 			.help("request latency in seconds.")
 			.labelNames(LABEL_SERVICE, LABEL_PROCESS, LABEL_PROCESS_NAME)
 			.register();
-	
-	public static String getConsumerId() {
-		return MDC.get(CONSUMER_ID) == null ? UKJENT : MDC.get(CONSUMER_ID);
-	}
-	
-	public static String getUserId() {
-		return MDC.get(USER_ID) == null ? UKJENT : MDC.get(USER_ID);
-	}
-	
 }

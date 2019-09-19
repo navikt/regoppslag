@@ -3,7 +3,7 @@ package no.nav.regoppslag.consumer.personv3.support;
 import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

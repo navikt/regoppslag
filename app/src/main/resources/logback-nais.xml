@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-		<appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
-			<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-				<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-					<maxDepthPerThrowable>30</maxDepthPerThrowable>
-					<exclude>java\.util\.concurrent\..*</exclude>
-					<exclude>org\.apache\.tomcat\..*</exclude>
-					<exclude>org\.apache\.coyote\..*</exclude>
-					<exclude>org\.apache\.catalina\..*</exclude>
-					<exclude>org\.springframework\.web\..*</exclude>
-					<exclude>org\.springframework\.aop\..*</exclude>
-					<exclude>org\.springframework\.retry\..*</exclude>
-					<exclude>io\.reactivex\.internal\.*</exclude>
-					<exclude>sun\.net\.www\..*</exclude>
-					<rootCauseFirst>true</rootCauseFirst>
-				</throwableConverter>
-			</encoder>
-		</appender>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-		<root level="WARN">
-			<appender-ref ref="stdout_json"/>
-		</root>
+	<appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+				<maxDepthPerThrowable>30</maxDepthPerThrowable>
+				<exclude>java\.util\.concurrent\..*</exclude>
+				<exclude>org\.apache\.tomcat\..*</exclude>
+				<exclude>org\.apache\.coyote\..*</exclude>
+				<exclude>org\.apache\.catalina\..*</exclude>
+				<exclude>org\.springframework\.web\..*</exclude>
+				<exclude>sun\.net\.www\..*</exclude>
+				<exclude>org\.apache\.camel\.processor\..*</exclude>
+			</throwableConverter>
+		</encoder>
+	</appender>
+	<appender name="noop" class="ch.qos.logback.core.helpers.NOPAppender"/>
 
-		<logger name="no.nav.regoppslag" level="INFO" additivity="false">
-			<appender-ref ref="stdout_json"/>
-		</logger>
+	<root level="WARN">
+		<appender-ref ref="stdout_json"/>
+	</root>
 
-		<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
-			<appender-ref ref="stdout_json"/>
-		</logger>
+	<logger name="no.nav.regoppslag" level="INFO" additivity="false">
+		<appender-ref ref="stdout_json"/>
+	</logger>
+
+	<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
+		<appender-ref ref="stdout_json"/>
+	</logger>
 
 </configuration>

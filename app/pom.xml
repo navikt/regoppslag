@@ -112,6 +112,11 @@
 			<artifactId>javax.activation</artifactId>
 			<version>${javax-activation.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<version>${saaj-impl.version}</version>
+		</dependency>
 
 		<!--Swagger-->
 		<dependency>

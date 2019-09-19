@@ -6,7 +6,7 @@ import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
 import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;

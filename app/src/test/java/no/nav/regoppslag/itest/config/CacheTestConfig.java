@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheTestConfig {
 	
-	
 	@Bean
 	public LettuceConnectionFactory lettuceConnectionFactory() {
 		return new LettuceConnectionFactory();

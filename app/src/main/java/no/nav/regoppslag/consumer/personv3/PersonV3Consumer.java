@@ -1,11 +1,7 @@
 package no.nav.regoppslag.consumer.personv3;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +9,8 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
+import no.nav.regoppslag.metrics.Metrics;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -38,27 +36,28 @@ import javax.inject.Inject;
 @Service
 public class PersonV3Consumer {
 	private final PersonV3 personV3;
-	private Histogram.Timer requestTimer;
-	
+	private MicrometerMetrics metrics;
+
 	public static final String HENT_PERSON = "hentPerson";
 	public static final String PERSON_IKKE_FUNNET = "PersonV3 - Person ikke funnet";
 	public static final String SIKKERHETSBEGRENSNING = "PersonV3 - Sikkerhetsbegrensning";
 	
 	@Inject
-	public PersonV3Consumer(PersonV3 personV3) {
+	public PersonV3Consumer(PersonV3 personV3, MicrometerMetrics metrics) {
 		this.personV3 = personV3;
+		this.metrics = metrics;
 	}
 	
 	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Bruker hentPerson(final String personidentifikator, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		
-		requestCounter.labels(serviceCode, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		metrics.cacheMiss(HENT_PERSON);
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
 		try {
-			requestTimer = requestLatency.labels(serviceCode, PERSONV3, HENT_PERSON).startTimer();
 			return (Bruker) personV3.hentPerson(request).getPerson();
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
@@ -72,10 +71,7 @@ public class PersonV3Consumer {
 			}
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til PersonV3.hentPerson. Message=%s", e
 					.getMessage()), e, "PersonV3 - Teknisk feil");
-		} finally {
-			requestTimer.observeDuration();
 		}
-
 	}
 	
 	private HentPersonRequest mapHentPersonRequest(String personidentifikator) {

@@ -1,15 +1,7 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PLUGIN;
-import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getUserId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getUserId;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +16,7 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -59,24 +52,28 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 
+	private MicrometerMetrics metrics;
+
 	public SakspartPlugin() {
 		super(Sakspart.class);
 	}
 
 	@Inject
-	public SakspartPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo) {
+	public SakspartPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
+						  OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
+						  MicrometerMetrics metrics) {
 		super(Sakspart.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
+		this.metrics = metrics;
 	}
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
-
-		requestCounter.labels(SERVICE_CODE_TREG001, PLUGIN_NAME, PLUGIN, getConsumerId(), RECEIVED).inc();
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 		try {
@@ -92,14 +89,10 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					requestCounter.labels(SERVICE_CODE_TREG001, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-							.inc();
 					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getUserId(), SERVICE_CODE_TREG001);
 					sakspart.setNavn(personV3Mapper.getSakspartNavn(person));
 
 				} else {
-					requestCounter.labels(SERVICE_CODE_TREG001, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-							.inc();
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
 					sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
 				}
@@ -116,21 +109,17 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
-
 		}
-
 	}
 
 	private void validateMottaker(Sakspart sakspart) throws RegOppslagFunctionalException {
 
 		if (sakspart.getTypeKode() == null) {
 			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler AktoerTypeKode.", PLUGIN_NAME), UGYLDIG_INPUT);
-
 		}
 
 		if (StringUtils.isEmpty(sakspart.getId())) {
 			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler id", PLUGIN_NAME), UGYLDIG_INPUT);
-
 		}
 
 	}

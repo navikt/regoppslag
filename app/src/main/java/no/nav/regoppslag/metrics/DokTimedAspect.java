@@ -1,7 +1,8 @@
 package no.nav.regoppslag.metrics;
 
 import static java.util.Arrays.asList;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.MetricLabels.CONSUMER;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
 
 import io.micrometer.core.annotation.Incubating;
 import io.micrometer.core.instrument.Counter;
@@ -57,7 +58,7 @@ public class DokTimedAspect {
 		Counter.builder("dok_request_counter")
 				.tag("process", cacheable.value()[0])
 				.tag("type", "cacheCounter")
-				.tag("consumer_name", getConsumerId())
+				.tag(CONSUMER, getConsumerId())
 				.tag("event", "cacheTotal")
 				.register(registry).increment();
 	}

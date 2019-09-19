@@ -2,7 +2,7 @@ package no.nav.regoppslag.consumer.organisasjonv4.support;
 
 import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
 import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
 import static no.nav.regoppslag.util.TestDataUtil.GATENAVN;
 import static no.nav.regoppslag.util.TestDataUtil.HUSBOKSTAV;
