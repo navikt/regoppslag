@@ -3,7 +3,6 @@ package no.nav.regoppslag.consumer.personv3;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
-import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -47,12 +46,12 @@ public class PersonV3Consumer {
 		this.personV3 = personV3;
 		this.metrics = metrics;
 	}
-	
+
 	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId")
+	//@Cacheable(value = HENT_PERSON, key = "#personidentifikator", unless = "result.diskresjonskode!= null && result.diskresjonskode.value != null && result.diskresjonskode.value.length() > 0")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Bruker hentPerson(final String personidentifikator, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		
 		metrics.cacheMiss(HENT_PERSON);
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
