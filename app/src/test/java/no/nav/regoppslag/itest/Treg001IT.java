@@ -36,7 +36,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 public class Treg001IT extends AbstractIT {
 
-	private final String DOKUMENTTYPEID = "123";
+	private static final String DOKUMENTTYPEID = "123";
 
 	@Before
 	public void runBefore() {
@@ -72,14 +72,14 @@ public class Treg001IT extends AbstractIT {
 	 * Kompletterer fullt brevdatasett der mottaker er person
 	 */
 	@Test
-	public void shouldGetKomplettBrevdataPerson() throws Exception {
+	public void shouldGetKomplettBrevdataPerson() {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
 	@Test
-	public void shouldGetKomplettBrevdataPersonMaalFormEN() throws Exception {
+	public void shouldGetKomplettBrevdataPersonMaalFormEN() {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_en.xml"))); //mottakerPlugin
@@ -90,7 +90,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetKomplettBrevdataPersonMaalFormIkkeSkandinavisk() throws Exception {
+	public void shouldGetKomplettBrevdataPersonMaalFormIkkeSkandinavisk() {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_ikke_skandinavisk.xml"))); //mottakerPlugin
@@ -101,7 +101,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetKomplettBrevdataPersonMaalFormDansk() throws Exception {
+	public void shouldGetKomplettBrevdataPersonMaalFormDansk() {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody_maalform_dansk.xml"))); //mottakerPlugin
@@ -115,7 +115,7 @@ public class Treg001IT extends AbstractIT {
 	 * Komplertterer fullt brevdatasett der mottaker er organisasjon
 	 */
 	@Test
-	public void shouldGetKomplettBrevdataOrg() throws Exception {
+	public void shouldGetKomplettBrevdataOrg() {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
@@ -123,18 +123,19 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetKomplettBrevdataOrgIkkeSkandinavisk() throws Exception {
+	public void shouldGetKomplettBrevdataOrgIkkeSkandinavisk() {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_ikke_skandinavisk.xml"))); //mottakerPlugin
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
+
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
 	@Test
-	public void shouldGetKomplettBrevdataOrgDansk() throws Exception {
+	public void shouldGetKomplettBrevdataOrgDansk() {
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_dansk.xml"))); //mottakerPlugin
@@ -146,7 +147,7 @@ public class Treg001IT extends AbstractIT {
 
 
 	@Test
-	public void shouldNotMapWhenIsBerikIsFalse() throws Exception {
+	public void shouldNotMapWhenIsBerikIsFalse() {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_is_berik_false.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_is_berik_false_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
@@ -154,7 +155,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldNotMapBehandlendeEnhetWhenBerikIsFalse() throws Exception {
+	public void shouldNotMapBehandlendeEnhetWhenBerikIsFalse() {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_behandlende_enhet_8020.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_behandlendeEnhet_8020.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
@@ -167,7 +168,7 @@ public class Treg001IT extends AbstractIT {
 	 * - HVIS det er opprettet en feillogg funksjonelle feil SÅ SKAL loggen returneres
 	 */
 	@Test
-	public void shouldThrowFunctionalExceptionFromOrgPlugin() throws Exception {
+	public void shouldThrowFunctionalExceptionFromOrgPlugin() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -178,13 +179,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJON_V4")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ingen organisasjon ble funnet med orgnr: 111111111"));
 		}
 	}
 
 	@Test
-	public void shouldThrowTechnicalIfPersonIsMissingAdresse() throws Exception {
+	public void shouldThrowTechnicalIfPersonIsMissingAdresse() {
 
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -194,19 +195,19 @@ public class Treg001IT extends AbstractIT {
 			fail("Should throw techical Exception");
 		} catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land."));
 		}
 	}
 
 	@Test
-	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() throws Exception {
+	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() {
 
 		try {
 			restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpClientErrorException e) {
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
 			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
 		}
@@ -214,7 +215,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenPersonHasUkjentAdresse() throws Exception {
+	public void shouldThrowWhenPersonHasUkjentAdresse() {
 
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -224,7 +225,7 @@ public class Treg001IT extends AbstractIT {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 			fail("Test did not throw exception");
 		} catch (HttpClientErrorException e) {
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE"));
 			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
 		}
@@ -232,7 +233,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() throws Exception {
+	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() {
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
@@ -249,7 +250,7 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionFromPersonPlugin() throws Exception {
+	public void shouldThrowFunctionalExceptionFromPersonPlugin() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -259,13 +260,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=20096828390, message=Ingen forekomster funnet"));
 		}
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionFromNorgPlugins() throws Exception {
+	public void shouldThrowFunctionalExceptionFromNorgPlugins() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -275,14 +276,14 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
-			assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
 		}
 
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromPersonPlugin() throws Exception {
+	public void shouldThrowTechnicalExceptionFromPersonPlugin() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_PERSON_V3")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
@@ -291,13 +292,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. Message=Could not send Message."));
 		}
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromOrgPlugin() throws Exception {
+	public void shouldThrowTechnicalExceptionFromOrgPlugin() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
@@ -306,13 +307,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJON_V4")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111"));
 		}
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromNorgPlugin() throws Exception {
+	public void shouldThrowTechnicalExceptionFromNorgPlugin() {
 		//Stub web services:
 		stubFor(post("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(notFound().withStatus(HttpStatus.NOT_FOUND.value())));
@@ -321,13 +322,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/VIRKSOMHET_ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til Norg for enhetNr=0136"));
 		}
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionWhenReceivedNotFoundFromDokkat() throws Exception {
+	public void shouldThrowTechnicalExceptionWhenReceivedNotFoundFromDokkat() {
 		//Stub web services:
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())
@@ -338,13 +339,13 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpServerErrorException e) {
 			verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=123."));
 		}
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromDokkat() throws Exception {
+	public void shouldThrowTechnicalExceptionFromDokkat() {
 		//Stub web services:
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -355,7 +356,7 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpServerErrorException e) {
 			verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
-			assertEquals(e.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=123"));
 		}
 	}
