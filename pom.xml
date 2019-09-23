@@ -58,6 +58,7 @@
 		<wiremock-standalone.version>2.15.0</wiremock-standalone.version>
 		<modig-testcertificates.version>1.2.0</modig-testcertificates.version>
 		<rxjava.version>2.1.14</rxjava.version>
+		<kryo.version>4.0.2</kryo.version>
 		<httpunit.version>1.7</httpunit.version>
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
 	</properties>
