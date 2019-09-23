@@ -68,7 +68,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		initialConfigs.put(HENT_ORGANISASJON, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, null));
 
 		return RedisCacheManager.builder(connectionFactory)
-				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, null))
+				//.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, null))
 				.withInitialCacheConfigurations(initialConfigs)
 				.build();
 	}
