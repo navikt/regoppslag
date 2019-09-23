@@ -11,7 +11,7 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.JuridiskEnhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -65,7 +65,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME, Bruker.class));
 		initialConfigs.put(HENT_DOKKAT_SPRAAKINFO, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, SpraakInfoTo.class));
 		initialConfigs.put(HENT_ENHET_NAVN, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, Organisasjonsenhet.class));
-		initialConfigs.put(HENT_ORGANISASJON, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, Organisasjon.class));
+		initialConfigs.put(HENT_ORGANISASJON, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, JuridiskEnhet.class));
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME, null))
