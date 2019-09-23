@@ -32,6 +32,7 @@ public class CustomCacheErrorHandler implements CacheErrorHandler {
 		log.warn(String.format("Feil ved Cache Put operasjon. CacheNavn=%s, feilklasse=%s, feilmelding=%s", cache.getName(), exception
 				.getClass()
 				.getSimpleName(), exception.getMessage()));
+		log.warn(exception.getMessage(), exception);
 		metrics.cacheError(cache.getName(), "PUT");
 	}
 	
