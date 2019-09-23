@@ -2,6 +2,7 @@ package no.nav.regoppslag.nais;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,12 +27,16 @@ public class NaisCheckSTSTokenRetriever {
 	private final STSClient stsClient;
 
 	@Inject
+	private MicrometerMetrics metrics;
+
+	@Inject
 	public NaisCheckSTSTokenRetriever(@Value("${securityTokenService.url}") String stsUrl, ServiceuserAlias serviceuserAlias, Bus cxf) {
 		this.stsClient = NaisCheckSTSConfigUtil.configureStsRequestSamlToken(stsUrl, serviceuserAlias.getUsername(), serviceuserAlias.getPassword(), cxf);
 	}
 
 	@Cacheable(value = STS_CACHE_NAME, key="#root.methodName")
 	public String requestStsToken() throws Exception {
+		metrics.cacheMiss(STS_CACHE_NAME);
 		log.info("Henter SAML security token fra STS for bruk i NAIS isReady check");
 		return elementToString(stsClient.requestSecurityToken().getToken());
 	}
