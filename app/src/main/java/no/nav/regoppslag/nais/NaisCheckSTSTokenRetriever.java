@@ -43,8 +43,7 @@ public class NaisCheckSTSTokenRetriever {
 
 	private String elementToString(Element element) {
 		try {
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(element);
 			StreamResult result = new StreamResult(new StringWriter());
