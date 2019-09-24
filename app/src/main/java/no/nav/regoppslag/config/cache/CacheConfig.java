@@ -56,7 +56,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
-		//initialConfigs.put(HENT_ENHET_NAVN, generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME));
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(defaultCacheConfig)
@@ -64,7 +63,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.build();
 	}
 
-	@Bean RedisTemplate redisTemplate(RedisConnectionFactory factory) {
+	@Bean
+	RedisTemplate redisTemplate(RedisConnectionFactory factory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setDefaultSerializer(new CustomRedisSerializer<>());
 		template.setConnectionFactory(factory);
@@ -86,8 +86,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 			redisCacheConfiguration.entryTtl(duration);
 		}
 
-		//redisCacheConfiguration.serializeKeysWith(fromSerializer(new CustomRedisSerializer<>()));
-		//redisCacheConfiguration.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
 		return redisCacheConfiguration;
 	}
 

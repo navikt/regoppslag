@@ -41,7 +41,7 @@ public class OrganisasjonV4Consumer {
 		this.metrics = metrics;
 	}
 	
-	@Cacheable(HENT_ORGANISASJON)
+	@Cacheable(value = HENT_ORGANISASJON, key = "#organisasjonsnummer")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(final String organisasjonsnummer, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {

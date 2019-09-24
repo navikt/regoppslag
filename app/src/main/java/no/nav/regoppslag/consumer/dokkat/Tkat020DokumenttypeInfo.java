@@ -62,7 +62,7 @@ public class Tkat020DokumenttypeInfo {
 		this.restTemplate = restTemplate;
 	}
 
-	@Cacheable(HENT_DOKKAT_SPRAAKINFO)
+	@Cacheable(value = HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {

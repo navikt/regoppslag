@@ -50,7 +50,7 @@ public class LdapAdeoUserLookup {
 	 * @param adeoIdent The NAV user ident
 	 * @return The full name of the user or null if not found.
 	 */
-	@Cacheable(HENT_FULLT_NAVN)
+	@Cacheable(value = HENT_FULLT_NAVN, key = "#adeoIdent")
 	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_FULLT_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
