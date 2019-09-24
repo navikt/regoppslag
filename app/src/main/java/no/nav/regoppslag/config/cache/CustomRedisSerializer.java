@@ -4,8 +4,13 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.util.Pool;
+import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.JuridiskEnhet;
+import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.springframework.data.redis.serializer.RedisSerializer;
+
+import java.util.ArrayList;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -20,6 +25,10 @@ public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 			protected Kryo create () {
 				Kryo kryo = new Kryo();
 				kryo.register(JuridiskEnhet.class);
+				kryo.register(Organisasjonsenhet.class);
+				kryo.register(Bruker.class);
+				kryo.register(SpraakInfoTo.class);
+				kryo.register(ArrayList.class);
 				// Configure the Kryo instance.
 				return kryo;
 			}
