@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>com.sun.xml.messaging.saaj</groupId>
 			<artifactId>saaj-impl</artifactId>
-			<version>${saaj-impl.version}</version>
+			<version>1.5.1</version>
 		</dependency>
 
 		<!--Swagger-->
