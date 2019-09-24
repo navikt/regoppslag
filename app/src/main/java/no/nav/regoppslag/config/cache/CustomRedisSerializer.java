@@ -9,7 +9,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class CustomRedisSerializer implements RedisSerializer<Object> {
+public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 	
 	private final KryoPool kryoPool;
 	
@@ -20,7 +20,7 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	}
 	
 	@Override
-	public byte[] serialize(Object o)  {
+	public byte[] serialize(T o)  {
 		ByteBufferOutput output = new ByteBufferOutput(MIN_BUFFER_SIZE, -1); //-1 means maximum possible buffer size on VM.
 		Kryo kryo = kryoPool.borrow();
 		try {
@@ -34,14 +34,14 @@ public class CustomRedisSerializer implements RedisSerializer<Object> {
 	}
 	
 	@Override
-	public Object deserialize(byte[] bytes) {
+	public T deserialize(byte[] bytes) {
 		if(bytes.length == 0) {
 			return null;
 		}
 		Kryo kryo = kryoPool.borrow();
-		Object o;
+		T o;
 		try {
-			o = kryo.readClassAndObject(new ByteBufferInput(bytes));
+			o = (T)kryo.readClassAndObject(new ByteBufferInput(bytes));
 		} finally {
 			kryoPool.release(kryo);
 		}

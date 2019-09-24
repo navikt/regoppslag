@@ -75,8 +75,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 		if(duration != null) {
 			redisCacheConfiguration.entryTtl(duration);
 		}
-		redisCacheConfiguration.serializeKeysWith(fromSerializer(new StringRedisSerializer()));
-		redisCacheConfiguration.serializeValuesWith(fromSerializer(new CustomRedisSerializer()));
+		redisCacheConfiguration.serializeKeysWith(fromSerializer(new CustomRedisSerializer<>()));
+		redisCacheConfiguration.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
 		return redisCacheConfiguration;
 	}
 
