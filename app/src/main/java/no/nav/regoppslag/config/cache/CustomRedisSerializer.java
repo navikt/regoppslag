@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.util.Pool;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.JuridiskEnhet;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
@@ -18,6 +19,7 @@ public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 		kryoPool = new Pool<Kryo>(true, false, 8) {
 			protected Kryo create () {
 				Kryo kryo = new Kryo();
+				kryo.register(JuridiskEnhet.class);
 				// Configure the Kryo instance.
 				return kryo;
 			}
