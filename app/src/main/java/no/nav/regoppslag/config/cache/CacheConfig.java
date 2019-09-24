@@ -1,6 +1,5 @@
 package no.nav.regoppslag.config.cache;
 
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
@@ -10,7 +9,6 @@ import io.lettuce.core.SocketOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
@@ -25,6 +23,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	private int redisPort;
 
 	@Bean
-	public CacheManager cacheManager(RedisConnectionFactory connectionFactory, RedisCacheConfiguration defaultCacheConfig) {
+	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, RedisCacheConfiguration defaultCacheConfig) {
 		//Remaining caches uses the default value
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
@@ -64,12 +64,19 @@ public class CacheConfig extends CachingConfigurerSupport {
 				.build();
 	}
 
+	@Bean RedisTemplate redisTemplate(RedisConnectionFactory factory) {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		template.setDefaultSerializer(new CustomRedisSerializer<>());
+		template.setConnectionFactory(factory);
+		return template;
+	}
+
 	@Bean
 	@Primary
 	public RedisCacheConfiguration defaultCacheConfig() {
 		return RedisCacheConfiguration.defaultCacheConfig()
 				.entryTtl(DEFAULT_CACHE_EXPIRATION_TIME)
-				.serializeKeysWith(fromSerializer(new CustomRedisSerializer<>()))
+				.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
 				.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
 	}
 
