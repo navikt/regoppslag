@@ -6,7 +6,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 import io.swagger.annotations.Api;

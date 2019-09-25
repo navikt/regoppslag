@@ -38,18 +38,5 @@ public class PrometheusMetrics {
 			.name("request_total_counter")
 			.help("Counts total number of messages received per event")
 			.labelNames(LABEL_SERVICE, LABEL_PROCESS, LABEL_TYPE, LABEL_CONSUMER_ID, LABEL_EVENT).register();
-	
-	public static final Counter requestExceptionCounter = Counter.build()
-			.namespace(DOK_NAMESPACE)
-			.name("request_exception_total_counter")
-			.help("Total exception counter.")
-			.labelNames(LABEL_SERVICE, LABEL_ERROR_TYPE, LABEL_EXCEPTION_NAME, LABEL_EXCEPTION_DESCRIPTION)
-			.register();
-	
-	public static final Histogram requestLatency = Histogram.build()
-			.namespace(DOK_NAMESPACE)
-			.name("internal_request_latency_seconds_histogram")
-			.help("request latency in seconds.")
-			.labelNames(LABEL_SERVICE, LABEL_PROCESS, LABEL_PROCESS_NAME)
-			.register();
+
 }
