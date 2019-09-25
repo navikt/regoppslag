@@ -40,9 +40,9 @@ import java.util.HashMap;
 @Slf4j
 public class CacheConfig extends CachingConfigurerSupport {
 	
-	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofSeconds(2L);
+	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
-	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofSeconds(50L);
+	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
 	@Value("${redis.hostname:regoppslag-redis}")
 	private String redisHost;
