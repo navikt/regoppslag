@@ -47,8 +47,7 @@ public class PersonV3Consumer {
 		this.metrics = metrics;
 	}
 
-	@Cacheable(value = HENT_PERSON, key = "#personidentifikator+'-'+#subjectId")
-	//@Cacheable(value = HENT_PERSON, key = "#personidentifikator", unless = "result.diskresjonskode!= null && result.diskresjonskode.value != null && result.diskresjonskode.value.length() > 0")
+	@Cacheable(value = HENT_PERSON, key = "#personidentifikator", unless = "result?.diskresjonskode?.value?.length() > 0")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Bruker hentPerson(final String personidentifikator, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
