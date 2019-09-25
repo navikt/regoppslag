@@ -2,6 +2,7 @@ package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
@@ -22,6 +23,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import java.util.HashMap;
 /**
  * Iniitaliserer Redis Cache.
  *
- * @author Ugur Alpay Cenar, Visma Consulting
+ * @author Martin Burheim Tingstad, Miles AS
  */
 @Profile("nais")
 @Configuration
@@ -71,7 +73,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 	private RedisCacheConfiguration generateCacheConfig(Duration duration) {
 		return RedisCacheConfiguration.defaultCacheConfig()
 				.disableCachingNullValues()
-				.entryTtl(duration != null ? duration : DEFAULT_CACHE_EXPIRATION_TIME);
+				.entryTtl(duration != null ? duration : DEFAULT_CACHE_EXPIRATION_TIME)
+				.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
+				.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
 	}
 
 	@Bean
