@@ -1,7 +1,5 @@
 package no.nav.regoppslag.nais.selftest;
 
-import static no.nav.regoppslag.metrics.PrometheusMetrics.dependencyPingable;
-
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiter;
@@ -11,6 +9,7 @@ import io.vavr.control.Try;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -42,13 +41,15 @@ public abstract class AbstractDependencyCheck {
 	private final TimeLimiter timeLimiter = TimeLimiter.of(timeLimiterConfig);
 	private AtomicInteger dependencyStatus = new AtomicInteger();
 	private Gauge gauge;
+	private MicrometerMetrics metrics;
 
-	public AbstractDependencyCheck(DependencyType type, String name, String address, Importance importance) {
+	public AbstractDependencyCheck(DependencyType type, String name, String address, Importance importance, MicrometerMetrics metrics) {
 		this.type = type;
 		this.name = name;
 		this.address = address;
 		this.importance = importance;
 		this.circuitBreakerRegistry = CircuitBreakerRegistry.ofDefaults();
+		this.metrics = metrics;
 	}
 
 	protected abstract void doCheck();
@@ -60,9 +61,9 @@ public abstract class AbstractDependencyCheck {
 		CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker(dependencyName);
 		Callable<DependencyCheckResult> chainedCallable = CircuitBreaker.decorateCallable(circuitBreaker, timeRestrictedCall);
 		return Try.ofCallable(chainedCallable)
-				.onSuccess(success -> dependencyPingable.labels(this.name).set(1))
+				.onSuccess(success -> metrics.dependenycPingable(this.name, 1.0))
 				.onFailure(throwable -> {
-					dependencyPingable.labels(this.name).set(0);
+					metrics.dependenycPingable(this.name, 0.0);
 					log.error("Call to dependency={} with type={} at url={} timed out or circuitbreaker was tripped.", getName(), getType(), getAddress(), throwable);
 				})
 				.recover(throwable -> DependencyCheckResult.builder()

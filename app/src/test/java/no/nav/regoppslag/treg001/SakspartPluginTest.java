@@ -7,8 +7,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -61,11 +59,11 @@ import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SakspartPluginTest {
-	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
-	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
-	public static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
-	public static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
-	public static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
+	private static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
+	private static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
+	private static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
+	private static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
+	private static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
@@ -80,16 +78,16 @@ public class SakspartPluginTest {
 	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
-	private PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService);
 	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-	private OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
+	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private MeterRegistry registry;
 	private MicrometerMetrics metrics;
 	private SakspartPlugin sakspartPlugin;
-	
+	private PersonV3Mapper personV3Mapper;
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -103,6 +101,8 @@ public class SakspartPluginTest {
 
 		registry = new SimpleMeterRegistry();
 		metrics = mock(MicrometerMetrics.class);
+		personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
+		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		sakspartPlugin = new SakspartPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
 		when(personV3Consumer.hentPerson(any(String.class), any(String.class), any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(any(String.class), any(String.class))).thenReturn(createOrganisasjon(Arrays
@@ -122,7 +122,7 @@ public class SakspartPluginTest {
 		
 		Node processed = sakspartPlugin.processElement(node, valueMap);
 		
-		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<Sakspart>(Sakspart.class);
+		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 		
 		assertThat(sakspart.getNavn(), is(FORNAVN + " " + ETTERNAVN));
@@ -159,7 +159,7 @@ public class SakspartPluginTest {
 		Node node = findSingleNode(xPathExpression, document);
 		
 		Node processed = sakspartPlugin.processElement(node, valueMap);
-		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<Sakspart>(Sakspart.class);
+		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 		
 		assertThat(sakspart.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));

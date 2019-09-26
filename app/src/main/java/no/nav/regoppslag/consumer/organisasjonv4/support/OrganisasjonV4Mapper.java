@@ -2,12 +2,10 @@ package no.nav.regoppslag.consumer.organisasjonv4.support;
 
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LAND;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
-import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.LAND;
+import static no.nav.regoppslag.metrics.MetricLabels.ORGANISASJONV4_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -17,6 +15,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -53,13 +52,15 @@ public class OrganisasjonV4Mapper {
 
 	private final LandkodeService landkodeService;
 	private final PostnummerService postnummerService;
+	private final MicrometerMetrics metrics;
 
 	private static final String LAND_NORGE = "Norge";
 
 	@Inject
-	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
+	public OrganisasjonV4Mapper(PostnummerService postnummerService, LandkodeService landkodeService, MicrometerMetrics metrics) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
+		this.metrics = metrics;
 	}
 
 	public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
@@ -102,13 +103,12 @@ public class OrganisasjonV4Mapper {
 
 	private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
 		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
+			metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
 		}
 		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
+			metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
 		}
-		requestCounter.labels(serviceCode, ORGANISASJONV4_MAPPER, LAND, getConsumerId(), postadresse.getLand() == null ? "Ukjent" : postadresse
-				.getLand()).inc();
+		metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
 	}
 
 

@@ -2,6 +2,7 @@ package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
@@ -26,8 +27,9 @@ public class DokkatCheck extends AbstractDependencyCheck {
 	public DokkatCheck(RestTemplateBuilder restTemplateBuilder,
 					   HttpComponentsClientHttpRequestFactory requestFactory,
 					   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,
-					   ServiceuserAlias serviceuserAlias) {
-		super(DependencyType.REST, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl(), Importance.WARNING);
+					   ServiceuserAlias serviceuserAlias,
+					   MicrometerMetrics metrics) {
+		super(DependencyType.REST, DOKKATV3_LABEL, dokumenttypeInfoV3Alias.getUrl(), Importance.WARNING, metrics);
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory.getClass())
 				.rootUri(dokumenttypeInfoV3Alias.getUrl())

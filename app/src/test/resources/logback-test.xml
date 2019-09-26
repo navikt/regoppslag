@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false" debug="false">
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -9,16 +10,12 @@
 
 	<logger name="org.apache.cxf.common.logging" level="WARN" additivity="false"/>
 
-	<root level="INFO">
-		<appender-ref ref="CONSOLE"/>
+	<root level="WARN">
+		<!--<appender-ref ref="CONSOLE"/>-->
 	</root>
 
-	<logger name="no.nav.regoppslag" level="INFO"/>
+	<logger name="no.nav.regoppslag" level="WARN" additivity="false"/>
 
-	<logger name="org.apache.cxf.interceptor" additivity="true">
-		    
-		<appender-ref ref="CONSOLE"/>
-		  
-	</logger>
+	<logger name="org.apache.cxf.interceptor" additivity="true"/>
 
 </configuration>

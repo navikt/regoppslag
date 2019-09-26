@@ -1,8 +1,8 @@
 package no.nav.regoppslag.treg002;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusLabels.TREG002_ADRESSE_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;

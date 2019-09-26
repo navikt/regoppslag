@@ -3,7 +3,6 @@ package no.nav.regoppslag.consumer.ldap;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
-import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -35,7 +34,6 @@ public class LdapAdeoUserLookup {
 	
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
-	private Histogram.Timer requestTimer;
 	private MicrometerMetrics metrics;
 
 	public LdapAdeoUserLookup(LdapTemplate ldapTemplate, String userBaseDn, MicrometerMetrics metrics) {

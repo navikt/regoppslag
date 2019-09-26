@@ -1,6 +1,7 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.OrganisasjonV4Alias;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
@@ -19,8 +20,10 @@ public class OrganisasjonV4Check extends AbstractDependencyCheck {
 	private final OrganisasjonV4 organisasjonV4;
 
 	@Inject
-	public OrganisasjonV4Check(OrganisasjonV4 organisasjonV4, OrganisasjonV4Alias organisasjonV4Alias) {
-		super(DependencyType.SOAP, ORGANISASJON_V4, organisasjonV4Alias.getEndpointurl(), Importance.WARNING);
+	public OrganisasjonV4Check(OrganisasjonV4 organisasjonV4,
+							   OrganisasjonV4Alias organisasjonV4Alias,
+							   MicrometerMetrics metrics) {
+		super(DependencyType.SOAP, ORGANISASJON_V4, organisasjonV4Alias.getEndpointurl(), Importance.WARNING, metrics);
 		this.organisasjonV4 = organisasjonV4;
 	}
 

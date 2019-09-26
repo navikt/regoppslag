@@ -2,6 +2,8 @@ package no.nav.regoppslag.nais;
 
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +45,11 @@ public class NaisContract {
 	private NaisCheckSTSTokenRetriever naisCheckSTSTokenRetriever;
 
 	@Inject
-	public NaisContract(List<AbstractDependencyCheck> dependencyCheckList, @Value("${APP_NAME:regoppslag}") String appName, @Value("${APP_VERSION:0}") String version) {
+	public NaisContract(MeterRegistry meterRegistry,
+						List<AbstractDependencyCheck> dependencyCheckList,
+						@Value("${APP_NAME:regoppslag}") String appName,
+						@Value("${APP_VERSION:0}") String version) {
+		Gauge.builder("dok_app_is_ready", isReady, AtomicInteger::get).register(meterRegistry);
 		this.dependencyCheckList = new ArrayList<>(dependencyCheckList);
 		this.appName = appName;
 		this.version = version;
