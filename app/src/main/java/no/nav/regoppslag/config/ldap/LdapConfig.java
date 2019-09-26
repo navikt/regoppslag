@@ -40,7 +40,6 @@ public class LdapConfig {
 	LdapAdeoUserLookup ldapUserLookup(LdapTemplate ldapTemplate,
 									  @Value("${ldap_user_basedn}") final String userBaseDn) {
 		return new LdapAdeoUserLookup(ldapTemplate, userBaseDn, metrics);
-		
 	}
 	
 }

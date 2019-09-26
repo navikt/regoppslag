@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 
 import javax.inject.Inject;
+import javax.xml.XMLConstants;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -44,14 +46,17 @@ public class NaisCheckSTSTokenRetriever {
 	private String elementToString(Element element) {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
 			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			DOMSource source = new DOMSource(element);
 			StreamResult result = new StreamResult(new StringWriter());
 			transformer.transform(source, result);
 			return result.getWriter().toString();
 		} catch (TransformerException e) {
-			throw new RuntimeException(String.format("Exception when converting Element to String. errorMsg=%s", e
-					.getMessage()));
+			throw new RuntimeException(String.format("Exception when converting Element to String. errorMsg=%s", e.getMessage()));
 		}
 	}
 }

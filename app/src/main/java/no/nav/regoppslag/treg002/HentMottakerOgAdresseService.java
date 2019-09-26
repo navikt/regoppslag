@@ -35,7 +35,7 @@ public class HentMottakerOgAdresseService {
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final AdresseMapper adresseMapper;
 
-	private final String UGYLDIG_INPUT = "Ugyldig input";
+	private static final String UGYLDIG_INPUT = "Ugyldig input";
 
 	@Inject
 	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, AdresseMapper adresseMapper) {
@@ -52,10 +52,10 @@ public class HentMottakerOgAdresseService {
 			validateInput(request);
 			MottakerTo mottakerTo;
 			if (PERSON.name().equals(request.getType())) {
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getUserId(), SERVICE_CODE_TREG002);
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
 				mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			} else {
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
 			}
 			return HentMottakerOgAdresseResponse.builder()

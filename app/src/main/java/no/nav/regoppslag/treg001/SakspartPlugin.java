@@ -1,13 +1,11 @@
 package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.MicrometerMetrics.getUserId;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
@@ -39,10 +37,9 @@ import java.util.Map;
 @Slf4j
 public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnricherPlugin {
 
-	private static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	private static final String ELEMENT_LOCALNAME = "sakspart";
 	private static final String UGYLDIG_INPUT = "SaksportPlugin - Ugyldig input";
-	public static final String PLUGIN_NAME = "SakspartPlugin";
+	private static final String PLUGIN_NAME = "SakspartPlugin";
 
 	private PersonV3Consumer personV3Consumer;
 
@@ -60,8 +57,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 	@Inject
 	public SakspartPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
-						  OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
-						  MicrometerMetrics metrics) {
+						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics) {
 		super(Sakspart.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
@@ -89,11 +85,11 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), getUserId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(sakspart.getId());
 					sakspart.setNavn(personV3Mapper.getSakspartNavn(person));
 
 				} else {
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId(), SERVICE_CODE_TREG001);
+					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());
 					sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
 				}
 			}

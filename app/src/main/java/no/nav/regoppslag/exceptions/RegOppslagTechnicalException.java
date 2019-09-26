@@ -33,7 +33,6 @@ public class RegOppslagTechnicalException extends Exception {
 		this.metricMessage = metricMessage;
 	}
 
-
 	public RegOppslagTechnicalException(String message, Throwable cause, String metricMessage, HttpStatus httpStatus) {
 		super(message, cause);
 		this.metricMessage = metricMessage;

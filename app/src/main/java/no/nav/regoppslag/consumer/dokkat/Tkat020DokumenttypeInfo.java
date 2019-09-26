@@ -9,6 +9,7 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -35,7 +36,6 @@ import java.util.Map;
 @Slf4j
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
-	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	private static final String DOKKAT = "DOKKAT";
 	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
 	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
@@ -62,12 +62,12 @@ public class Tkat020DokumenttypeInfo {
 		this.restTemplate = restTemplate;
 	}
 
-	@Cacheable(value = HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
+	@Cacheable(value = MetricLabels.HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 
-		metrics.cacheMiss(HENT_DOKKAT_SPRAAKINFO);
+		metrics.cacheMiss(MetricLabels.HENT_DOKKAT_SPRAAKINFO);
 		try {
 			Map<String, Object> uriVariables = new HashMap<>();
 			uriVariables.put("dokumenttypeId", dokumenttypeId);

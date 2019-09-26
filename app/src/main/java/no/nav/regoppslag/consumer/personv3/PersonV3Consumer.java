@@ -8,6 +8,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
+import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
@@ -37,9 +38,8 @@ public class PersonV3Consumer {
 	private final PersonV3 personV3;
 	private MicrometerMetrics metrics;
 
-	public static final String HENT_PERSON = "hentPerson";
-	public static final String PERSON_IKKE_FUNNET = "PersonV3 - Person ikke funnet";
-	public static final String SIKKERHETSBEGRENSNING = "PersonV3 - Sikkerhetsbegrensning";
+	private static final String PERSON_IKKE_FUNNET = "PersonV3 - Person ikke funnet";
+	private static final String SIKKERHETSBEGRENSNING = "PersonV3 - Sikkerhetsbegrensning";
 	
 	@Inject
 	public PersonV3Consumer(PersonV3 personV3, MicrometerMetrics metrics) {
@@ -47,11 +47,11 @@ public class PersonV3Consumer {
 		this.metrics = metrics;
 	}
 
-	@Cacheable(value = HENT_PERSON, key = "#personidentifikator", unless = "#result?.diskresjonskode?.value?.length() > 0")
+	@Cacheable(value = MetricLabels.HENT_PERSON, key = "#personidentifikator", unless = "#result?.diskresjonskode?.value?.length() > 0")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
-	public Bruker hentPerson(final String personidentifikator, final String subjectId, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		metrics.cacheMiss(HENT_PERSON);
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
+	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+		metrics.cacheMiss(MetricLabels.HENT_PERSON);
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 

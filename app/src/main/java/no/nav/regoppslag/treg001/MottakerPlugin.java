@@ -44,10 +44,9 @@ import java.util.Map;
 @Slf4j
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 
-	private static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
-	public static final String PLUGIN_NAME = "MottakerPlugin";
+	private static final String PLUGIN_NAME = "MottakerPlugin";
 
 	private PersonV3Consumer personV3Consumer;
 
@@ -97,10 +96,10 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), getUserId(), SERVICE_CODE_TREG001);
+					Bruker person = personV3Consumer.hentPerson(mottaker.getId());
 					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 				} else {
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId(), SERVICE_CODE_TREG001);
+					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 					mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
 				}
 

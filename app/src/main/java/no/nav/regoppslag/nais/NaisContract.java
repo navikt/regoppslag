@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 @RestController
 public class NaisContract {
 
-	public static final String APPLICATION_ALIVE = "Application is alive!";
-	public static final String APPLICATION_READY = "Application is ready for traffic!";
+	private static final String APPLICATION_ALIVE = "Application is alive!";
+	private static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
 	private static AtomicInteger isReady = new AtomicInteger(1);
 
@@ -91,17 +91,15 @@ public class NaisContract {
 	}
 
 	private boolean isAnyVitalDependencyUnhealthy(List<Result> results) {
-		return results.stream().anyMatch((result) -> result.equals(Result.ERROR));
+		return results.stream().anyMatch(result -> result.equals(Result.ERROR));
 	}
 
-
 	private Result getOverallSelftestResult(List<DependencyCheckResult> results) {
-		if (results.stream().anyMatch((result) -> result.getResult().equals(Result.ERROR))) {
+		if (results.stream().anyMatch(result -> result.getResult().equals(Result.ERROR))) {
 			return Result.ERROR;
-		} else if (results.stream().anyMatch((result) -> result.getResult().equals(Result.WARNING))) {
+		} else if (results.stream().anyMatch(result -> result.getResult().equals(Result.WARNING))) {
 			return Result.WARNING;
 		}
-
 		return Result.OK;
 	}
 
@@ -130,6 +128,5 @@ public class NaisContract {
 		String decodedToken = naisCheckSTSTokenRetriever.requestStsToken();
 		return new UsernamePasswordAuthenticationToken("NaisIsReadySamlToken", decodedToken, NO_AUTHORITIES);
 	}
-
 
 }

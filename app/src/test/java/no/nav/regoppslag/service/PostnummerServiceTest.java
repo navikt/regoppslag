@@ -45,19 +45,19 @@ public class PostnummerServiceTest {
 
 
 	@Test
-	public void testFinnPoststed() throws Exception {
+	public void testFinnPoststed() {
 		String poststed = postnumnmerService.finnPoststed("1400");
 		assertThat(poststed, is("SKI"));
 	}
 
 	@Test
-	public void testFinnLandNavnNullPoststed() throws Exception {
+	public void testFinnLandNavnNullPoststed() {
 		String landNavn = postnumnmerService.finnPoststed(null);
 		assertThat(landNavn, isEmptyOrNullString());
 	}
 
 	@Test
-	public void testFinnUkjentPoststed() throws Exception {
+	public void testFinnUkjentPoststed() {
 		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(PostnummerService.LOG);
 		String landNavn = postnumnmerService.finnPoststed("FINNES IKKE");
 		LogbackCapturingAppender.Factory.cleanUp();

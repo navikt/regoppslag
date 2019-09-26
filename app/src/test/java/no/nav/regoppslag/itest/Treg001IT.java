@@ -209,7 +209,6 @@ public class Treg001IT extends AbstractIT {
 		} catch (HttpClientErrorException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
-			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
 		}
 
 	}
@@ -227,7 +226,6 @@ public class Treg001IT extends AbstractIT {
 		} catch (HttpClientErrorException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE"));
-			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagFunctionalException"));
 		}
 
 	}
@@ -243,7 +241,6 @@ public class Treg001IT extends AbstractIT {
 			fail("Test did not throw exception");
 		} catch (HttpStatusCodeException e) {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
-			//assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("RegOppslagSecurityException"));
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 		}
 
