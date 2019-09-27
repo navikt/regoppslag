@@ -74,11 +74,6 @@ public class OrganisasjonV4MapperTest {
 	private static final String LAND = "Norge";
 	private static final String SERVICECODE = "SERVICECODE";
 
-	@Before
-	public void setUp() {
-
-	}
-
 	@Test
 	public void shouldMapSpraakKode() throws RegOppslagFunctionalException, DatatypeConfigurationException {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
