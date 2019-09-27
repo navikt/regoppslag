@@ -81,6 +81,7 @@ public class DokTimedAspect {
 						.tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
 						.tags("exception_name", e.getClass().getSimpleName())
 						.tags(metrics.extraTags())
+						.tags(CONSUMER, getConsumerId())
 						.tags(tagsBasedOnJoinpoint.apply(pjp))
 						.register(registry)
 						.increment();
@@ -92,6 +93,7 @@ public class DokTimedAspect {
 			sample.stop(Timer.builder(metrics.value())
 					.description(metrics.description().isEmpty() ? null : metrics.description())
 					.tags(metrics.extraTags())
+					.tags(CONSUMER, getConsumerId())
 					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.publishPercentileHistogram(metrics.histogram())
 					.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
