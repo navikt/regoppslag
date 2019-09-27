@@ -1,8 +1,7 @@
 package no.nav.regoppslag;
 
-import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
-import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;
-import io.prometheus.client.spring.web.EnablePrometheusTiming;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.ElementEnricherConfig;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
@@ -16,8 +15,12 @@ import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
+import no.nav.regoppslag.metrics.DokTimedAspect;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.annotation.EnableRetry;
 
@@ -37,10 +40,20 @@ import org.springframework.retry.annotation.EnableRetry;
 		PersonV3EndpointConfig.class,
 		ElementEnricherConfig.class,
 		RestConsumerConfig.class})
-@EnablePrometheusEndpoint
-@EnablePrometheusTiming
-@EnableSpringBootMetricsCollector
 @EnableRetry
 @Configuration
+@EnableAspectJAutoProxy
+@EnableAutoConfiguration
 public class ApplicationConfig {
+
+	@Bean
+	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
+		return new DokTimedAspect(meterRegistry);
+	}
+
+	@Bean
+	JvmThreadMetrics threadMetrics(){
+		return new JvmThreadMetrics();
+	}
+
 }

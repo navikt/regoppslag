@@ -2,13 +2,11 @@ package no.nav.regoppslag.consumer.personv3.support;
 
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ADRESSETYPE;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTSTED;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +16,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -50,18 +49,19 @@ public class PersonV3Mapper {
 	public static final String MIDLERTIDIG_POSTADRESSE_NORGE = "MIDLERTIDIG_POSTADRESSE_NORGE";
 	public static final String UKJENT_ADRESSE = "UKJENT_ADRESSE";
 
-	@Inject
 	private final PostnummerService postnummerService;
-	@Inject
 	private final LandkodeService landkodeService;
+	private MicrometerMetrics metrics;
 
 	private static final Pattern pattern = Pattern.compile("(\\d{4})");
 
 	private static final String LAND_NORGE = "Norge";
 
-	public PersonV3Mapper(PostnummerService postnummerService, LandkodeService landkodeService) {
+	@Inject
+	public PersonV3Mapper(PostnummerService postnummerService, LandkodeService landkodeService, MicrometerMetrics metrics) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;
+		this.metrics = metrics;
 	}
 
 	public String getSakspartNavn(Bruker person) {
@@ -147,20 +147,20 @@ public class PersonV3Mapper {
 
 	private void incrementFunctionalMetrics(Bruker person, Postadresse postadresse, String serviceCode) {
 
-		requestCounter.labels(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, getConsumerId(), person.getGjeldendePostadressetype() == null ? "Ukjent" : person
+		metrics.meter(serviceCode, PERSONV3_MAPPER, ADRESSETYPE, person.getGjeldendePostadressetype() == null ? "Ukjent" : person
 				.getGjeldendePostadressetype()
-				.getValue()).inc();
+				.getValue());
 
 		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).inc();
+			metrics.meter(serviceCode, PERSONV3_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
 		}
 
 		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_POSTSTED, getConsumerId(), UKJENT_POSTSTED).inc();
+			metrics.meter(serviceCode, PERSONV3_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
 		}
 
 		if (postadresse.getLand() == null) {
-			requestCounter.labels(serviceCode, PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).inc();
+			metrics.meter(serviceCode, PERSONV3_MAPPER, UKJENT_LAND, UKJENT_LAND);
 		}
 
 	}

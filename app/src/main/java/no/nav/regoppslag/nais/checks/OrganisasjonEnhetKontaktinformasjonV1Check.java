@@ -1,6 +1,7 @@
 package no.nav.regoppslag.nais.checks;
 
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
@@ -19,8 +20,10 @@ public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractDependen
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 
 	@Inject
-	public OrganisasjonEnhetKontaktinformasjonV1Check(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1, OrganisasjonEnhetKontaktinformasjonV1Alias alias) {
-		super(DependencyType.SOAP, OrganisasjonEnhetKontaktinformasjonV1_label, alias.getEndpointurl(), Importance.WARNING);
+	public OrganisasjonEnhetKontaktinformasjonV1Check(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1,
+													  OrganisasjonEnhetKontaktinformasjonV1Alias alias,
+													  MicrometerMetrics metrics) {
+		super(DependencyType.SOAP, OrganisasjonEnhetKontaktinformasjonV1_label, alias.getEndpointurl(), Importance.WARNING, metrics);
 
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;
 	}

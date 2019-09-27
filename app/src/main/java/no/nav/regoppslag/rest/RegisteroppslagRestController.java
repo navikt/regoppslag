@@ -1,20 +1,13 @@
 package no.nav.regoppslag.rest;
 
 import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_FUNCTIONAL_EXCEPTION;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_SECURITY_EXCEPTION;
-import static no.nav.regoppslag.metrics.PrometheusLabels.LABEL_TECHNICAL_EXCEPTION;
-import static no.nav.regoppslag.metrics.PrometheusLabels.PROCESSED_OK;
-import static no.nav.regoppslag.metrics.PrometheusLabels.RECEIVED;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestExceptionCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
-import io.prometheus.client.Histogram;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,7 +20,7 @@ import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.PrometheusLabels;
+import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
@@ -59,7 +52,6 @@ public class RegisteroppslagRestController {
 
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
-	private Histogram.Timer requestTimer;
 
 	@Inject
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService, HentMottakerOgAdresseService hentMottakerOgAdresseService) {
@@ -75,35 +67,22 @@ public class RegisteroppslagRestController {
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
+	@Metrics(value = DOK_REQUEST, extraTags = {PROCESS_CODE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
+	public @ResponseBody KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-
-		requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, "kompletterBrevdata")
-				.startTimer();
 
 		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 
 		try {
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), RECEIVED)
-					.inc();
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG001, SERVICE_CODE_TREG001, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
-					.inc();
-
 			log.info(String.format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 			return response;
 
 		} catch (MarshallerTechnicalException e) {
 			//Logger error hvis retry ikke fungerer
 			log.error("TREG001 Teknisk marshaller feil: " + e.getMessage(), e);
-			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
-			throw e;
-		} catch (Exception e) {
-			incrementExceptionMetrics(e, SERVICE_CODE_TREG001);
 			throw e;
 		} finally {
-			requestTimer.observeDuration();
 			SecurityContextHolder.clearContext();
 			MDC.clear();
 		}
@@ -117,46 +96,19 @@ public class RegisteroppslagRestController {
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
+	@Metrics(value = DOK_REQUEST, extraTags = {PROCESS_CODE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
+	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-
-		requestTimer = requestLatency.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, "hentMottakerOgAdresse").startTimer();
 
 		try {
 			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
-			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), RECEIVED)
-					.inc();
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			requestCounter.labels(SERVICE_CODE_TREG002, SERVICE_CODE_TREG002, PrometheusLabels.REST, getConsumerId(), PROCESSED_OK)
-					.inc();
 			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody
 					.getType()));
 			return response;
-		} catch (Exception e) {
-			incrementExceptionMetrics(e, SERVICE_CODE_TREG002);
-			throw e;
 		} finally {
-			requestTimer.observeDuration();
 			SecurityContextHolder.clearContext();
 			MDC.clear();
-		}
-	}
-
-	private void incrementExceptionMetrics(Exception e, String serviceCode) {
-		if (e instanceof RegOppslagFunctionalException) {
-			requestExceptionCounter.labels(serviceCode, LABEL_FUNCTIONAL_EXCEPTION, e.getClass()
-					.getSimpleName(), ((RegOppslagFunctionalException) e).getMetricMessage()).inc();
-		} else if (e instanceof RegOppslagSecurityException) {
-			requestExceptionCounter.labels(serviceCode, LABEL_SECURITY_EXCEPTION, e.getClass()
-					.getSimpleName(), ((RegOppslagSecurityException) e).getShortDescription()).inc();
-		} else if (e instanceof RegOppslagTechnicalException) {
-			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass()
-					.getSimpleName(), ((RegOppslagTechnicalException) e).getMetricMessage()).inc();
-		} else {
-			requestExceptionCounter.labels(serviceCode, LABEL_TECHNICAL_EXCEPTION, e.getClass().getSimpleName(), e.getClass()
-					.getSimpleName()).inc();
-
 		}
 	}
 }

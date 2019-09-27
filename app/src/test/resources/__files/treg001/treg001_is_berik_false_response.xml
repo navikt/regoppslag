@@ -33,7 +33,7 @@
 			</navEnhet>
 		</test:signerendeBeslutter>
 		<test:behandlendeEnhet f:berik="false">
-			<enhetsId>0136</enhetsId>
+			<f:enhetsId>0136</f:enhetsId>
 		</test:behandlendeEnhet>
 		<test:kontaktinformasjon f:berik="false">
 			<postadresse xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"

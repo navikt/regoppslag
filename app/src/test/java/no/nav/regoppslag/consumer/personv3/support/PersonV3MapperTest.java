@@ -1,14 +1,14 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_LAND;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
@@ -16,6 +16,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -37,6 +38,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 
 public class PersonV3MapperTest {
@@ -65,6 +67,9 @@ public class PersonV3MapperTest {
 
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
+	private MeterRegistry registry = new SimpleMeterRegistry();
+	private MicrometerMetrics metrics = new MicrometerMetrics();
+
 	private PersonV3Mapper mapper;
 
 	@Rule
@@ -73,11 +78,12 @@ public class PersonV3MapperTest {
 	@Before
 	public void initPostnummer() throws Exception {
 		postnummerService.init();
-		mapper = new PersonV3Mapper(postnummerService, landkodeService);
+		ReflectionTestUtils.setField(metrics, "registry", registry);
+		mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 	}
 
 	@Test
-	public void shouldMapSakspartNavn() throws Exception {
+	public void shouldMapSakspartNavn() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		String navn = mapper.getSakspartNavn(person);
 		assertThat(navn, is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -343,15 +349,14 @@ public class PersonV3MapperTest {
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
 		mapper.map(person, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER)
-				.get(), is(1.0));
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
+
+		assertThat(metrics.countEvents("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER), is(1.0));
+		assertThat(metrics.countEvents("T", PERSONV3_MAPPER, UKJENT_LAND), is(1.0));
 
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(createLandkode("SE"));
 		mapper.map(person, "T");
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER)
-				.get(), is(1.0));
-		assertThat(requestCounter.labels("T", PERSONV3_MAPPER, UKJENT_LAND, getConsumerId(), UKJENT_LAND).get(), is(1.0));
+		assertThat(metrics.countEvents("T", PERSONV3_MAPPER, UKJENT_POSTNUMMER), is(1.0));
+		assertThat(metrics.countEvents("T", PERSONV3_MAPPER, UKJENT_LAND), is(1.0));
 	}
 
 

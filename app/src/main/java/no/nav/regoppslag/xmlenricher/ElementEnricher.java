@@ -118,7 +118,7 @@ public class ElementEnricher {
 	private void aggregate(Document document, Aggregate aggregate) {
 		// Find element in original XML, only one of each supported
 		Node orgElem = aggregate.getOrigNode();
-		// If plugin does in-place mutation, no aggregation is necessary.
+		// If plugin doe\MottakerPluginTests in-place mutation, no aggregation is necessary.
 		if (aggregate.getNewNode().isSameNode(orgElem)) {
 			return;
 		}

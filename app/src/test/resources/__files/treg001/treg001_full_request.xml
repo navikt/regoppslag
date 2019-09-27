@@ -9,18 +9,18 @@
 		</test:mottaker>
 		<test:signerendeSaksbehandler>
 			<f:navAnsatt>
-				<ansattId>Z991006</ansattId>
+				<f:ansattId>Z991006</f:ansattId>
 			</f:navAnsatt>
 			<f:navEnhet>
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 			</f:navEnhet>
 		</test:signerendeSaksbehandler>
 		<test:signerendeBeslutter>
 			<f:navAnsatt>
-				<ansattId>Z991006</ansattId>
+				<f:ansattId>Z991006</f:ansattId>
 			</f:navAnsatt>
 			<f:navEnhet>
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 			</f:navEnhet>
 		</test:signerendeBeslutter>
 		<test:behandlendeEnhet>

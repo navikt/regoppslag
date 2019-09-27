@@ -3,7 +3,7 @@ package no.nav.regoppslag.config.fasit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -15,7 +15,7 @@ import javax.validation.constraints.Min;
 @Getter
 @Setter
 @ToString
-@ConfigurationProperties("VIRKSOMHET_PERSON_V3")
+@ConfigurationProperties("virksomhet-person-v3")
 @Validated
 public class PersonV3Alias {
 	@NotEmpty

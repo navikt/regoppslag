@@ -2,7 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

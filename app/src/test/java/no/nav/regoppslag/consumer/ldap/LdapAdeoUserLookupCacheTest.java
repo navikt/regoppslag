@@ -2,14 +2,18 @@ package no.nav.regoppslag.consumer.ldap;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.itest.config.CacheTestConfig;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,12 +54,12 @@ public class LdapAdeoUserLookupCacheTest {
 	public void shouldCache() throws Exception {
 		cacheManager.getCache(HENT_FULLT_NAVN).clear();
 
-		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
+		when(ldapTemplate.search(any(LdapQuery.class), ArgumentMatchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add(NAME1);
 		}});
 		ldapAdeoUserLookup.hentFulltNavn("Z999990");
 
-		when(ldapTemplate.search(Matchers.<LdapQuery>any(), Matchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
+		when(ldapTemplate.search(any(LdapQuery.class), ArgumentMatchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{
 			add(NAME2);
 		}});
 
@@ -75,6 +79,16 @@ public class LdapAdeoUserLookupCacheTest {
 		@Bean
 		LdapTemplate ldapTemplate() {
 			return mock(LdapTemplate.class);
+		}
+
+		@Bean
+		public MeterRegistry registry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public MicrometerMetrics metrics() {
+			return new MicrometerMetrics();
 		}
 
 	}

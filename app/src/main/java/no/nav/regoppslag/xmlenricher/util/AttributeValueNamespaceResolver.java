@@ -67,7 +67,7 @@ public class AttributeValueNamespaceResolver {
 		if (attr.getNodeValue()==null || !attr.getNodeValue().contains(":")){
 			return "";
 		}
-		return attr.getNodeValue().substring(0, attr.getNodeValue().indexOf(":"));
+		return attr.getNodeValue().substring(0, attr.getNodeValue().indexOf(':'));
 	}
 
 	private void updateOrAddAttributeNSToElement(String attrValNs, Node xpathResult, String prefix, Node attr){

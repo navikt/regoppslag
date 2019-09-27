@@ -1,17 +1,13 @@
 package no.nav.regoppslag.consumer.norg2;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.NORG2;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
-import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.Metrics;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.HentKontaktinformasjonForEnhetBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
@@ -32,27 +28,27 @@ import javax.inject.Inject;
 public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
-	private Histogram.Timer requestTimer;
-	
+	private MicrometerMetrics metrics;
+
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
 	public static final String HENT_KONTAKTINFORMASJON_FOR_ENHET = "hentKontaktInformasjonForEnhet";
 	public static final String KUNNE_IKKE_FINNE_ENHET = "NORG2 - Kunne ikke finne enhet";
 	
 	@Inject
-	public OrganisasjonEnhetKontaktinformasjonV1Consumer(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1) {
+	public OrganisasjonEnhetKontaktinformasjonV1Consumer(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1,
+														 MicrometerMetrics metrics) {
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;
+		this.metrics = metrics;
 	}
 	
-	@Cacheable(HENT_ENHET_NAVN)
+	@Cacheable(value = HENT_ENHET_NAVN, key = "#enhetNr")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjonsenhet hentKontaktinformasjonForEnhet(String enhetNr) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
-		
-		requestCounter.labels(SERVICE_CODE_TREG001, HENT_ENHET_NAVN, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
-		
+
+		metrics.cacheMiss(HENT_ENHET_NAVN);
+
 		try {
-			requestTimer = requestLatency.labels(SERVICE_CODE_TREG001, NORG2, HENT_KONTAKTINFORMASJON_FOR_ENHET)
-					.startTimer();
-			
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput hentKontaktinformasjonForEnhetBolkUgyldigInput) {
@@ -61,8 +57,6 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til Norg for enhetNr=%s, message=%s", enhetNr, e
 					.getMessage()), e, "NORG2 - Teknisk feil");
-		} finally {
-			requestTimer.observeDuration();
 		}
 	}
 	

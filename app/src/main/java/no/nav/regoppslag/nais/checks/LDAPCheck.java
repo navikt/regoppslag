@@ -1,5 +1,6 @@
 package no.nav.regoppslag.nais.checks;
 
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
@@ -19,8 +20,9 @@ public class LDAPCheck extends AbstractDependencyCheck {
 	
 	@Inject
 	public LDAPCheck(LdapTemplate ldapTemplate,
-					 @Value("${ldap_url}") String ldapUrl) {
-		super(DependencyType.LDAP, "LDAP", ldapUrl, Importance.WARNING);
+					 @Value("${ldap_url}") String ldapUrl,
+					 MicrometerMetrics metrics) {
+		super(DependencyType.LDAP, "LDAP", ldapUrl, Importance.WARNING, metrics);
 		this.ldapTemplate = ldapTemplate;
 	}
 	

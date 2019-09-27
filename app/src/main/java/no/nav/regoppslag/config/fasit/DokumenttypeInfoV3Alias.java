@@ -2,7 +2,7 @@ package no.nav.regoppslag.config.fasit;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -13,7 +13,7 @@ import javax.validation.constraints.Min;
  */
 @Getter
 @Setter
-@ConfigurationProperties("DOKUMENTTYPEINFO_V3")
+@ConfigurationProperties("dokumenttypeinfo-v3")
 @Validated
 public class DokumenttypeInfoV3Alias {
 	@NotEmpty

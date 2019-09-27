@@ -1,14 +1,8 @@
 package no.nav.regoppslag.treg002;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
-import static no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer.HENT_ORGANISASJON;
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_TOTAL;
-import static no.nav.regoppslag.metrics.PrometheusLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getUserId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getUserId;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
@@ -35,17 +29,13 @@ import javax.inject.Inject;
 @Slf4j
 public class HentMottakerOgAdresseService {
 
-
 	private final PersonV3Consumer personV3Consumer;
-
 	private final PersonV3Mapper personV3Mapper;
-
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
-
 	private final AdresseMapper adresseMapper;
 
-	private final String UGYLDIG_INPUT = "Ugyldig input";
+	private static final String UGYLDIG_INPUT = "Ugyldig input";
 
 	@Inject
 	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, AdresseMapper adresseMapper) {
@@ -62,14 +52,10 @@ public class HentMottakerOgAdresseService {
 			validateInput(request);
 			MottakerTo mottakerTo;
 			if (PERSON.name().equals(request.getType())) {
-				requestCounter.labels(SERVICE_CODE_TREG002, HENT_PERSON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-						.inc();
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), getUserId(), SERVICE_CODE_TREG002);
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
 				mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			} else {
-				requestCounter.labels(SERVICE_CODE_TREG002, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_TOTAL)
-						.inc();
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator(), SERVICE_CODE_TREG002);
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
 			}
 			return HentMottakerOgAdresseResponse.builder()

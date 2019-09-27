@@ -3,12 +3,13 @@ package no.nav.regoppslag.consumer.organisasjonv4;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.feil.OrganisasjonIkkeFunnet;
@@ -34,7 +35,8 @@ public class OrganisasjonV4ConsumerTest {
 	private static final String ORGNAVN = "NAV AS";
 	private static final String ORGNAVN_2 = "SAGENE";
 	private OrganisasjonV4 organisasjonV4 = mock(OrganisasjonV4.class);
-	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4);
+	private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
+	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4, metrics);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -43,7 +45,7 @@ public class OrganisasjonV4ConsumerTest {
 	public void shouldHentOrganisasjon() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(defaultResponse());
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN));
 	}
@@ -52,7 +54,7 @@ public class OrganisasjonV4ConsumerTest {
 	public void shouldHentOrganisasjonWithMultipleNavnelinje() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(createResponse(Arrays.asList(ORGNAVN, ORGNAVN_2)));
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN + " " + ORGNAVN_2));
 	}
@@ -64,7 +66,7 @@ public class OrganisasjonV4ConsumerTest {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 	}
 
 	@Test
@@ -74,7 +76,7 @@ public class OrganisasjonV4ConsumerTest {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new RuntimeException());
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 	}
 
 
@@ -84,7 +86,7 @@ public class OrganisasjonV4ConsumerTest {
 		response.setOrganisasjon(null);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
 		assertThat(organisasjon, nullValue());
 	}
@@ -98,7 +100,7 @@ public class OrganisasjonV4ConsumerTest {
 		response.setOrganisasjon(org);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
 		
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR, "");
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
 		assertThat(sammensattNavn(organisasjon.getNavn()), nullValue());
 	}

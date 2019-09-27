@@ -1,9 +1,7 @@
 package no.nav.regoppslag.consumer.organisasjonv4.support;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4_MAPPER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
+import static no.nav.regoppslag.metrics.MetricLabels.ORGANISASJONV4_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.util.TestDataUtil.GATENAVN;
 import static no.nav.regoppslag.util.TestDataUtil.HUSBOKSTAV;
 import static no.nav.regoppslag.util.TestDataUtil.HUSNR;
@@ -20,9 +18,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -36,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.Instant;
@@ -49,15 +51,18 @@ public class OrganisasjonV4MapperTest {
 
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
+	private MeterRegistry registry = new SimpleMeterRegistry();
+	private MicrometerMetrics metrics = new MicrometerMetrics();
 	private OrganisasjonV4Mapper mapper;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Before
-	public void initPostnummer() throws Exception {
+	public void initTests() throws Exception {
 		postnummerService.init();
-		mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService);
+		ReflectionTestUtils.setField(metrics, "registry", registry);
+		mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 	}
 
 	private static final String ORGNAVN = "Orgnavn 1";
@@ -240,11 +245,11 @@ public class OrganisasjonV4MapperTest {
 		((StedsadresseNorge) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(new Postnummer());
 
 		mapper.map(ORGID, org, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+		assertThat(metrics.countEvents("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER), is(1.0));
 
 		(org.getOrganisasjonDetaljer().getPostadresse().get(0)).setLandkode(createLandkode("SE"));
 		mapper.map(ORGID, org, "T");
-		assertThat(requestCounter.labels("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, getConsumerId(), UKJENT_POSTNUMMER).get(), is(1.0));
+		assertThat(metrics.countEvents("T", ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER), is(1.0));
 	}
 
 	private Landkoder createLandkode(String landkode) {

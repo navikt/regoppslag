@@ -1,16 +1,14 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_COUNTER;
-import static no.nav.regoppslag.metrics.PrometheusLabels.CACHE_MISS;
-import static no.nav.regoppslag.metrics.PrometheusLabels.ORGANISASJONV4;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.getConsumerId;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestCounter;
-import static no.nav.regoppslag.metrics.PrometheusMetrics.requestLatency;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
-import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MetricLabels;
+import no.nav.regoppslag.metrics.Metrics;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonOrganisasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.HentOrganisasjonUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.binding.OrganisasjonV4;
@@ -32,27 +30,26 @@ import javax.inject.Inject;
 public class OrganisasjonV4Consumer {
 	
 	private final OrganisasjonV4 organisasjonV4;
-	private Histogram.Timer requestTimer;
-	
-	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
-	public static final String ORGV4_UGYLDIG_INPUT = "OrganisasjonV4 - Ugyldig input";
-	public static final String ORGV4_ORG_IKKE_FUNNET = "OrganisasjonV4 - Organisasjon ikke funnet";
-	
+	private MicrometerMetrics metrics;
+
+	private static final String ORGV4_UGYLDIG_INPUT = "OrganisasjonV4 - Ugyldig input";
+	private static final String ORGV4_ORG_IKKE_FUNNET = "OrganisasjonV4 - Organisasjon ikke funnet";
 	
 	@Inject
-	public OrganisasjonV4Consumer(OrganisasjonV4 organisasjonV4) {
+	public OrganisasjonV4Consumer(OrganisasjonV4 organisasjonV4, MicrometerMetrics metrics) {
 		this.organisasjonV4 = organisasjonV4;
+		this.metrics = metrics;
 	}
 	
-	@Cacheable(HENT_ORGANISASJON)
+	@Cacheable(value = MetricLabels.HENT_ORGANISASJON, key = "#organisasjonsnummer")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Organisasjon hentOrganisasjon(final String organisasjonsnummer, final String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
+	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
 		
-		requestCounter.labels(serviceCode, HENT_ORGANISASJON, CACHE_COUNTER, getConsumerId(), CACHE_MISS).inc();
+		metrics.cacheMiss(MetricLabels.HENT_ORGANISASJON);
 		
 		try {
 			HentOrganisasjonRequest request = mapHentNoekkelinfoOrganisasjonRequest(organisasjonsnummer);
-			requestTimer = requestLatency.labels(serviceCode, ORGANISASJONV4, HENT_ORGANISASJON).startTimer();
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
@@ -62,8 +59,6 @@ public class OrganisasjonV4Consumer {
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=%s, message=%s", organisasjonsnummer, e
 					.getMessage()), e, "OrganisasjonV4 - Teknisk feil");
-		} finally {
-			requestTimer.observeDuration();
 		}
 	}
 	

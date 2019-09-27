@@ -4,7 +4,7 @@
 			xmlns:test="test">
 		<test:signerendeSaksbehandler>
 			<f:navEnhet>
-				<enhetsId>0136</enhetsId>
+				<f:enhetsId>0136</f:enhetsId>
 			</f:navEnhet>
 		</test:signerendeSaksbehandler>
 	</NAVFelles>

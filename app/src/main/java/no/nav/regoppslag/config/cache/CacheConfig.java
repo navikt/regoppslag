@@ -1,35 +1,37 @@
 package no.nav.regoppslag.config.cache;
 
-import static no.nav.regoppslag.consumer.personv3.PersonV3Consumer.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
-import com.lambdaworks.redis.resource.DefaultClientResources;
-import com.lambdaworks.redis.resource.Delay;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.SocketOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisNode;
-import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePool;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Iniitaliserer Redis Cache.
  *
- * @author Ugur Alpay Cenar, Visma Consulting
+ * @author Martin Burheim Tingstad, Miles AS
  */
 @Profile("nais")
 @Configuration
@@ -37,65 +39,75 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CacheConfig extends CachingConfigurerSupport {
 	
-	private static final String MASTER_NAME = "mymaster";
-	
-	public static final Long DEFAULT_CACHE_EXPIRATION_SECONDS = TimeUnit.DAYS.toSeconds(2);
-	public static final Long HENT_PERSON_CACHE_EXPIRATION_SECONDS = 10L;
-	public static final Long STS_CACHE_EXPIRATION_SECONDS = TimeUnit.MINUTES.toSeconds(50);
+	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
+	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
+	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
-	@Value("${REDIS_HOST:rfs-regoppslag}")
+	@Value("${redis.hostname:regoppslag-redis}")
 	private String redisHost;
-	
-	private final CustomRedisSerializer customRedisSerializer = new CustomRedisSerializer();
-	
-	@Bean
-	public CacheManager cacheManager(RedisTemplate redisTemplate) {
-		RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
-		redisCacheManager.setDefaultExpiration(DEFAULT_CACHE_EXPIRATION_SECONDS);
 
+	@Value("${redis.port:6379}")
+	private int redisPort;
+
+	@Bean
+	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		//Remaining caches uses the default value
-		Map<String, Long> expiresInSeconds = new HashMap<>();
-		expiresInSeconds.put(HENT_PERSON, HENT_PERSON_CACHE_EXPIRATION_SECONDS);
-		expiresInSeconds.put(STS_CACHE_NAME, STS_CACHE_EXPIRATION_SECONDS);
+		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
+		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
+		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
 
-		redisCacheManager.setExpires(expiresInSeconds);
-		redisCacheManager.setLoadRemoteCachesOnStartup(true);
-		redisCacheManager.setUsePrefix(true);
-		return redisCacheManager;
+		return RedisCacheManager.builder(connectionFactory)
+				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME))
+				.withInitialCacheConfigurations(initialConfigs)
+				.build();
 	}
-	
+
 	@Bean
-	public RedisTemplate<?, ?> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
-		RedisTemplate<?, ?> redisTemplate = new RedisTemplate();
-		redisTemplate.setConnectionFactory(lettuceConnectionFactory);
-		
-		redisTemplate.setDefaultSerializer(customRedisSerializer);
-		redisTemplate.setEnableDefaultSerializer(true);
-		return redisTemplate;
+	RedisTemplate redisTemplate(RedisConnectionFactory factory) {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		template.setDefaultSerializer(new CustomRedisSerializer<>());
+		template.setConnectionFactory(factory);
+		return template;
 	}
-	
+
+	private RedisCacheConfiguration generateCacheConfig(Duration duration) {
+		return RedisCacheConfiguration.defaultCacheConfig()
+				.disableCachingNullValues()
+				.entryTtl(duration != null ? duration : DEFAULT_CACHE_EXPIRATION_TIME)
+				.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
+				.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
+	}
+
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory(LettucePool lettucePool) {
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(lettucePool);
+	public RedisConnectionFactory connectionFactory(LettuceClientConfiguration clientConfiguration) {
+		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+		log.info("Starting redis connection to {} on port {}", redisHost, redisPort);
+		config.setHostName(redisHost);
+		config.setPort(redisPort);
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(config, clientConfiguration);
 		factory.setShareNativeConnection(true);
 		return factory;
 	}
-	
+
 	@Bean
-	public LettucePool lettucePool() {
-		CustomLettucePool lettucePool = new CustomLettucePool(new RedisSentinelConfiguration()
-				.master(MASTER_NAME).sentinel(new RedisNode(redisHost, 26379)));
-		lettucePool.setClientResources(DefaultClientResources.builder()
-				.reconnectDelay(Delay.constant(200, TimeUnit.MILLISECONDS))
-				.build());
-		lettucePool.setPoolConfig(poolConfig());
-		lettucePool.setTimeout(400);
-		lettucePool.afterPropertiesSet();
-		return lettucePool;
+	public LettuceClientConfiguration lettucePoolingClientConfiguration() {
+		return LettucePoolingClientConfiguration.builder()
+				.poolConfig(poolConfig())
+				.clientResources(io.lettuce.core.resource.DefaultClientResources.builder()
+						.reconnectDelay(io.lettuce.core.resource.Delay.constant(Duration.ofMillis(200)))
+						.build())
+				.clientOptions(ClientOptions.builder()
+						.autoReconnect(true)
+						.cancelCommandsOnReconnectFailure(true)
+						.pingBeforeActivateConnection(true)
+						.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+						.suspendReconnectOnProtocolFailure(false)
+						.socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(400)).build())
+						.build())
+				.build();
 	}
-	
-	
-	public GenericObjectPoolConfig poolConfig() {
+
+	private GenericObjectPoolConfig poolConfig() {
 		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
 		genericObjectPoolConfig.setTestOnReturn(false);
 		genericObjectPoolConfig.setTestOnCreate(false);

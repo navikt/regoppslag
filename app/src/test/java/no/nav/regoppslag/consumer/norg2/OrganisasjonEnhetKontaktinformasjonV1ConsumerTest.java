@@ -3,12 +3,13 @@ package no.nav.regoppslag.consumer.norg2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.HentKontaktinformasjonForEnhetBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.feil.UgyldigInput;
@@ -22,7 +23,9 @@ import org.junit.rules.ExpectedException;
 
 public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 	private OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = mock(OrganisasjonEnhetKontaktinformasjonV1.class);
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer organisasjonEnhetKontaktinformasjonV1Consumer = new OrganisasjonEnhetKontaktinformasjonV1Consumer(organisasjonEnhetKontaktinformasjonV1);
+	private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
+	private OrganisasjonEnhetKontaktinformasjonV1Consumer organisasjonEnhetKontaktinformasjonV1Consumer =
+			new OrganisasjonEnhetKontaktinformasjonV1Consumer(organisasjonEnhetKontaktinformasjonV1, metrics);
 
 	private final String ENHET_NR = "1234";
 	private final String ENHET_NAVN = "NAV Husnes";

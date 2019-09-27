@@ -13,15 +13,13 @@ import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportExceptio
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import javax.xml.xpath.XPathExpressionException;
-
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 public class ElementEnricherConfig {
 
 	@Bean
-	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException, XPathExpressionException {
+	public ElementEnricherPluginRegistry registry(ApplicationContext applicationContext) throws DuplicatedElementSupportException {
 		ElementEnricherPluginRegistry registry = new PluginBeanRegistry(applicationContext);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']", MottakerPlugin.class);
 		registry.registerPlugin("/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='sakspart']", SakspartPlugin.class);

@@ -3,8 +3,11 @@ package no.nav.regoppslag.consumer.ldap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -42,7 +45,6 @@ public class LdapAdeoUserLookupTest {
 		thrown.expect(RegOppslagFunctionalException.class);
 		thrown.expectMessage("Ldap.hentFulltNavn finner ikke bruker med ident=bxxxxxx");
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("bxxxxxx");
-
 	}
 
 	static class Config {
@@ -50,5 +52,16 @@ public class LdapAdeoUserLookupTest {
 		static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
+
+		@Bean
+		public MeterRegistry registry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public MicrometerMetrics metrics() {
+			return new MicrometerMetrics();
+		}
+
 	}
 }
