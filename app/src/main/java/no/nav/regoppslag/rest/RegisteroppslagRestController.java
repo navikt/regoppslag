@@ -3,7 +3,7 @@ package no.nav.regoppslag.rest;
 import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
@@ -67,7 +67,7 @@ public class RegisteroppslagRestController {
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Metrics(value = DOK_REQUEST, extraTags = {PROCESS_CODE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
+	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 
@@ -96,7 +96,7 @@ public class RegisteroppslagRestController {
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Metrics(value = DOK_REQUEST, extraTags = {PROCESS_CODE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
+	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
 			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 
