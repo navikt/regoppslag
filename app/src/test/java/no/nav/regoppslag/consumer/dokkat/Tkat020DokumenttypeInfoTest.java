@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -80,7 +81,7 @@ public class Tkat020DokumenttypeInfoTest {
 	
 	@Test
 	public void shouldHentSpraakinfo() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenReturn(defaultResponse(Arrays.asList(LANG1, LANG2)));
 		
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
@@ -92,7 +93,7 @@ public class Tkat020DokumenttypeInfoTest {
 	
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		
 		try {
@@ -100,13 +101,13 @@ public class Tkat020DokumenttypeInfoTest {
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
 			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003. "));
-			verify(restTemplate, times(1)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
+			verify(restTemplate, times(1)).getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
 	
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerErrorAndRetry() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 		
 		try {
@@ -114,13 +115,13 @@ public class Tkat020DokumenttypeInfoTest {
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
 			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
+			verify(restTemplate, times(5)).getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
 	
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerException() throws Exception {
-		when(restTemplate.getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 		
 		try {
@@ -128,7 +129,7 @@ public class Tkat020DokumenttypeInfoTest {
 			assertFalse("Should throw exception", true);
 		} catch (RegOppslagTechnicalException e) {
 			assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-			verify(restTemplate, times(5)).getForObject(any(String.class), eq(DokumentTypeInfoToV3.class), any(Map.class));
+			verify(restTemplate, times(5)).getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class));
 		}
 	}
 	
@@ -168,8 +169,8 @@ public class Tkat020DokumenttypeInfoTest {
 			when(restTemplateBuilder.requestFactory(ClientHttpRequestFactory.class)).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.setConnectTimeout(any(Duration.class))).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.setReadTimeout(any(Duration.class))).thenReturn(restTemplateBuilder);
-			when(restTemplateBuilder.basicAuthentication(any(String.class), any(String.class))).thenReturn(restTemplateBuilder);
-			when(restTemplateBuilder.rootUri(any(String.class))).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.basicAuthentication(anyString(), anyString())).thenReturn(restTemplateBuilder);
+			when(restTemplateBuilder.rootUri(anyString())).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.build()).thenReturn(restTemplate);
 			return restTemplateBuilder;
 		}

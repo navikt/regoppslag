@@ -96,7 +96,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId());
+					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
 					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());

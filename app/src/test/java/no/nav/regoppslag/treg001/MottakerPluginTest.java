@@ -8,6 +8,7 @@ import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -115,9 +116,9 @@ public class MottakerPluginTest {
         organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
         mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
 
-        when(personV3Consumer.hentPerson(any(String.class))).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
-        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(createOrganisasjon());
-        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
+        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+        when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 
     }
 
@@ -147,8 +148,8 @@ public class MottakerPluginTest {
         Spraak spraak = new Spraak();
         spraak.setValue("EN");
         person.setMaalform(spraak);
-        when(personV3Consumer.hentPerson(any(String.class))).thenReturn(person);
-        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
         File xmlFile = new File(BREVDATA1);
         Document document = loadDocument(xmlFile);
@@ -170,8 +171,8 @@ public class MottakerPluginTest {
     public void shouldUseMottakerMaalform() throws Exception {
         Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 
-        when(personV3Consumer.hentPerson(any(String.class))).thenReturn(person);
-        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
+        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
         File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
         Document document = loadDocument(xmlFile);
@@ -213,7 +214,7 @@ public class MottakerPluginTest {
 
     @Test
     public void testMottakerPluginOrganisasjon() throws Exception {
-        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(any(String.class))).thenReturn(createTkatResponse(Collections.singletonList("NN")));
+        when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList("NN")));
 
         File xmlFile = new File(BREVDATA_ORG);
         Document document = loadDocument(xmlFile);
@@ -240,7 +241,7 @@ public class MottakerPluginTest {
     public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
         expectedException.expect(RegOppslagFunctionalException.class);
         expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
-        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
+        when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
         File xmlFile = new File(BREVDATA_TYPE);
         Document document = loadDocument(xmlFile);
 
@@ -256,7 +257,7 @@ public class MottakerPluginTest {
     public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
         expectedException.expect(RegOppslagFunctionalException.class);
         expectedException.expectMessage("Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
-        when(organisasjonV4Consumer.hentOrganisasjon(any(String.class))).thenReturn(null);
+        when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
         File xmlFile = new File(BREVDATA_ID);
         Document document = loadDocument(xmlFile);
 

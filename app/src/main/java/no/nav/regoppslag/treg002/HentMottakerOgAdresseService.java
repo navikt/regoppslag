@@ -52,7 +52,7 @@ public class HentMottakerOgAdresseService {
 			validateInput(request);
 			MottakerTo mottakerTo;
 			if (PERSON.name().equals(request.getType())) {
-				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator());
+				Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), SERVICE_CODE_TREG002);
 				mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());

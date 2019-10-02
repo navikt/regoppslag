@@ -1,7 +1,10 @@
 package no.nav.regoppslag.consumer.personv3;
 
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSON_DISKRESJONSKODE;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -17,6 +20,7 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
@@ -47,16 +51,21 @@ public class PersonV3Consumer {
 		this.metrics = metrics;
 	}
 
-	@Cacheable(value = MetricLabels.HENT_PERSON, key = "#personidentifikator", unless = "#result?.diskresjonskode?.value?.length() > 0")
+	@Cacheable(value = MetricLabels.HENT_PERSON, key = "#personidentifikator",
+			unless = "#result != null && #result.diskresjonskode != null && #result.diskresjonskode.value != null && #result.diskresjonskode.value.length() > 0")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
-	public Bruker hentPerson(final String personidentifikator) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Bruker hentPerson(final String personidentifikator, String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		metrics.cacheMiss(MetricLabels.HENT_PERSON);
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
 		try {
-			return (Bruker) personV3.hentPerson(request).getPerson();
+			Person person = personV3.hentPerson(request).getPerson();
+			if(person != null && person.getDiskresjonskode() != null && !isBlank(person.getDiskresjonskode().getValue())) {
+				metrics.meter(serviceCode, PERSONV3, PERSON_DISKRESJONSKODE, PERSON_DISKRESJONSKODE);
+			}
+			return (Bruker)person;
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
 			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
 					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);

@@ -85,7 +85,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(sakspart.getId());
+					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), SERVICE_CODE_TREG001);
 					sakspart.setNavn(personV3Mapper.getSakspartNavn(person));
 
 				} else {

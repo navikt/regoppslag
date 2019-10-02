@@ -5,6 +5,7 @@ import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,7 +78,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPlugin() throws Exception {
-		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn("Test Testesen");
+		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -98,7 +99,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPluginIkkeBerik() throws Exception {
-		when(ldapAdeoUserLookup.hentFulltNavn(any(String.class))).thenReturn("Test Testesen");
+		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 		Document document = loadDocument(xmlFile);
