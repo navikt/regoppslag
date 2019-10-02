@@ -35,6 +35,7 @@ public final class MetricLabels {
 	public static final String POSTNUMMER = "postnummer";
 	public static final String UKJENT_POSTNUMMER = "ukjent_postnummer";
 	public static final String UKJENT_POSTSTED = "ukjent_poststed";
+	public static final String PERSON_DISKRESJONSKODE = "person_diskresjonskode";
 	public static final String LAND = "land";
 	public static final String UKJENT_LAND = "ukjent_land";
 	public static final String POSTSTED = "poststed";

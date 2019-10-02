@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +77,7 @@ public class NavOrgenhetNavnPluginTest {
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper, metrics);
-		when(norgConsumer.hentKontaktinformasjonForEnhet(any(String.class))).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentKontaktinformasjonForEnhet(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 
 	@Test
