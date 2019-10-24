@@ -21,40 +21,40 @@ prometheus:
   path: /actuator/prometheus
 resources:
   limits:
-      cpu: 2000m
-      memory: 1024Mi
+    cpu: 2000m
+    memory: 1024Mi
   requests:
-      cpu: 250m
-      memory: 512Mi
+    cpu: 250m
+    memory: 512Mi
 fasitResources:
   used:
-  - alias: securityTokenService
-    resourceType: baseurl
-  - alias: "virksomhet:OrganisasjonEnhetKontaktinformasjon_v1"
-    resourceType: webserviceendpoint
-  - alias: "virksomhet:Organisasjon_v4"
-    resourceType: webserviceendpoint
-  - alias: "virksomhet:Person_v3"
-    resourceType: webserviceendpoint
-  - alias: DokumenttypeInfo_v3
-    resourceType: restservice
-  - alias: ldap
-    resourceType: ldap
-  - alias: srvregoppslag
-    resourceType: credential
-    propertyMap:
-      username: SERVICEUSER_USERNAME
-      password: SERVICEUSER_PASSWORD
-  - alias: srvregoppslag
-    resourceType: certificate
-    propertyMap:
-      keystore: SRVREGOPPSLAG_CERT_KEYSTORE
-      keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
-      password: SRVREGOPPSLAG_CERT_PASSWORD
+    - alias: securityTokenService
+      resourceType: baseurl
+    - alias: "OrganisasjonEnhetKontaktinformasjon_v1"
+      resourceType: soapservice
+    - alias: "Organisasjon_v4"
+      resourceType: soapservice
+    - alias: "virksomhet:PersonV3"
+      resourceType: soapservice
+    - alias: DokumenttypeInfo_v3
+      resourceType: restservice
+    - alias: ldap
+      resourceType: ldap
+    - alias: srvregoppslag
+      resourceType: credential
+      propertyMap:
+        username: SERVICEUSER_USERNAME
+        password: SERVICEUSER_PASSWORD
+    - alias: srvregoppslag
+      resourceType: certificate
+      propertyMap:
+        keystore: SRVREGOPPSLAG_CERT_KEYSTORE
+        keystorealias: SRVREGOPPSLAG_CERT_KEYSTOREALIAS
+        password: SRVREGOPPSLAG_CERT_PASSWORD
   exposed:
-  - alias: KompletterBrevdata
-    resourceType: restservice
-    path: /rest/kompletterBrevdata
-  - alias: HentMottakerOgAdresse
-    resourceType: restservice
-    path: /rest/hentMottakerOgAdresse
+    - alias: KompletterBrevdata
+      resourceType: restservice
+      path: /rest/kompletterBrevdata
+    - alias: HentMottakerOgAdresse
+      resourceType: restservice
+      path: /rest/hentMottakerOgAdresse
