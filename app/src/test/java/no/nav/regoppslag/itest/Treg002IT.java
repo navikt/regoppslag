@@ -43,14 +43,14 @@ public class Treg002IT extends AbstractIT {
 						.withHeader("Content-Type", "text/xml")
 						.withBodyFile("/xsd/felles/sts/sts_signature-responsebody.xml")));
 
-		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
 	}
 
 	@Test
 	public void shouldGetMottakerAndAdresseForPersonWhenLandIsNull() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentperson-happypath-null-land-responsebody.xml")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
@@ -62,7 +62,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldGetMottakerAndAdresseForPerson() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentperson-happypath-responsebody.xml")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
@@ -72,13 +72,13 @@ public class Treg002IT extends AbstractIT {
 		assertEquals("0102030405", response.getIdentifikator());
 		assertEquals("Geir Appleson", response.getNavn());
 
-		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSON_V3")).withRequestBody(matchingXPath("//ident/text()", equalTo("0102030405"))));
-		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSON_V3")).withRequestBody(matchingXPath("//informasjonsbehov/text()", equalTo("adresse"))));
+		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//ident/text()", equalTo("0102030405"))));
+		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//informasjonsbehov/text()", equalTo("adresse"))));
 	}
 
 	@Test
 	public void shouldGetMottakerAndAdresseForOrganisasjonHasPostadresse() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentperson-happypath-responsebody.xml")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
@@ -87,12 +87,12 @@ public class Treg002IT extends AbstractIT {
 		assertEquals("ARBEIDS- OG VELFERDSETATEN", response.getNavn());
 		assertOrgAdresse(response);
 
-		verify(postRequestedFor(urlMatching("/VIRKSOMHET_ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
+		verify(postRequestedFor(urlMatching("/ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
 	}
 
 	@Test
 	public void shouldGetMottakerAndAdresseForOrganisasjonNoPostadresseOnlyForretningsadresse() {
-		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ingenpostadresse.xml")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
@@ -104,12 +104,12 @@ public class Treg002IT extends AbstractIT {
 		assertEquals("OSLO", response.getAdresse().getPoststed());
 		assertEquals("NO", response.getAdresse().getLandkode());
 
-		verify(postRequestedFor(urlMatching("/VIRKSOMHET_ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
+		verify(postRequestedFor(urlMatching("/ORGANISASJON_V4")).withRequestBody(matchingXPath("//orgnummer/text()", equalTo("0102030405"))));
 	}
 
 	@Test
 	public void shouldThrowWhenOrganisasjonV4FailsFunctionalInvalidInput() {
-		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ugyldigInput-response.xml")));
 		try {
@@ -124,14 +124,14 @@ public class Treg002IT extends AbstractIT {
 	@Test
 	public void shouldThrowIfPersonIsMissingAdresse() {
 
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-mangler_adresse.xml"))); //mottakerPlugin
 		try {
 			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 			fail("Should throw technical Exception");
 		} catch (HttpStatusCodeException e) {
-			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSON_V3")));
+			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land."));
 		}
@@ -139,7 +139,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenOrganisasjonV4FailsFunctionalNotFound() {
-		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
 
@@ -154,7 +154,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenOrganisasjonV4FailsTechnical() {
-		stubFor(post("/VIRKSOMHET_ORGANISASJON_V4")
+		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
 		try {
@@ -169,7 +169,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonV3FailsFunctionalNotFound() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
 
@@ -184,7 +184,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
 
@@ -199,7 +199,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-FunksjonellFeil-SikkerhetsBegrensning-responsebody.xml")));
 
@@ -214,7 +214,7 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonV3FailsTechnical() {
-		stubFor(post("/VIRKSOMHET_PERSON_V3")
+		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentPerson-Tecnical-responsebody.xml")));
 
@@ -251,7 +251,7 @@ public class Treg002IT extends AbstractIT {
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Identifikator kan ikke være null"));
 		}
 	}
-	
+
 	@Test
 	public void shouldThrowWhenTypeIsEmpty() {
 		try {
