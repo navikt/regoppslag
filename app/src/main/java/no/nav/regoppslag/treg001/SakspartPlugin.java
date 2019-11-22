@@ -77,8 +77,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
 			}
 			Sakspart sakspart = unmarshal(content);
-			log.info(String.format("Henter sakspart info. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
-					.getId()));
+			log.info(String.format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
 			
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
@@ -97,8 +96,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			Document newNode = convertObjectToDocument(sakspart);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s, SakspartId=%s", dokumenttypeId, sakspart
-					.getId()));
+			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s", dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
