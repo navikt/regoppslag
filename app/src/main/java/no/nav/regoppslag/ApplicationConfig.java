@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.ElementEnricherConfig;
 import no.nav.regoppslag.config.RestConsumerConfig;
+import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonV4EndpointConfig;
 import no.nav.regoppslag.config.cxf.PersonV3EndpointConfig;
@@ -31,7 +32,7 @@ import org.springframework.retry.annotation.EnableRetry;
 		DokumenttypeInfoV3Alias.class,
 		ServiceuserAlias.class
 })
-@Import({
+@Import({TomcatConfig.class,
 		PersonV3Consumer.class,
 		OrganisasjonV4Consumer.class,
 		OrganisasjonEnhetKontaktinformasjonV1Consumer.class,
