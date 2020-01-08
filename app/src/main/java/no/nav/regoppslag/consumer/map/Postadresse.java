@@ -7,7 +7,7 @@ import lombok.Data;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class Postadresse {
 
 	private String adresseType;

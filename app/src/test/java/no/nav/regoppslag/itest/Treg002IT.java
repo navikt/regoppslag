@@ -87,8 +87,6 @@ public class Treg002IT extends AbstractIT {
 		assertPersonCOAdresse(response);
 		assertEquals("0102030405", response.getIdentifikator());
 		assertEquals("Nytt Navn", response.getNavn());
-		assertEquals("C/O Bjarne Betjent", response.getAdresse().getAdresselinje1());
-		assertEquals("Flesbergveien 381", response.getAdresse().getAdresselinje2());
 
 		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//ident/text()", equalTo("0102030405"))));
 		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//informasjonsbehov/text()", equalTo("adresse"))));

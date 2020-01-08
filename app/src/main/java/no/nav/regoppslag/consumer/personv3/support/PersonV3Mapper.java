@@ -20,14 +20,7 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.to.MottakerTo;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseNorge;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUtland;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postboksadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.StedsadresseNorge;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -48,6 +41,7 @@ public class PersonV3Mapper {
 	public static final String MIDLERTIDIG_POSTADRESSE_UTLAND = "MIDLERTIDIG_POSTADRESSE_UTLAND";
 	public static final String MIDLERTIDIG_POSTADRESSE_NORGE = "MIDLERTIDIG_POSTADRESSE_NORGE";
 	public static final String UKJENT_ADRESSE = "UKJENT_ADRESSE";
+	public static final String CO_TILLEGGSADRESSETYPE = "C/O";
 
 	private final PostnummerService postnummerService;
 	private final LandkodeService landkodeService;
@@ -323,21 +317,20 @@ public class PersonV3Mapper {
 					.getValue()));
 		}
 
-		postadresse = mapPostadresseCo(postadresse, person);
+		return mapNyPostadresseIfTillegsadresseTypeCo(postadresse, person);
 
-		return postadresse;
 	}
-	private Postadresse mapPostadresseCo(Postadresse postadresse, Bruker person){
-		if(((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresse() != null
-				&& (((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().
-				getTilleggsadresseType().equalsIgnoreCase("C/O")))
-			{
-			postadresse.setAdresselinje3(postadresse.getAdresselinje2());
-			postadresse.setAdresselinje2(postadresse.getAdresselinje1());
-			postadresse.setAdresselinje1(((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresseType() +
-					" " + ((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresse());
-		}
+	private Postadresse mapNyPostadresseIfTillegsadresseTypeCo(Postadresse postadresse, Bruker person){
+		final StrukturertAdresse strukturertAdresse = ((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse();
 
+		if( strukturertAdresse != null
+			&& strukturertAdresse.getTilleggsadresse() != null
+			&& CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType()))
+				return  postadresse.toBuilder()
+						.adresselinje3(postadresse.getAdresselinje2())
+						.adresselinje2(postadresse.getAdresselinje1())
+						.adresselinje1(strukturertAdresse.getTilleggsadresseType() + " " + strukturertAdresse.getTilleggsadresse())
+						.build();
 		return postadresse;
 	}
 }
