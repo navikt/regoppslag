@@ -323,7 +323,21 @@ public class PersonV3Mapper {
 					.getValue()));
 		}
 
+		postadresse = mapPostadresseCo(postadresse, person);
+
 		return postadresse;
 	}
+	private Postadresse mapPostadresseCo(Postadresse postadresse, Bruker person){
+		if(((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresse() != null
+				&& (((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().
+				getTilleggsadresseType().equalsIgnoreCase("C/O")))
+			{
+			postadresse.setAdresselinje3(postadresse.getAdresselinje2());
+			postadresse.setAdresselinje2(postadresse.getAdresselinje1());
+			postadresse.setAdresselinje1(((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresseType() +
+					" " + ((MidlertidigPostadresseNorge)person.getMidlertidigPostadresse()).getStrukturertAdresse().getTilleggsadresse());
+		}
 
+		return postadresse;
+	}
 }
