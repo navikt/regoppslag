@@ -77,6 +77,22 @@ public class Treg002IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetMottakerAndTilleggsAdresseForPerson() {
+		stubFor(post("/VIRKSOMHET_PERSONV3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentperson-CO-responsebody.xml")));
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+		assertPersonCOAdresse(response);
+		assertEquals("0102030405", response.getIdentifikator());
+		assertEquals("Nytt Navn", response.getNavn());
+
+		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//ident/text()", equalTo("0102030405"))));
+		verify(postRequestedFor(urlMatching("/VIRKSOMHET_PERSONV3")).withRequestBody(matchingXPath("//informasjonsbehov/text()", equalTo("adresse"))));
+	}
+
+	@Test
 	public void shouldGetMottakerAndAdresseForOrganisasjonHasPostadresse() {
 		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -272,6 +288,15 @@ public class Treg002IT extends AbstractIT {
 		assertEquals("NO", response.getAdresse().getLandkode());
 		assertEquals("0350", response.getAdresse().getPostnummer());
 		assertEquals("OSLO", response.getAdresse().getPoststed());
+	}
+
+	private void assertPersonCOAdresse(HentMottakerOgAdresseResponse response) {
+		assertEquals("C/O Bjarne Betjent", response.getAdresse().getAdresselinje1());
+		assertEquals("Flesbergveien 381", response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals("NO", response.getAdresse().getLandkode());
+		assertEquals("3960", response.getAdresse().getPostnummer());
+		assertEquals("STATHELLE", response.getAdresse().getPoststed());
 	}
 
 	private void assertOrgAdresse(HentMottakerOgAdresseResponse response) {
