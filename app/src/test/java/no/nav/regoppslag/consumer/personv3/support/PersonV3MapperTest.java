@@ -33,6 +33,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +65,8 @@ public class PersonV3MapperTest {
 	private static final String LANDKODE_UTLAND = "DNK";
 	private static final String LAND = "Norge";
 	private static final String LAND_UTLAND = "Denmark";
+	private static final String TILLEGGSADRESSETYPE_CO = "C/O";
+	private static final String TILLEGGSADRESSE = "Tilleggsadresse";
 
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
@@ -265,6 +268,18 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
+	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCo() throws Exception {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresseMedMidlertidigAresseGsteMedCo(person);
+		MottakerTo mottakerTo = mapper.map(person, "");
+
+		Mottaker mottaker = mottakerTo.getMottaker();
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(TILLEGGSADRESSETYPE_CO + " " + TILLEGGSADRESSE));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+
+	}
+
+	@Test
 	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAresseMatrikkel(person);
@@ -280,6 +295,18 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
+	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCo() throws Exception {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settPostadresseMedMidlertidigAresseMatrikkelMedCo(person);
+		MottakerTo mottakerTo = mapper.map(person, "");
+
+		Mottaker mottaker = mottakerTo.getMottaker();
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(TILLEGGSADRESSETYPE_CO + " " + TILLEGGSADRESSE));
+		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2()), is(EIENDOMSNAVN));
+	}
+
+
+	@Test
 	public void mapPersonBostedadresseMedMidlertidigPostboksAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigAressePostboks(person);
@@ -292,6 +319,17 @@ public class PersonV3MapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), is(POSTNR));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), is(POSTSTED));
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getLand()), is(LAND));
+	}
+
+	@Test
+	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCo() throws Exception {
+		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
+		settMidlertidigPostBoksAdresseMedCo(person);
+		MottakerTo mottakerTo = mapper.map(person, "");
+
+		Mottaker mottaker = mottakerTo.getMottaker();
+		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is(TILLEGGSADRESSETYPE_CO + " " + TILLEGGSADRESSE));
+		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje2(), is("Postboks" + " " + POSTBOKS));
 	}
 
 	@Test(expected = RegOppslagFunctionalException.class)
@@ -547,6 +585,61 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
+	private void settPostadresseMedMidlertidigAresseGsteMedCo(Bruker person) {
+		Postadressetyper postadressetyper = new Postadressetyper();
+		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
+		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
+		person.setGjeldendePostadressetype(postadressetyper);
+
+		Gateadresse gateadresse = new Gateadresse();
+		gateadresse.setGatenavn(GATENAVN);
+		gateadresse.setHusnummer(HUSNR);
+		gateadresse.setHusbokstav(HUSBOKSTAV);
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		gateadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		gateadresse.setLandkode(landkoder);
+		gateadresse.setTilleggsadresse(TILLEGGSADRESSE);
+		gateadresse.setTilleggsadresseType(TILLEGGSADRESSETYPE_CO);
+
+		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
+		midlertidigPostadresseNorge.setStrukturertAdresse(gateadresse);
+
+		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
+	}
+
+	private void settMidlertidigPostBoksAdresseMedCo(Bruker person){
+		Postadressetyper postadressetyper = new Postadressetyper();
+		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
+		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
+		person.setGjeldendePostadressetype(postadressetyper);
+
+		PostboksadresseNorsk postboksadresse = new PostboksadresseNorsk();
+		postboksadresse.setPostboksnummer(POSTBOKS);
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		postboksadresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		postboksadresse.setLandkode(landkoder);
+		postboksadresse.setTilleggsadresse(TILLEGGSADRESSE);
+		postboksadresse.setTilleggsadresseType(TILLEGGSADRESSETYPE_CO);
+		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
+		midlertidigPostadresseNorge.setStrukturertAdresse(postboksadresse);
+
+		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
+	}
+
 	private void settPostadresseMedMidlertidigAresseMatrikkel(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -565,6 +658,33 @@ public class PersonV3MapperTest {
 		landkoder.setKodeRef(LANDKODE);
 		landkoder.setValue(LANDKODE);
 		matrikkeladresse.setLandkode(landkoder);
+
+		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
+		midlertidigPostadresseNorge.setStrukturertAdresse(matrikkeladresse);
+
+		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
+	}
+
+	private void settPostadresseMedMidlertidigAresseMatrikkelMedCo(Bruker person) {
+		Postadressetyper postadressetyper = new Postadressetyper();
+		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
+		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
+		person.setGjeldendePostadressetype(postadressetyper);
+
+		Matrikkeladresse matrikkeladresse = new Matrikkeladresse();
+		matrikkeladresse.setEiendomsnavn(EIENDOMSNAVN);
+
+		Postnummer postnummer = new Postnummer();
+		postnummer.setKodeRef(POSTNR);
+		postnummer.setValue(POSTNR);
+		matrikkeladresse.setPoststed(postnummer);
+
+		Landkoder landkoder = new Landkoder();
+		landkoder.setKodeRef(LANDKODE);
+		landkoder.setValue(LANDKODE);
+		matrikkeladresse.setLandkode(landkoder);
+		matrikkeladresse.setTilleggsadresse(TILLEGGSADRESSE);
+		matrikkeladresse.setTilleggsadresseType(TILLEGGSADRESSETYPE_CO);
 
 		MidlertidigPostadresseNorge midlertidigPostadresseNorge = new MidlertidigPostadresseNorge();
 		midlertidigPostadresseNorge.setStrukturertAdresse(matrikkeladresse);
