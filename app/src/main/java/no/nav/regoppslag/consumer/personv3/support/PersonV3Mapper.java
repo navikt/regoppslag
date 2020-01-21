@@ -329,7 +329,7 @@ public class PersonV3Mapper {
 
 		if (strukturertAdresse != null && strukturertAdresse.getTilleggsadresse() != null) {
 			if (CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType())) {
-				return mapMidlertidigPostAdresseMedTillegsadresseTypeCo(postadresse, strukturertAdresse);
+				return mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(postadresse, strukturertAdresse);
 			} else if (strukturertAdresse.getTilleggsadresse().startsWith(CO_TILLEGGSADRESSETYPE)) {
 				return mapMidlertidigPostAdresseMedCoAdresse(postadresse, strukturertAdresse);
 			}
@@ -345,7 +345,7 @@ public class PersonV3Mapper {
 				.build();
 	}
 
-	private Postadresse mapMidlertidigPostAdresseMedTillegsadresseTypeCo(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
+	private Postadresse mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
 		return postadresse.toBuilder()
 				.adresselinje3(postadresse.getAdresselinje2())
 				.adresselinje2(postadresse.getAdresselinje1())
