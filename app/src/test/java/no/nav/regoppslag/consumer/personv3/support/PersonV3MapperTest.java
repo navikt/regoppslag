@@ -224,7 +224,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigAdresseUtland() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseUtland(person);
+		settPostadresseMedMidlertidigUtlandsadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 		assertThat(mottakerTo.getMottaker().getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -239,7 +239,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigAdresseUtlandPostnummerInAdresseLinje4() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseUtland(person);
+		settPostadresseMedMidlertidigUtlandsadresse(person);
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
 		midlertidigPostadresseUtland.getUstrukturertAdresse().setAdresselinje4("0001 ADDDD");
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -256,7 +256,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigGateAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseGste(person);
+		settPostadresseMedMidlertidigGateadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 		assertThat(mottakerTo.getMottaker().getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -271,7 +271,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCo() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseGsteMedCo(person);
+		settPostadresseMedMidlertidigGateadresseMedCo(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 
 		Mottaker mottaker = mottakerTo.getMottaker();
@@ -282,7 +282,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCoAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigGateAdresseMedCoAdresse(person);
+		settPostadresseMedMidlertidigGateadresseMedCoAdresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 
 		Mottaker mottaker = mottakerTo.getMottaker();
@@ -294,7 +294,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseMatrikkel(person);
+		settPostadresseMedMidlertidigMatrikkeladresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 		assertThat(mottakerTo.getMottaker().getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -309,7 +309,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCo() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAresseMatrikkelMedCo(person);
+		settPostadresseMedMidlertidigMatrikkeladresseMedCo(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 
 		Mottaker mottaker = mottakerTo.getMottaker();
@@ -332,7 +332,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonBostedadresseMedMidlertidigPostboksAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settPostadresseMedMidlertidigAressePostboks(person);
+		settPostadresseMedMidlertidigPostboksadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 		assertThat(mottakerTo.getMottaker().getKortNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
@@ -358,7 +358,7 @@ public class PersonV3MapperTest {
 	@Test
 	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCoAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
-		settMidlertidigPostAdresseMedCo(person);
+		settMidlertidigPostboksAdresseMedCoAdresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
 
 		Mottaker mottaker = mottakerTo.getMottaker();
@@ -569,7 +569,7 @@ public class PersonV3MapperTest {
 		person.setPostadresse(postadresse);
 	}
 
-	private void settPostadresseMedMidlertidigAresseUtland(Bruker person) {
+	private void settPostadresseMedMidlertidigUtlandsadresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_UTLAND");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_UTLAND");
@@ -592,7 +592,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseUtland);
 	}
 
-	private void settPostadresseMedMidlertidigAresseGste(Bruker person) {
+	private void settPostadresseMedMidlertidigGateadresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -619,7 +619,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settPostadresseMedMidlertidigAresseGsteMedCo(Bruker person) {
+	private void settPostadresseMedMidlertidigGateadresseMedCo(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -648,7 +648,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settPostadresseMedMidlertidigGateAdresseMedCoAdresse(Bruker person) {
+	private void settPostadresseMedMidlertidigGateadresseMedCoAdresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -676,7 +676,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settMidlertidigPostAdresseMedCo(Bruker person) {
+	private void settMidlertidigPostboksAdresseMedCoAdresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -727,7 +727,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settPostadresseMedMidlertidigAresseMatrikkel(Bruker person) {
+	private void settPostadresseMedMidlertidigMatrikkeladresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -778,7 +778,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settPostadresseMedMidlertidigAresseMatrikkelMedCo(Bruker person) {
+	private void settPostadresseMedMidlertidigMatrikkeladresseMedCo(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
@@ -805,7 +805,7 @@ public class PersonV3MapperTest {
 		person.setMidlertidigPostadresse(midlertidigPostadresseNorge);
 	}
 
-	private void settPostadresseMedMidlertidigAressePostboks(Bruker person) {
+	private void settPostadresseMedMidlertidigPostboksadresse(Bruker person) {
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setKodeverksRef("MIDLERTIDIG_POSTADRESSE_NORGE");
 		postadressetyper.setValue("MIDLERTIDIG_POSTADRESSE_NORGE");
