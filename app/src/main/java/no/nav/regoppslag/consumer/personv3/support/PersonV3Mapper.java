@@ -169,7 +169,8 @@ public class PersonV3Mapper {
 
 	private void validateAdresse(Bruker person, Postadresse postadresse, String serviceCode) throws RegOppslagFunctionalException {
 
-		if (person.getGjeldendePostadressetype()!=null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype().getValue())) {
+		if (person.getGjeldendePostadressetype() != null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype()
+				.getValue())) {
 			throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 		}
 
@@ -326,19 +327,29 @@ public class PersonV3Mapper {
 					.getValue()));
 		}
 
-		if( strukturertAdresse != null && strukturertAdresse.getTilleggsadresse() != null
-				&& CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType())) {
-			return mapPostAdresseMedCo(postadresse, strukturertAdresse);
+		if (strukturertAdresse != null && strukturertAdresse.getTilleggsadresse() != null) {
+			if (CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType())) {
+				return mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(postadresse, strukturertAdresse);
+			} else if (strukturertAdresse.getTilleggsadresse().startsWith(CO_TILLEGGSADRESSETYPE)) {
+				return mapMidlertidigPostAdresseMedCoAdresse(postadresse, strukturertAdresse);
+			}
 		}
-
 		return postadresse;
 	}
 
-	private Postadresse mapPostAdresseMedCo(Postadresse postadresse, StrukturertAdresse strukturertAdresse){
-				return  postadresse.toBuilder()
-						.adresselinje3(postadresse.getAdresselinje2())
-						.adresselinje2(postadresse.getAdresselinje1())
-						.adresselinje1(strukturertAdresse.getTilleggsadresseType() + " " + strukturertAdresse.getTilleggsadresse())
-						.build();
+	private Postadresse mapMidlertidigPostAdresseMedCoAdresse(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
+		return postadresse.toBuilder()
+				.adresselinje3(postadresse.getAdresselinje2())
+				.adresselinje2(postadresse.getAdresselinje1())
+				.adresselinje1(strukturertAdresse.getTilleggsadresse())
+				.build();
+	}
+
+	private Postadresse mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
+		return postadresse.toBuilder()
+				.adresselinje3(postadresse.getAdresselinje2())
+				.adresselinje2(postadresse.getAdresselinje1())
+				.adresselinje1(strukturertAdresse.getTilleggsadresseType() + " " + strukturertAdresse.getTilleggsadresse())
+				.build();
 	}
 }
