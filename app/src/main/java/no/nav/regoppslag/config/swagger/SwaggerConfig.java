@@ -1,6 +1,6 @@
 package no.nav.regoppslag.config.swagger;
 
-import org.springframework.beans.factory.annotation.Value;
+import no.nav.regoppslag.config.AppVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -25,22 +25,18 @@ import java.util.Collections;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-	
-	@Value("${APP_VERSION}")
-	private String version;
-	
 	public static final String samlTokenInfo = "<p>Ved input som krever oppslag i personopplysninger så krever denne tjenesten SAML assertion token som authorization header. Tokenet blir da brukt ved kall mot PersonV3, og hvis brukeren ikke har tilgang vil kallet mot PersonV3 returnere sikkerhetsfeil. " +
 			"SAML assertion tokenet er del av SAML authentication headeret som starter og slutter med \"saml2:Assertion\". Dette tokenet må konverteres til BASE64 og legges som header i formatet: Key=Authorization, Value=SAML \"SAML assertion token konvertert til BASE64\"</p>";
 	
 	@Bean
-	public Docket api() {
+	public Docket api(AppVersion appVersion) {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.any())
 				.paths(PathSelectors.ant("/rest/*"))
 				.build()
 				.useDefaultResponseMessages(false)
-				.apiInfo(apiInfo());
+				.apiInfo(apiInfo(appVersion));
 	}
 	
 	@Bean
@@ -62,11 +58,11 @@ public class SwaggerConfig {
 				.build();
 	}
 	
-	private ApiInfo apiInfo() {
+	private ApiInfo apiInfo(AppVersion appVersion) {
 		return new ApiInfo(
 				"Registeroppslag",
 				" ",
-				version,
+				appVersion.getVersion(),
 				"",
 				new Contact("Team Dokument", "", ""),
 				"", "", Collections.EMPTY_LIST);
