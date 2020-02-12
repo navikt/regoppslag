@@ -11,7 +11,6 @@
 	"LDAP_URL": "ldaps://ldapgw.preprod.local",
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
-	"VAULT": "/kv/preprod/fss/regoppslag/default",
 	"NAMESPACE": "q2",
 	"INGRESSES": [
 		"https://regoppslag-q2.nais.preprod.local"

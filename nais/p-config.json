@@ -11,7 +11,6 @@
 	"LDAP_URL": "ldaps://ldapgw.adeo.no",
 	"LDAP": "/serviceuser/data/prod/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/prod/srvregoppslag",
-	"VAULT": "/kv/prod/fss/regoppslag/default",
 	"NAMESPACE": "default",
 	"INGRESSES": [
 		"https://regoppslag.nais.adeo.no"

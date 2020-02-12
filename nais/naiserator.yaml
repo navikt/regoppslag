@@ -25,8 +25,6 @@ spec:
       value: {{ LDAP_BASEDN }}
     - name: LDAP_URL
       value: {{ LDAP_URL }}
-    - name: LDAP_USERNAME
-      value: {{ LDAP_USERNAME }}
     - name: LDAP_USER_BASEDN
       value: {{ LDAP_USER_BASEDN }}
   image: {{ image }}
@@ -66,5 +64,3 @@ spec:
         mountPath: /var/run/secrets/nais.io/ldap
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
-      - kvPath: {{ VAULT }}
-        mountPath: /var/run/secrets/nais.io/vault

@@ -11,7 +11,6 @@
 	"LDAP_URL": "ldaps://ldapgw.test.local",
 	"LDAP": "/serviceuser/data/test/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/test/srvregoppslag",
-	"VAULT": "/kv/preprod/fss/regoppslag/default",
 	"NAMESPACE": "t5",
 	"INGRESSES": [
 		"https://regoppslag-t5.nais.preprod.local"
