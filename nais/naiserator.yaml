@@ -1,0 +1,66 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: regoppslag
+  namespace: {{ NAMESPACE }}
+  labels:
+    team: teamdokumenthandtering
+spec:
+  env:
+    - name: SECURITYTOKENSERVICE_URL
+      value: {{ SECURITYTOKENSERVICE_URL }}
+    - name: ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL
+      value: {{ ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL }}
+    - name: ORGANISASJON_V4_ENDPOINTURL
+      value: {{ ORGANISASJON_V4_ENDPOINTURL }}
+    - name: VIRKSOMHET_PERSONV3_ENDPOINTURL
+      value: {{ VIRKSOMHET_PERSONV3_ENDPOINTURL }}
+    - name: DOKUMENTTYPEINFO_V3_URL
+      value: {{ DOKUMENTTYPEINFO_V3_URL }}
+    - name: LDAP_SERVICEUSER_BASEDN
+      value: {{ LDAP_SERVICEUSER_BASEDN }}
+    - name: LDAP_DOMAIN
+      value: {{ LDAP_DOMAIN }}
+    - name: LDAP_BASEDN
+      value: {{ LDAP_BASEDN }}
+    - name: LDAP_URL
+      value: {{ LDAP_URL }}
+    - name: LDAP_USER_BASEDN
+      value: {{ LDAP_USER_BASEDN }}
+  image: {{ image }}
+  ingresses:
+        {{#each INGRESSES}}
+          - {{this }}
+        {{/each}}
+  liveness:
+    path: /isAlive
+    port: 8080
+    initialDelay: 30
+    failureThreshold: 10
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  readiness:
+    path: /isReady
+    port: 8080
+    initialDelay: 30
+    timeout: 4
+  replicas:
+    min: 2
+    max: 5
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ LDAP }}
+        mountPath: /var/run/secrets/nais.io/ldap
+      - kvPath: {{ SRVREGOPPSLAG }}
+        mountPath: /var/run/secrets/nais.io/srvregoppslag

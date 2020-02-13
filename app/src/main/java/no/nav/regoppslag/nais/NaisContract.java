@@ -7,12 +7,12 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.DependencyCheckResult;
 import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.regoppslag.nais.selftest.Result;
 import no.nav.regoppslag.nais.selftest.SelftestResult;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +35,9 @@ public class NaisContract {
 	private static final String APPLICATION_ALIVE = "Application is alive!";
 	private static final String APPLICATION_READY = "Application is ready for traffic!";
 	private static final String APPLICATION_NOT_READY = "Application is not ready for traffic :-(";
+	private static final String APP_NAME = "regoppslag";
 	private static AtomicInteger isReady = new AtomicInteger(1);
 
-	private final String appName;
 	private final String version;
 	private final List<AbstractDependencyCheck> dependencyCheckList;
 
@@ -47,12 +47,10 @@ public class NaisContract {
 	@Inject
 	public NaisContract(MeterRegistry meterRegistry,
 						List<AbstractDependencyCheck> dependencyCheckList,
-						@Value("${APP_NAME:regoppslag}") String appName,
-						@Value("${APP_VERSION:0}") String version) {
+						AppVersion version) {
 		Gauge.builder("dok_app_is_ready", isReady, AtomicInteger::get).register(meterRegistry);
 		this.dependencyCheckList = new ArrayList<>(dependencyCheckList);
-		this.appName = appName;
-		this.version = version;
+		this.version = version.getVersion();
 	}
 
 	@GetMapping("/isAlive")
@@ -83,7 +81,7 @@ public class NaisContract {
 		List<DependencyCheckResult> results = new ArrayList<>();
 		checkDependencies(results);
 		return SelftestResult.builder()
-				.appName(appName)
+				.appName(APP_NAME)
 				.version(version)
 				.dependencyCheckResults(results)
 				.result(getOverallSelftestResult(results))

@@ -1,6 +1,6 @@
-naisPipeline {
+naiseratorPipeline {
     applicationName = "regoppslag"
-    dockerfileDir = "./app"
+    dockerfileDir = "."
     javaVersion = "11"
     deployEnvironmentQ = "q1"
 }
