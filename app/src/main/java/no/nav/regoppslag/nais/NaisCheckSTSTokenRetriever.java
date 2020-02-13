@@ -49,7 +49,7 @@ public class NaisCheckSTSTokenRetriever {
 			transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
 			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.INDENT, "no");
 			DOMSource source = new DOMSource(element);
 			StreamResult result = new StreamResult(new StringWriter());
 			transformer.transform(source, result);
