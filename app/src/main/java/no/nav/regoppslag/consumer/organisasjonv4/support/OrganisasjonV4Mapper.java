@@ -46,6 +46,7 @@ public class OrganisasjonV4Mapper {
 
 	public static final String ADRESSELINJE_1 = "adresselinje1";
 	public static final String ADRESSELINJE_2 = "adresselinje2";
+	public static final String ADRESSELINJE_3 = "adresselinje3";
 	public static final String ADRESSE_3_SPLIT_1 = "Adresse 3 split 1";
 	public static final String POSTNR = "postnr";
 	public static final String POSTSTED = "poststed";
@@ -209,11 +210,22 @@ public class OrganisasjonV4Mapper {
 				&& (tomBruk == null || tomBruk.isAfter(now));
 	}
 
+	private boolean semiStruktuertAdresseShouldContainPostNummer(GeografiskAdresse adresse) {
+		return adresse.getLandkode() != null && adresse.getLandkode().getKodeRef() != null && adresse.getLandkode().getKodeRef().equals("NO");
+	}
+
+	private boolean semiStruktuertAdresseIsValidUtlandskAdresse(GeografiskAdresse adresse) {
+		return adresse.getLandkode() != null && adresse.getLandkode().getKodeRef() != null && !adresse.getLandkode().getKodeRef().equals("NO");
+	}
+
 	private boolean containsPostnummer(GeografiskAdresse adresse) {
 		if (adresse instanceof SemistrukturertAdresse) {
-			return ((SemistrukturertAdresse) adresse).getAdresseledd()
-					.stream()
-					.anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && isNotEmpty(nva.getVerdi()));
+			if (semiStruktuertAdresseShouldContainPostNummer(adresse)){
+				return ((SemistrukturertAdresse) adresse).getAdresseledd()
+						.stream()
+						.anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && isNotEmpty(nva.getVerdi()));
+			}
+			return semiStruktuertAdresseIsValidUtlandskAdresse(adresse);
 		} else if (adresse instanceof Gateadresse) {
 			return ((Gateadresse) adresse).getPoststed() != null;
 		} else {
@@ -228,6 +240,8 @@ public class OrganisasjonV4Mapper {
 				postadresse.setAdresselinje1(nokkel.getVerdi());
 			} else if (ADRESSELINJE_2.equals(nokkel.getNoekkel().getKodeRef())) {
 				postadresse.setAdresselinje2(nokkel.getVerdi());
+			} else if (ADRESSELINJE_3.equals(nokkel.getNoekkel().getKodeRef())) {
+				postadresse.setAdresselinje3(nokkel.getVerdi());
 			} else if (ADRESSE_3_SPLIT_1.equals(nokkel.getNoekkel().getKodeRef())) {
 				postadresse.setAdresselinje3(nokkel.getVerdi());
 			} else if (POSTNR.equals(nokkel.getNoekkel().getKodeRef())) {
