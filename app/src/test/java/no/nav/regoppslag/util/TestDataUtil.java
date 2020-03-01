@@ -37,6 +37,8 @@ public class TestDataUtil {
     public static final String ADRESSELINJE1 = "adresselinje1";
     public static final String ADRESSELINJE2 = "adresselinje2";
     public static final String ADRESSELINJE3 = "adresselinje3";
+    public static final String ADRESSELINJE_POSTSTED = "poststed";
+
     public static final String LANDKODE = "NO";
     public static final String UTENLANDSK_ADRESSELINJE1 = "Dammgatan 14";
     public static final String UTENLANDSK_ADRESSELINJE2 = "SE 567 31 VAGGERYD";
@@ -154,6 +156,23 @@ public class TestDataUtil {
 
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE1, utenlandskPostadresse.getAdresselinje1()));
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE2, utenlandskPostadresse.getAdresselinje2()));
+        semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE3, utenlandskPostadresse.getAdresselinje3()));
+        semistrukturertAdresse.setLandkode(createLandkodeRef(utenlandskPostadresse.getLand()));
+
+        OrganisasjonsDetaljer organisasjonsDetaljer = org.getOrganisasjonDetaljer();
+        organisasjonsDetaljer.getPostadresse().add(semistrukturertAdresse);
+
+        org.setOrganisasjonDetaljer(organisasjonsDetaljer);
+    }
+
+    public static void settUtlandskPostadresseMedPoststed(Organisasjon org) throws DatatypeConfigurationException {
+        SemistrukturertAdresse semistrukturertAdresse = new SemistrukturertAdresse();
+        setFomTomPerioder(semistrukturertAdresse);
+
+        UtenlandskPostadresse utenlandskPostadresse = createUtenlandsPostadresse();
+
+        semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE1, utenlandskPostadresse.getAdresselinje1()));
+        semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE_POSTSTED, utenlandskPostadresse.getAdresselinje2()));
         semistrukturertAdresse.setLandkode(createLandkodeRef(utenlandskPostadresse.getLand()));
 
         OrganisasjonsDetaljer organisasjonsDetaljer = org.getOrganisasjonDetaljer();

@@ -44,6 +44,7 @@ import static no.nav.regoppslag.util.TestDataUtil.settKunForretningsadresse;
 import static no.nav.regoppslag.util.TestDataUtil.settSemistrukturertAdresse;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestDataUtil.settUtlandskPostadresse;
+import static no.nav.regoppslag.util.TestDataUtil.settUtlandskPostadresseMedPoststed;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -240,14 +241,27 @@ public class OrganisasjonV4MapperTest {
         Organisasjon org = createOrganisasjon(Collections.singletonList(ORGNAVN), Collections.singletonList(ORGKORTNAVN));
         settUtlandskPostadresse(org);
         MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
-        assertThat(mottaker.getMottaker().getKortNavn(), is(ORGKORTNAVN));
-        assertThat(mottaker.getMottaker().getNavn(), is(ORGNAVN));
 
         assertThat(mottaker.getMottaker().getMottakeradresse(), instanceOf(UtenlandskPostadresse.class));
         UtenlandskPostadresse actualAdresse = (UtenlandskPostadresse) mottaker.getMottaker().getMottakeradresse();
         assertThat(expectedAdresse.getAdresselinje1(), equalTo(actualAdresse.getAdresselinje1()));
         assertThat(expectedAdresse.getAdresselinje2(), equalTo(actualAdresse.getAdresselinje2()));
+        assertThat(expectedAdresse.getAdresselinje3(), equalTo(actualAdresse.getAdresselinje3()));
         assertThat(expectedAdresse.getLand(), equalTo(actualAdresse.getLand()));
+    }
+
+    @Test
+    public void shouldMapSemistrukturertAdresseWithAdresseledPoststedWhenLandskodeNotNO() throws DatatypeConfigurationException, RegOppslagFunctionalException {
+        UtenlandskPostadresse expectedAdresse = createUtenlandsPostadresse();
+
+        Organisasjon org = createOrganisasjon(Collections.singletonList(ORGNAVN), Collections.singletonList(ORGKORTNAVN));
+        settUtlandskPostadresseMedPoststed(org);
+        MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
+
+        assertThat(mottaker.getMottaker().getMottakeradresse(), instanceOf(UtenlandskPostadresse.class));
+        UtenlandskPostadresse actualAdresse = (UtenlandskPostadresse) mottaker.getMottaker().getMottakeradresse();
+        assertThat(expectedAdresse.getAdresselinje1(), equalTo(actualAdresse.getAdresselinje1()));
+        assertThat(expectedAdresse.getAdresselinje2(), equalTo(actualAdresse.getAdresselinje2()));
     }
 
     @Test

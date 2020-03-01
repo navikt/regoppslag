@@ -8,26 +8,31 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
  */
 public class PostadresseMapper {
 
-	public static NorskPostadresse mapPostadresseToNorskpostadresse(Postadresse postadresse) {
+    private PostadresseMapper(){}
 
-		NorskPostadresse norskPostadresse = new NorskPostadresse();
-		norskPostadresse.setLand(postadresse.getLand());
-		norskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
-		norskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
-		norskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
-		norskPostadresse.setPostnummer(postadresse.getPostnummer());
-		norskPostadresse.setPoststed(postadresse.getPoststed());
+    public static NorskPostadresse mapPostadresseToNorskpostadresse(Postadresse postadresse) {
 
-		return norskPostadresse;
-	}
+        NorskPostadresse norskPostadresse = new NorskPostadresse();
+        norskPostadresse.setLand(postadresse.getLand());
+        norskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
+        norskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
+        norskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
+        norskPostadresse.setPostnummer(postadresse.getPostnummer());
+        norskPostadresse.setPoststed(postadresse.getPoststed());
 
-	public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) {
-		UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
-		utenlandskPostadresse.setLand(postadresse.getLand());
-		utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
-		utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
-		utenlandskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
+        return norskPostadresse;
+    }
 
-		return utenlandskPostadresse;
-	}
+    public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) {
+        UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
+        utenlandskPostadresse.setLand(postadresse.getLand());
+        utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
+        utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
+        utenlandskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
+
+        if (postadresse.getPoststed() != null) {
+            utenlandskPostadresse.setAdresselinje2(postadresse.getPoststed());
+        }
+        return utenlandskPostadresse;
+    }
 }
