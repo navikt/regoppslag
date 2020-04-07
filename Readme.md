@@ -40,7 +40,7 @@ Noen secrets må settes i VM Options
 -Dnamespace=tx
 ```
 
-Miljø som det ønskes å kjøre mot kan settes med `-Dnamespace=t8` feks for t8
+Miljø som det ønskes å kjøre mot kan settes med `-Dnamespace=q2` feks for q2
 ## Cache ved lokal kjøring
 
 Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
