@@ -162,6 +162,18 @@ public class Treg001IT extends AbstractIT {
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
+	@Test
+	public void shouldGetKomplettBrevdataWhenDodPerson() {
+		stubFor(post("/VIRKSOMHET_PERSONV3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-happypath-responsebody-dodperson.xml")));
+
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertEquals(classpathToString("__files/treg001/treg001_full_response_dodperson.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+				.getBrevdata()
+				.replaceAll("[\n\t\r ]", ""));
+	}
+
 	/**
 	 * Testbetingelser:
 	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
@@ -355,6 +367,22 @@ public class Treg001IT extends AbstractIT {
 			verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
 			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=123"));
+		}
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenPersonDodAndNoAdress() {
+		//Stub web services:
+		stubFor(post("/VIRKSOMHET_PERSONV3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg001/personV3/hentperson-dod_mangler_adresse.xml")));
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+			fail("Should throw techical Exception");
+		} catch (HttpStatusCodeException e) {
+			verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE"));
 		}
 	}
 

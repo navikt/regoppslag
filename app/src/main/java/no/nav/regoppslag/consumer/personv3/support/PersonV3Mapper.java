@@ -183,8 +183,7 @@ public class PersonV3Mapper {
 	}
 
 	private boolean isPersonDod(Bruker person) {
-		Date now = Date.from(Instant.now());
-		return (person.getDoedsdato() != null) && (now.after(person.getDoedsdato()
+		return (person.getDoedsdato() != null) && (Date.from(Instant.now()).after(person.getDoedsdato()
 				.getDoedsdato()
 				.toGregorianCalendar()
 				.getTime()));
