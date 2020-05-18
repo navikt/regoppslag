@@ -9,9 +9,9 @@
 	<name>regoppslag</name>
 
 	<scm>
-		<connection>scm:git:http://stash.devillo.no/scm/boaf/regoppslag.git</connection>
-		<developerConnection>scm:git:http://stash.devillo.no/scm/boaf/regoppslag.git</developerConnection>
-		<url>http://stash.devillo.no/projects/BOAF/repos/regoppslag</url>
+		<connection>scm:git:https://stash.adeo.no/scm/boaf/regoppslag.git</connection>
+		<developerConnection>scm:git:https://stash.adeo.no/scm/boaf/regoppslag.git</developerConnection>
+		<url>https://stash.adeo.no/projects/BOAF/repos/regoppslag</url>
 		<tag>HEAD</tag>
 	</scm>
 
