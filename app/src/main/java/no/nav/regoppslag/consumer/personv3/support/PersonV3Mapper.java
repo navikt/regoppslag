@@ -50,6 +50,7 @@ public class PersonV3Mapper {
 	public static final String MIDLERTIDIG_POSTADRESSE_NORGE = "MIDLERTIDIG_POSTADRESSE_NORGE";
 	public static final String UKJENT_ADRESSE = "UKJENT_ADRESSE";
 	public static final String CO_TILLEGGSADRESSETYPE = "C/O";
+	public static final String V_TILLEGGSADRESSETYPE = "V/";
 
 	private final PostnummerService postnummerService;
 	private final LandkodeService landkodeService;
@@ -76,12 +77,6 @@ public class PersonV3Mapper {
 	}
 
 	public MottakerTo map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
-		Date now = Date.from(Instant.now());
-
-		if (person.getDoedsdato() != null && now.after(person.getDoedsdato().getDoedsdato().toGregorianCalendar().getTime())) {
-			throw new RegOppslagFunctionalException("Personen er registrert som død.", "Personen er registrert som død.");
-		}
-
 
 		Mottaker mottaker = new Person();
 
@@ -171,14 +166,27 @@ public class PersonV3Mapper {
 
 		if (person.getGjeldendePostadressetype() != null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype()
 				.getValue())) {
+			if (isPersonDod(person)) {
+				throw new RegOppslagFunctionalException(serviceCode + " Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE", "Person er død og har ukjent postadresse");
+			}
 			throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
 		}
 
 		if (isBlankPostadresse(postadresse)) {
+			if (isPersonDod(person)) {
+				throw new RegOppslagFunctionalException("Mottaker er registrert som død og har ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land.", "Person er registrert som død og har ugyldig postadresse");
+			}
 			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
 					.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
 					.getValue()), "Ugyldig postadresse");
 		}
+	}
+
+	private boolean isPersonDod(Bruker person) {
+		return (person.getDoedsdato() != null) && (Date.from(Instant.now()).after(person.getDoedsdato()
+				.getDoedsdato()
+				.toGregorianCalendar()
+				.getTime()));
 	}
 
 	private boolean isBlankPostadresse(Postadresse postadresse) {
@@ -275,11 +283,12 @@ public class PersonV3Mapper {
 			if (postnummer != null) {
 				postadresse.setPostnummer(postnummer);
 			}
-		}
-		if (midlertidigPostadresseUtland.getUstrukturertAdresse().getLandkode() != null) {
-			postadresse.setLand(landkodeService.finnLandnavn(midlertidigPostadresseUtland.getUstrukturertAdresse()
-					.getLandkode()
-					.getValue()));
+
+			if (midlertidigPostadresseUtland.getUstrukturertAdresse().getLandkode() != null) {
+				postadresse.setLand(landkodeService.finnLandnavn(midlertidigPostadresseUtland.getUstrukturertAdresse()
+						.getLandkode()
+						.getValue()));
+			}
 		}
 
 		return postadresse;
@@ -328,16 +337,18 @@ public class PersonV3Mapper {
 		}
 
 		if (strukturertAdresse != null && strukturertAdresse.getTilleggsadresse() != null) {
-			if (CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType())) {
-				return mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(postadresse, strukturertAdresse);
-			} else if (strukturertAdresse.getTilleggsadresse().startsWith(CO_TILLEGGSADRESSETYPE)) {
-				return mapMidlertidigPostAdresseMedCoAdresse(postadresse, strukturertAdresse);
+			if (CO_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType()) ||
+					V_TILLEGGSADRESSETYPE.equalsIgnoreCase(strukturertAdresse.getTilleggsadresseType())) {
+				return mapMidlertidigPostAdresseMedTilleggsadresseType(postadresse, strukturertAdresse);
+			} else if (strukturertAdresse.getTilleggsadresse().startsWith(CO_TILLEGGSADRESSETYPE) ||
+					strukturertAdresse.getTilleggsadresse().startsWith(V_TILLEGGSADRESSETYPE)) {
+				return mapMidlertidigPostAdresseMedTilleggsadresse(postadresse, strukturertAdresse);
 			}
 		}
 		return postadresse;
 	}
 
-	private Postadresse mapMidlertidigPostAdresseMedCoAdresse(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
+	private Postadresse mapMidlertidigPostAdresseMedTilleggsadresse(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
 		return postadresse.toBuilder()
 				.adresselinje3(postadresse.getAdresselinje2())
 				.adresselinje2(postadresse.getAdresselinje1())
@@ -345,7 +356,7 @@ public class PersonV3Mapper {
 				.build();
 	}
 
-	private Postadresse mapMidlertidigPostAdresseMedTilleggsadresseTypeCo(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
+	private Postadresse mapMidlertidigPostAdresseMedTilleggsadresseType(Postadresse postadresse, StrukturertAdresse strukturertAdresse) {
 		return postadresse.toBuilder()
 				.adresselinje3(postadresse.getAdresselinje2())
 				.adresselinje2(postadresse.getAdresselinje1())

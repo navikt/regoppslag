@@ -1,0 +1,49 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Body>
+		<b:hentPersonResponse xmlns:b="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:a="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
+			<response>
+				<person xmlns:c="http://www.w3.org/2001/XMLSchema-instance" c:type="a:Bruker">
+					<sivilstand fomGyldighetsperiode="9999-01-01T00:00:00.000+01:00">
+						<sivilstand>UGIF</sivilstand>
+					</sivilstand>
+					<statsborgerskap>
+						<land>NOR</land>
+					</statsborgerskap>
+					<aktoer c:type="a:PersonIdent">
+						<ident>
+							<ident>12345678910</ident>
+							<type>FNR</type>
+						</ident>
+					</aktoer>
+					<kjoenn>
+						<kjoenn>M</kjoenn>
+					</kjoenn>
+					<personnavn>
+						<etternavn>Appleson</etternavn>
+						<fornavn>Geir</fornavn>
+						<sammensattNavn>Geir Appleson</sammensattNavn>
+					</personnavn>
+					<personstatus>
+						<personstatus>BOSA</personstatus>
+					</personstatus>
+					<foedselsdato>
+						<foedselsdato>1968-09-20+01:00</foedselsdato>
+					</foedselsdato>
+					<doedsdato>
+						<doedsdato>2019-09-20+01:00</doedsdato>
+					</doedsdato>
+					<postadresse>
+						<ustrukturertAdresse>
+							<adresselinje1>Eventyrveien</adresselinje1>
+							<adresselinje2>Eventyrland</adresselinje2>
+						</ustrukturertAdresse>
+					</postadresse>
+					<gjeldendePostadressetype>POSTADRESSE</gjeldendePostadressetype>
+					<geografiskTilknytning c:type="a:Bydel">
+						<geografiskTilknytning>030105</geografiskTilknytning>
+					</geografiskTilknytning>
+				</person>
+			</response>
+		</b:hentPersonResponse>
+	</soapenv:Body>
+</soapenv:Envelope>
