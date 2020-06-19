@@ -1,12 +1,5 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -16,6 +9,8 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -47,6 +42,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.GregorianCalendar;
+
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 
 public class PersonV3MapperTest {
@@ -421,7 +423,7 @@ public class PersonV3MapperTest {
 
 	}
 
-	@Test(expected = RegOppslagFunctionalException.class)
+	@Test(expected = UkjentAdressePersonErDoed.class)
 	public void shouldThrowIfDodPersonWithoutAdress() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		Doedsdato doedsdato = new Doedsdato();
@@ -440,7 +442,7 @@ public class PersonV3MapperTest {
 		mapper.map(person, "");
 	}
 
-	@Test(expected = RegOppslagFunctionalException.class)
+	@Test(expected = UkjentAdresseException.class)
 	public void shouldThrowIfUkjentAdresse() throws Exception {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);

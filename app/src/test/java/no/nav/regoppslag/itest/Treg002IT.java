@@ -1,5 +1,15 @@
 package no.nav.regoppslag.itest;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingXPath;
@@ -16,16 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-
-import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -139,7 +139,6 @@ public class Treg002IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowIfPersonIsMissingAdresse() {
-
 		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-mangler_adresse.xml"))); //mottakerPlugin
@@ -148,8 +147,23 @@ public class Treg002IT extends AbstractIT {
 			fail("Should throw technical Exception");
 		} catch (HttpStatusCodeException e) {
 			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+			assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land."));
+		}
+	}
+
+	@Test
+	public void shouldThrowIfPersonIsDoedAndMissingAdresse() {
+		stubFor(post("/VIRKSOMHET_PERSONV3")
+				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+						.withBodyFile("treg002/personV3/hentperson-dod_mangler_adresse.xml"))); //mottakerPlugin
+		try {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+			fail("Should throw technical Exception");
+		} catch (HttpStatusCodeException e) {
+			verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
+			assertEquals(HttpStatus.GONE, e.getStatusCode());
+			assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE"));
 		}
 	}
 
