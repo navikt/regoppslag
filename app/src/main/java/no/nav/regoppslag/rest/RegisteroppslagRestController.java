@@ -1,13 +1,5 @@
 package no.nav.regoppslag.rest;
 
-import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
-import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -34,6 +26,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+
+import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
+import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -62,8 +62,8 @@ public class RegisteroppslagRestController {
 	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
 			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
+			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -91,8 +91,10 @@ public class RegisteroppslagRestController {
 	@ApiOperation(value = "TREG002", notes = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + samlTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
 			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
+			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
+			@ApiResponse(code = 404, message = "Bruker har ukjent adresse"),
+			@ApiResponse(code = 410, message = "Person er død og har ukjent adresse"),
 			@ApiResponse(code = 500, message = "Teknisk feil")
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

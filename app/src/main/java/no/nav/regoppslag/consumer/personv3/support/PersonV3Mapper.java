@@ -1,14 +1,5 @@
 package no.nav.regoppslag.consumer.personv3.support;
 
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
-import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
-import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
@@ -16,6 +7,8 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -37,6 +30,15 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
+import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
+import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
+import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -167,18 +169,18 @@ public class PersonV3Mapper {
 		if (person.getGjeldendePostadressetype() != null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype()
 				.getValue())) {
 			if (isPersonDod(person)) {
-				throw new RegOppslagFunctionalException(serviceCode + " Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE", "Person er død og har ukjent postadresse");
+				throw new UkjentAdressePersonErDoed(serviceCode + " Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE");
 			}
-			throw new RegOppslagFunctionalException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", "Person har ukjent postadresse");
+			throw new UkjentAdresseException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE");
 		}
 
 		if (isBlankPostadresse(postadresse)) {
 			if (isPersonDod(person)) {
-				throw new RegOppslagFunctionalException("Mottaker er registrert som død og har ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land.", "Person er registrert som død og har ugyldig postadresse");
+				throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land.");
 			}
-			throw new RegOppslagFunctionalException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
+			throw new UkjentAdresseException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
 					.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
-					.getValue()), "Ugyldig postadresse");
+					.getValue()));
 		}
 	}
 
