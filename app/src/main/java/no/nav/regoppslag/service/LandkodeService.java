@@ -14,15 +14,27 @@ import java.util.List;
 public class LandkodeService {
 
 	public static final Logger LOG = LoggerFactory.getLogger(LandkodeService.class);
+	private static final String KOSOVO = "Kosovo, Republic of";
+	private static final String KOSOVO_LANDKODE_FEIL = "XXK";
+	private static final String NORGE = "Norge";
+	private static final String NORWAY = "Norway";
 
 	public String finnLandnavn(String landkode) {
-		if (CountryCode.getByCode(landkode) == null || CountryCode.getByCode(landkode).equals(CountryCode.UNDEFINED)) {
+
+		/*
+		* Spesialtilfelle. I en periode lå Kosovo lagret på landkode XXK, mens den senere ble oppdatert til XKX.
+		* Det er fremdeles rester av XXK rundt om som stopper opp.
+		 */
+		if(KOSOVO_LANDKODE_FEIL.equalsIgnoreCase(landkode)) {
+			return KOSOVO;
+		}
+		else if (CountryCode.getByCode(landkode) == null || CountryCode.getByCode(landkode).equals(CountryCode.UNDEFINED)) {
 			LOG.warn("Finner ikke land for landkode: " + landkode + ", sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon");
 			return null;
-		} else {
+		} else{
 			String landNavn = CountryCode.getByCode(landkode).getName();
-			if ("Norway".equalsIgnoreCase(landNavn)) {
-				return "Norge";
+			if (NORWAY.equalsIgnoreCase(landNavn)) {
+				return NORGE;
 			}
 			return landNavn;
 		}
@@ -34,8 +46,8 @@ public class LandkodeService {
 			return null;
 		}
 
-		if (landnavn.equalsIgnoreCase("Norge")) {
-			landnavn = "Norway";
+		if (landnavn.equalsIgnoreCase(NORGE)) {
+			landnavn = NORWAY;
 		}
 
 		if (CountryCode.findByName(landnavn).size() == 0) {
