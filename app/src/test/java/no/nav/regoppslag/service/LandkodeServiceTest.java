@@ -23,6 +23,13 @@ public class LandkodeServiceTest {
 
 	@Mock
 	private Appender mockAppender;
+	private static final String NORGE = "Norge";
+	private static final String NO = "NO";
+	private static final String NOR = "NOR";
+	private static final String FINNES_IKKE = "FINNES IKKE";
+	private static final String KOSOVO = "Kosovo, Republic of";
+	private static final String KOSOVO_LANDKODE_FEIL = "XXK";
+	private static final String KOSOVO_LANDKODE_RIKTIG = "XKX";
 
 	private LandkodeService landkodeService = new LandkodeService();
 
@@ -39,20 +46,20 @@ public class LandkodeServiceTest {
 
 	@Test
 	public void testFinnLandkode() throws Exception {
-		String landKode = landkodeService.finnLandkode("Norge");
-		assertThat(landKode, is("NO"));
+		String landKode = landkodeService.finnLandkode(NORGE);
+		assertThat(landKode, is(NO));
 	}
 
 	@Test
 	public void testFinnLandNavn() throws Exception {
-		String landNavn = landkodeService.finnLandnavn("NO");
-		assertThat(landNavn, is("Norge"));
+		String landNavn = landkodeService.finnLandnavn(NO);
+		assertThat(landNavn, is(NORGE));
 	}
 
 	@Test
 	public void testFinnLandNavnKode3() throws Exception {
-		String landNavn = landkodeService.finnLandnavn("NOR");
-		assertThat(landNavn, is("Norge"));
+		String landNavn = landkodeService.finnLandnavn(NOR);
+		assertThat(landNavn, is(NORGE));
 	}
 
 	@Test
@@ -62,9 +69,17 @@ public class LandkodeServiceTest {
 	}
 
 	@Test
+	public void testFinnLandNavnKosovo() throws Exception {
+		String landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_FEIL);
+		assertThat(landNavn, is(KOSOVO));
+		landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_RIKTIG);
+		assertThat(landNavn, is(KOSOVO));
+	}
+
+	@Test
 	public void testFinnUkjentLandNavn() throws Exception {
 		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(LandkodeService.LOG);
-		String landNavn = landkodeService.finnLandnavn("FINNES IKKE");
+		String landNavn = landkodeService.finnLandnavn(FINNES_IKKE);
 		LogbackCapturingAppender.Factory.cleanUp();
 
 		assertThat(landNavn, isEmptyOrNullString());
