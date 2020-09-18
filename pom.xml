@@ -42,10 +42,10 @@
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<additionalparam>-Xdoclint:none</additionalparam>
-		<bootstrap.version>3.3.6</bootstrap.version>
+		<bootstrap.version>4.5.0</bootstrap.version>
 		<resilience4j.version>0.13.1</resilience4j.version>
-		<cxf.version>3.3.4</cxf.version>
-		<wss4j-ws-security-dom.version>2.2.4</wss4j-ws-security-dom.version>
+		<cxf.version>3.4.0</cxf.version>
+		<wss4j-ws-security-dom.version>2.3.0</wss4j-ws-security-dom.version>
 		<nav-person-v3-tjenestespesifikasjon.version>3.0.2</nav-person-v3-tjenestespesifikasjon.version>
 		<nav-fim-organisasjon-v4-tjenestespesifikasjon.version>1.0.4</nav-fim-organisasjon-v4-tjenestespesifikasjon.version>
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0
@@ -59,7 +59,7 @@
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
 		<javax.inject.version>1</javax.inject.version>
 		<javax.jws-api.version>1.1</javax.jws-api.version>
-		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+		<springfox-swagger2.version>3.0.0</springfox-swagger2.version>
 		<jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<nv-i18n.version>1.26</nv-i18n.version>
 		<logstash-logback-encoder.version>6.3</logstash-logback-encoder.version>
@@ -114,12 +114,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>${springfox-swagger2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
+				<artifactId>springfox-boot-starter</artifactId>
 				<version>${springfox-swagger2.version}</version>
 			</dependency>
 			<!--CXF dependencies-->
