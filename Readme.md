@@ -1,57 +1,64 @@
-Regoppslag
-================
+# regoppslag
 
-## Swagger dokumentasjon
-Beskrivelsen av grensesnittet finner du på endepunktet `/swagger-ui.html` 
+* [Funksjonelle Krav](#1-funksjonelle-krav)
+* [Distribusjon av tjenesten (deployment)](#2-distribusjon-av-tjenesten-deployment)
+* [Utviklingsmiljø](#3-utviklingsmilj)
+* [Drift og støtte](#4-drift-og-sttte)
 
-## Bygge app.jar og kjøre tester
+## Funksjonelle krav
+Regoppslag er en applikasjon som gjør oppslag mot ulike tjenester hos registerne. 
 
-`mvn clean package`
+For mer informasjon: [confluence](https://confluence.adeo.no/display/BOA/Registeroppslag)
 
-## Kjøre systemtester
 
-Denne applikasjonen har ingen automatiske systemtester
+## Distribusjon av tjenesten (deployment)
+Distribusjon av tjenesten er gjort av Jenkins:
+[regoppslag CI / CD](https://dok-jenkins.adeo.no/job/regoppslag/job/master/)
+Push/merge til masterbranch vil teste, bygge og deploye til produksjonsmiljø og testmiljø.
 
-## Hvordan kjøre lokalt med IntelliJ
 
-Start `Application.java` som en Spring Boot/Java Application. På denne måten kan man kjøre lokalt og få full debug-støtte. 
+## Utviklingsmiljø
+### Forutsetninger
+* Java 11
+* Kubectl
+* Maven
 
-Active profiles: `t`.
+### Kjøre prosjektet lokalt
+For å kjøre opp applikasjonen lokal, bruk profile `nais` og systemvariabler hentet fra vault: [System variabler](https://vault.adeo.no/ui/vault/secrets/secret/list/dokument/regoppslag/) 
 
-Det ligger profil for t i `regoppslag/src/main/resources` hvor url for alle endepunkter ligger som applikasjonen henter opp ved oppstart:
+### Bygge app.jar og kjøre tester
+`mvn clean package`/`mvn clean install`
 
-* application-t.properties
-
-Noen secrets må settes i VM Options
-
-```
-
-# Systembruker
--Dserviceuser.username=srvregoppslag
--Dserviceuser.password=<pw>
-
-# System cert
--Djavax.net.ssl.trustStore=<nav_truststore_nonproduction_ny2.jts path>
--Djavax.net.ssl.trustStorePassword=<pw>
-
-# Ldap
--Dldap_password=<psw>
-
--Dnamespace=tx
-```
-
-Miljø som det ønskes å kjøre mot kan settes med `-Dnamespace=q2` feks for q2
-## Cache ved lokal kjøring
-
+### Cache
 Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
 Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjører lokalt på applikasjonen. Konfigurasjon av denne cachen ligger i `LokalCacheConfig` klassen og vil bare kjøres når Activeprofiles settes `local`.
 
-# Henvendelser
 
-Spørsmål knyttet til koden eller prosjektet kan rettes mot:
+## Drift og støtte
+### Logging
+Loggene til tjenesten kan leses på to måter:
 
-* Applikasjonsansvarlig Paul Magne Lunde <Paul.Magne.Lunde@nav.no> 
+### Kibana
+For [dev-fss](https://logs.adeo.no/goto/73e5f3ceed036fe47affe43670459266)
 
-## For NAV-ansatte
+For [prod-fss](https://logs.adeo.no/goto/8c0004b421ed20528f0aad8600b4f0ea)
 
-Interne henvendelser kan sendes via Slack i kanalen #team_dokument.
+### Kubectl
+For dev-fss:
+```shell script
+kubectl config use-context dev-fss
+kubectl get pods -n q1 -l app=regoppslag
+kubectl logs -f regoppslag-<POD-ID> -n teamdokumenthandtering -c regoppslag
+```
+
+For prod-fss:
+```shell script
+kubectl config use-context prod-fss
+kubectl get pods -l app=regoppslag
+kubectl logs -f regoppslag-<POD-ID> -n teamdokumenthandtering -c regoppslag
+```
+
+
+### Henvendelser
+Spørsmål til koden eller prosjektet kan rettes til Team Dokumentløsninger på:
+* [\#Team Dokumentløsninger](https://nav-it.slack.com/client/T5LNAMWNA/C6W9E5GPJ)
