@@ -58,7 +58,6 @@
 		<kryo.version>4.0.2</kryo.version>
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
 		<javax.inject.version>1</javax.inject.version>
-		<javax.jws-api.version>1.1</javax.jws-api.version>
 		<springfox-swagger2.version>2.10.0</springfox-swagger2.version>
 		<jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<nv-i18n.version>1.26</nv-i18n.version>
