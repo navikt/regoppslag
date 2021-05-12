@@ -64,7 +64,7 @@
 		<logstash-logback-encoder.version>6.4</logstash-logback-encoder.version>
 		<jakarta.jaxws-api.version>3.0.1</jakarta.jaxws-api.version>
 		<jakarta.activation.version>2.0.1</jakarta.activation.version>
-		<jakarta.jws.version>3.0.0</jakarta.jws.version>
+		<javax.jws-api.version>1.1</javax.jws-api.version>
 		<!-- test -->
 		<modig-testcertificates.version>1.2.5</modig-testcertificates.version>
 		<wiremock-standalone.version>2.25.1</wiremock-standalone.version>
@@ -80,11 +80,10 @@
 				<version>${jakarta.activation.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>jakarta.jws</groupId>
-				<artifactId>jakarta.jws-api</artifactId>
-				<version>${jakarta.jws.version}</version>
+			<groupId>javax.jws</groupId>
+			<artifactId>javax.jws-api</artifactId>
+			<version>${javax.jws-api.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>
