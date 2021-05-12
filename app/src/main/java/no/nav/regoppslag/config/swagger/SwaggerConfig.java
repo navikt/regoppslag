@@ -15,14 +15,15 @@ import springfox.documentation.swagger.web.OperationsSorter;
 import springfox.documentation.swagger.web.TagsSorter;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Collections;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+
+//disable swagger2 da det ikke funker. High severity snyk.
+//@EnableSwagger2
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 	public static final String samlTokenInfo = "<p>Ved input som krever oppslag i personopplysninger så krever denne tjenesten SAML assertion token som authorization header. Tokenet blir da brukt ved kall mot PersonV3, og hvis brukeren ikke har tilgang vil kallet mot PersonV3 returnere sikkerhetsfeil. " +
 			"SAML assertion tokenet er del av SAML authentication headeret som starter og slutter med \"saml2:Assertion\". Dette tokenet må konverteres til BASE64 og legges som header i formatet: Key=Authorization, Value=SAML \"SAML assertion token konvertert til BASE64\"</p>";
