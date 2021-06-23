@@ -8,12 +8,6 @@
 	<version>1-SNAPSHOT</version>
 	<name>regoppslag</name>
 
-	<scm>
-		<connection>scm:git:https://stash.adeo.no/scm/boaf/regoppslag.git</connection>
-		<developerConnection>scm:git:https://stash.adeo.no/scm/boaf/regoppslag.git</developerConnection>
-		<url>https://stash.adeo.no/projects/BOAF/repos/regoppslag</url>
-		<tag>HEAD</tag>
-	</scm>
 
 	<modules>
 		<module>app</module>
@@ -22,21 +16,9 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.11.RELEASE</version>
+		<version>2.4.5</version>
 	</parent>
 
-	<distributionManagement>
-		<repository>
-			<id>m2internal</id>
-			<name>NAV Internal Repository</name>
-			<url>dav:http://maven.adeo.no/nexus/content/repositories/m2internal</url>
-		</repository>
-		<snapshotRepository>
-			<id>m2snapshot</id>
-			<name>NAV Snapshot Repository</name>
-			<url>dav:http://maven.adeo.no/nexus/content/repositories/m2snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<properties>
 		<java.version>11</java.version>
@@ -66,7 +48,7 @@
 		<!-- test -->
 		<modig-testcertificates.version>1.2.5</modig-testcertificates.version>
 		<wiremock-standalone.version>2.25.1</wiremock-standalone.version>
-		<httpunit.version>1.7</httpunit.version>
+		<httpunit.version>1.7.3</httpunit.version>
 		<spring-cloud-contract-wiremock.version>2.1.4.RELEASE</spring-cloud-contract-wiremock.version>
 	</properties>
 
@@ -142,6 +124,11 @@
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-core</artifactId>
 				<version>${jaxb-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>1.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
@@ -254,7 +241,7 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>httpunit</groupId>
+				<groupId>org.httpunit</groupId>
 				<artifactId>httpunit</artifactId>
 				<version>${httpunit.version}</version>
 				<exclusions>
