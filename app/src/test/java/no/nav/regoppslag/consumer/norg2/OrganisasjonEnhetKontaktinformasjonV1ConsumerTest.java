@@ -1,12 +1,5 @@
 package no.nav.regoppslag.consumer.norg2;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -17,89 +10,87 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.meldinger.HentKontaktinformasjonForEnhetBolkRequest;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.meldinger.HentKontaktinformasjonForEnhetBolkResponse;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
-	private OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = mock(OrganisasjonEnhetKontaktinformasjonV1.class);
-	private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer organisasjonEnhetKontaktinformasjonV1Consumer =
-			new OrganisasjonEnhetKontaktinformasjonV1Consumer(organisasjonEnhetKontaktinformasjonV1, metrics);
+    private OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1 = mock(OrganisasjonEnhetKontaktinformasjonV1.class);
+    private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
+    private OrganisasjonEnhetKontaktinformasjonV1Consumer organisasjonEnhetKontaktinformasjonV1Consumer =
+            new OrganisasjonEnhetKontaktinformasjonV1Consumer(organisasjonEnhetKontaktinformasjonV1, metrics);
 
-	private final String ENHET_NR = "1234";
-	private final String ENHET_NAVN = "NAV Husnes";
+    private final String ENHET_NR = "1234";
+    private final String ENHET_NAVN = "NAV Husnes";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
-	@Test
-	public void shouldHentEnhetNavn() throws Exception {
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
+    @Test
+    public void shouldHentEnhetNavn() throws Exception {
+        when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(defaultResponse());
 
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
+        Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		assertThat(enhet.getEnhetNavn(), is(ENHET_NAVN));
-	}
+        assertEquals(enhet.getEnhetNavn(), ENHET_NAVN);
+    }
 
-	@Test
-	public void shouldReturnNullWhenNameNotInResponse() throws Exception{
-		HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
-		response.getEnhetListe().get(0).setEnhetNavn(null);
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+    @Test
+    public void shouldReturnNullWhenNameNotInResponse() throws Exception {
+        HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
+        response.getEnhetListe().get(0).setEnhetNavn(null);
+        when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
 
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
+        Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
+        assertNull(enhet.getEnhetNavn());
+    }
 
-		assertThat(enhet.getEnhetNavn(), nullValue());
-	}
+    @Test
+    public void shouldReturnNullWhenFeilEnhetListe() throws Exception {
+        HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
+        response.getEnhetListe().clear();
+        FeiletEnhet feiletEnhet = new FeiletEnhet();
+        feiletEnhet.setEnhetId(ENHET_NR);
+        feiletEnhet.setFeilmelding("Fant ikke enheten");
+        response.getFeiletEnhetListe().add(0, feiletEnhet);
+        when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR),
+                "Nav enhet finnes ikke for enhetNr=" + ENHET_NR);
 
-	@Test
-	public void shouldReturnNullWhenFeilEnhetListe() throws Exception{
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Nav enhet finnes ikke for enhetNr="+ ENHET_NR);
+    }
 
-		HentKontaktinformasjonForEnhetBolkResponse response = defaultResponse();
-		response.getEnhetListe().clear();
-		FeiletEnhet feiletEnhet = new FeiletEnhet();
-		feiletEnhet.setEnhetId(ENHET_NR);
-		feiletEnhet.setFeilmelding("Fant ikke enheten");
-		response.getFeiletEnhetListe().add(0, feiletEnhet);
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
+    @Test
+    public void shouldThrowFunctionalErrorWhenUgyldigInput() throws Exception {
+        when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new HentKontaktinformasjonForEnhetBolkUgyldigInput("Ugyldig input", new UgyldigInput()));
 
-		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-	}
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR),
+                "Ugyldig input");
+    }
 
-	@Test
-	public void shouldThrowFunctionalErrorWhenUgyldigInput() throws Exception {
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new HentKontaktinformasjonForEnhetBolkUgyldigInput("Ugyldig input", new UgyldigInput()));
+    @Test
+    public void shouldThrowTechnicalErrorErrorWhenRuntimeException() throws Exception {
+        when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new RuntimeException());
 
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Ugyldig input");
+        assertThrows(RegOppslagTechnicalException.class,
+                () -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR),
+                "Noe gikk galt i kall til Norg for enhetNr=" + ENHET_NR);
 
-		organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
+    }
 
-	}
+    private HentKontaktinformasjonForEnhetBolkResponse defaultResponse() {
+        return createResponse(ENHET_NAVN);
+    }
 
-	@Test
-	public void shouldThrowTechnicalErrorErrorWhenRuntimeException() throws Exception {
-		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new RuntimeException());
-
-		expectedException.expect(RegOppslagTechnicalException.class);
-		expectedException.expectMessage("Noe gikk galt i kall til Norg for enhetNr="+ENHET_NR);
-
-		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
-
-	}
-
-	private HentKontaktinformasjonForEnhetBolkResponse defaultResponse() {
-		return createResponse(ENHET_NAVN);
-	}
-
-	private HentKontaktinformasjonForEnhetBolkResponse createResponse(String enhetNavn) {
-		HentKontaktinformasjonForEnhetBolkResponse response = new HentKontaktinformasjonForEnhetBolkResponse();
-		Organisasjonsenhet organisasjonsenhet = new Organisasjonsenhet();
-		organisasjonsenhet.setEnhetNavn(enhetNavn);
-		response.getEnhetListe().add(0, organisasjonsenhet);
-		return response;
-	}
+    private HentKontaktinformasjonForEnhetBolkResponse createResponse(String enhetNavn) {
+        HentKontaktinformasjonForEnhetBolkResponse response = new HentKontaktinformasjonForEnhetBolkResponse();
+        Organisasjonsenhet organisasjonsenhet = new Organisasjonsenhet();
+        organisasjonsenhet.setEnhetNavn(enhetNavn);
+        response.getEnhetListe().add(0, organisasjonsenhet);
+        return response;
+    }
 }

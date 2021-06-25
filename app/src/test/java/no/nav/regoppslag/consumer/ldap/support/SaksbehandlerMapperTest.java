@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SaksbehandlerMapperTest {
 	private final String SAKSBEHANDLER_NAVN = "Sverre Saksbehandler";

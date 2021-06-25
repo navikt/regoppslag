@@ -23,7 +23,7 @@ import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -38,7 +38,7 @@ public class Treg001IT extends AbstractIT {
 
 	private static final String DOKUMENTTYPEID = "123";
 
-	@Before
+	@BeforeEach
 	public void runBefore() {
 		WireMock.removeAllMappings();
 		WireMock.resetAllRequests();

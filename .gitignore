@@ -16,6 +16,7 @@ atlassian-ide-plugin.xml
 *.tm*.epoch
 *.lck
 *.log
+*.jar
 testDb.properties
 APP_LOG_HOME_IS_UNDEFINED
 

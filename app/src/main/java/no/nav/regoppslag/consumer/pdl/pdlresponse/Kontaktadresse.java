@@ -2,8 +2,12 @@ package no.nav.regoppslag.consumer.pdl.pdlresponse;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class Kontaktadresse {
+    private LocalDate gyldigFraOgMed;
+    private LocalDate gyldigTilOgMed;
     private String type;
     private String coAdressenavn;
     private PostadresseIFrittFormat postadresseIFrittFormat;

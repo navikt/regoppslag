@@ -16,10 +16,8 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -50,6 +48,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OrganisasjonV4MapperTest {
 
@@ -61,10 +60,7 @@ public class OrganisasjonV4MapperTest {
     private MicrometerMetrics metrics = new MicrometerMetrics();
     private OrganisasjonV4Mapper mapper;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void initTests() throws Exception {
         postnummerService.init();
         ReflectionTestUtils.setField(metrics, "registry", registry);
@@ -104,48 +100,38 @@ public class OrganisasjonV4MapperTest {
 
     @Test
     public void shouldThrowWhenMissingAdresse() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-        MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
-        assertThat(mottaker.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-        assertThat(mottaker.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet for orgnummer=null");
+
     }
 
     @Test
     public void shouldThrowWhenExpiredAdresse() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settSemistrukturertAdresse(org, "POSTADRESSE", -20000);
-        MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
-        assertThat(mottaker.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-        assertThat(mottaker.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet for orgnummer=null");
+
     }
 
     @Test
     public void shouldThrowWhenMissingPoststed() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Ingen gyldige adresser funnet");
-
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         settStrukturertAdresse(org, "POSTADRESSE");
         ((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(null);
-        mapper.map(ORGID, org, SERVICECODE);
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet for orgnummer=null");
+
     }
 
     @Test
     public void shouldThrowWhenOpphoertOrg() throws Exception {
-        thrown.expect(RegOppslagFunctionalException.class);
-        thrown.expectMessage("Organisasjon har opphørt");
-
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         org.getOrganisasjonDetaljer().setOpphoersdato(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
-        MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
-        assertThat(mottaker.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-        assertThat(mottaker.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+
+        assertThrows(RegOppslagFunctionalException.class,
+                () -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
     }
 
     @Test

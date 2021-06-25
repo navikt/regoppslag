@@ -20,9 +20,9 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -32,7 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LdapConfig.class, SaksbehandlerPluginTest.Config.class})
 @TestPropertySource("classpath:ldap.properties")
 public class SaksbehandlerPluginTest {
@@ -54,11 +54,6 @@ public class SaksbehandlerPluginTest {
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
 	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
-	
-	
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;

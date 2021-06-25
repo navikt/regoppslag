@@ -35,7 +35,6 @@ public class PdlGraphQLConsumer {
     private final StsRestConsumer stsConsumer;
     private final String pdlUrl;
 
-
     @Inject
     public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder, StsRestConsumer stsConsumer, @Value("${pdl.url}") String pdlUrl) {
         this.restTemplate = restTemplateBuilder
@@ -62,8 +61,8 @@ public class PdlGraphQLConsumer {
             log.debug("Henter personinfo for aktørId={}", aktoerId);
 
             final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
-
-            return null;
+            response.getData().getHentPerson().getBostedsadresse();
+            return response;
         } catch (HttpClientErrorException e) {
             throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e);
         } catch (HttpServerErrorException e) {
@@ -83,12 +82,12 @@ public class PdlGraphQLConsumer {
                 "    \tgradering\n" +
                 "    }\n" +
                 "    doedsfall{\n" +
-                "        doedsdato\n" +
-                "      }\n" +
-                "  foedsel{\n" +
-                "    foedselsaar\n" +
-                "    foedselsdato\n" +
-                "  }\n" +
+                "      doedsdato\n" +
+                "    }\n" +
+                "    foedsel{\n" +
+                "      foedselsaar\n" +
+                "      foedselsdato\n" +
+                "    }\n" +
                 "    navn(historikk: false){\n" +
                 "      fornavn\n" +
                 "      mellomnavn\n" +
@@ -136,6 +135,17 @@ public class PdlGraphQLConsumer {
                 "      postboksadresse{\n" +
                 "        postbokseier\n" +
                 "        postboks\n" +
+                "        postnummer\n" +
+                "      }\n" +
+                "      vegadresse{\n" +
+                "        matrikkelId\n" +
+                "        husnummer\n" +
+                "        husbokstav\n" +
+                "        bruksenhetsnummer\n" +
+                "        adressenavn\n" +
+                "        kommunenummer\n" +
+                "        bydelsnummer\n" +
+                "        tilleggsnavn\n" +
                 "        postnummer\n" +
                 "      }\n" +
                 "      postadresseIFrittFormat{\n" +
@@ -269,8 +279,7 @@ public class PdlGraphQLConsumer {
                 "      status\n" +
                 "    \tforenkletStatus\n" +
                 "    }\n" +
-                "    \n" +
-                "  tilrettelagtKommunikasjon{\n" +
+                "    tilrettelagtKommunikasjon{\n" +
                 "     tegnspraaktolk{\n" +
                 "    \tspraak\n" +
                 "    }\n" +
@@ -279,7 +288,7 @@ public class PdlGraphQLConsumer {
                 "  }\n" +
                 "  }\n" +
                 "  }\n" +
-                "}\n").variables(variables).build();
+                "}").variables(variables).build();
     }
 
 

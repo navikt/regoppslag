@@ -11,8 +11,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.itest.config.CacheTestConfig;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.ldap.query.LdapQuery;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LdapConfig.class, CacheTestConfig.class, LdapAdeoUserLookupCacheTest.Config.class})
 @TestPropertySource("classpath:ldap.properties")
 @ActiveProfiles("itest")

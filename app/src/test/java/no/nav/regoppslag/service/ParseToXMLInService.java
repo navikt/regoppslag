@@ -8,9 +8,9 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import java.util.Collection;
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@RunWith(Parameterized.class)
+//@ExtendWith(Parameterized.class)
 public class ParseToXMLInService {
 	
 	ExpectedException exception = ExpectedException.none();
