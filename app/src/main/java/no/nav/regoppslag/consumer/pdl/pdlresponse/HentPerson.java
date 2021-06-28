@@ -66,8 +66,8 @@ public class HentPerson {
     }
 
     @Data
-    private static class Folkeregisterpersonstatus {
-        private String status;  //midlertidig,doed
+    public static class Folkeregisterpersonstatus {
+        private String status;  //midlertidig,doed, bosatt
         private String forenkletStatus;
     }
 

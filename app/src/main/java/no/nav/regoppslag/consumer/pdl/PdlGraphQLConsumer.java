@@ -1,15 +1,22 @@
 package no.nav.regoppslag.consumer.pdl;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.HentPerson;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.stsrest.StsRestConsumer;
 import no.nav.regoppslag.exceptions.PdlFunctionalException;
 import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MetricLabels;
+import no.nav.regoppslag.metrics.Metrics;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,7 +29,11 @@ import javax.inject.Inject;
 import java.time.Duration;
 import java.util.HashMap;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 
 @Slf4j
 @Component
@@ -45,8 +56,10 @@ public class PdlGraphQLConsumer {
         this.pdlUrl = pdlUrl;
     }
 
-    @Retryable(include = HttpServerErrorException.class)
-    public PDLHentPersonResponse hentPerson(final String aktoerId, final String tema) {
+    @Cacheable(value = MetricLabels.HENT_PERSON, key = "#aktoerId")
+    @Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+    @Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
+    public HentPerson hentPerson(final String aktoerId, final String tema) {
         try {
             final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdlUrl).build();
             final String serviceUserToken = "Bearer " + stsConsumer.getOidcToken();
@@ -59,10 +72,13 @@ public class PdlGraphQLConsumer {
                     .body(mapRequest(aktoerId));
 
             log.debug("Henter personinfo for aktørId={}", aktoerId);
-
             final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
-            response.getData().getHentPerson().getBostedsadresse();
-            return response;
+
+            if (isNull(response.getErrors()) || response.getErrors().isEmpty()) {
+                return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
+            }else {
+                throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors());
+            }
         } catch (HttpClientErrorException e) {
             throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e);
         } catch (HttpServerErrorException e) {

@@ -6,8 +6,11 @@ import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.MappPDLResponse;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
@@ -42,12 +45,11 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private static final String PLUGIN_NAME = "SakspartPlugin";
 
 	private PersonV3Consumer personV3Consumer;
-
 	private PersonV3Mapper personV3Mapper;
-
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
-
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
+	private PdlGraphQLConsumer pdlGraphQLConsumer;
+	private MappPDLResponse mappPDLResponse;
 
 	private MicrometerMetrics metrics;
 
@@ -56,9 +58,13 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	}
 
 	@Inject
-	public SakspartPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
+	public SakspartPlugin(PdlGraphQLConsumer pdlGraphQLConsumer, MappPDLResponse mappPDLResponse,
+						  PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper,
+						  OrganisasjonV4Consumer organisasjonV4Consumer,
 						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics) {
 		super(Sakspart.class);
+		this.mappPDLResponse = mappPDLResponse;
+		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
@@ -84,8 +90,9 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), SERVICE_CODE_TREG001);
-					sakspart.setNavn(personV3Mapper.getSakspartNavn(person));
+					HentMottakerOgAdresseResponse response = mappPDLResponse.mapHentPerson(
+							pdlGraphQLConsumer.hentPerson(sakspart.getId(), ""), SERVICE_CODE_TREG001);
+					sakspart.setNavn(response.getNavn());
 
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());

@@ -3,10 +3,8 @@ package no.nav.regoppslag.consumer.pdl.pdlresponse;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -67,7 +65,7 @@ public class KontaktinformasjonForDoedsbo {
     }
 
     public String getFulltnavn(Personnavn personnavn) {
-        return  (nonNull(personnavn)) ? personnavn.getFornavn() + " " +
+        return (nonNull(personnavn)) ? personnavn.getFornavn() + " " +
                 (isBlank(personnavn.getMellomnavn()) ? "" : personnavn.getMellomnavn() + " ") +
                 personnavn.getEtternavn() : null;
     }

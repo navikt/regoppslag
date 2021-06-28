@@ -1,10 +1,12 @@
 package no.nav.regoppslag.consumer.pdl.pdlresponse;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class Kontaktadresse {
     private LocalDate gyldigFraOgMed;
     private LocalDate gyldigTilOgMed;
@@ -13,7 +15,7 @@ public class Kontaktadresse {
     private PostadresseIFrittFormat postadresseIFrittFormat;
     private UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
     private Postboksadresse postboksadresse;
-    private UtenlandskAdresse utenlandskAdresse;
+    private UtenlandskAdresse UtenlandskAdresse;
 
     @Data
     static class PostadresseIFrittFormat {

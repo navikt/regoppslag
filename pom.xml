@@ -19,12 +19,11 @@
 		<version>2.4.5</version>
 	</parent>
 
-
 	<properties>
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<additionalparam>-Xdoclint:none</additionalparam>
-		<bootstrap.version>4.5.0</bootstrap.version>
+		<bootstrap.version>5.0.1</bootstrap.version>
 		<resilience4j.version>0.13.1</resilience4j.version>
 		<cxf.version>3.4.0</cxf.version>
 		<wss4j-ws-security-dom.version>2.2.4</wss4j-ws-security-dom.version>

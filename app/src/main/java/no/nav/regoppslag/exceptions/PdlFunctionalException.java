@@ -1,6 +1,6 @@
 package no.nav.regoppslag.exceptions;
 
-public class PdlFunctionalException extends RuntimeException {
+public class PdlFunctionalException extends AbstractRegOppslagFunctionalException {
 
     public PdlFunctionalException(String message) {
         super(message);

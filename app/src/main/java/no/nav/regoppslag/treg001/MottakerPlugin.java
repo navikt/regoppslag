@@ -9,9 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.MappPDLResponse;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
@@ -49,26 +52,26 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private static final String PLUGIN_NAME = "MottakerPlugin";
 
 	private PersonV3Consumer personV3Consumer;
-
 	private PersonV3Mapper personV3Mapper;
-
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
-
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
-
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
-
 	private MicrometerMetrics metrics;
+	private PdlGraphQLConsumer pdlGraphQLConsumer;
+	private MappPDLResponse mappPDLResponse;
 
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
+	public MottakerPlugin(PdlGraphQLConsumer pdlGraphQLConsumer, MappPDLResponse mappPDLResponse,
+						  PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
 						  OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
 						  MicrometerMetrics metrics) {
 		super(Mottaker.class);
+		this.mappPDLResponse = mappPDLResponse;
+		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
@@ -97,6 +100,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				validateMottaker(mottaker);
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
+					HentMottakerOgAdresseResponse response = mappPDLResponse.mapHentPerson(
+							pdlGraphQLConsumer.hentPerson(mottaker.getId(), ""), SERVICE_CODE_TREG001);
+
 					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
