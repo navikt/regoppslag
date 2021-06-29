@@ -47,6 +47,7 @@ public class NavOrgenhetNavnPluginTest {
 
     private static final String NAV_ENHET_NAVN = "NAV Husnes";
     private static final String DOKUMENTTYPEID = "I000003";
+    private static final String TEMA_PEN = "PEN";
 
     private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
     private PostnummerService postnummerService = new PostnummerService();
@@ -87,7 +88,7 @@ public class NavOrgenhetNavnPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = norgPlugin.processElement(node, valueMap);
+        Node processed = norgPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
         NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -106,7 +107,7 @@ public class NavOrgenhetNavnPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = norgPlugin.processElement(node, valueMap);
+        Node processed = norgPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
         NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -125,7 +126,7 @@ public class NavOrgenhetNavnPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = norgPlugin.processElement(node, valueMap);
+        Node processed = norgPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
         NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -144,7 +145,7 @@ public class NavOrgenhetNavnPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = norgPlugin.processElement(node, valueMap);
+        Node processed = norgPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
         NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);

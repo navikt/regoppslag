@@ -51,6 +51,8 @@ public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
+	private static final String TEMA_PEN = "PEN";
+
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
 	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
@@ -84,7 +86,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap, TEMA_PEN);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
@@ -105,7 +107,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap, TEMA_PEN);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);

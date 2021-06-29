@@ -8,12 +8,11 @@ import java.time.LocalDateTime;
 @Data
 @SuperBuilder
 public class Oppholdsadresse {
-    private LocalDateTime gyldigFraOgMed;
-    private LocalDateTime gyldigTilOgMed;
-    private String coAdressenavn;
-    private String oppholdAnnetSted;
-    private UkjentBosted ukjentBosted;
-    private Vegadresse vegadresse;
-    private Matrikkeladresse matrikkeladresse;
-    private UtenlandskAdresse utenlandskAdresse;
+	private LocalDateTime gyldigFraOgMed;
+	private LocalDateTime gyldigTilOgMed;
+	private String coAdressenavn;
+	private String oppholdAnnetSted;
+	private Vegadresse vegadresse;
+	private Matrikkeladresse matrikkeladresse;
+	private UtenlandskAdresse utenlandskAdresse;
 }

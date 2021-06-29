@@ -8,13 +8,14 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@NoArgsConstructor
-public class MottakerPostInfo {
+public class PdlMottakerInfo {
 
     private String identifikasjonsnummer;
     private LocalDate doedsdato;
     private LocalDate foedselsdato;
-    private String mottakerNavn;
+    private String navn;
+    private String kortNavn;
     private PostadresseTo postadresse;
+
 
 }

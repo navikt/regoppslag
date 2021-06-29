@@ -65,7 +65,7 @@ public class KompletterBrevdataService {
 		String responseBrevdata;
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
-			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
+			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId(), request.getTema());
 
 			responseBrevdata = documentToString(brevdataUtfylt);
 		} catch (MarshallerTechnicalException e) {

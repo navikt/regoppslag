@@ -25,4 +25,7 @@ public class KompletterBrevdataRequest {
 	private String dokumentTypeId;
 	@ApiModelProperty(example = exampleBrevdata, notes = "Brevdata fra felles mastermal. XML'en kan være utfylt med data eller ikke.", required = true)
 	private String brevdata;
+	@ApiModelProperty(example = "FOR", notes = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", required = true, allowableValues = "DAG, FOR, PEN, FRI ....")
+	private String tema;
+
 }

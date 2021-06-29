@@ -6,12 +6,11 @@ import lombok.Data;
 @Data
 @Builder
 public class PostadresseTo {
-    private String adresseType;
-    private String adresselinje1;
-    private String adresselinje2;
-    private String adresselinje3;
-    private String adresselinje4;
-    private String postnummer;
-    private String poststed;
-    private String land;
+	private String adresseType;
+	private String adresselinje1;
+	private String adresselinje2;
+	private String adresselinje3;
+	private String postnummer;
+	private String poststed;
+	private String landkode;
 }

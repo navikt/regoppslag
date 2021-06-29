@@ -37,6 +37,6 @@ public interface ElementEnricherPlugin {
 	 * @throws MissingKeyValueException if lookup key subelement is empty or missing
 	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 */
-	Node processElement(Node content, Map<String, Object> propertyMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException;
+	Node processElement(Node content, Map<String, Object> propertyMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException;
 
 }

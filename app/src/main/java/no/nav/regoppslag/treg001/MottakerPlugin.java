@@ -1,22 +1,16 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.MicrometerMetrics.getUserId;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
-
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dok.brevdata.felles.v1.navfelles.Adresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MappPDLResponse;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -27,7 +21,6 @@ import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -40,6 +33,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
 import java.util.Map;
 
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+
 /**
  * @author Hans Petter Simonsen - Miles
  */
@@ -51,29 +48,24 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	private static final String PLUGIN_NAME = "MottakerPlugin";
 
-	private PersonV3Consumer personV3Consumer;
-	private PersonV3Mapper personV3Mapper;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private MicrometerMetrics metrics;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
-	private MappPDLResponse mappPDLResponse;
+	private MapPDLResponse mapPDLResponse;
 
 	public MottakerPlugin() {
 		super(Mottaker.class);
 	}
 
 	@Inject
-	public MottakerPlugin(PdlGraphQLConsumer pdlGraphQLConsumer, MappPDLResponse mappPDLResponse,
-						  PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
-						  OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
+	public MottakerPlugin(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
+						  OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
 						  MicrometerMetrics metrics) {
 		super(Mottaker.class);
-		this.mappPDLResponse = mappPDLResponse;
+		this.mapPDLResponse = mapPDLResponse;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
-		this.personV3Consumer = personV3Consumer;
-		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
@@ -81,7 +73,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		SpraakKodeMapper spraakKodeMapper = (SpraakKodeMapper) valueMap.get(MAALFORM.name());
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
@@ -99,21 +91,18 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
-					HentMottakerOgAdresseResponse response = mappPDLResponse.mapHentPerson(
-							pdlGraphQLConsumer.hentPerson(mottaker.getId(), ""), SERVICE_CODE_TREG001);
-
-					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
+					Adresse adresse = mottaker.getMottakeradresse();
+					PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
+							pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), SERVICE_CODE_TREG001);
+					mottaker.setNavn(hentPerson.getNavn());
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 					mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+					mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
+					mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
+					mottaker.setNavn(mottakerTo.getMottaker().getNavn());
 				}
-
-				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
-				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
-				mottaker.setNavn(mottakerTo.getMottaker().getNavn());
 			}
-
 			//Sjekker språket på malen opp mot mottakers preferanser
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null || sprakinfos.isEmpty()) {

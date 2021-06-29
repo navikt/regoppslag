@@ -3,11 +3,13 @@ package no.nav.regoppslag.service;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,10 +25,10 @@ public class PostnummerService {
 	public static final Logger LOG = LoggerFactory.getLogger(PostnummerService.class);
 	private static final String FILENAME = "/kodeverk/postnummerregister.txt";
 
-	private final Map<String, PostData> postalCodeTable;
+	private final Map<String, PostData> postalCodeTable = new HashMap<>();
 
+	@Inject
 	public PostnummerService() {
-		postalCodeTable = new HashMap<>();
 	}
 
 	@PostConstruct
@@ -56,7 +58,9 @@ public class PostnummerService {
 		private String poststed;
 	}
 
+	@SneakyThrows
 	public String finnPoststed (String postnr) {
+		init();
 		if (postalCodeTable.get(postnr) == null) {
 			LOG.warn("Finner ikke poststed for postnummer: " + postnr + ", sjekk om ny postnummer.txt må lastes ned.");
 			return null;

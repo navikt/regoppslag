@@ -18,6 +18,7 @@ import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Con
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.metrics.DokTimedAspect;
+import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ import org.springframework.retry.annotation.EnableRetry;
 		ServiceuserAlias.class
 })
 @Import({TomcatConfig.class,
+		PostnummerService.class,
 		PersonV3Consumer.class,
 		OrganisasjonV4Consumer.class,
 		OrganisasjonEnhetKontaktinformasjonV1Consumer.class,

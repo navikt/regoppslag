@@ -13,6 +13,7 @@ public class PDLHentPersonResponse {
     private PDLHentPerson data;
 
     @Data
+    @Builder
     public static class PDLHentPerson {
         private HentPerson hentPerson;
     }

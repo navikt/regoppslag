@@ -35,6 +35,10 @@ public class TestDataUtil {
 
 
     public static final String ADRESSELINJE1 = "adresselinje1";
+    public static final String PDL_ADRESSELINJE1 = "HAGERESELAM 26";
+    public static final String PDL_ADRESSELINJE2 = "HAGERESELAM 26";
+    public static final String PDL_ADRESSELINJE3 = "HAGERESELAM 26";
+    public static final String PDl_POSTNUMMER = "7319";
     public static final String ADRESSELINJE2 = "adresselinje2";
     public static final String ADRESSELINJE3 = "adresselinje3";
     public static final String ADRESSELINJE_POSTSTED = "poststed";

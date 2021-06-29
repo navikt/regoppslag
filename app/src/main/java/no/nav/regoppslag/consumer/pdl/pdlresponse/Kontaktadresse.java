@@ -4,21 +4,24 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class Kontaktadresse {
-    private LocalDate gyldigFraOgMed;
-    private LocalDate gyldigTilOgMed;
+    private LocalDateTime gyldigFraOgMed;
+    private LocalDateTime gyldigTilOgMed;
     private String type;
     private String coAdressenavn;
     private PostadresseIFrittFormat postadresseIFrittFormat;
+    private Vegadresse vegadresse;
     private UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
     private Postboksadresse postboksadresse;
     private UtenlandskAdresse UtenlandskAdresse;
 
     @Data
-    static class PostadresseIFrittFormat {
+    @Builder
+    public static class PostadresseIFrittFormat {
         private String adresselinje1;
         private String adresselinje2;
         private String adresselinje3;
@@ -27,7 +30,7 @@ public class Kontaktadresse {
 
 
     @Data
-    static class UtenlandskAdresseIFrittFormat{
+    public static class UtenlandskAdresseIFrittFormat{
         private String adresselinje1;
         private String adresselinje2;
         private String adresselinje3;
@@ -37,7 +40,8 @@ public class Kontaktadresse {
     }
 
     @Data
-    static class Postboksadresse {
+    @Builder
+    public static class Postboksadresse {
         private String postbokseier;
         private String postboks;
         private String postnummer;

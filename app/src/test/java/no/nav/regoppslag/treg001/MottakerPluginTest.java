@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import lombok.SneakyThrows;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
@@ -9,8 +10,9 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.Kontaktadresse;
+import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -18,6 +20,7 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
+import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
@@ -31,6 +34,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -50,6 +54,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
@@ -84,18 +91,22 @@ public class MottakerPluginTest {
     private static final String DOKUMENTTYPEID = "I000003";
     private static final String SPRAAK_NB = "NB";
     private static final String MOTTAKER_ID = "30085849677";
+    private static final String TEMA_PEN = "PEN";
+    private static final String TEMA_DAG = "DAG";
 
-    private static PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
-    private static PostnummerService postnummerService = new PostnummerService();
+
+    private static PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
+    private static PostnummerService postnummerService = mock(PostnummerService.class);
     private static LandkodeService landkodeService = new LandkodeService();
     private static OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
     private static OrganisasjonV4Mapper organisasjonV4Mapper;
     private static Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
     private static Map<String, Object> valueMap;
     private static SecurityContext securityContext = new SecurityContextImpl();
-    private static PersonV3Mapper personV3Mapper;
+    private static MapPDLResponse mapPDLResponse;
     private static MottakerPlugin mottakerPlugin;
 
+    @SneakyThrows
     @BeforeAll
     public static void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException, DatatypeConfigurationException {
         valueMap = new HashMap<>();
@@ -107,11 +118,12 @@ public class MottakerPluginTest {
         MicrometerMetrics metrics = new MicrometerMetrics();
         MeterRegistry registry = new SimpleMeterRegistry();
         ReflectionTestUtils.setField(metrics, "registry", registry);
-        personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
+        mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, metrics);
         organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-        mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
+        mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
 
-        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+        when(postnummerService.finnPoststed(anyString())).thenReturn("AGDENES");
+        when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPerson());
         when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
         when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 
@@ -128,7 +140,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -139,11 +151,10 @@ public class MottakerPluginTest {
     @Test
     public void shouldUsePersonMaalform() throws Exception {
         Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
-
         Spraak spraak = new Spraak();
         spraak.setValue("EN");
         person.setMaalform(spraak);
-        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+        when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPerson());
         when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
         File xmlFile = new File(BREVDATA1);
@@ -155,7 +166,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap, TEMA_DAG);
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -165,8 +176,7 @@ public class MottakerPluginTest {
     @Test
     public void shouldUseMottakerMaalform() throws Exception {
         Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
-
-        when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+        when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPerson());
         when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
         File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
@@ -178,7 +188,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap, TEMA_PEN);
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -196,7 +206,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap, TEMA_DAG);
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -220,7 +230,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
 
-        Node processed = mottakerPlugin.processElement(node, valueMap);
+        Node processed = mottakerPlugin.processElement(node, valueMap, TEMA_PEN);
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
@@ -244,7 +254,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
         RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
-                () -> mottakerPlugin.processElement(node, valueMap),
+                () -> mottakerPlugin.processElement(node, valueMap, TEMA_PEN),
                 "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
         assertEquals(exception.getMessage(), "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 
@@ -262,7 +272,7 @@ public class MottakerPluginTest {
 
         Node node = findSingleNode(xPathExpression, document);
         assertThrows(RegOppslagFunctionalException.class,
-                () -> mottakerPlugin.processElement(node, valueMap), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
+                () -> mottakerPlugin.processElement(node, valueMap, TEMA_DAG), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
 
     }
 
