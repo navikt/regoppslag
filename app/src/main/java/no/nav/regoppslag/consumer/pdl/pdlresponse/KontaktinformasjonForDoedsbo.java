@@ -6,9 +6,6 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 @Data
 @Builder
 public class KontaktinformasjonForDoedsbo {
@@ -42,6 +39,7 @@ public class KontaktinformasjonForDoedsbo {
 	}
 
 	@Data
+	@Builder
 	public static class AdvokatSomKontakt {
 		private Personnavn personnavn;
 		private String organisasjonsnavn;
@@ -62,11 +60,5 @@ public class KontaktinformasjonForDoedsbo {
 		private String poststedsnavn;
 		private String postnummer;
 		private String landkode;
-	}
-
-	public String getFulltnavn(Personnavn personnavn) {
-		return (nonNull(personnavn)) ? personnavn.getFornavn() + " " +
-				(isBlank(personnavn.getMellomnavn()) ? "" : personnavn.getMellomnavn() + " ") +
-				personnavn.getEtternavn() : null;
 	}
 }

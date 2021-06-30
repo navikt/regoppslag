@@ -11,7 +11,6 @@ import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -34,7 +33,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -54,12 +52,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULTTNAVN;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -118,7 +114,7 @@ public class MottakerPluginTest {
         MicrometerMetrics metrics = new MicrometerMetrics();
         MeterRegistry registry = new SimpleMeterRegistry();
         ReflectionTestUtils.setField(metrics, "registry", registry);
-        mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, metrics);
+        mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
         organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
         mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
 
@@ -145,7 +141,7 @@ public class MottakerPluginTest {
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-        assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+        assertThat(mottaker.getNavn(), is(FULTTNAVN));
     }
 
     @Test
@@ -170,7 +166,7 @@ public class MottakerPluginTest {
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-        assertThat(mottaker.getSpraakkode().value(), is("EN"));
+        assertThat(mottaker.getSpraakkode().value(), is("NN"));
     }
 
     @Test

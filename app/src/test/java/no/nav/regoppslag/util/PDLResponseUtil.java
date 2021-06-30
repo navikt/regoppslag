@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_BOSATT;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
 
 
@@ -26,8 +26,8 @@ public class PDLResponseUtil {
 	public static final String UTELAND_NAVN = "Herr H. C. Andersen";
 	public static final String UTENLANDSK_POSTKODE = "Ottawa ON K1A 0B1";
 	public static final String UTENLANDSK_BYSTED = "Ottawa";
-	public static final String  UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
-	public static final String  UTENLANDSK_LANDKODE = "CA";
+	public static final String UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
+	public static final String UTENLANDSK_LANDKODE = "CA";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "H. C.";
@@ -39,6 +39,7 @@ public class PDLResponseUtil {
 
 	public static final int FOEDSELSAAR = 1984;
 	public static final LocalDate FOEDSELDATO = LocalDate.of(1984, Month.APRIL, 24);
+	public static final LocalDate DOEDSDATO = LocalDate.now();
 	public static final String FORKOORETNAVN = "GYNGEHEST ÅPENHJERTIG";
 	public static final String FULTTNAVN = "GYNGEHEST A. ÅPENHJERTIG";
 	public static final String FORNAVN = "GYNGEHEST";
@@ -55,7 +56,7 @@ public class PDLResponseUtil {
 	public static final String POSTNUMMER = "7320";
 	public static final String FRITTFORMAT_ADRESSELINJE1 = "C/O Kari Hansen";
 	public static final String FRITTFORMAT_ADRESSELINJE2 = "Kirkegata 12";
-	public static final String FRITTFORMAT_POSTNUMMER = "9550";
+	public static final String FRITTFORMAT_POSTNUMMER = "7320";
 	public static final String POSTSTED = "FANNREM";
 	public static final String POSTBOKSEIER = "Byggfirma A/S";
 	public static final String POSTBOKS = "Postboks 7320";
@@ -71,8 +72,10 @@ public class PDLResponseUtil {
 	public static final String IDENTTYPE_FNR = "FNR";
 	public static final String IDENTTYPE_DNR = "DNR";
 	public static final String STATUS = "I_BRUK";
-
-
+	public static final String ORGANISASJONNUMMER = "1234567";
+	public static final String ORGANISASJONNAVN = "Fred Advokat AS";
+	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
+	public static final String COADRESSENAVN = "C/O Herr Andersen ";
 
 	public static PDLHentPersonResponse pdlHentPersonResponse() {
 		return PDLHentPersonResponse.builder()
@@ -152,6 +155,35 @@ public class PDLResponseUtil {
 				.build();
 	}
 
+	public static HentPerson createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt() {
+		return HentPerson.builder()
+				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+						.gradering(HentPerson.Gradering.FORTROLIG)
+						.build()))
+				.doedsfall(Arrays.asList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
+				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+						.foedselsaar(FOEDSELSAAR)
+						.foedselsdato(FOEDSELDATO)
+						.build()))
+				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+						.forkortetNavn(FORKOORETNAVN)
+						.fornavn(FORNAVN)
+						.mellomnavn(MELLOMNAVN)
+						.etternavn(ETTERNAVN)
+						.build()))
+				.kontaktinformasjonForDoedsbo(Arrays.asList(createKontaktinformasjonForDoedsbo()))
+				.sikkerhetstiltak(Collections.emptyList())
+				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
+						.type(IDENTTYPE_FNR)
+						.status(STATUS)
+						.build()))
+				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+						.status(PERSONSTATUS_DOED)
+						.forenkletStatus("bosattEtterFolkeregisterloven")
+						.build()))
+				.build();
+	}
 
 	public static HentPerson createPdlHentPersonUtelandsk() {
 		return HentPerson.builder()
@@ -184,12 +216,33 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	private static KontaktinformasjonForDoedsbo.Personnavn createNavnAdvokatSomKontakt() {
+	private static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsbo() {
+		return KontaktinformasjonForDoedsbo.builder()
+				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
+				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.adresse(createAdvokatKontaktAdresse())
+				.advokatSomKontakt(KontaktinformasjonForDoedsbo.AdvokatSomKontakt.builder()
+						.personnavn(createNavnForAdvokatSomKontakt())
+						.organisasjonsnummer(ORGANISASJONNUMMER)
+						.organisasjonsnavn(ORGANISASJONNAVN)
+						.build())
+				.build();
+	}
+
+	private static KontaktinformasjonForDoedsbo.Personnavn createNavnForAdvokatSomKontakt() {
 		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
 		personnavn.setFornavn(ADVOKAT_FORNAVN);
 		personnavn.setMellomnavn(ADVOKAT_MELLOMNAVN);
 		personnavn.setMellomnavn(ADVOKAT_ETTERNAVN);
 		return personnavn;
+	}
+
+	private static KontaktinformasjonForDoedsbo.KontaktAdresse createAdvokatKontaktAdresse() {
+		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
+		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
+		kontaktAdresse.setPostnummer(POSTNUMMER);
+		kontaktAdresse.setPoststedsnavn(POSTSTED);
+		return kontaktAdresse;
 	}
 
 	private static Bostedsadresse createBostedsadresse() {
@@ -212,7 +265,7 @@ public class PDLResponseUtil {
 				.kommunenummer("5432")
 				.bydelsnummer(null)
 				.tilleggsnavn(null)
-				.postnummer("7320")
+				.postnummer(POSTNUMMER)
 				.build();
 	}
 
@@ -229,6 +282,7 @@ public class PDLResponseUtil {
 				.postnummer(POSTNUMMER)
 				.build();
 	}
+
 
 	private static Matrikkeladresse createMatrikkeladresse() {
 		return Matrikkeladresse.builder()

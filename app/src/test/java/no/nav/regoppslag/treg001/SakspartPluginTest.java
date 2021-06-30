@@ -81,7 +81,6 @@ public class SakspartPluginTest {
 	private PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 	@InjectMocks
 	private MapPDLResponse mapPDLResponse;
-	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
 	private PostnummerService postnummerService = new PostnummerService();
 	private LandkodeService landkodeService = new LandkodeService();
 	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
@@ -102,7 +101,6 @@ public class SakspartPluginTest {
 		PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, metrics);
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}

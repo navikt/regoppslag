@@ -5,7 +5,6 @@ import no.nav.regoppslag.consumer.pdl.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -31,31 +30,43 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class MapPDLResponse {
 
 	private final PostnummerService postnummerService;
-	private final LandkodeService landkodeService;
 	private MicrometerMetrics metrics;
 
 	private static final String LANDKODE_NORGE = "NO";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
-	private static final String CARE_OF = "c/o";
+	private static final String CARE_OF = "C/O ";
 
 	@Inject
-	public MapPDLResponse(PostnummerService postnummerService, LandkodeService landkodeService,
+	public MapPDLResponse(PostnummerService postnummerService,
 						  MicrometerMetrics metrics) {
 		this.postnummerService = new PostnummerService();
-		this.landkodeService = landkodeService;
 		this.metrics = metrics;
 	}
 
-	private boolean isDoed(LocalDate doedsdato, String personstatus) {
-		return nonNull(doedsdato) && PERSONSTATUS_DOED.equals(personstatus);
+	private boolean isDoed(HentPerson hentPerson) {
+		return nonNull(getDoedsdato(hentPerson)) &&
+				PERSONSTATUS_DOED.equals(getFolkeregisterstatus(hentPerson));
 	}
 
 	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode) {
-		if (nonNull(hentPerson.getKontaktadresse())) {
+		if (nonNull(hentPerson.getDoedsfall()) && isDoed(hentPerson)) {
 			return PdlMottakerInfo.builder()
 					.navn(getFulltnavn(hentPerson.getNavn()))
 					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
+					.foedselsdato(getFoedselsdato(hentPerson))
+					.doedsdato(getDoedsdato(hentPerson))
+					.postadresse(mapKontaktinformasjonForDoedsbo(hentPerson.getKontaktinformasjonForDoedsbo().stream()
+							.findAny()
+							.filter(Objects::nonNull)
+							.orElse(null)))
+					.build();
+		} else if (nonNull(hentPerson.getKontaktadresse())) {
+			return PdlMottakerInfo.builder()
+					.navn(getFulltnavn(hentPerson.getNavn()))
+					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
+					.foedselsdato(getFoedselsdato(hentPerson))
+					.doedsdato(getDoedsdato(hentPerson))
 					.postadresse(mapKontaktadresse(hentPerson.getKontaktadresse().stream()
 									.filter(Objects::nonNull)
 									.findAny()
@@ -78,34 +89,24 @@ public class MapPDLResponse {
 					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
 					.postadresse(mapBostedsadresse(hentPerson.getBostedsadresse().stream().filter(Objects::nonNull).findAny().get(), serviceCode))
 					.build();
-		} else if (nonNull(hentPerson.getDoedsfall()) && isDoed(getDDoedsdato(hentPerson), getFolkeregisterstatus(hentPerson))) {
-			return PdlMottakerInfo.builder()
-					.navn(getFulltnavn(hentPerson.getNavn()))
-					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-					.postadresse(mapKontaktinformasjonForDoedsbo(hentPerson.getKontaktinformasjonForDoedsbo().stream()
-							.findAny()
-							.filter(Objects::nonNull)
-							.orElse(null)))
-					.build();
 		}
 		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL");
-
 	}
 
-	public PostadresseTo mapBostedsadresse(Bostedsadresse bostedsadresse, String serviceCode) {
+	private PostadresseTo mapBostedsadresse(Bostedsadresse bostedsadresse, String serviceCode) {
 		return (harBostedsadresse(bostedsadresse)) ? getRightAdresse(bostedsadresse.getVegadresse(), bostedsadresse.getUtenlandskAdresse(),
 				bostedsadresse.getMatrikkeladresse(),
 				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode) : null;
 	}
 
-	public PostadresseTo mapOppholdsadresse(Oppholdsadresse oppholdsadresse, String serviceCode) {
+	private PostadresseTo mapOppholdsadresse(Oppholdsadresse oppholdsadresse, String serviceCode) {
 		return harOppholdsadresse(oppholdsadresse) ? getRightAdresse(oppholdsadresse.getVegadresse(), oppholdsadresse.getUtenlandskAdresse(),
 				oppholdsadresse.getMatrikkeladresse(),
 				null, oppholdsadresse.getCoAdressenavn(), serviceCode) : null;
 
 	}
 
-	public PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	private PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		PostadresseTo.PostadresseToBuilder postadresseToBuilder = PostadresseTo.builder();
 		if (POSTADRESSE_INNLAND.equals(kontaktadresse.getType())) {
 			if (nonNull(kontaktadresse.getPostboksadresse())) {
@@ -155,7 +156,7 @@ public class MapPDLResponse {
 		return postadresseToBuilder.build();
 	}
 
-	public PostadresseTo mapKontaktinformasjonForDoedsbo(KontaktinformasjonForDoedsbo kontaktinformasjon) {
+	private PostadresseTo mapKontaktinformasjonForDoedsbo(KontaktinformasjonForDoedsbo kontaktinformasjon) {
 		if (now().isBefore(kontaktinformasjon.getAttestutstedelsesdato()) && (nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
 				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt()))) {
 			return Optional.of(mapAndValidateKontaktinformasjonForDoeds(kontaktinformasjon)).orElseThrow(
@@ -163,26 +164,25 @@ public class MapPDLResponse {
 
 		}
 		throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
-
 	}
 
-	public PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
+	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
 		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = nonNull(kontaktinformasjonForDoedsbo.getAdresse()) ? kontaktinformasjonForDoedsbo.getAdresse() : null;
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
 			KontaktinformasjonForDoedsbo.AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
 			PostadresseTo postadresse = mapMidlertidigPostboksadresse(kontaktinformasjonForDoedsbo);
-			postadresse.setAdresselinje1(CARE_OF + kontaktinformasjonForDoedsbo.getFulltnavn(advokatSomKontakt.getPersonnavn()));
+			postadresse.setAdresselinje1(CARE_OF + getFulltnavn(advokatSomKontakt.getPersonnavn()));
 			return postadresse;
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getPersonSomKontakt())) {
 			KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
 			PostadresseTo postadresse = mapMidlertidigPostboksadresse(kontaktinformasjonForDoedsbo);
-			postadresse.setAdresselinje1(CARE_OF + kontaktinformasjonForDoedsbo.getFulltnavn(personSomKontakt.getPersonnavn()));
+			postadresse.setAdresselinje1(CARE_OF + getFulltnavn(personSomKontakt.getPersonnavn()));
 			return postadresse;
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt())) {
 			KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
 			return PostadresseTo.builder()
 					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(CARE_OF + kontaktinformasjonForDoedsbo.getFulltnavn(organisasjonSomKontakt.getKontaktperson()))
+					.adresselinje1(CARE_OF + getFulltnavn(organisasjonSomKontakt.getKontaktperson()))
 					.adresselinje2(requireNonNull(kontaktAdresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje1")))
 					.adresselinje3(isBlank(kontaktAdresse.getAdresselinje2()) ? null : kontaktAdresse.getAdresselinje2())
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, "postnummer")))
@@ -285,14 +285,22 @@ public class MapPDLResponse {
 
 	}
 
-	public String getForkortetNavn(List<HentPerson.PersonNavn> navns) {
+	private String getForkortetNavn(List<HentPerson.PersonNavn> navns) {
 		return navns.stream().map(personNavn -> personNavn.getForkortetNavn()).filter(Objects::nonNull)
 				.findFirst().orElse(null);
 	}
 
-	private LocalDate getDDoedsdato(HentPerson hentPerson) {
+	private LocalDate getDoedsdato(HentPerson hentPerson) {
 		return hentPerson.getDoedsfall().stream()
 				.map(doedsfall -> doedsfall.getDoedsdato())
+				.filter(Objects::nonNull)
+				.findAny()
+				.orElse(null);
+	}
+
+	private LocalDate getFoedselsdato(HentPerson hentPerson) {
+		return hentPerson.getFoedsel().stream()
+				.map(foedsel -> foedsel.getFoedselsdato())
 				.filter(Objects::nonNull)
 				.findAny()
 				.orElse(null);
@@ -301,12 +309,18 @@ public class MapPDLResponse {
 	private String getFolkeregisterstatus(HentPerson hentPerson) {
 		return hentPerson.getFolkeregisterpersonstatus().stream()
 				.filter(Objects::nonNull)
-				.map(folkeregisterstatus -> folkeregisterstatus.getForenkletStatus())
+				.map(folkeregisterstatus -> folkeregisterstatus.getStatus())
 				.filter(Objects::nonNull)
 				.findAny().orElse(null);
 	}
 
 	private boolean isLandkodeEmptyAndHavePostnummer(String landkode, String postnummer) {
 		return isBlank(landkode) && isNotBlank(postnummerService.finnPoststed(postnummer));
+	}
+
+	public String getFulltnavn(KontaktinformasjonForDoedsbo.Personnavn personnavn) {
+		return (nonNull(personnavn)) ? personnavn.getFornavn() + " " +
+				(isBlank(personnavn.getMellomnavn()) ? "" : personnavn.getMellomnavn() + " ") +
+				(isBlank(personnavn.getEtternavn()) ? "" : personnavn.getEtternavn()) : null;
 	}
 }
