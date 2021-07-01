@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class LocalCacheConfig {
 
+	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
+
 	@Bean
 	@Primary
 	public CacheManager cacheManager() {
@@ -59,6 +61,9 @@ public class LocalCacheConfig {
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.build()),
+				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build())));
 		return cacheManager;

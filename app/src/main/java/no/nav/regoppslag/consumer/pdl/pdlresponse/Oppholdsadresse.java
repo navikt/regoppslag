@@ -1,12 +1,12 @@
 package no.nav.regoppslag.consumer.pdl.pdlresponse;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Data
-@SuperBuilder
+@Builder
 public class Oppholdsadresse {
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;

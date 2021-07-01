@@ -7,8 +7,6 @@ import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -98,7 +96,6 @@ public class SakspartPluginTest {
 
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, metrics);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays

@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl.pdlresponse;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
@@ -26,6 +27,7 @@ import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 @Component
 public class MapPDLResponse {
 
@@ -108,7 +110,7 @@ public class MapPDLResponse {
 
 	private PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		PostadresseTo.PostadresseToBuilder postadresseToBuilder = PostadresseTo.builder();
-		if (POSTADRESSE_INNLAND.equals(kontaktadresse.getType())) {
+		if (POSTADRESSE_INNLAND.equalsIgnoreCase(kontaktadresse.getType())) {
 			if (nonNull(kontaktadresse.getPostboksadresse())) {
 				Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
 				postadresseToBuilder
@@ -137,7 +139,7 @@ public class MapPDLResponse {
 			} else if (nonNull(kontaktadresse.getVegadresse())) {
 				postadresseToBuilder = mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn);
 			}
-		} else if (POSTADRESSE_UTLAND.equals(kontaktadresse.getType())) {
+		} else if (POSTADRESSE_UTLAND.equalsIgnoreCase(kontaktadresse.getType())) {
 			if (nonNull(kontaktadresse.getUtenlandskAdresse())) {
 				UtenlandskAdresse utenlandskAdresse = kontaktadresse.getUtenlandskAdresse();
 				postadresseToBuilder = mapUtenlandskAdresse(utenlandskAdresse, kontaktadresse.getCoAdressenavn());
@@ -157,13 +159,23 @@ public class MapPDLResponse {
 	}
 
 	private PostadresseTo mapKontaktinformasjonForDoedsbo(KontaktinformasjonForDoedsbo kontaktinformasjon) {
-		if (now().isBefore(kontaktinformasjon.getAttestutstedelsesdato()) && (nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
-				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt()))) {
-			return Optional.of(mapAndValidateKontaktinformasjonForDoeds(kontaktinformasjon)).orElseThrow(
-					() -> new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse"));
-
+		if (isNull(kontaktinformasjon)) {
+			log.warn("Mottaker er registrert som død og har ugyldig postadresse");
+			throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
 		}
-		throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
+
+		if(hasDoedPersonValidAdresse(kontaktinformasjon)) {
+			log.warn("Mottaker er registrert som død og har ugyldig postadresse");
+			throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
+		}
+
+		return Optional.of(mapAndValidateKontaktinformasjonForDoeds(kontaktinformasjon)).orElseThrow(
+				() -> new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse"));
+	}
+
+	private boolean hasDoedPersonValidAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {
+		return (isNull(kontaktinformasjon.getAttestutstedelsesdato())) && !(now().isBefore(kontaktinformasjon.getAttestutstedelsesdato()) && (nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
+				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt())));
 	}
 
 	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
@@ -262,7 +274,7 @@ public class MapPDLResponse {
 				.adresselinje1(requireNonNull(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer(), format(ERROR_UTENLANDSKADRESSE, "adresselinje1")))
-				.adresselinje2(utenlandskAdresse.getPostkode())
+				.adresselinje2(requireNonNull(utenlandskAdresse.getPostkode(), format(ERROR_UTENLANDSKADRESSE, "postkode")))
 				.adresselinje3(isNotBlank(utenlandskAdresse.getBySted()) ? utenlandskAdresse.getBySted() : utenlandskAdresse.getRegionDistriktOmraade())
 				.landkode(requireNonNull(utenlandskAdresse.getLandkode(), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}

@@ -1,8 +1,6 @@
 package no.nav.regoppslag.itest;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.regoppslag.Application;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,32 +22,32 @@ import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 0, httpsPort = 8443)
+@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 @ImportAutoConfiguration
 public abstract class AbstractIT {
 
-    @Value("${local.url}")
-    protected String LOCAL_ENDPOINT_URL;
+	@Value("${local.url}")
+	protected String LOCAL_ENDPOINT_URL;
 
-    @Inject
-    private CacheManager cacheManager;
+	@Inject
+	private CacheManager cacheManager;
 
-    @Inject
-    protected RestTemplate restTemplate;
+	@Inject
+	protected RestTemplate restTemplate;
 
-    @Inject
-    protected RestTemplate restTemplateNoHeader;
+	@Inject
+	protected RestTemplate restTemplateNoHeader;
 
-    @BeforeEach
-    public void setUp() {
-        clearCachene();
-        cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006", "en vilkaarlig saksbehandler");
-    }
+	@BeforeEach
+	public void setUp() {
+		clearCachene();
+		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006", "en vilkaarlig saksbehandler");
+	}
 
-    private void clearCachene() {
-        cacheManager.getCacheNames()
-                .forEach(names -> cacheManager.getCache(names).clear());
-    }
+	private void clearCachene() {
+		cacheManager.getCacheNames()
+				.forEach(names -> cacheManager.getCache(names).clear());
+	}
 
 }

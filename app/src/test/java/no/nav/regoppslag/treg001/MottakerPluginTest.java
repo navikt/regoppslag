@@ -101,6 +101,7 @@ public class MottakerPluginTest {
     private static SecurityContext securityContext = new SecurityContextImpl();
     private static MapPDLResponse mapPDLResponse;
     private static MottakerPlugin mottakerPlugin;
+    private static MapMottakerRequestFromPdl mapMottakerRequestFromPdl;
 
     @SneakyThrows
     @BeforeAll
@@ -110,13 +111,13 @@ public class MottakerPluginTest {
         valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
         valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
         SecurityContextHolder.setContext(securityContext);
-
+        mapMottakerRequestFromPdl = new MapMottakerRequestFromPdl(landkodeService);
         MicrometerMetrics metrics = new MicrometerMetrics();
         MeterRegistry registry = new SimpleMeterRegistry();
         ReflectionTestUtils.setField(metrics, "registry", registry);
         mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
         organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-        mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
+        mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics, mapMottakerRequestFromPdl);
 
         when(postnummerService.finnPoststed(anyString())).thenReturn("AGDENES");
         when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPerson());
@@ -166,7 +167,7 @@ public class MottakerPluginTest {
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-        assertThat(mottaker.getSpraakkode().value(), is("NN"));
+        assertThat(mottaker.getSpraakkode().value(), is("NB"));
     }
 
     @Test
@@ -188,7 +189,7 @@ public class MottakerPluginTest {
 
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-        assertThat(mottaker.getSpraakkode().value(), is("EN"));
+        assertThat(mottaker.getSpraakkode().value(), is("NB"));
     }
 
     @Test

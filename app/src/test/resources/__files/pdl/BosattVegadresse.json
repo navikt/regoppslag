@@ -15,9 +15,9 @@
       ],
       "navn": [
         {
-          "fornavn": "ÅPENHJERTIG",
-          "mellomnavn": null,
-          "etternavn": "GYNGEHEST",
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
           "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
         }
       ],
@@ -31,10 +31,10 @@
           "postboksadresse": null,
           "vegadresse": null,
           "postadresseIFrittFormat": {
-            "adresselinje1": "HAGERESELAM 26",
+            "adresselinje1": "Finnesveien 45",
             "adresselinje2": null,
             "adresselinje3": null,
-            "postnummer": "7319"
+            "postnummer": "7320"
           },
           "utenlandskAdresse": null,
           "utenlandskAdresseIFrittFormat": null
@@ -64,8 +64,10 @@
             "kommunenummer": "5432",
             "bydelsnummer": null,
             "tilleggsnavn": null,
-            "postnummer": "9550"
-          }
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null
         }
       ],
       "folkeregisterpersonstatus": [
@@ -73,7 +75,8 @@
           "status": "bosatt",
           "forenkletStatus": "bosattEtterFolkeregisterloven"
         }
-      ]
+      ],
+      "tilrettelagtKommunikasjon": []
     }
   }
 }

@@ -9,6 +9,8 @@ import no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.pdlresponse.Vegadresse;
+import org.apache.http.HttpHeaders;
+import org.apache.http.entity.ContentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +18,10 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
@@ -67,7 +73,7 @@ public class PDLResponseUtil {
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
 	public static final String LANDKODE_NORGE = "NO";
-
+	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";
 	public static final String IDENTTYPE_DNR = "DNR";
@@ -330,5 +336,19 @@ public class PDLResponseUtil {
 				.regionDistriktOmraade(REGION_DISTRIKTOMRAADE)
 				.landkode(LANDKODE_UTENLANDSK)
 				.build();
+	}
+
+	public static void postPdlGraphql(int status, String filePath) {
+		stubFor(post("/graphql")
+				.willReturn(aResponse().withStatus(status)
+						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withBodyFile(filePath)));
+	}
+
+	public static void getStsToken(int status, String filePath) {
+		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+				.withBodyFile(filePath)));
 	}
 }

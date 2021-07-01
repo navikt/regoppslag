@@ -1,0 +1,65 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [
+        {
+          "doedsdato": "2021-06-17"
+        }
+      ],
+      "foedsel": [
+        {
+          "foedselsaar": 1975,
+          "foedselsdato": "1975-12-31"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "GUL",
+          "mellomnavn": null,
+          "etternavn": "KAKE",
+          "forkortetNavn": "KAKE GUL"
+        }
+      ],
+      "kontaktadresse": [],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "31127521487",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1975-12-31",
+          "gyldigFraOgMed": "1975-12-31T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": 6278233876,
+            "husnummer": "13",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Elletoppen",
+            "kommunenummer": "3022",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "1444"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "doed",
+          "forenkletStatus": "doedIFolkeregisteret"
+        }
+      ],
+      "tilrettelagtKommunikasjon": []
+    }
+  }
+}

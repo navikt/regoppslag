@@ -1,30 +1,40 @@
 package no.nav.regoppslag.consumer.pdl.pdlresponse;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HentPerson {
 	private List<Adressebeskyttelse> adressebeskyttelse;
-	private List<PersonNavn> navn;
 	private List<Foedsel> foedsel;
 	private List<Doedsfall> doedsfall;
+	private List<PersonNavn> navn;
+	private List<Kontaktadresse> kontaktadresse;
+	private List<Oppholdsadresse> oppholdsadresse;
+	private List<Bostedsadresse> bostedsadresse;
 	private List<Sikkerhetstiltak> sikkerhetstiltak;
 	private List<Folkeregisteridentifikator> folkeregisteridentifikator;
-	private List<Kontaktadresse> kontaktadresse;
-	private List<Bostedsadresse> bostedsadresse;
-	private List<Oppholdsadresse> oppholdsadresse;
 	private List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsbo;
 	private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
 	private List<TilrettelagtKommunikasjon> tilrettelagtKommunikasjon;
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Adressebeskyttelse {
 		private Gradering gradering;
 	}
@@ -34,8 +44,11 @@ public class HentPerson {
 		FORTROLIG, UGRADERT
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class PersonNavn {
 		@ToString.Exclude
 		private String fornavn;
@@ -47,54 +60,81 @@ public class HentPerson {
 		private String forkortetNavn;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Doedsfall {
 		private LocalDate doedsdato;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Foedsel {
 		private int foedselsaar;
 		private LocalDate foedselsdato;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Sikkerhetstiltak {
 		private String tiltakstype;
 		private String beskrivelse;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Folkeregisteridentifikator {
+		@ToString.Exclude
 		private String identifikasjonsnummer;
 		private String type;
 		private String status;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Folkeregisterpersonstatus {
 		private String status;  //midlertidig,doed, bosatt
 		private String forenkletStatus;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class TilrettelagtKommunikasjon {
 		private Tegnspraaktolk tegnspraaktolk;
 		private Talespraaktolk talespraaktolk;
 	}
 
-	@Data
+	@Getter
+	@Setter
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Tegnspraaktolk {
 		private String spraak;
 	}
 
-	@Data
+	@Getter
+	@Setter
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Talespraaktolk {
 		private String spraak;
 	}

@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 
 @Component
@@ -39,7 +40,7 @@ public class StsRestConsumer {
     }
 
     @Retryable(include = RegOppslagTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
-    @Cacheable(STS_CACHE_NAME)
+    @Cacheable(RESTSTS_CACHE_NAME)
     public String getOidcToken() {
         try {
             return requireNonNull(restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponse.class))

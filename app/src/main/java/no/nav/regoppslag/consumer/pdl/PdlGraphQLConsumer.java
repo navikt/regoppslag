@@ -55,7 +55,6 @@ public class PdlGraphQLConsumer {
 		this.pdlUrl = pdlUrl;
 	}
 
-	@Cacheable(value = MetricLabels.HENT_PERSON, key = "#aktoerId")
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
 	public HentPerson hentPerson(final String aktoerId, final String tema) {
@@ -188,6 +187,7 @@ public class PdlGraphQLConsumer {
 				"      }\n" +
 				"    }\n" +
 				"    kontaktinformasjonForDoedsbo(historikk: false){\n" +
+				"      skifteform\n" +
 				"      attestutstedelsesdato\n" +
 				"      personSomKontakt{\n" +
 				"        foedselsdato\n" +
@@ -207,23 +207,23 @@ public class PdlGraphQLConsumer {
 				"        organisasjonsnavn\n" +
 				"        organisasjonsnummer\n" +
 				"      }\n" +
-				"    organisasjonSomKontakt{\n" +
-				"    kontaktperson{\n" +
-				"      fornavn\n" +
-				"      mellomnavn\n" +
-				"      etternavn\n" +
+				"      organisasjonSomKontakt{\n" +
+				"        kontaktperson{\n" +
+				"          fornavn\n" +
+				"          mellomnavn\n" +
+				"          etternavn\n" +
+				"        }\n" +
+				"        organisasjonsnavn\n" +
+				"        organisasjonsnummer\n" +
+				"      }\n" +
+				"      adresse{\n" +
+				"        adresselinje1\n" +
+				"        adresselinje2\n" +
+				"        poststedsnavn\n" +
+				"        postnummer\n" +
+				"        landkode\n" +
+				"      }\n" +
 				"    }\n" +
-				"    organisasjonsnavn\n" +
-				"    organisasjonsnummer\n" +
-				"    }\n" +
-				"    adresse{\n" +
-				"      adresselinje1\n" +
-				"      adresselinje2\n" +
-				"      poststedsnavn\n" +
-				"      postnummer\n" +
-				"      landkode\n" +
-				"    }\n" +
-				"  }\n" +
 				"    sikkerhetstiltak{\n" +
 				"      tiltakstype\n" +
 				"      beskrivelse\n" +
@@ -232,34 +232,6 @@ public class PdlGraphQLConsumer {
 				"      identifikasjonsnummer\n" +
 				"      type\n" +
 				"      status\n" +
-				"    }\n" +
-				"    deltBosted(historikk: false){\n" +
-				"      startdatoForKontrakt\n" +
-				"      sluttdatoForKontrakt\n" +
-				"      coAdressenavn\n" +
-				"      vegadresse{\n" +
-				"        matrikkelId\n" +
-				"        husnummer\n" +
-				"        husbokstav\n" +
-				"        bruksenhetsnummer\n" +
-				"        adressenavn\n" +
-				"        kommunenummer\n" +
-				"        bydelsnummer\n" +
-				"        tilleggsnavn\n" +
-				"        postnummer\n" +
-				"      }\n" +
-				"      utenlandskAdresse{\n" +
-				"        adressenavnNummer\n" +
-				"        bygningEtasjeLeilighet\n" +
-				"        postboksNummerNavn\n" +
-				"        postkode\n" +
-				"        bySted\n" +
-				"        regionDistriktOmraade\n" +
-				"        landkode\n" +
-				"      }\n" +
-				"      ukjentBosted{\n" +
-				"    \t\tbostedskommune\n" +
-				"      }\n" +
 				"    }\n" +
 				"    bostedsadresse(historikk: false){\n" +
 				"      angittFlyttedato\n" +
