@@ -22,6 +22,7 @@ public class KontaktinformasjonForDoedsbo {
 	}
 
 	@Data
+	@Builder
 	public static class PersonSomKontakt {
 		private LocalDate foedselsdato;
 		private Personnavn personnavn;
@@ -47,6 +48,7 @@ public class KontaktinformasjonForDoedsbo {
 	}
 
 	@Data
+	@Builder
 	public static class OrganisasjonSomKontakt {
 		private Personnavn kontaktperson;
 		private String organisasjonsnavn;

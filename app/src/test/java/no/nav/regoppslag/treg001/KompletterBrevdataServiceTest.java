@@ -47,6 +47,7 @@ public class KompletterBrevdataServiceTest {
 	private KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
 			.brevdata(brevdata)
+			.tema("tema")
 			.build();
 	private KompletterBrevdataRequest illegalRequest = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
@@ -58,7 +59,7 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
-		when(elementEnricher.process(any(), any(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
+		when(elementEnricher.process(any(), anyString(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
 		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
 		Mockito.verify(elementEnricher, Mockito.times(1)).process(any(), any(), anyString());

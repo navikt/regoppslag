@@ -28,6 +28,7 @@ public class Kontaktadresse {
 	}
 
 	@Data
+	@Builder
 	public static class UtenlandskAdresseIFrittFormat {
 		private String adresselinje1;
 		private String adresselinje2;
