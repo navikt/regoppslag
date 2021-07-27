@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 @Getter
-public class IngenGyldigEnumVerdiForSpraakKodeException extends RegOppslagTechnicalException {
-
+public class IngenGyldigEnumVerdiForSpraakKodeException extends AbstractRegOppslagTechnicalException {
 
 	public IngenGyldigEnumVerdiForSpraakKodeException(String message) {
 		super(message);

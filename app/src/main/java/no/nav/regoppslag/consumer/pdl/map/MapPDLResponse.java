@@ -1,8 +1,17 @@
-package no.nav.regoppslag.consumer.pdl.pdlresponse;
+package no.nav.regoppslag.consumer.pdl.map;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.PostadresseTo;
+import no.nav.regoppslag.consumer.pdl.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.HentPerson;
+import no.nav.regoppslag.consumer.pdl.Kontaktadresse;
+import no.nav.regoppslag.consumer.pdl.KontaktinformasjonForDoedsbo;
+import no.nav.regoppslag.consumer.pdl.Matrikkeladresse;
+import no.nav.regoppslag.consumer.pdl.Oppholdsadresse;
+import no.nav.regoppslag.consumer.pdl.UkjentBosted;
+import no.nav.regoppslag.consumer.pdl.UtenlandskAdresse;
+import no.nav.regoppslag.consumer.pdl.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -21,9 +30,9 @@ import static java.time.LocalDate.now;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_DOED;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_INNLAND;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.PERSONSTATUS_DOED;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_UTLAND;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -77,7 +86,7 @@ public class MapPDLResponse {
 									.orElse(null),
 							hentPerson.getKontaktadresse().stream()
 									.filter(Objects::nonNull)
-									.map(kontaktadresse -> kontaktadresse.getCoAdressenavn())
+									.map(Kontaktadresse::getCoAdressenavn)
 									.filter(Objects::nonNull)
 									.findAny()
 									.orElse(null)))
@@ -110,7 +119,7 @@ public class MapPDLResponse {
 
 	}
 
-	PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	public PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		if (POSTADRESSE_INNLAND.equalsIgnoreCase(kontaktadresse.getType())) {
 			if (nonNull(kontaktadresse.getPostboksadresse())) {
 				Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
@@ -127,7 +136,7 @@ public class MapPDLResponse {
 							.adresseType(POSTADRESSE_INNLAND)
 							.adresselinje1(isBlank(postadresse.getAdresselinje1()) ? null : postadresse.getAdresselinje1())
 							.adresselinje2(postadresse.getAdresselinje2()).adresselinje3(postadresse.getAdresselinje3())
-							.postnummer(requireNonNull(postadresse.getPostnummer(), format(ERROR_MELDING, "postnummer")))
+							.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, "postnummer")))
 							.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
 							.landkode(isLandkodeEmptyAndHavePostnummer(null, postadresse.getPostnummer()) ? LANDKODE_NORGE : null)
 							.build();
@@ -137,7 +146,7 @@ public class MapPDLResponse {
 						.adresselinje1(kontaktadresse.getCoAdressenavn())
 						.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
 						.adresselinje3(postadresse.getAdresselinje2())
-						.postnummer(requireNonNull(postadresse.getPostnummer(), format(ERROR_MELDING, "postnummer")))
+						.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, "postnummer")))
 						.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
 						.landkode(isLandkodeEmptyAndHavePostnummer(null, postadresse.getPostnummer()) ? LANDKODE_NORGE : null)
 						.build();
@@ -168,7 +177,7 @@ public class MapPDLResponse {
 			throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
 		}
 
-		if (hasDoedPersonValidAdresse(kontaktinformasjon)) {
+		if (!hasDoedPersonValidKontaktAdresse(kontaktinformasjon)) {
 			log.warn("Mottaker er registrert som død og har ugyldig postadresse");
 			throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse");
 		}
@@ -177,12 +186,12 @@ public class MapPDLResponse {
 				() -> new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse"));
 	}
 
-	private boolean hasDoedPersonValidAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {
-		return (isNull(kontaktinformasjon.getAttestutstedelsesdato())) && !(now().isBefore(kontaktinformasjon.getAttestutstedelsesdato()) && (nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
+	private boolean hasDoedPersonValidKontaktAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {
+		return (nonNull(kontaktinformasjon.getAttestutstedelsesdato())) && ((nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
 				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt())));
 	}
 
-	PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
+	public PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
 		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = nonNull(kontaktinformasjonForDoedsbo.getAdresse()) ? kontaktinformasjonForDoedsbo.getAdresse() : null;
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
 			KontaktinformasjonForDoedsbo.AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
@@ -250,7 +259,7 @@ public class MapPDLResponse {
 		return null;
 	}
 
-	PostadresseTo.PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
+	public PostadresseTo.PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
 		return isBlank(coAdressenavn) ?
 				PostadresseTo.builder()
 						.adresseType(POSTADRESSE_INNLAND)

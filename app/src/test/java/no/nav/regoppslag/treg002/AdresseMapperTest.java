@@ -3,9 +3,10 @@ package no.nav.regoppslag.treg002;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,9 @@ public class AdresseMapperTest {
 	@InjectMocks
 	private MapPDLResponse mapPDLResponse;
 
+	@InjectMocks
+	private PostnummerService postnummerService;
+
 	@Mock
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 
@@ -50,7 +54,7 @@ public class AdresseMapperTest {
 
 	@BeforeEach
 	public void setUp() {
-
+		mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
 	}
 
 	@Test

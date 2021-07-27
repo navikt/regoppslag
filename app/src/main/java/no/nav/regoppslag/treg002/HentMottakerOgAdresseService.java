@@ -8,10 +8,12 @@ import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
+import no.nav.regoppslag.exceptions.PdlFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
+import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 
@@ -36,6 +39,7 @@ public class HentMottakerOgAdresseService {
 	private final MapPDLResponse mapPDLResponse;
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
+	private static final String TREG002_FUN_FEIL = "TREG002 Funksjonell feil: %s";
 
 	@Inject
 	public HentMottakerOgAdresseService(OrganisasjonV4Consumer organisasjonV4Consumer,
@@ -93,28 +97,29 @@ public class HentMottakerOgAdresseService {
 			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
 				.equals(request.getType()))) {
-			throw new RegOppslagFunctionalException(String.format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
+			throw new RegOppslagFunctionalException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
 					.getType()), UGYLDIG_INPUT);
 		}
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException) {
-			log.warn(String.format("TREG002 Funksjonell feil: %s", e.getMessage()));
+			log.warn(format(TREG002_FUN_FEIL, e.getMessage()));
 			throw (RegOppslagFunctionalException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
-			log.warn(String.format("TREG002 Sikkerhetsfeil: %s", e.getMessage()));
+			log.warn(format("TREG002 Sikkerhetsfeil: %s", e.getMessage()));
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
-			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
+			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
 					.getMetricMessage());
 		} else if (e instanceof UkjentAdressePersonErDoed) {
-			log.error(String.format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
-		} else {
-			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()
-					.getSimpleName());
+			log.error(format(TREG002_FUN_FEIL, e.getMessage()), e);
+		} else if(e instanceof PdlFunctionalException) {
+			log.error(format(TREG002_FUN_FEIL, e.getMessage()), e);
+			throw new PdlFunctionalException(format("Funksjonell feil: feilmelding=%s", e.getMessage()), e.getCause());
+		} else if (e instanceof NullPointerException) {
+			throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: feilmelding=%s", e.getMessage()), e.getCause());
 		}
 	}
 }

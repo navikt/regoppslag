@@ -21,6 +21,7 @@ public final class MetricLabels {
 	// Caches
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
 	public static final String HENT_PERSON = "hentPerson";
+	public static final String HENT_NAVN = "hentNavn";
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 
 	private MetricLabels() {

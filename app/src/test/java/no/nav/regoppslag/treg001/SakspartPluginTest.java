@@ -6,7 +6,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static no.nav.regoppslag.util.PDLResponseUtil.FULTTNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVegadresse;
 import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
@@ -107,6 +107,7 @@ public class SakspartPluginTest {
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(FULLT_NAVN);
 
 		String expression1 = "//*[local-name() = 'sakspart']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
@@ -119,7 +120,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertEquals(sakspart.getNavn(), FULTTNAVN);
+		assertEquals(sakspart.getNavn(), FULLT_NAVN);
 	}
 
 	@Test

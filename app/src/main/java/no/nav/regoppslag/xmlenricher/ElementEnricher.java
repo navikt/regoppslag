@@ -46,7 +46,12 @@ import java.util.Set;
 public class ElementEnricher {
 
 	private ElementEnricherPluginRegistry registry;
-	private AttributeValueNamespaceResolver attributeValueNamespaceResolver = new AttributeValueNamespaceResolver();
+	private AttributeValueNamespaceResolver attributeValueNamespaceResolver;
+
+	public ElementEnricher(ElementEnricherPluginRegistry registry) {
+		this.registry = registry;
+		attributeValueNamespaceResolver = new AttributeValueNamespaceResolver();
+	}
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
@@ -95,7 +100,7 @@ public class ElementEnricher {
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-					valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
+							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
@@ -103,8 +108,8 @@ public class ElementEnricher {
 				)
 				.sequential()
 				.blockingSubscribe(
-						onNextElement -> aggregateList.add(onNextElement),
-						error -> unhandledError.add(error)
+						aggregateList::add,
+						unhandledError::add
 				);
 
 

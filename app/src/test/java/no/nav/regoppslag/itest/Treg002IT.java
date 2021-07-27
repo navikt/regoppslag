@@ -3,6 +3,7 @@ package no.nav.regoppslag.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
-import static no.nav.regoppslag.util.PDLResponseUtil.FULTTNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
@@ -56,14 +57,14 @@ public class Treg002IT extends AbstractIT {
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
-		assertEquals(response.getIdentifikator(), PERSON_IDENT);
-		assertEquals(response.getAdresse().getAdresselinje1(), ADRESSENAVN_1);
-		assertEquals(response.getNavn(), FULTTNAVN);
-		assertEquals(response.getAdresse().getLandkode(), LANDKODE_NORGE);
+		assertEquals(PERSON_IDENT, response.getIdentifikator());
+		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
+		assertEquals(FULLT_NAVN, response.getNavn());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertNull(response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
-		assertEquals(response.getAdresse().getPostnummer(), POSTNUMMER);
-		assertEquals(response.getAdresse().getPoststed(), POSTSTED);
+		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
+		assertEquals(POSTSTED, response.getAdresse().getPoststed());
 	}
 
 	@Test
@@ -152,13 +153,13 @@ public class Treg002IT extends AbstractIT {
 	@Test
 	public void shouldThrowIfPersonIsMissingAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json"); //mottakerPlugin
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/vegadresseutenpostnummer.json"); //mottakerPlugin
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
-				"Should throw technical Exception");
+				"Feltet postnummer kan ikke være null eller tomt");
 
-		verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+		verify(1, postRequestedFor(urlEqualTo("/graphql")));
+		assertEquals(e.getStatusCode(), HttpStatus.BAD_REQUEST);
 	}
 
 	@Test

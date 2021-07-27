@@ -9,7 +9,6 @@ import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

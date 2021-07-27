@@ -1,8 +1,7 @@
-package no.nav.regoppslag.consumer.pdl.pdlresponse;
+package no.nav.regoppslag.consumer.pdl;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +27,6 @@ public class HentPerson {
 	private List<Folkeregisteridentifikator> folkeregisteridentifikator;
 	private List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsbo;
 	private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
-	private List<TilrettelagtKommunikasjon> tilrettelagtKommunikasjon;
 
 	@Getter
 	@Setter

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.consumer.pdl.pdlresponse;
+package no.nav.regoppslag.consumer.pdl;
 
 import lombok.Builder;
 import lombok.Data;

@@ -9,4 +9,6 @@ public abstract class AbstractRegOppslagFunctionalException extends RuntimeExcep
     public AbstractRegOppslagFunctionalException(String message, Throwable cause) {
         super(message, cause);
     }
+
+
 }

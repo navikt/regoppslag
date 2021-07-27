@@ -1,15 +1,15 @@
 package no.nav.regoppslag.util;
 
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Bostedsadresse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.HentPerson;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Kontaktadresse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.KontaktinformasjonForDoedsbo;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Matrikkeladresse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Oppholdsadresse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.PDLHentPersonResponse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.UtenlandskAdresse;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.Vegadresse;
+import no.nav.regoppslag.consumer.pdl.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.HentPerson;
+import no.nav.regoppslag.consumer.pdl.Kontaktadresse;
+import no.nav.regoppslag.consumer.pdl.KontaktinformasjonForDoedsbo;
+import no.nav.regoppslag.consumer.pdl.Matrikkeladresse;
+import no.nav.regoppslag.consumer.pdl.Oppholdsadresse;
+import no.nav.regoppslag.consumer.pdl.PDLConstant;
+import no.nav.regoppslag.consumer.pdl.PDLHentPersonResponse;
+import no.nav.regoppslag.consumer.pdl.UtenlandskAdresse;
+import no.nav.regoppslag.consumer.pdl.Vegadresse;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
@@ -23,9 +23,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_BOSATT;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.PERSONSTATUS_DOED;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.PERSONSTATUS_BOSATT;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.PERSONSTATUS_DOED;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_UTLAND;
 
 
 public class PDLResponseUtil {
@@ -52,7 +52,7 @@ public class PDLResponseUtil {
 	public static final LocalDate FOEDSELDATO = LocalDate.of(1984, Month.APRIL, 24);
 	public static final LocalDate DOEDSDATO = LocalDate.now();
 	public static final String FORKOORETNAVN = "GYNGEHEST ÅPENHJERTIG";
-	public static final String FULTTNAVN = "GYNGEHEST A. ÅPENHJERTIG";
+	public static final String FULLT_NAVN = "GYNGEHEST A. ÅPENHJERTIG";
 	public static final String FORNAVN = "GYNGEHEST";
 	public static final String MELLOMNAVN = "A.";
 	public static final String ETTERNAVN = "ÅPENHJERTIG";
@@ -100,33 +100,33 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPerson() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.kontaktadresse(Arrays.asList(Kontaktadresse.builder()
+				.kontaktadresse(Collections.singletonList(Kontaktadresse.builder()
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.type(PDLConstant.POSTADRESSE_INNLAND)
 						.postadresseIFrittFormat(createPostadresseIFrittFormat())
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -135,33 +135,33 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithVegadresse() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.kontaktadresse(Arrays.asList(Kontaktadresse.builder()
+				.kontaktadresse(Collections.singletonList(Kontaktadresse.builder()
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.type(PDLConstant.POSTADRESSE_INNLAND)
 						.vegadresse(createVegadresse())
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -171,32 +171,32 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithOppholdsadresse() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.oppholdsadresse(Arrays.asList(Oppholdsadresse.builder()
+				.oppholdsadresse(Collections.singletonList(Oppholdsadresse.builder()
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.vegadresse(createVegadresse())
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -205,32 +205,32 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithBostedsadresse() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.bostedsadresse(Arrays.asList(Bostedsadresse.builder()
+				.bostedsadresse(Collections.singletonList(Bostedsadresse.builder()
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.vegadresse(createVegadresse())
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -239,27 +239,27 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithNoAdresse() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -268,28 +268,28 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
-				.doedsfall(Arrays.asList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.doedsfall(Collections.singletonList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.kontaktinformasjonForDoedsbo(Arrays.asList(createKontaktinformasjonForDoedsbo()))
+				.kontaktinformasjonForDoedsbo(Collections.singletonList(createKontaktinformasjonForDoedsbo()))
 				.sikkerhetstiltak(Collections.emptyList())
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_DOED)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
@@ -298,29 +298,29 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonUtelandsk() {
 		return HentPerson.builder()
-				.adressebeskyttelse(Arrays.asList(HentPerson.Adressebeskyttelse.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
-				.foedsel(Arrays.asList(HentPerson.Foedsel.builder()
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
 						.foedselsaar(FOEDSELSAAR)
 						.foedselsdato(FOEDSELDATO)
 						.build()))
-				.navn(Arrays.asList(HentPerson.PersonNavn.builder()
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(FORKOORETNAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
 						.build()))
-				.kontaktadresse(Arrays.asList(Kontaktadresse.builder()
+				.kontaktadresse(Collections.singletonList(Kontaktadresse.builder()
 						.type(POSTADRESSE_UTLAND)
 						.UtenlandskAdresse(createUtenlandskAdresseWithName()).build()))
-				.folkeregisteridentifikator(Arrays.asList(HentPerson.Folkeregisteridentifikator.builder()
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)
 						.status(STATUS)
 						.build()))
-				.folkeregisterpersonstatus(Arrays.asList(HentPerson.Folkeregisterpersonstatus.builder()
+				.folkeregisterpersonstatus(Collections.singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_BOSATT)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))

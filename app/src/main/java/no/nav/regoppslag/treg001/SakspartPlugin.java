@@ -1,18 +1,12 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.HentPerson;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -31,6 +25,9 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -77,16 +74,15 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			}
 			Sakspart sakspart = unmarshal(content);
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
-			
+
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
-							pdlGraphQLConsumer.hentPerson(sakspart.getId(), tema), SERVICE_CODE_TREG001);
+					String personNavn = pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
 
-					sakspart.setNavn(hentPerson.getNavn());
+					sakspart.setNavn(personNavn);
 
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());

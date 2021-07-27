@@ -1,6 +1,6 @@
 package no.nav.regoppslag.exceptions;
 
-public class PdlHentPersonTechnicalException extends RuntimeException {
+public class PdlHentPersonTechnicalException extends AbstractRegOppslagTechnicalException {
 
     public PdlHentPersonTechnicalException(String message) {
         super(message);

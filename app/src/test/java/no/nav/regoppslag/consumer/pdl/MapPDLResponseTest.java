@@ -1,8 +1,6 @@
-package no.nav.regoppslag.consumer.pdl.pdlresponse;
+package no.nav.regoppslag.consumer.pdl;
 
-import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
-import no.nav.regoppslag.consumer.pdl.PostadresseTo;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
@@ -10,8 +8,6 @@ import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_INNLAND;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
@@ -20,7 +16,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.CO_PERSON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FORKOORETNAVN;
-import static no.nav.regoppslag.util.PDLResponseUtil.FULTTNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
@@ -53,15 +49,15 @@ public class MapPDLResponseTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(), SERVICE_CODE_TREG002);
 
-		assertEquals(mottakerInfo.getFoedselsdato(), FOEDSELDATO);
-		assertEquals(mottakerInfo.getDoedsdato(), DOEDSDATO);
-		assertEquals(mottakerInfo.getNavn(), FULTTNAVN);
-		assertEquals(mottakerInfo.getPostadresse().getAdresselinje1(), COADRESSENAVN);
-		assertEquals(mottakerInfo.getPostadresse().getAdresselinje2(), ADRESSENAVN_1);
-		assertEquals(mottakerInfo.getPostadresse().getAdresseType(), POSTADRESSE_INNLAND);
-		assertEquals(mottakerInfo.getPostadresse().getPostnummer(), POSTNUMMER);
-		assertEquals(mottakerInfo.getPostadresse().getPoststed(), POSTSTED);
-		assertEquals(mottakerInfo.getPostadresse().getLandkode(), LANDKODE_NORGE);
+		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
+		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
+		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
+		assertEquals(COADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
+		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje2());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
+		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
+		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
+		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
 	}
 
 	@Test
@@ -69,15 +65,15 @@ public class MapPDLResponseTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPersonWithVegadresse());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithVegadresse(), SERVICE_CODE_TREG002);
 
-		assertEquals(mottakerInfo.getFoedselsdato(), FOEDSELDATO);
+		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
 		assertNull(mottakerInfo.getDoedsdato());
-		assertEquals(mottakerInfo.getNavn(), FULTTNAVN);
-		assertEquals(mottakerInfo.getPostadresse().getAdresselinje1(), ADRESSENAVN_1);
+		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
+		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertNull(mottakerInfo.getPostadresse().getAdresselinje2());
-		assertEquals(mottakerInfo.getPostadresse().getAdresseType(), POSTADRESSE_INNLAND);
-		assertEquals(mottakerInfo.getPostadresse().getPostnummer(), POSTNUMMER);
-		assertEquals(mottakerInfo.getPostadresse().getPoststed(), POSTSTED);
-		assertEquals(mottakerInfo.getPostadresse().getLandkode(), LANDKODE_NORGE);
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
+		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
+		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
+		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
 	}
 
 	@Test
@@ -86,14 +82,14 @@ public class MapPDLResponseTest {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithOppholdsadresse(), SERVICE_CODE_TREG002);
 
 		assertNull(mottakerInfo.getDoedsdato());
-		assertEquals(mottakerInfo.getNavn(), FULTTNAVN);
-		assertEquals(mottakerInfo.getKortNavn(), FORKOORETNAVN);
-		assertEquals(mottakerInfo.getPostadresse().getAdresselinje1(), ADRESSENAVN_1);
+		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
+		assertEquals(FORKOORETNAVN, mottakerInfo.getKortNavn());
+		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertNull(mottakerInfo.getPostadresse().getAdresselinje2());
-		assertEquals(mottakerInfo.getPostadresse().getAdresseType(), POSTADRESSE_INNLAND);
-		assertEquals(mottakerInfo.getPostadresse().getPostnummer(), POSTNUMMER);
-		assertEquals(mottakerInfo.getPostadresse().getPoststed(), POSTSTED);
-		assertEquals(mottakerInfo.getPostadresse().getLandkode(), LANDKODE_NORGE);
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
+		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
+		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
+		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
 	}
 
 	@Test
@@ -102,14 +98,14 @@ public class MapPDLResponseTest {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithBostedsadresse(), SERVICE_CODE_TREG002);
 
 		assertNull(mottakerInfo.getDoedsdato());
-		assertEquals(mottakerInfo.getNavn(), FULTTNAVN);
-		assertEquals(mottakerInfo.getKortNavn(), FORKOORETNAVN);
-		assertEquals(mottakerInfo.getPostadresse().getAdresselinje1(), ADRESSENAVN_1);
+		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
+		assertEquals(FORKOORETNAVN, mottakerInfo.getKortNavn());
+		assertEquals( ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertNull(mottakerInfo.getPostadresse().getAdresselinje2());
-		assertEquals(mottakerInfo.getPostadresse().getAdresseType(), POSTADRESSE_INNLAND);
-		assertEquals(mottakerInfo.getPostadresse().getPostnummer(), POSTNUMMER);
-		assertEquals(mottakerInfo.getPostadresse().getPoststed(), POSTSTED);
-		assertEquals(mottakerInfo.getPostadresse().getLandkode(), LANDKODE_NORGE);
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
+		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
+		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
+		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
 	}
 
 	@Test
@@ -131,7 +127,7 @@ public class MapPDLResponseTest {
 		Vegadresse adresse = PDLResponseUtil.createVegadresse();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
-				.type(POSTADRESSE_INNLAND)
+				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.build();
 
 		PostadresseTo response = mapPDLResponse.mapKontaktadresse(kontaktadresse, null);
@@ -140,7 +136,7 @@ public class MapPDLResponseTest {
 		assertEquals(null, response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -152,7 +148,7 @@ public class MapPDLResponseTest {
 		Kontaktadresse.PostadresseIFrittFormat adresse = PDLResponseUtil.createPostadresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
-				.type(POSTADRESSE_INNLAND)
+				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.coAdressenavn(COADRESSENAVN)
 				.build();
 
@@ -162,7 +158,7 @@ public class MapPDLResponseTest {
 		assertEquals(adresse.getAdresselinje1(), response.getAdresselinje2());
 		assertEquals(adresse.getAdresselinje2(), response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -173,7 +169,7 @@ public class MapPDLResponseTest {
 		Kontaktadresse.PostadresseIFrittFormat adresse = PDLResponseUtil.createPostadresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
-				.type(POSTADRESSE_INNLAND)
+				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.build();
 
 		PostadresseTo response = mapPDLResponse.mapKontaktadresse(kontaktadresse, null);
@@ -182,7 +178,7 @@ public class MapPDLResponseTest {
 		assertEquals(adresse.getAdresselinje2(), response.getAdresselinje2());
 		assertEquals(adresse.getAdresselinje3(), response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -193,7 +189,7 @@ public class MapPDLResponseTest {
 		Kontaktadresse.Postboksadresse adresse = PDLResponseUtil.createPostboksadresse();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
-				.type(POSTADRESSE_INNLAND)
+				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.build();
 
 		PostadresseTo response = mapPDLResponse.mapKontaktadresse(kontaktadresse, null);
@@ -202,7 +198,7 @@ public class MapPDLResponseTest {
 		assertEquals(null, response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(null, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -213,7 +209,7 @@ public class MapPDLResponseTest {
 		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
-				.type(POSTADRESSE_UTLAND)
+				.type(PDLConstant.POSTADRESSE_UTLAND)
 				.build();
 
 		PostadresseTo response = mapPDLResponse.mapKontaktadresse(kontaktadresse, null);
@@ -222,7 +218,7 @@ public class MapPDLResponseTest {
 		assertEquals(adresse.getPostkode(), response.getAdresselinje2());
 		assertEquals(adresse.getBySted(), response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_UTLAND, response.getAdresseType());
 		assertEquals(UTENLANDSK_LANDKODE, response.getLandkode());
 		assertEquals(null, response.getPostnummer());
 		assertEquals(null, response.getPoststed());
@@ -233,7 +229,7 @@ public class MapPDLResponseTest {
 		Kontaktadresse.UtenlandskAdresseIFrittFormat adresse = PDLResponseUtil.createUtenlandskAdresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.utenlandskAdresseIFrittFormat(adresse)
-				.type(POSTADRESSE_UTLAND)
+				.type(PDLConstant.POSTADRESSE_UTLAND)
 				.build();
 
 		PostadresseTo response = mapPDLResponse.mapKontaktadresse(kontaktadresse, null);
@@ -242,7 +238,7 @@ public class MapPDLResponseTest {
 		assertEquals(UTENLANDSK_POSTKODE, response.getAdresselinje2());
 		assertEquals(POSTSTED, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_UTLAND, response.getAdresseType());
 		assertEquals(UTENLANDSK_LANDKODE, response.getLandkode());
 		assertEquals(null, response.getPostnummer());
 		assertEquals(null, response.getPoststed());
@@ -257,7 +253,7 @@ public class MapPDLResponseTest {
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -272,7 +268,7 @@ public class MapPDLResponseTest {
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -287,7 +283,7 @@ public class MapPDLResponseTest {
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(null, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -310,7 +306,7 @@ public class MapPDLResponseTest {
 		assertEquals(vegadresse.getAdressenavn() + " " + vegadresse.getHusnummer(), response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
@@ -326,7 +322,7 @@ public class MapPDLResponseTest {
 		assertEquals( null, response.getAdresselinje2());
 		assertEquals(null, response.getAdresselinje3());
 
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(PDLConstant.POSTADRESSE_INNLAND, response.getAdresseType());
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());

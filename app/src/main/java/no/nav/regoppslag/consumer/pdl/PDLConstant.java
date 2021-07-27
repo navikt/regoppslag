@@ -1,4 +1,4 @@
-package no.nav.regoppslag.consumer.pdl.pdlresponse;
+package no.nav.regoppslag.consumer.pdl;
 
 public class PDLConstant {
     public static final String POSTADRESSE_UTLAND = "utland";

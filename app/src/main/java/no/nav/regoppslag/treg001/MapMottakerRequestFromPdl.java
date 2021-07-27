@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Objects;
 
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_INNLAND;
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_UTLAND;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component

@@ -11,4 +11,6 @@ public class UkjentAdressePersonErDoed extends AbstractRegOppslagFunctionalExcep
     public UkjentAdressePersonErDoed(String message) {
         super(message);
     }
+
+
 }

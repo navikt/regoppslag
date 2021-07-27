@@ -7,11 +7,12 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.pdlresponse.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -55,7 +56,7 @@ import java.util.Map;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
-import static no.nav.regoppslag.util.PDLResponseUtil.FULTTNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -63,6 +64,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -102,6 +104,7 @@ public class MottakerPluginTest {
     private static MapPDLResponse mapPDLResponse;
     private static MottakerPlugin mottakerPlugin;
     private static MapMottakerRequestFromPdl mapMottakerRequestFromPdl;
+    private static DigitalKontaktinformasjon digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 
     @SneakyThrows
     @BeforeAll
@@ -117,13 +120,14 @@ public class MottakerPluginTest {
         ReflectionTestUtils.setField(metrics, "registry", registry);
         mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
         organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-        mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics, mapMottakerRequestFromPdl);
+        mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo,
+                metrics, mapMottakerRequestFromPdl, digitalKontaktinformasjon);
 
         when(postnummerService.finnPoststed(anyString())).thenReturn("AGDENES");
         when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(PDLResponseUtil.createPdlHentPerson());
         when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
         when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
-
+        when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn(Spraakkode.NB.name());
     }
 
     @Test
@@ -142,7 +146,7 @@ public class MottakerPluginTest {
         JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
         Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-        assertThat(mottaker.getNavn(), is(FULTTNAVN));
+        assertThat(mottaker.getNavn(), is(FULLT_NAVN));
     }
 
     @Test
@@ -253,7 +257,7 @@ public class MottakerPluginTest {
         RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
                 () -> mottakerPlugin.processElement(node, valueMap, TEMA_PEN),
                 "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
-        assertEquals(exception.getMessage(), "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
+        assertEquals("Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", exception.getMessage());
 
     }
 

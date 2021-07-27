@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg002;
 
-import static no.nav.regoppslag.consumer.pdl.pdlresponse.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
@@ -15,7 +16,6 @@ import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.PostadresseTo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 @Component
 @Slf4j
 public class AdresseMapper {
-	
+
 	@Inject
 	private LandkodeService landkodeService;
 
@@ -34,7 +34,7 @@ public class AdresseMapper {
 	private MicrometerMetrics metrics;
 
 	private static final String UNKNOWN_LANDKODE = "???";
-	
+
 	public HentMottakerOgAdresseResponse.Adresse mapFraOrg(Mottaker mottaker){
 
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){
@@ -42,12 +42,12 @@ public class AdresseMapper {
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
-				.adresselinje1(norskPostadresse.getAdresselinje1())
-				.adresselinje2(norskPostadresse.getAdresselinje2())
-				.adresselinje3(norskPostadresse.getAdresselinje3())
+					.adresselinje1(norskPostadresse.getAdresselinje1())
+					.adresselinje2(norskPostadresse.getAdresselinje2())
+					.adresselinje3(norskPostadresse.getAdresselinje3())
 					.landkode(getLandkode(norskPostadresse.getLand()))
-				.postnummer(norskPostadresse.getPostnummer())
-				.poststed(norskPostadresse.getPoststed()).build();
+					.postnummer(norskPostadresse.getPostnummer())
+					.poststed(norskPostadresse.getPoststed()).build();
 		} else {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "UTENLANDSK_ADRESSE");
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
@@ -71,7 +71,7 @@ public class AdresseMapper {
 					.poststed(norskPostadresse.getPoststed())
 					.landkode(isNotBlank(norskPostadresse.getLandkode()) ? norskPostadresse.getLandkode() : null)
 					.build();
-		} else {
+		} else if(POSTADRESSE_UTLAND.equals(mottaker.getPostadresse().getAdresseType())){
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "UTENLANDSK_ADRESSE");
 			PostadresseTo utenlandskPostadresse = mottaker.getPostadresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
@@ -81,6 +81,8 @@ public class AdresseMapper {
 					.landkode(utenlandskPostadresse.getLandkode())
 					.build();
 		}
+
+		return null;
 	}
 
 	private String getLandkode(String land) {
