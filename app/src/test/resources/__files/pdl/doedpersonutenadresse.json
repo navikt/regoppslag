@@ -43,32 +43,6 @@
           "utenlandskAdresseIFrittFormat": null
         }
       ],
-      "oppholdsadresse": [],
-      "kontaktinformasjonForDoedsbo": [
-        {
-          "skifteform": "OFFENTLIG",
-          "attestutstedelsesdato": "2014-07-10",
-          "personSomKontakt": null,
-          "advokatSomKontakt": null,
-          "organisasjonSomKontakt": {
-            "kontaktperson": {
-              "fornavn": "Herr",
-              "mellomnavn": "",
-              "etternavn": "Andersen"
-            },
-            "organisasjonsnavn": "Sykehjemm Org",
-            "organisasjonsnummer": "123456789"
-          },
-          "adresse": {
-            "adresselinje1": "Postboks 15",
-            "adresselinje2": null,
-            "poststedsnavn": "",
-            "postnummer": "7320",
-            "landkode": "NOR"
-          }
-        }
-      ],
-      "sikkerhetstiltak": [],
       "folkeregisteridentifikator": [
         {
           "identifikasjonsnummer": "28118122722",
@@ -76,7 +50,6 @@
           "status": "I_BRUK"
         }
       ],
-      "bostedsadresse": [],
       "folkeregisterpersonstatus": [
         {
           "status": "doed",

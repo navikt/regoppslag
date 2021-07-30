@@ -37,12 +37,11 @@ public class PDLResponseUtil {
 	public static final String UTENLANDSK_LANDKODE = "CA";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
-	public static final String ADVOKAT_MELLOMNAVN = "H. C.";
+	public static final String ADVOKAT_MELLOMNAVN = "";
 	public static final String ADVOKAT_ETTERNAVN = "Andersen";
 
-	public static final String PERSON_FORNAVN = "Person_Fornavn";
-	public static final String PERSON_MELLOMNAVN = "Person_Mellomnavn";
-	public static final String PERSON_ETTERNAVN = "Person_Etternavn";
+	public static final String PERSON_FORNAVN = "Herr";
+	public static final String PERSON_MELLOMNAVN = "Andersen";
 
 	public static final String HUSNUMMER_1 = "45";
 	public static final String ADRESSENAVN_1 = "Finnesveien 45";
@@ -77,7 +76,7 @@ public class PDLResponseUtil {
 	public static final String BYSTED = "Haworth";
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
-	public static final String LANDKODE_NORGE = "NO";
+	public static final String LANDKODE_NORGE = "NOR";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";
@@ -86,9 +85,11 @@ public class PDLResponseUtil {
 	public static final String ORGANISASJONNUMMER = "1234567";
 	public static final String ORGANISASJONNAVN = "Fred Advokat AS";
 	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
-	public static final String COADRESSENAVN = "C/O Herr Andersen ";
-	public static final String CO_PERSON_NAVN = "C/O Person_Fornavn Person_Mellomnavn Person_Etternavn";
-	public static final String CO_ORGINASJON_NAVN = "C/O Fred Advokat AS ";
+	public static final String COADRESSENAVN = "C/O Herr Andersen";
+	public static final String CO_ORGINASJON_NAVN = "C/O Fred Advokat AS";
+
+	public static final String POSTSTED_OSLO = "OSLO";
+	public static final String ADRESSELINJE_POSTBOKS= "Postboks 15";
 
 	public static PDLHentPersonResponse pdlHentPersonResponse() {
 		return PDLHentPersonResponse.builder()
@@ -235,6 +236,28 @@ public class PDLResponseUtil {
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
 				.build();
+	}
+
+	public static HentPerson.HentPersonBuilder createHentePersonBuilder() {
+		return HentPerson.builder()
+				.adressebeskyttelse(Collections.singletonList(HentPerson.Adressebeskyttelse.builder()
+						.gradering(HentPerson.Gradering.FORTROLIG)
+						.build()))
+				.foedsel(Collections.singletonList(HentPerson.Foedsel.builder()
+						.foedselsaar(FOEDSELSAAR)
+						.foedselsdato(FOEDSELDATO)
+						.build()))
+				.navn(Collections.singletonList(HentPerson.PersonNavn.builder()
+						.forkortetNavn(FORKOORETNAVN)
+						.fornavn(FORNAVN)
+						.mellomnavn(MELLOMNAVN)
+						.etternavn(ETTERNAVN)
+						.build()))
+				.folkeregisteridentifikator(Collections.singletonList(HentPerson.Folkeregisteridentifikator.builder()
+						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
+						.type(IDENTTYPE_FNR)
+						.status(STATUS)
+						.build()));
 	}
 
 	public static HentPerson createPdlHentPersonWithNoAdresse() {
@@ -384,8 +407,8 @@ public class PDLResponseUtil {
 	private static KontaktinformasjonForDoedsbo.Personnavn createNavnForPersonSomKontakt() {
 		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
 		personnavn.setFornavn(PERSON_FORNAVN);
-		personnavn.setMellomnavn(PERSON_MELLOMNAVN);
-		personnavn.setEtternavn(PERSON_ETTERNAVN);
+		personnavn.setMellomnavn(null);
+		personnavn.setEtternavn(PERSON_MELLOMNAVN);
 		return personnavn;
 	}
 
@@ -522,6 +545,12 @@ public class PDLResponseUtil {
 				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
 						.withBodyFile(filePath)));
+	}
+
+	public static void postPdlGraphqlWithErrorResponse(int status) {
+		stubFor(post("/graphql")
+				.willReturn(aResponse().withStatus(status)
+						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())));
 	}
 
 	public static void getStsToken(int status, String filePath) {
