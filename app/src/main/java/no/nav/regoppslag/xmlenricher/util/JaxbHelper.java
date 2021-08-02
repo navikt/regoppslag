@@ -3,6 +3,7 @@ package no.nav.regoppslag.xmlenricher.util;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -23,6 +24,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -48,7 +52,7 @@ public class JaxbHelper<T> {
 		return (Document) node;
 	}
 
-	public T unmarshal(Node node) throws MarshallerException, MarshallerTechnicalException {
+	public T unmarshal(Node node) throws MarshallerException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(jaxbClass);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -64,7 +68,7 @@ public class JaxbHelper<T> {
 
 	}
 
-	public <T> Node marshal(T jaxbObject, Node node) throws MarshallerException, MarshallerTechnicalException {
+	public <T> Node marshal(T jaxbObject, Node node) throws MarshallerException {
 		try {
 			String contextPath = jaxbClass.getPackage().getName();
 			JAXBContext context = JAXBContext.newInstance(contextPath);
@@ -102,7 +106,7 @@ public class JaxbHelper<T> {
 	 *
 	 * @param object the object
 	 * @param tClass the class of object
-	 * @param <T> type of object to be returned
+	 * @param <T>    type of object to be returned
 	 * @return the wrapped object
 	 */
 	@SuppressWarnings("unchecked")
@@ -117,7 +121,7 @@ public class JaxbHelper<T> {
 	/**
 	 * Test if an object is an instance of a list of classes
 	 *
-	 * @param payLoad the object
+	 * @param payLoad      the object
 	 * @param validClasses the classes to check against
 	 * @return true if object is instance of any of the given classes, else true
 	 */

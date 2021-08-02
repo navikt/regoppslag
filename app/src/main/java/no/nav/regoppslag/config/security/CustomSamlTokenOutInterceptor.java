@@ -11,6 +11,7 @@ import org.apache.cxf.ws.security.wss4j.SamlTokenInterceptor;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.dom.engine.WSSConfig;
+import org.springframework.http.HttpStatus;
 import org.w3c.dom.Element;
 
 /**

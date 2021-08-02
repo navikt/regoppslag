@@ -3,9 +3,13 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagParsingException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
@@ -30,6 +34,10 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -61,13 +69,12 @@ public class KompletterBrevdataService {
 	}
 
 	@Retryable(include = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
-	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		String responseBrevdata;
+	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
 			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId(), request.getTema());
 
-			responseBrevdata = documentToString(brevdataUtfylt);
+			return KompletterBrevdataResponse.builder().brevdata(documentToString(brevdataUtfylt)).build();
 		} catch (MarshallerTechnicalException e) {
 			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
@@ -76,11 +83,20 @@ public class KompletterBrevdataService {
 			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
-			throw new RegOppslagFunctionalException(e, "Feil ved parsing av brevdata");
-		} catch (RegOppslagFunctionalException e) {
+			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
+		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException
+				| UkjentAdresseException | UkjentAdressePersonErDoed e) {
 			log.warn("TREG001 Funksjonell feil: " + e.getMessage());
-			throw new RegOppslagFunctionalException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-					.getMessage()), e, e.getMetricMessage());
+			if (GONE.equals(e.getHttpStatus())) {
+				log.error("TREG001 funksjonell feil : {}", e.getMessage());
+				return null;
+			} else if (NOT_FOUND.equals(e.getHttpStatus())) {
+				throw new RegOppslagIkkeFunnetException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+						.getMessage()), e, e.getMetricMessage(), e.getHttpStatus());
+			} else {
+				throw new RegoppslagIllegalArgumentException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+						.getMessage()), e, e.getMetricMessage(), e.getHttpStatus());
+			}
 		} catch (RegOppslagTechnicalException e) {
 			log.error("TREG001 Teknisk feil: " + e.getMessage(), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: dokumenttypeId=%s feilmelding=%s.", request
@@ -91,7 +107,6 @@ public class KompletterBrevdataService {
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		}
-		return KompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
 
 	}
 }

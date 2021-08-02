@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
@@ -9,6 +7,7 @@ import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -21,6 +20,10 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static java.lang.String.format;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @Component
@@ -44,7 +47,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	private MicrometerMetrics metrics;
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException {
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
@@ -52,7 +55,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		try {
 			NavAnsatt navAnsatt = unmarshal(content);
 
-			log.info(String.format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info(format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
 
 			//Skal elementet berikes?
 			if (navAnsatt.isBerik()) {
@@ -64,25 +67,25 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			Document newNode = convertObjectToDocument(navAnsatt);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info(format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 
 	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Saksbehandlerdata mangler ansattId", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Saksbehandlerdata mangler ansattId. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName() + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
 

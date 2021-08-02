@@ -34,11 +34,13 @@ public class AdresseMapper {
 	private MicrometerMetrics metrics;
 
 	private static final String UNKNOWN_LANDKODE = "???";
+	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
+	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
 
 	public HentMottakerOgAdresseResponse.Adresse mapFraOrg(Mottaker mottaker){
 
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){
-			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "NORSK_ADRESSE");
+			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
@@ -49,7 +51,7 @@ public class AdresseMapper {
 					.postnummer(norskPostadresse.getPostnummer())
 					.poststed(norskPostadresse.getPoststed()).build();
 		} else {
-			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "UTENLANDSK_ADRESSE");
+			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())

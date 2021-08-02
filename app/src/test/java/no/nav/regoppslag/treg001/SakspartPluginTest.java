@@ -20,8 +20,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,7 +95,7 @@ public class SakspartPluginTest {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, metrics);
+		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, organisasjonV4Consumer, organisasjonV4Mapper, metrics);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}
@@ -191,21 +189,6 @@ public class SakspartPluginTest {
 
 	}
 
-	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		return person;
-	}
-
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
@@ -220,7 +203,6 @@ public class SakspartPluginTest {
 		organisasjonsnavn.setFomGyldighetsperiode(dateToGregorian(LocalDate.now().minusDays(1)));
 		organisasjonsnavn.setFomBruksperiode(dateToGregorian(LocalDate.now().minusDays(1)));
 		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
-
 		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
 
 		return organisasjon;

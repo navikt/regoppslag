@@ -1,19 +1,14 @@
 package no.nav.regoppslag.xmlenricher;
 
-import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
-import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
-import static no.nav.regoppslag.util.MDCConstants.USER_ID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
-
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.xmlenricher.util.Aggregate;
@@ -38,6 +33,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.String.format;
+import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
+import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.USER_ID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 /**
  * @author Hans Petter Simonsen - Miles
  */
@@ -47,6 +53,7 @@ public class ElementEnricher {
 
 	private ElementEnricherPluginRegistry registry;
 	private AttributeValueNamespaceResolver attributeValueNamespaceResolver;
+	private static final String TREG001_FUN_FEIL = "TREG001 Funksjonell feil: {}";
 
 	public ElementEnricher(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
@@ -57,7 +64,7 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException{
+	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException {
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -78,7 +85,7 @@ public class ElementEnricher {
 			Node node = findSingleNode(xpathExpression, document);
 			attributeValueNamespaceResolver.resolveNamespace(document, node);
 			if (node != null) {
-				Node clonedNode=node.cloneNode(true);
+				Node clonedNode = node.cloneNode(true);
 				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
@@ -137,12 +144,19 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException) {
-			throw (RegOppslagFunctionalException) e;
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+			log.error(format(TREG001_FUN_FEIL, e.getMessage()), e);
+			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
+		} else if (e instanceof RegOppslagFunctionalException | e instanceof NullPointerException) {
+			log.warn(format(TREG001_FUN_FEIL, e.getMessage()));
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
+			}
+			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagSecurityException) {
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
-			throw (RegOppslagTechnicalException) e;
+			throw new RegOppslagTechnicalException(e.getMessage(), e, "TREG001", ((RegOppslagTechnicalException) e).getHttpStatus());
 		} else {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}

@@ -24,7 +24,7 @@ public class StsRestConsumer {
 
     private final RestTemplate restTemplate;
     private final String stsUrl;
-    public static final int DELAY_SHORT = 500;
+    public static final int DELAY_SHORT = 300;
     public static final int MULTIPLIER_SHORT = 2;
 
     @Inject

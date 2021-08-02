@@ -8,6 +8,7 @@ import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.RequestEntity;
@@ -28,6 +29,8 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -65,11 +68,12 @@ public class PdlGraphQLConsumer {
 			final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
 
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
-				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors());
+				log.error("Kunne ikke hente person fra Pdl = {}", response.getErrors());
+				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
 			}
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e);
+			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
@@ -84,11 +88,11 @@ public class PdlGraphQLConsumer {
 			final PDLHentNavnResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
 
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
-				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors());
+				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
 			}
 			return nonNull(response.getData()) ? mapHentNavnResponse.mapNavn(response) : null;
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e);
+			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
@@ -102,7 +106,8 @@ public class PdlGraphQLConsumer {
 				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.header(AUTHORIZATION, serviceUserToken)
 				.header(NAV_CONSUMER_TOKEN, serviceUserToken)
-				.header(HEADER_PDL_TEMA, requireNonNull(tema, "tema kan ikke bli null"))
+				.header(HEADER_PDL_TEMA, tema)
+				.header(NAV_CALL_ID, MDC.get(CALL_ID))
 				.body(mapRequest(aktoerId, query));
 	}
 

@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -9,6 +7,7 @@ import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -22,6 +21,10 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static java.lang.String.format;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j
@@ -51,14 +54,14 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 
 		try {
 			Postadresse adresse = unmarshal(content);
-			log.info(String.format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
+			log.info(format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
 
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
@@ -70,26 +73,26 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
+			log.info(format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 
-	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
+	private void validateAdresse(Postadresse adresse) {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mangler enhetId.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mangler enhetId. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName()))) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
 					+ " or " + ELEMENT_LOCALNAME_RETUR + ". Found {" + element.getNamespaceURI() + "}" + element
-					.getLocalName(), UGYLDIG_INPUT);
+					.getLocalName() + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
 }

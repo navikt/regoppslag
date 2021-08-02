@@ -1,22 +1,24 @@
 package no.nav.regoppslag.treg001.support;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 @Slf4j
 public class SpraakKodeMapper {
 
-	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
+	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) {
 		if (StringUtils.isEmpty(mottakerSpraakKode)) {
 			return getMaalFormNaarMottakerIkkeHarSattMaalform(mottaker, spraakInfoMal);
 		} else { //Bruker har ikke satt språk
@@ -24,7 +26,7 @@ public class SpraakKodeMapper {
 		}
 	}
 
-	private Spraakkode getMaalFormNaarMottakerHarSattMaalform(String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMalDokkat) throws IngenGyldigEnumVerdiForSpraakKodeException {
+	private Spraakkode getMaalFormNaarMottakerHarSattMaalform(String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMalDokkat) {
 		if (spraakInfoMalDokkat == null) {
 			return Spraakkode.NB;
 		}
@@ -99,7 +101,7 @@ public class SpraakKodeMapper {
 		return isFalse(Stream.of(Spraakkode.NB.name(), Spraakkode.NN.name(), "NO", "SV", "DA").anyMatch(spraak -> spraak.equalsIgnoreCase(mottakerSpraak)));
 	}
 
-	private Spraakkode mapToSpraakKode(String spraakKodeValue) throws IngenGyldigEnumVerdiForSpraakKodeException {
+	private Spraakkode mapToSpraakKode(String spraakKodeValue) {
 		if ("NO".equals(spraakKodeValue)) {
 			return Spraakkode.NB;
 		}
@@ -107,7 +109,7 @@ public class SpraakKodeMapper {
 		if (Arrays.stream(Spraakkode.values()).anyMatch(spraakkode -> spraakkode.name().equals(spraakKodeValue))) {
 			return Spraakkode.valueOf(spraakKodeValue);
 		} else {
-			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue));
+			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue), BAD_REQUEST);
 		}
 	}
 }

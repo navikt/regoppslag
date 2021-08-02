@@ -2,6 +2,7 @@ package no.nav.regoppslag.itest;
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientResponseException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -21,15 +23,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.PDLResponseUtil.getPdlDkif;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
+import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpStatus.GONE;
 
@@ -62,11 +69,6 @@ public class Treg001IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
 
-
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml"))); //mottakerPlugin
-
 	}
 
 	/**
@@ -75,7 +77,8 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldGetKomplettBrevdataPerson() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response.xml").replaceAll("[\n\t\r ]", ""), actualResponse.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
@@ -85,6 +88,7 @@ public class Treg001IT extends AbstractIT {
 	public void shouldGetKomplettBrevdataPersonMaalFormEN() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_response_maalform_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
@@ -92,13 +96,27 @@ public class Treg001IT extends AbstractIT {
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
+
+	@Test
+	public void shouldLogWithStatusCodeGoneIfPersonErDoedOgUtenKontaktAdresse() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
+
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertNull(actualResponse);
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
 	@Test
 	public void shouldGetKomplettBrevdataPersonMaalFormIkkeSkandinavisk() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattadressemedconavn.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy-sv.json");
 
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
-		assertEquals(classpathToString("__files/treg001/treg001_response_maalform_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
+		assertEquals(classpathToString("__files/treg001/treg001_response_maalform_sv.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
 				.replaceAll("[\n\t\r ]", ""));
 	}
@@ -134,6 +152,8 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_ikke_skandinavisk.xml"))); //mottakerPlugin
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_orgv4_en.xml").replaceAll("[\n\t\r ]", ""), actualResponse
@@ -143,6 +163,8 @@ public class Treg001IT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataOrgDansk() {
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy-da.json");
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_dansk.xml"))); //mottakerPlugin
@@ -167,8 +189,8 @@ public class Treg001IT extends AbstractIT {
 	@Test
 	public void shouldNotMapBehandlendeEnhetWhenBerikIsFalse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
-
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattadressemedconavn.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request_behandlende_enhet_8020.xml"), KompletterBrevdataResponse.class);
 		assertEquals(classpathToString("__files/treg001/treg001_full_response_behandlendeEnhet_8020.xml").replaceAll("[\n\t\r ]", ""), actualResponse
 				.getBrevdata()
@@ -223,13 +245,16 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenPersonV3FailsFunctionalInvalidSecurityToken() {
+	public void shouldThrowWhenPDLFailsFunctionalInvalidSecurityToken() {
+		getStsToken(HttpStatus.BAD_REQUEST.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
 						restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		verify(15, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -245,64 +270,64 @@ public class Treg001IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenPersonV3FailsSecurityErrorNoAccess() {
+	public void shouldThrowWhenPDLFailsSecurityErrorNoAccess() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/unauthenticated-error-response.json");
 
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=Ingen tilgang"));
-		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 	}
 
 	@Test
 	public void shouldThrowFunctionalExceptionFromPersonPlugin() {
-		//Stub web services:
-		stubFor(post("/VIRKSOMHET_PERSONV3")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/personV3/hentPerson-FunksjonellFeil-PersonIkkeFunnet-responsebody.xml")));
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattutenpostdresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
+		RestClientResponseException e = assertThrows(RestClientResponseException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-		verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("PersonV3.hentPerson fant ikke person med ident=20096828390, message=Ingen forekomster funnet"));
+		verify(postRequestedFor(urlEqualTo("/grphql")));
+		//assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 	}
 
 	@Test
 	public void shouldThrowFunctionalExceptionFromNorgPlugins() {
-		//Stub web services:
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		stubFor(post("/ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_norg2_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
 		verify(postRequestedFor(urlEqualTo("/ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
-		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0136"));
+		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionFromPersonPlugin() {
+	public void shouldThrowNotFoundExceptionFromPDL() {
 		//Stub web services:
-		stubFor(post("/VIRKSOMHET_PERSONV3")
-				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphqlWithErrorResponse(HttpStatus.NOT_FOUND.value());
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Noe gikk galt i kall til PersonV3.hentPerson. Message=Could not send Message."));
+		verify(1, postRequestedFor(urlEqualTo("/graphql")));
+		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionFromOrgPlugin() {
 		//Stub web services:
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattutenpostdresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
@@ -331,8 +356,9 @@ public class Treg001IT extends AbstractIT {
 		//Stub web services:
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
-				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
@@ -347,6 +373,7 @@ public class Treg001IT extends AbstractIT {
 		//Stub web services:
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dki-happy.json");
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
 						.withHeader("Content-Type", "application/json")
@@ -360,14 +387,11 @@ public class Treg001IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowFunctionalExceptionWhenPersonDodAndNoAdress() {
-		//Stub web services:
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
-		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Mottaker er registrert som død og har ugyldig kontaktinformasjon");
+		KompletterBrevdataResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 		verify(postRequestedFor(urlEqualTo("/graphql")));
-		assertEquals(GONE, e.getStatusCode());
+		assertNull(response);
 	}
 
 	private KompletterBrevdataRequest createRequest(String path) {

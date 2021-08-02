@@ -2,10 +2,12 @@ package no.nav.regoppslag.consumer.dkif;
 
 
 import no.nav.regoppslag.consumer.stsrest.StsRestConsumer;
-import no.nav.regoppslag.exceptions.AbstractRegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.time.Duration;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
@@ -32,6 +35,8 @@ import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_PERSONIDENTER;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 public class DigitalKontaktinformasjon {
@@ -55,10 +60,13 @@ public class DigitalKontaktinformasjon {
 		this.stsRestConsumer = stsRestConsumer;
 	}
 
-	@Retryable(include = AbstractRegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_SIKKER_DIGITAL_POSTADRESSE}, percentiles = {0.5, 0.95}, histogram = true)
-	public String hentSpraak(final String personidentifikator, final boolean inkluderSikkerDigitalPost) {
+	public String hentSpraak(final String personidentifikator, final boolean inkluderSikkerDigitalPost) throws DigitalKontaktinformasjonFunctionalException {
 		HttpHeaders headers = createHeaders();
+		if (isBlank(personidentifikator)) {
+			throw new RegOppslagIkkeFunnetException("Personidentifikator kan ikke være null", BAD_REQUEST);
+		}
 		final String fnrTrimmed = personidentifikator.trim();
 		headers.add(NAV_PERSONIDENTER, fnrTrimmed);
 
@@ -69,7 +77,7 @@ public class DigitalKontaktinformasjon {
 
 		} catch (HttpClientErrorException e) {
 			throw new DigitalKontaktinformasjonFunctionalException(format("Funksjonell feil ved kall mot DigitalKontaktinformasjonV1.kontaktinformasjon. Feilmelding=%s", e
-					.getMessage()), e.getCause());
+					.getMessage()), e.getCause(), e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new DigitalKontaktinformasjonTechnicalException(format("Teknisk feil ved kall mot DigitalKontaktinformasjon.kontaktinformasjon. Feilmelding=%s", e.getMessage()), e);
 		}

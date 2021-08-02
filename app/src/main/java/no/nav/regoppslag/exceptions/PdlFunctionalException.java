@@ -1,12 +1,13 @@
 package no.nav.regoppslag.exceptions;
 
-public class PdlFunctionalException extends AbstractRegOppslagFunctionalException {
+import org.springframework.http.HttpStatus;
 
-    public PdlFunctionalException(String message) {
-        super(message);
+public class PdlFunctionalException extends RegOppslagFunctionalException {
+    public PdlFunctionalException(String message, HttpStatus httpStatus) {
+        super(message, httpStatus);
     }
 
-    public PdlFunctionalException(String message, Throwable cause) {
-        super(message, cause);
+    public PdlFunctionalException(String message, Throwable cause, String metricMessage, HttpStatus httpStatus) {
+        super(message, cause, metricMessage, httpStatus);
     }
 }

@@ -1,6 +1,8 @@
 #Maven
 target
 
+.mvn/wrapper/maven-wrapper.jar
+
 #IntelliJ
 *.iml
 *.iws
@@ -24,3 +26,5 @@ APP_LOG_HOME_IS_UNDEFINED
 **/application-q*.properties
 
 **/*NoCommit*.java
+
+**/.m2

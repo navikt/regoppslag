@@ -1,10 +1,7 @@
 package no.nav.regoppslag.consumer.ldap;
 
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -21,17 +18,21 @@ import org.springframework.retry.annotation.Retryable;
 import javax.naming.directory.Attribute;
 import java.util.List;
 
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
 public class LdapAdeoUserLookup {
-	
+
 	public static final String DESCRIPTION = "description";
 	public static final String DISPLAYNAME = "displayname";
 	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
 	public static final String BRUKER_IKKE_FUNNET = "LDAP - Bruker ikke funnet";
-	
+
 	private final LdapTemplate ldapTemplate;
 	private final String userBaseDn;
 	private MicrometerMetrics metrics;
@@ -41,7 +42,7 @@ public class LdapAdeoUserLookup {
 		this.userBaseDn = userBaseDn;
 		this.metrics = metrics;
 	}
-	
+
 	/**
 	 * Gets the full name based on lookup in AD
 	 *
@@ -49,9 +50,9 @@ public class LdapAdeoUserLookup {
 	 * @return The full name of the user or null if not found.
 	 */
 	@Cacheable(value = HENT_FULLT_NAVN, key = "#adeoIdent")
-	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = Exception.class, exclude = {RegOppslagIkkeFunnetException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_FULLT_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
-	public String hentFulltNavn(final String adeoIdent) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public String hentFulltNavn(final String adeoIdent) {
 
 		metrics.cacheMiss(HENT_FULLT_NAVN);
 
@@ -70,12 +71,12 @@ public class LdapAdeoUserLookup {
 		}
 
 		if (search == null || search.isEmpty()) {
-			throw new RegOppslagFunctionalException(String.format("Ldap.hentFulltNavn finner ikke bruker med ident=%s", adeoIdent), BRUKER_IKKE_FUNNET);
+			throw new RegOppslagIkkeFunnetException(String.format("Ldap.hentFulltNavn finner ikke bruker med ident=%s. %s", adeoIdent, BRUKER_IKKE_FUNNET), NOT_FOUND);
 		} else {
 			return search.get(0);
 		}
 	}
-	
+
 	private List<String> doSearch(LdapQuery cn) {
 		return ldapTemplate.search(cn, (AttributesMapper<String>) attributes -> {
 			// Description contains most consistent naming format

@@ -15,6 +15,7 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -33,9 +34,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -75,7 +78,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		SpraakKodeMapper spraakKodeMapper = (SpraakKodeMapper) valueMap.get(MAALFORM.name());
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
@@ -83,15 +86,15 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
+				throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 			}
 			Mottaker mottaker = getMottaker(content, tema);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
 			//Sjekker språket på malen opp mot mottakers preferanser
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
+				log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
 			mottaker.setSpraakkode(spraakKodeMapper.getSpraakKode(mottaker, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false), sprakinfos));
@@ -99,18 +102,18 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = convertObjectToDocument(mottaker);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
 		}
 
 	}
 
-	private Mottaker getMottaker(Node content, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException{
+	private Mottaker getMottaker(Node content, String tema) {
 		try {
 
 			Mottaker mottaker = unmarshal(content);
@@ -119,12 +122,17 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			if (mottaker.isBerik()) {
 				validateMottaker(mottaker);
 				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
+					final String id = mottaker.getId();
 					PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
 							pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), SERVICE_CODE_TREG001);
-					mottaker = mapMottakerRequestFromPdl.mapMottakerFraPdl(hentPerson);
+					Mottaker mottakerFraPdl = mapMottakerRequestFromPdl.mapMottakerFraPdl(hentPerson);
+					mottaker.setKortNavn(mottakerFraPdl.getKortNavn());
+					mottaker.setNavn(mottakerFraPdl.getNavn());
+					mottaker.setMottakeradresse(mottakerFraPdl.getMottakeradresse());
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 					MottakerTo mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+					mottaker.setId(mottaker.getId());
 					mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 					mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
 					mottaker.setNavn(mottakerTo.getMottaker().getNavn());
@@ -132,25 +140,25 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			}
 			return mottaker;
 		} catch (MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new MarshallerException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e);
 		}
 	}
 
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 
 		if (mottaker.getTypeKode() == null) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 
 		if (StringUtils.isEmpty(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler mottakerId", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler mottakerId. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 	}
 
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element) {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName() + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
 

@@ -65,7 +65,7 @@ public class Tkat020DokumenttypeInfo {
 	@Cacheable(value = MetricLabels.HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
-	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
+	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) {
 
 		metrics.cacheMiss(MetricLabels.HENT_DOKKAT_SPRAAKINFO);
 		try {

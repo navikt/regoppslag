@@ -547,6 +547,13 @@ public class PDLResponseUtil {
 						.withBodyFile(filePath)));
 	}
 
+	public static void getPdlDkif(int status, String filePath) {
+		stubFor(get("/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false")
+				.willReturn(aResponse().withStatus(status)
+						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withBodyFile(filePath)));
+	}
+
 	public static void postPdlGraphqlWithErrorResponse(int status) {
 		stubFor(post("/graphql")
 				.willReturn(aResponse().withStatus(status)

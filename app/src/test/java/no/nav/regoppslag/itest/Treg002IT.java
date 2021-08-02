@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -158,7 +159,7 @@ public class Treg002IT extends AbstractIT {
 	public void shouldThrowIfBadRequestMotPDL() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphqlWithErrorResponse(HttpStatus.BAD_REQUEST.value()); //mottakerPlugin
-		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Funksjonell feil: feilmelding=Kunne ikke hente person fra pdl.");
 
@@ -180,13 +181,11 @@ public class Treg002IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
 
-		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
+		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
-		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Nav enhet finnes ikke for enhetNr=0102030405, message=Ingen organisasjon ble funnet med orgnr: 889640732"));
-
+		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 	}
 
 	@Test
@@ -237,17 +236,18 @@ public class Treg002IT extends AbstractIT {
 				"Test did not throw exception");
 
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Fant ingen SAML assertion token i sikkerhetskontekst. SAML assertion token kreves for å kunne kalle PersonV3"));
 	}
 
 	@Test
-	public void shouldThrowWhenPersonV3FailsTechnical() {
+	public void shouldThrowWhenPDLFailsTechnical() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
+		postPdlGraphqlWithErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
+		verify(5, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 

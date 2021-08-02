@@ -9,12 +9,11 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
-import no.nav.regoppslag.exceptions.PdlFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,9 @@ import javax.inject.Inject;
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -38,7 +40,7 @@ public class HentMottakerOgAdresseService {
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
 
-	private static final String UGYLDIG_INPUT = "Ugyldig input";
+	private static final String UGYLDIG_INPUT = " Ugyldig input";
 	private static final String TREG002_FUN_FEIL = "TREG002 Funksjonell feil: %s";
 
 	@Inject
@@ -52,7 +54,7 @@ public class HentMottakerOgAdresseService {
 		this.adresseMapper = adresseMapper;
 	}
 
-	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagSecurityException {
 
 		try {
 			validateInput(request);
@@ -62,6 +64,7 @@ public class HentMottakerOgAdresseService {
 				hentMottaker.setIdentifikator(request.getIdentifikator());
 				hentMottaker.setNavn(pdlMottakerInfo.getNavn());
 				hentMottaker.setAdresse(adresseMapper.mapFraPdl(pdlMottakerInfo));
+				return hentMottaker;
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
 				MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
@@ -70,8 +73,9 @@ public class HentMottakerOgAdresseService {
 						.navn(mottakerTo.getMottaker().getNavn())
 						.adresse(adresseMapper.mapFraOrg(mottakerTo.getMottaker()))
 						.build();
+				return hentMottaker;
 			}
-			return hentMottaker;
+
 		} catch (Exception e) {
 			logAndRethrowException(e);
 		}
@@ -82,44 +86,42 @@ public class HentMottakerOgAdresseService {
 	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
 
 		if (request == null) {
-			throw new RegOppslagFunctionalException("Request body er tom", UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
 		if (request.getIdentifikator() == null) {
-			throw new RegOppslagFunctionalException("Identifikator kan ikke være null", UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Identifikator kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
-		if(request.getTema() == null)  {
-			throw new RegOppslagFunctionalException("Tema kan ikke være null", UGYLDIG_INPUT);
+		if (request.getTema() == null) {
+			throw new RegoppslagIllegalArgumentException("Tema kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
 		if (request.getType() == null) {
-			throw new RegOppslagFunctionalException("Mottakertype kan ikke være null", UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Mottakertype kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
 				.equals(request.getType()))) {
-			throw new RegOppslagFunctionalException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
-					.getType()), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
+					.getType()) + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
 
-	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException) {
-			log.warn(format(TREG002_FUN_FEIL, e.getMessage()));
-			throw (RegOppslagFunctionalException) e;
+	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+			log.error(format(TREG002_FUN_FEIL, e.getMessage()), e);
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(format("TREG002 Sikkerhetsfeil: %s", e.getMessage()));
 			throw (RegOppslagSecurityException) e;
+		} else if (e instanceof RegOppslagFunctionalException | e instanceof NullPointerException) {
+			log.warn(format(TREG002_FUN_FEIL, e.getMessage()));
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatus());
+			}
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagTechnicalException) {
-			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
+			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
+			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, ((RegOppslagTechnicalException) e)
 					.getMetricMessage());
-		} else if (e instanceof UkjentAdressePersonErDoed) {
-			log.error(format(TREG002_FUN_FEIL, e.getMessage()), e);
-		} else if(e instanceof PdlFunctionalException) {
-			log.error(format(TREG002_FUN_FEIL, e.getMessage()), e);
-			throw new PdlFunctionalException(format("Funksjonell feil: feilmelding=%s", e.getMessage()), e.getCause());
-		} else if (e instanceof NullPointerException) {
-			throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: feilmelding=%s", e.getMessage()), e.getCause());
 		}
 	}
 }

@@ -1,11 +1,13 @@
 package no.nav.regoppslag.exceptions;
 
-public class DigitalKontaktinformasjonFunctionalException extends AbstractRegOppslagFunctionalException {
-	public DigitalKontaktinformasjonFunctionalException(String message) {
-		super(message);
-	}
 
-	public DigitalKontaktinformasjonFunctionalException(String message, Throwable cause) {
-		super(message, cause);
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+public class DigitalKontaktinformasjonFunctionalException extends RegOppslagFunctionalException {
+
+	public DigitalKontaktinformasjonFunctionalException(String message, Throwable cause, HttpStatus httpStatus) {
+		super(message, cause, httpStatus);
 	}
 }

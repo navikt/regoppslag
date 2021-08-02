@@ -6,11 +6,11 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -26,8 +26,10 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -43,7 +45,6 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
-	private MapPDLResponse mapPDLResponse;
 	private MicrometerMetrics metrics;
 
 	public SakspartPlugin() {
@@ -51,11 +52,10 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	}
 
 	@Inject
-	public SakspartPlugin(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
+	public SakspartPlugin(PdlGraphQLConsumer pdlGraphQLConsumer,
 						  OrganisasjonV4Consumer organisasjonV4Consumer,
 						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics) {
 		super(Sakspart.class);
-		this.mapPDLResponse = mapPDLResponse;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
@@ -63,17 +63,17 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagFunctionalException, RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
+				throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 			}
 			Sakspart sakspart = unmarshal(content);
-			log.info(String.format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
 
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
@@ -93,11 +93,11 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			Document newNode = convertObjectToDocument(sakspart);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Sakspart er beriket med data. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Sakspart er beriket med data. dokumentTypeId=%s", dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
 		}
@@ -106,19 +106,19 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private void validateMottaker(Sakspart sakspart) throws RegOppslagFunctionalException {
 
 		if (sakspart.getTypeKode() == null) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler AktoerTypeKode.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Sakspart mangler AktoerTypeKode. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 
 		if (StringUtils.isEmpty(sakspart.getId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler id", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Sakspart mangler id. %s", PLUGIN_NAME, UGYLDIG_INPUT), BAD_REQUEST);
 		}
 
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName() + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
 
