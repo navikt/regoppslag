@@ -112,7 +112,7 @@ public class MottakerPluginTest {
 		MicrometerMetrics metrics = new MicrometerMetrics();
 		MeterRegistry registry = new SimpleMeterRegistry();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
-		mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
+		mapPDLResponse = new MapPDLResponse(postnummerService);
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		mottakerPlugin = new MottakerPlugin(pdlGraphQLConsumer, mapPDLResponse, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo,
 				metrics, mapMottakerRequestFromPdl, digitalKontaktinformasjon);

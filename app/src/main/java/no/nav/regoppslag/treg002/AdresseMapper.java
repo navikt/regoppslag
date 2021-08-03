@@ -63,7 +63,7 @@ public class AdresseMapper {
 
 	public HentMottakerOgAdresseResponse.Adresse mapFraPdl(PdlMottakerInfo mottaker) {
 		if (POSTADRESSE_INNLAND.equals(mottaker.getPostadresse().getAdresseType())) {
-			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "NORSK_ADRESSE");
+			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 			PostadresseTo norskPostadresse = mottaker.getPostadresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
 					.adresselinje1(norskPostadresse.getAdresselinje1())
@@ -74,7 +74,7 @@ public class AdresseMapper {
 					.landkode(isNotBlank(norskPostadresse.getLandkode()) ? norskPostadresse.getLandkode() : null)
 					.build();
 		} else if(POSTADRESSE_UTLAND.equals(mottaker.getPostadresse().getAdresseType())){
-			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, "UTENLANDSK_ADRESSE");
+			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			PostadresseTo utenlandskPostadresse = mottaker.getPostadresse();
 			return HentMottakerOgAdresseResponse.Adresse.builder()
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() :null)

@@ -58,7 +58,7 @@ public class AdresseMapperTest {
 
 	@BeforeEach
 	public void setUp() {
-		mapPDLResponse = new MapPDLResponse(postnummerService, metrics);
+		mapPDLResponse = new MapPDLResponse(postnummerService);
 	}
 
 	@SneakyThrows

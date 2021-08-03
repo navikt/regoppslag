@@ -36,9 +36,7 @@ import java.util.Map;
 @Slf4j
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
-	private static final String DOKKAT = "DOKKAT";
 	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
-	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
 	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 	private MicrometerMetrics metrics;
 

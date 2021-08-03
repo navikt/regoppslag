@@ -22,33 +22,33 @@ import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 @Component
 public class StsRestConsumer {
 
-    private final RestTemplate restTemplate;
-    private final String stsUrl;
-    public static final int DELAY_SHORT = 300;
-    public static final int MULTIPLIER_SHORT = 2;
+	private final RestTemplate restTemplate;
+	private final String stsUrl;
+	public static final int DELAY_SHORT = 300;
+	public static final int MULTIPLIER_SHORT = 2;
 
-    @Inject
-    public StsRestConsumer(@Value("${security-token-service-token.url}") String stsUrl,
-                           RestTemplateBuilder restTemplateBuilder,
-                           final ServiceuserAlias serviceuserAlias) {
-        this.stsUrl = stsUrl;
-        this.restTemplate = restTemplateBuilder
-                .setReadTimeout(Duration.ofSeconds(20))
-                .setConnectTimeout(Duration.ofSeconds(5))
-                .basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
-                .build();
-    }
+	@Inject
+	public StsRestConsumer(@Value("${security-token-service-token.url}") String stsUrl,
+						   RestTemplateBuilder restTemplateBuilder,
+						   final ServiceuserAlias serviceuserAlias) {
+		this.stsUrl = stsUrl;
+		this.restTemplate = restTemplateBuilder
+				.setReadTimeout(Duration.ofSeconds(20))
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
+				.build();
+	}
 
-    @Retryable(include = RegOppslagTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
-    @Cacheable(RESTSTS_CACHE_NAME)
-    public String getOidcToken() {
-        try {
-            return requireNonNull(restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponse.class))
-                    .getAccessToken();
-        } catch (HttpStatusCodeException e) {
-            throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
-                    .getMessage()), e);
-        }
-    }
+	@Retryable(include = RegOppslagTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
+	@Cacheable(RESTSTS_CACHE_NAME)
+	public String getOidcToken() {
+		try {
+			return requireNonNull(restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponse.class))
+					.getAccessToken();
+		} catch (HttpStatusCodeException e) {
+			throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
+					.getMessage()), e);
+		}
+	}
 }
 
