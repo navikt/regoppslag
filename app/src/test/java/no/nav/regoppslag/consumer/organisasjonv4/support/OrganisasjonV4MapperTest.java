@@ -16,7 +16,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -64,7 +64,7 @@ public class OrganisasjonV4MapperTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Before
+    @BeforeEach
     public void initTests() throws Exception {
         postnummerService.init();
         ReflectionTestUtils.setField(metrics, "registry", registry);

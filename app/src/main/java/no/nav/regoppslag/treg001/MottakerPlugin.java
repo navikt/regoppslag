@@ -1,10 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.MicrometerMetrics.getUserId;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
@@ -18,6 +13,7 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.to.MottakerTo;
@@ -36,6 +32,12 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.String.format;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -78,7 +80,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		SpraakKodeMapper spraakKodeMapper = (SpraakKodeMapper) valueMap.get(MAALFORM.name());
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
@@ -86,10 +88,10 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
+				throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
 			}
 			Mottaker mottaker = unmarshal(content);
-			log.info(String.format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 
 			MottakerTo mottakerTo = MottakerTo.builder().build();
 			//Skal elementet berikes?
@@ -111,7 +113,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			//Sjekker språket på malen opp mot mottakers preferanser
 			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 			if (sprakinfos == null || sprakinfos.isEmpty()) {
-				log.warn(String.format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
+				log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
 			}
 
 			mottaker.setSpraakkode(spraakKodeMapper.getSpraakKode(mottaker, mottakerTo.getSpraakKode(), sprakinfos));
@@ -119,11 +121,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = convertObjectToDocument(mottaker);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
+			log.info(format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
 			invalidateSecurityContext();
 		}
@@ -133,19 +135,19 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
 
 		if (mottaker.getTypeKode() == null) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), BAD_REQUEST);
 		}
 
 		if (StringUtils.isEmpty(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mottakerdata mangler mottakerId", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler mottakerId", PLUGIN_NAME), BAD_REQUEST);
 		}
 
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 

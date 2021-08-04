@@ -11,7 +11,7 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 public class Norg2MapperTest {
@@ -29,7 +29,7 @@ public class Norg2MapperTest {
 	private static final String POSTBOKSANLEGG = "Postboksanlegg";
 	private static final String POSTBOKSNUMMER = "1";
 
-	@Before
+	@BeforeEach
 	public	void initPostnummer() throws Exception {
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);

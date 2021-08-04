@@ -5,6 +5,7 @@ import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -32,15 +33,16 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -56,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SakspartPluginTest {
 	private static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
@@ -82,11 +84,8 @@ public class SakspartPluginTest {
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private SakspartPlugin sakspartPlugin;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
-	@Before
-	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException, DatatypeConfigurationException {
+	@BeforeEach
+	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
@@ -111,14 +110,14 @@ public class SakspartPluginTest {
 		String expression1 = "//*[local-name() = 'sakspart']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
-		
+
 		Node processed = sakspartPlugin.processElement(node, valueMap);
-		
+
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
-		
+
 		assertThat(sakspart.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
@@ -149,20 +148,18 @@ public class SakspartPluginTest {
 		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'sakspart']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
-		
+
 		Node processed = sakspartPlugin.processElement(node, valueMap);
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
-		
+
 		assertThat(sakspart.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
@@ -170,15 +167,14 @@ public class SakspartPluginTest {
 		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'sakspart']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
-		sakspartPlugin.processElement(node, valueMap);
+		assertThrows(RegOppslagFunctionalException.class,
+				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
-		expectedException.expect(RegOppslagFunctionalException.class);
-		expectedException.expectMessage("Feil i SakspartPlugin: Sakspart mangler id");
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
@@ -186,12 +182,13 @@ public class SakspartPluginTest {
 		String expression1 = "/brevdata/*[local-name() = 'NAVFelles']//*[local-name() = 'sakspart']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
-		
-		sakspartPlugin.processElement(node, valueMap);
+		assertThrows(RegOppslagFunctionalException.class,
+				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler id");
+
 	}
-	
+
 	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
 		Personnavn personnavn = new Personnavn();
 		personnavn.setFornavn(fornavn);
@@ -206,14 +203,14 @@ public class SakspartPluginTest {
 		person.setPersonnavn(personnavn);
 		return person;
 	}
-	
+
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
 		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
 		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
 		organisasjon.setNavn(organisasjonKortnavn);
-		
+
 		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
 		orgDetNavn.getNavnelinje().addAll(orgNavn);
 		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();

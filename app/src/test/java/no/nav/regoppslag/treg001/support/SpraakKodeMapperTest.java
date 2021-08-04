@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001.support;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -8,10 +9,11 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SpraakKodeMapperTest {
@@ -111,7 +113,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgEN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NN.name(), list);
 		assertThat(spraakkode, is(Spraakkode.EN));
 	}
@@ -144,7 +146,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_EN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 		assertThat(spraakkode, is(Spraakkode.EN));
 	}
@@ -160,7 +162,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_UGYLDIGSPRAAK() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("HOHO"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("HOHO"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 		assertThat(spraakkode, is(Spraakkode.NB));
 	}

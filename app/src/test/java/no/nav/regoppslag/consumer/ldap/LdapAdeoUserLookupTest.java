@@ -8,7 +8,7 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.ldap.core.AttributesMapper;
@@ -16,7 +16,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LdapConfig.class, LdapAdeoUserLookupTest.Config.class})
 @TestPropertySource("classpath:ldap.properties")
 public class LdapAdeoUserLookupTest {

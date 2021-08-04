@@ -14,7 +14,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -30,8 +30,8 @@ public class RegisteroppslagRestControllerTest {
 	HentMottakerOgAdresseService hentMottakerOgAdresseService = mock(HentMottakerOgAdresseService.class);
 	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService,hentMottakerOgAdresseService);
 
-	@Before
-	public void setUp() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	@BeforeEach
+	public void setUp() throws RegOppslagSecurityException {
 		request = KompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdata).build();
 		String brevdataUtfylt = "<ole>brumm</ole>";
 		KompletterBrevdataResponse response = KompletterBrevdataResponse.builder()
@@ -42,7 +42,7 @@ public class RegisteroppslagRestControllerTest {
 	}
 	
 	@Test
-	public void shouldGetKomplettBrevdata() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public void shouldGetKomplettBrevdata() throws RegOppslagSecurityException {
 		KompletterBrevdataResponse actualResponse = registeroppslagRestController.kompletterBrevdata(request);
 		assertEquals(brevdata, actualResponse.getBrevdata());
 		Mockito.verify(kompletterBrevdataService, Mockito.times(1)).hentBrevdataFraRegistre(any());

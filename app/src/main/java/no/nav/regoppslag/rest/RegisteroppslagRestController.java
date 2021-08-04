@@ -69,7 +69,7 @@ public class RegisteroppslagRestController {
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
-			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+			throws RegOppslagSecurityException {
 
 		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 
@@ -100,7 +100,7 @@ public class RegisteroppslagRestController {
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
-			throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+			throws RegOppslagSecurityException {
 
 		try {
 			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));

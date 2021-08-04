@@ -2,7 +2,9 @@ package no.nav.regoppslag.consumer.map;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
-import no.nav.regoppslag.exceptions.FeilVedMappingAvUtenlandskPostadresseException;
+import no.nav.regoppslag.exceptions.FeilVedMappingAvPostadresseException;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -26,7 +28,7 @@ public class PostadresseMapper {
         return norskPostadresse;
     }
 
-    public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) throws FeilVedMappingAvUtenlandskPostadresseException {
+    public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) {
         UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
         utenlandskPostadresse.setLand(postadresse.getLand());
         utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
@@ -41,7 +43,7 @@ public class PostadresseMapper {
                 utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
             }
             else {
-                throw new FeilVedMappingAvUtenlandskPostadresseException(INGEN_TOM_ADRESSELINJE);
+                throw new FeilVedMappingAvPostadresseException(INGEN_TOM_ADRESSELINJE, BAD_REQUEST);
             }
         }
         return utenlandskPostadresse;

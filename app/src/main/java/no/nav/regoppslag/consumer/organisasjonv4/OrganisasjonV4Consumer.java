@@ -1,10 +1,8 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
@@ -21,6 +19,10 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -44,7 +46,7 @@ public class OrganisasjonV4Consumer {
 	@Cacheable(value = MetricLabels.HENT_ORGANISASJON, key = "#organisasjonsnummer")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
-	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Organisasjon hentOrganisasjon(final String organisasjonsnummer) {
 		
 		metrics.cacheMiss(MetricLabels.HENT_ORGANISASJON);
 		
@@ -53,9 +55,9 @@ public class OrganisasjonV4Consumer {
 			HentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request);
 			return mapHentOrganisasjonResponse(response);
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
-			throw new RegOppslagFunctionalException(String.format("Nav enhet finnes ikke for enhetNr=%s, message=%s", organisasjonsnummer, e
+			throw new RegOppslagIkkeFunnetException(String.format("Nav enhet finnes ikke for enhetNr=%s, message=%s", organisasjonsnummer, e
 					.getMessage()), e, e.getClass()
-					.equals(HentOrganisasjonOrganisasjonIkkeFunnet.class) ? ORGV4_ORG_IKKE_FUNNET : ORGV4_UGYLDIG_INPUT);
+					.equals(HentOrganisasjonOrganisasjonIkkeFunnet.class) ? ORGV4_ORG_IKKE_FUNNET : ORGV4_UGYLDIG_INPUT, NOT_FOUND);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=%s, message=%s", organisasjonsnummer, e
 					.getMessage()), e, "OrganisasjonV4 - Teknisk feil");

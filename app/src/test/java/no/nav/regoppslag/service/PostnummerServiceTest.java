@@ -1,27 +1,27 @@
 package no.nav.regoppslag.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.junit.Assert.assertThat;
-
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import no.nav.regoppslag.util.LogbackCapturingAppender;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.LoggingEvent;
 
 import java.io.IOException;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+@ExtendWith(MockitoExtension.class)
 public class PostnummerServiceTest {
 
 	@Mock
@@ -32,15 +32,15 @@ public class PostnummerServiceTest {
 
 	private PostnummerService postnumnmerService = new PostnummerService();
 
-	@Before
-	public void setUp() throws IOException{
+	@BeforeEach
+	public void setUp() throws IOException {
 		postnumnmerService.init();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		logger.detachAppender(mockAppender);
+		//logger.detachAppender(mockAppender);
 	}
 
 
@@ -53,7 +53,7 @@ public class PostnummerServiceTest {
 	@Test
 	public void testFinnLandNavnNullPoststed() {
 		String landNavn = postnumnmerService.finnPoststed(null);
-		assertThat(landNavn, isEmptyOrNullString());
+		assertNull(landNavn);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class PostnummerServiceTest {
 		String landNavn = postnumnmerService.finnPoststed("FINNES IKKE");
 		LogbackCapturingAppender.Factory.cleanUp();
 
-		assertThat(landNavn, isEmptyOrNullString());
+		assertNull(landNavn);
 		assertThat(capture.getCapturedLogMessage(), is("Finner ikke poststed for postnummer: FINNES IKKE, sjekk om ny postnummer.txt må lastes ned."));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}

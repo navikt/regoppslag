@@ -3,6 +3,7 @@ package no.nav.regoppslag.service;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,7 +57,9 @@ public class PostnummerService {
 		private String poststed;
 	}
 
+	@SneakyThrows
 	public String finnPoststed (String postnr) {
+		init();
 		if (postalCodeTable.get(postnr) == null) {
 			LOG.warn("Finner ikke poststed for postnummer: " + postnr + ", sjekk om ny postnummer.txt må lastes ned.");
 			return null;

@@ -2,44 +2,50 @@ package no.nav.regoppslag.exceptions;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 @Getter
-public class RegOppslagFunctionalException extends Exception {
+public class RegOppslagFunctionalException extends RuntimeException {
 
 	private final String metricMessage;
+	private final HttpStatus httpStatus;
 
-	public RegOppslagFunctionalException(String message, String metricMessage) {
+	public RegOppslagFunctionalException(String message, String metricMessage, HttpStatus httpStatus) {
 		super(message);
 		this.metricMessage = metricMessage;
+		this.httpStatus = httpStatus;
 	}
 
-	public RegOppslagFunctionalException(String message) {
+	public RegOppslagFunctionalException(String message, HttpStatus httpStatus) {
 		super(message);
 		metricMessage = this.getClass().getSimpleName();
+		this.httpStatus = httpStatus;
 	}
 
-	public RegOppslagFunctionalException(String message, Throwable cause) {
+	public RegOppslagFunctionalException(String message, Throwable cause, HttpStatus httpStatus) {
 		super(message, cause);
 		metricMessage = this.getClass().getSimpleName();
+		this.httpStatus = httpStatus;
 	}
 
-	public RegOppslagFunctionalException(String message, Throwable cause, String metricMessage) {
+	public RegOppslagFunctionalException(String message, Throwable cause, String metricMessage, HttpStatus httpStatus) {
 		super(message, cause);
 		this.metricMessage = metricMessage;
+		this.httpStatus = httpStatus;
 	}
 
-	public RegOppslagFunctionalException(Throwable cause) {
+	public RegOppslagFunctionalException(Throwable cause, HttpStatus httpStatus) {
 		super(cause);
 		metricMessage = this.getClass().getSimpleName();
+		this.httpStatus = httpStatus;
 	}
 
-	public RegOppslagFunctionalException(Throwable cause, String metricMessage) {
+	public RegOppslagFunctionalException(Throwable cause, String metricMessage, HttpStatus httpStatus) {
 		super(cause);
 		this.metricMessage = metricMessage;
+		this.httpStatus = httpStatus;
 	}
+
 }

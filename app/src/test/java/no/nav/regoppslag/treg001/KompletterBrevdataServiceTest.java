@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,7 +15,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.w3c.dom.Document;
@@ -30,7 +31,7 @@ import java.io.IOException;
 public class KompletterBrevdataServiceTest {
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
-	
+
 	private KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
 			.brevdata(brevdata)
@@ -42,42 +43,41 @@ public class KompletterBrevdataServiceTest {
 			.brevdata("<ole>brumm</oleIllegal>")
 			.build();
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-	
 	/**HVIS request inneholder gyldige verdier, SÅ skal elementEnricher kalles og metoden returnere ferdig utfylt brevdata.*/
 	@Test
-	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
+	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(),any())).thenReturn(stringToDocument(brevdataUtfylt));
 		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertEquals(brevdataUtfylt, actualResponse.getBrevdata());
 		Mockito.verify(elementEnricher, Mockito.times(1)).process(any(),any());
 	}
-	
+
 	/** HVIS Plugin mangler, SÅ skal teknisk feil kastes */
 	@Test
 	public void shouldHandleMissingPluginException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		exception.expect(RegOppslagTechnicalException.class);
 		when(elementEnricher.process(any(),any())).thenThrow(MissingPluginException.class);
-		kompletterBrevdataService.hentBrevdataFraRegistre(request);
+		assertThrows(RegOppslagFunctionalException.class,
+				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
+
 	}
-	
+
 	/** HVIS XPathExpression feiler i behandling av brevdata, SÅ skal funksjonell feil kastes */
 	@Test
 	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
-		exception.expect(RegOppslagFunctionalException.class);
 		when(elementEnricher.process(any(),any())).thenThrow(XPathExpressionException.class);
-		kompletterBrevdataService.hentBrevdataFraRegistre(request);
+		assertThrows(RegOppslagFunctionalException.class,
+				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
+
 	}
-	
+
 	/** HVIS parsing av brevdata fra xml- til streng-format feiler, SÅ skal funksjonell feil kastes */
 	@Test
-	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, IOException, SAXException, RegOppslagSecurityException {
-		exception.expect(RegOppslagFunctionalException.class);
-		exception.expectMessage("org.xml.sax.SAXParseException");
+	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, IOException, SAXException, RegOppslagSecurityException {
 		Document document= null;
 		when(elementEnricher.process(any(),any())).thenReturn(document);
-		kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest);
+		assertThrows(RegOppslagFunctionalException.class,
+				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest), "org.xml.sax.SAXParseException");
+
 	}
 }
 

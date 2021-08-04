@@ -8,6 +8,7 @@ import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -59,6 +60,9 @@ public class LocalCacheConfig {
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.build()),
+				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build())));
 		return cacheManager;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 @Getter
-public class RegOppslagSecurityException extends Exception {
+public class RegOppslagSecurityException extends RuntimeException {
 	
 	private String shortDescription = "RegOppslagSecurityException";
 	

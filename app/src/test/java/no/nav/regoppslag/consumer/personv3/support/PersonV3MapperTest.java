@@ -30,12 +30,12 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
@@ -88,10 +88,7 @@ public class PersonV3MapperTest {
 
 	private PersonV3Mapper mapper;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void initPostnummer() throws Exception {
 		postnummerService.init();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
@@ -106,14 +103,14 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldMapSakspartNavnWithoutMellomNavn() throws Exception {
+	public void shouldMapSakspartNavnWithoutMellomNavn() {
 		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 		String navn = mapper.getSakspartNavn(person);
 		assertThat(navn, is(FORNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
-	public void simpleMapping() throws Exception {
+	public void simpleMapping() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
@@ -140,7 +137,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedadresseMedGateadresse() throws Exception {
+	public void mapPersonBostedadresseMedGateadresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		person.setMaalform(createSpraak("NO"));
 		settBostedadresseMedGateadresse(person);
@@ -158,7 +155,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedadresseMedMatrikkeladresse() throws Exception {
+	public void mapPersonBostedadresseMedMatrikkeladresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedMatrikkeladresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -173,7 +170,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedadresseMedPostboksadresse() throws Exception {
+	public void mapPersonBostedadresseMedPostboksadresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settBostedadresseMedPostboksadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -188,7 +185,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresse() throws Exception {
+	public void mapPersonPostadresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -205,7 +202,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseWhereAdresseLinje4HasPostnummer() throws Exception {
+	public void mapPersonPostadresseWhereAdresseLinje4HasPostnummer() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4("0001 AAAA");
@@ -223,7 +220,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldMapToUtenlandskAdresseWhenLandIsNotNorway() throws Exception {
+	public void shouldMapToUtenlandskAdresseWhenLandIsNotNorway() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje3("0001 AAAA");
@@ -233,7 +230,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigAdresseUtland() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigAdresseUtland() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigUtlandsadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -248,7 +245,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigAdresseUtlandPostnummerInAdresseLinje4() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigAdresseUtlandPostnummerInAdresseLinje4() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigUtlandsadresse(person);
 		MidlertidigPostadresseUtland midlertidigPostadresseUtland = (MidlertidigPostadresseUtland) person.getMidlertidigPostadresse();
@@ -265,7 +262,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigGateAdresse() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigGateAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigGateadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -280,7 +277,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCo() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCo() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigGateadresseMedTilleggasadressetype(person, TILLEGGSADRESSETYPE_CO);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -291,7 +288,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCoAdresse() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigGateAdresseMedCoAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigGateadresseMedTilleggsadresse(person, CO_TILLEGGSADRESSE);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -303,7 +300,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigGateAdresseMedV() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigGateAdresseMedV() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigGateadresseMedTilleggasadressetype(person, TILLEGGSADRESSETYPE_V);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -314,7 +311,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigGateAdresseMedVAdresse() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigGateAdresseMedVAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigGateadresseMedTilleggsadresse(person, V_TILLEGGSADRESSE);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -326,7 +323,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresse() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigMatrikkeladresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -341,7 +338,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCo() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCo() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigMatrikkeladresseMedCo(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -352,7 +349,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCoAdresse() throws Exception {
+	public void mapPersonPostadresseMedMidlertidigMatrikkelAdresseMedCoAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigMatrikkelAdresseMedCoAdresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -364,7 +361,7 @@ public class PersonV3MapperTest {
 
 
 	@Test
-	public void mapPersonBostedadresseMedMidlertidigPostboksAdresse() throws Exception {
+	public void mapPersonBostedadresseMedMidlertidigPostboksAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresseMedMidlertidigPostboksadresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -379,7 +376,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCo() throws Exception {
+	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCo() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settMidlertidigPostBoksAdresseMedCo(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -390,7 +387,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCoAdresse() throws Exception {
+	public void mapPersonBostedAdresseMedMidlertidigPostboksAdresseMedCoAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settMidlertidigPostboksAdresseMedCoAdresse(person);
 		MottakerTo mottakerTo = mapper.map(person, "");
@@ -401,7 +398,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void mapDodPersonWithAdresse() throws Exception {
+	public void mapDodPersonWithAdresse() throws DatatypeConfigurationException {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 
@@ -423,37 +420,40 @@ public class PersonV3MapperTest {
 
 	}
 
-	@Test(expected = UkjentAdressePersonErDoed.class)
-	public void shouldThrowIfDodPersonWithoutAdress() throws Exception {
+	@Test
+	public void shouldThrowIfDodPersonWithoutAdress() throws DatatypeConfigurationException {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		Doedsdato doedsdato = new Doedsdato();
 		doedsdato.setDoedsdato(createDoedsdato());
 		person.setDoedsdato(doedsdato);
-		mapper.map(person, "");
+		UkjentAdressePersonErDoed e = Assertions.assertThrows(UkjentAdressePersonErDoed.class,
+				() -> mapper.map(person, ""));
 	}
 
-	@Test(expected = RegOppslagFunctionalException.class)
-	public void shouldThrowIfUtenPostnrAndLand() throws Exception {
+	@Test
+	public void shouldThrowIfUtenPostnrAndLand() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje4(null);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje1(null);
 		person.getPostadresse().getUstrukturertAdresse().setLandkode(null);
-		mapper.map(person, "");
+		UkjentAdresseException e = Assertions.assertThrows(UkjentAdresseException.class,
+				() -> mapper.map(person, ""));
 	}
 
-	@Test(expected = UkjentAdresseException.class)
-	public void shouldThrowIfUkjentAdresse() throws Exception {
+	@Test
+	public void shouldThrowIfUkjentAdresse() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		Postadressetyper postadressetyper = new Postadressetyper();
 		postadressetyper.setValue("UKJENT_ADRESSE");
 		person.setGjeldendePostadressetype(postadressetyper);
-		mapper.map(person, "");
+		UkjentAdresseException e = Assertions.assertThrows(UkjentAdresseException.class,
+				() -> mapper.map(person, ""));
 	}
 
 	@Test
-	public void shouldNotThrowIfNotMissingPostnrButMissingAdresseLinje1() throws Exception {
+	public void shouldNotThrowIfNotMissingPostnrButMissingAdresseLinje1() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 
@@ -464,7 +464,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldNotThrowIfMissingNotMissingAdresseLinje1ButMissingOtherAdresseAttributes() throws Exception {
+	public void shouldNotThrowIfMissingNotMissingAdresseLinje1ButMissingOtherAdresseAttributes() {
 
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
@@ -478,7 +478,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void testFunctionalMetrics() throws Exception {
+	public void testFunctionalMetrics() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
 		person.getPostadresse().getUstrukturertAdresse().setAdresselinje2(null);
@@ -499,7 +499,7 @@ public class PersonV3MapperTest {
 
 
 	@Test
-	public void shouldNotThrowIfMissingLandkode() throws Exception {
+	public void shouldNotThrowIfMissingLandkode() {
 
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		settPostadresse(person);
@@ -551,7 +551,7 @@ public class PersonV3MapperTest {
 		person.setBostedsadresse(bostedsadresse);
 	}
 
-	private XMLGregorianCalendar createDoedsdato() throws Exception {
+	private XMLGregorianCalendar createDoedsdato() throws DatatypeConfigurationException {
 		LocalDate date = LocalDate.now().minusMonths(1);
 		GregorianCalendar gcal = GregorianCalendar.from(date.atStartOfDay(ZoneId.systemDefault()));
 		return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);

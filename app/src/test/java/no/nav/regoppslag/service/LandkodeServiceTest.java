@@ -1,24 +1,25 @@
 package no.nav.regoppslag.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.junit.Assert.assertThat;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.Appender;
 import no.nav.regoppslag.util.LogbackCapturingAppender;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+@ExtendWith(MockitoExtension.class)
 public class LandkodeServiceTest {
 
 	@Mock
@@ -33,11 +34,11 @@ public class LandkodeServiceTest {
 
 	private LandkodeService landkodeService = new LandkodeService();
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		logger.detachAppender(mockAppender);
@@ -65,7 +66,7 @@ public class LandkodeServiceTest {
 	@Test
 	public void testFinnLandNavnNullLandkode() throws Exception {
 		String landNavn = landkodeService.finnLandnavn(null);
-		assertThat(landNavn, isEmptyOrNullString());
+		assertNull(landNavn);
 	}
 
 	@Test
@@ -82,7 +83,7 @@ public class LandkodeServiceTest {
 		String landNavn = landkodeService.finnLandnavn(FINNES_IKKE);
 		LogbackCapturingAppender.Factory.cleanUp();
 
-		assertThat(landNavn, isEmptyOrNullString());
+		assertNull(landNavn);
 		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon"));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}

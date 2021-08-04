@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
  */
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-@Getter
-public class IngenGyldigEnumVerdiForSpraakKodeException extends RegOppslagTechnicalException {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class IngenGyldigEnumVerdiForSpraakKodeException extends RegOppslagFunctionalException {
 
-
-	public IngenGyldigEnumVerdiForSpraakKodeException(String message) {
-		super(message);
+	public IngenGyldigEnumVerdiForSpraakKodeException(String message, HttpStatus httpStatus) {
+		super(message, httpStatus);
 	}
 }
