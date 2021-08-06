@@ -1,5 +1,5 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
-public enum  InformatsjonKilde {
+public enum InformasjonKilde {
 	PDL, FREG
 }

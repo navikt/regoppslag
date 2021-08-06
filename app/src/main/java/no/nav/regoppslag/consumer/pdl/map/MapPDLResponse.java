@@ -30,8 +30,8 @@ import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static no.nav.regoppslag.consumer.pdl.to.InformatsjonKilde.FREG;
-import static no.nav.regoppslag.consumer.pdl.to.InformatsjonKilde.PDL;
+import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
+import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
@@ -41,6 +41,10 @@ import static org.apache.commons.lang3.StringUtils.trim;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+/**
+ * @author Tsigab Angosom, NAV.
+ */
 
 @Slf4j
 @Component
@@ -54,6 +58,8 @@ public class MapPDLResponse {
 	private static final String CARE_OF = "C/O ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String POSTNUMMER = "postnummer";
+	private static final String FORNAVN = "Fornavn";
+	private static final String ETTERNAVN = "Etternavn";
 
 	@Inject
 	public MapPDLResponse(
@@ -81,20 +87,18 @@ public class MapPDLResponse {
 									.findAny()
 									.orElseThrow(() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE))))
 					.build();
-		} else if (nonNull(hentPerson.getKontaktadresse()) && (isSourcePdl(getMasterKilde(getKontaktadresse(hentPerson).getMetadata())) ||
+		} else if (nonNull(getKontaktadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getKontaktadresse(hentPerson).getMetadata())) ||
 				isGyldigDatoOgKilde(getKontaktadresse(hentPerson).getGyldigTilOgMed(), getKontaktadresse(hentPerson).getMetadata()))) {
 			return mapKontaktadresse(hentPerson);
-		} else if (nonNull(hentPerson.getOppholdsadresse()) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
+		} else if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
 				FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
 			return mapOppholdsadresse(hentPerson, serviceCode);
-		} else if (nonNull(hentPerson.getBostedsadresse())) {
+		} else if (nonNull(getBostedsadresse(hentPerson))) {
 			return PdlMottakerInfo.builder()
 					.identifikasjonsnummer(getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
 					.navn(getFulltnavn(hentPerson.getNavn()))
 					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-					.postadresse(mapPostadresseFraBostedsadresse(hentPerson.getBostedsadresse().stream()
-							.filter(Objects::nonNull)
-							.findAny()
+					.postadresse(mapPostadresseFraBostedsadresse(Optional.ofNullable(getBostedsadresse(hentPerson))
 							.orElseThrow(() -> new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND)), serviceCode))
 					.build();
 		}
@@ -302,7 +306,7 @@ public class MapPDLResponse {
 		} else if (nonNull(matrikkeladresse)) {
 			return mapMatrikkeladresse(matrikkeladresse);
 		} else if (nonNull(ukjentBosted)) {
-			throw new UkjentAdresseException(serviceCode + "Kunne ikke mappe postadresse for UkjentBosted mottaker", NOT_FOUND);
+			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", NOT_FOUND);
 		}
 		return null;
 	}
@@ -354,7 +358,7 @@ public class MapPDLResponse {
 	}
 
 	private boolean isGyldigDatoOgKilde(LocalDateTime gyldigDato, Metadata metadata) {
-		return FREG.name().equals(getMasterKilde(metadata)) && now().isBefore(gyldigDato);
+		return FREG.name().equals(getMasterKilde(metadata)) && (nonNull(gyldigDato) && now().isBefore(gyldigDato));
 	}
 
 	private boolean isSourcePdl(String source) {
@@ -363,26 +367,32 @@ public class MapPDLResponse {
 
 	public String getFulltnavn(List<HentPerson.PersonNavn> navns) {
 		return navns.stream().filter(Objects::nonNull)
-				.map(personNavn ->
-						nonNull(personNavn.getFornavn()) ? trim(getNavn(personNavn.getFornavn()) + getNavn(personNavn.getMellomnavn()) + getNavn(personNavn.getEtternavn())) : null)
+				.map(personNavn -> mapPersonnavn(personNavn))
 				.filter(Objects::nonNull)
-				.findFirst().orElse(null);
+				.findFirst().orElseThrow(() -> new RegoppslagIllegalArgumentException(format(ERROR_MELDING, "Personnavn"), BAD_REQUEST));
 
 	}
 
+	private String mapPersonnavn(HentPerson.PersonNavn personNavn) {
+		if (isBlank(personNavn.getFornavn()) || isBlank(personNavn.getEtternavn())) {
+			throw new RegoppslagIllegalArgumentException(format(ERROR_MELDING, isBlank(personNavn.getFornavn()) ? FORNAVN : ETTERNAVN), BAD_REQUEST);
+		}
+		return trim(getNavn(personNavn.getFornavn()) + getNavn(personNavn.getMellomnavn()) + getNavn(personNavn.getEtternavn()));
+	}
+
 	private Kontaktadresse getKontaktadresse(HentPerson hentPerson) {
-		return hentPerson.getKontaktadresse().stream()
+		return isNull(hentPerson.getKontaktadresse()) ? null : hentPerson.getKontaktadresse().stream()
 				.filter(Objects::nonNull)
 				.findAny().orElse(null);
 	}
 
 	private Oppholdsadresse getOppholdsadresse(HentPerson hentPerson) {
-		return hentPerson.getOppholdsadresse().stream()
+		return isNull(hentPerson.getOppholdsadresse()) ? null : hentPerson.getOppholdsadresse().stream()
 				.filter(Objects::nonNull).findAny().orElse(null);
 	}
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
-		return hentPerson.getBostedsadresse().stream()
+		return isNull(hentPerson.getBostedsadresse()) ? null : hentPerson.getBostedsadresse().stream()
 				.filter(Objects::nonNull).findAny().orElse(null);
 	}
 
@@ -438,4 +448,5 @@ public class MapPDLResponse {
 			throw new RegoppslagIllegalArgumentException(message, BAD_REQUEST);
 		return obj;
 	}
+
 }

@@ -1,10 +1,15 @@
 package no.nav.regoppslag.treg002;
 
+import lombok.SneakyThrows;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +17,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.io.IOException;
 
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1;
+import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2;
+import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_POSTNUMMER;
+import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
+import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_UTENLANDSK;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtelandsk;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE2;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE3;
@@ -29,6 +46,8 @@ import static no.nav.regoppslag.util.TestDataUtil.createNorskPostadresse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -41,19 +60,24 @@ public class AdresseMapperTest {
 	@Mock
 	private LandkodeService landkodeService;
 
+	@InjectMocks
+	private MapPDLResponse mapPDLResponse;
 	@Mock
 	private MicrometerMetrics metrics;
-
 	@InjectMocks
 	private AdresseMapper adresseMapper;
+	@InjectMocks
+	private PostnummerService postnummerService;
 
 	@BeforeEach
-	public void setUp() {
-		when(landkodeService.finnLandkode(any())).thenReturn(LANDKODE);
+	public void setUp() throws IOException {
+		postnummerService.init();
+		mapPDLResponse = new MapPDLResponse(postnummerService);
 	}
 
 	@Test
 	public void shouldMapWithNorskPostAdresse() {
+		when(landkodeService.finnLandkode(any())).thenReturn(LANDKODE);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(createMottaker());
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
@@ -74,6 +98,34 @@ public class AdresseMapperTest {
 		assertThat(adresse.getLandkode(), is(SVENSK_LANDKODE));
 		assertThat(adresse.getPostnummer(), nullValue());
 		assertThat(adresse.getPoststed(), nullValue());
+	}
+
+	@Test
+	public void shouldMapPDLWithNorskPostAdresse() {
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPerson(createPersonnavn()), SERVICE_CODE_TREG002);
+
+		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
+		assertEquals(FRITTFORMAT_ADRESSELINJE1, adresse.getAdresselinje1());
+		assertEquals(FRITTFORMAT_ADRESSELINJE2, adresse.getAdresselinje2());
+		assertNull(adresse.getAdresselinje3());
+		assertEquals(LANDKODE_NORGE, adresse.getLandkode());
+		assertEquals(FRITTFORMAT_POSTNUMMER, adresse.getPostnummer());
+		assertEquals(PDLResponseUtil.POSTSTED, adresse.getPoststed());
+	}
+
+	@SneakyThrows
+	@Test
+	public void shouldMapPDLWithUtenlandskPostAdresse() {
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtelandsk(), SERVICE_CODE_TREG002);
+		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
+
+		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
+		assertEquals(POSTKODE, adresse.getAdresselinje2());
+		assertEquals(BYSTED, adresse.getAdresselinje3());
+		assertNull(adresse.getPostnummer());
+		assertNull(adresse.getPoststed());
+		assertEquals(LANDKODE_UTENLANDSK, adresse.getLandkode());
+
 	}
 
 	@Test

@@ -3,7 +3,6 @@ package no.nav.regoppslag.consumer.pdl;
 import lombok.SneakyThrows;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
-import no.nav.regoppslag.consumer.pdl.to.InformatsjonKilde;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.Metadata;
@@ -19,14 +18,19 @@ import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static no.nav.regoppslag.consumer.pdl.to.InformatsjonKilde.FREG;
-import static no.nav.regoppslag.consumer.pdl.to.InformatsjonKilde.PDL;
+import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
+import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_MIDLERTIDIG;
@@ -49,6 +53,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsadresseWithUkjentBosted;
 import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
 import static no.nav.regoppslag.util.PDLResponseUtil.createHentePersonBuilder;
@@ -57,11 +62,13 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonFor
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithOrginasjon;
 import static no.nav.regoppslag.util.PDLResponseUtil.createMetadata;
 import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrginasjonSomKontakt;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithOppholdsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVegadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonKontaktAdresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
 import static no.nav.regoppslag.util.PDLResponseUtil.organisasjonSomKontakt;
@@ -73,7 +80,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@ExtendWith(SpringExtension.class)
 public class MapPDLResponseTest {
 
 	private static final String FEILMELDING_PERSON_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
@@ -81,14 +90,16 @@ public class MapPDLResponseTest {
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
+
+	@InjectMocks
 	private PostnummerService postnummerService;
 
 
 	@BeforeEach
-	public void setUp() {
+	public void setUp() throws IOException  {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		postnummerService = new PostnummerService();
 		mapPDLResponse = new MapPDLResponse(postnummerService);
+		postnummerService.init();
 	}
 
 	@Test
@@ -106,15 +117,6 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
-	}
-
-	@Test
-	public void shouldThrowFunctionalExceptionIfPersonErDoedOgHarIngenAdresse() {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), SERVICE_CODE_TREG002));
-		assertEquals(GONE, e.getHttpStatus());
-		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
 	@Test
@@ -165,15 +167,6 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
-	}
-
-	@SneakyThrows
-	@Test
-	public void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
-
-		assertThrows(UkjentAdresseException.class,
-				() -> mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithNoAdresse(), SERVICE_CODE_TREG002), "Fant ikke adresse for personen i PDL");
 	}
 
 	@Test
@@ -466,6 +459,63 @@ public class MapPDLResponseTest {
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
+
+	@Test
+	public void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
+		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
+
+		assertThrows(UkjentAdresseException.class,
+				() -> mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithNoAdresse(), SERVICE_CODE_TREG002), "Fant ikke adresse for personen i PDL");
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionIfPersonErDoedOgHarIngenAdresse() {
+		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
+		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
+				mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), SERVICE_CODE_TREG002));
+		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenPersonnavnIsNull() {
+		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPerson(null));
+		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(null), SERVICE_CODE_TREG002));
+		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals("Feltet Personnavn kan ikke være null eller tomt", e.getMessage());
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenFornavnIsNull() {
+		HentPerson.PersonNavn personNavn = createPersonnavn();
+		personNavn.setFornavn(null);
+		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002));
+		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals("Feltet Fornavn kan ikke være null eller tomt", e.getMessage());
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionWhenEtternavnIsNull() {
+		HentPerson.PersonNavn personNavn = createPersonnavn();
+		personNavn.setEtternavn(null);
+		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002));
+		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals("Feltet Etternavn kan ikke være null eller tomt", e.getMessage());
+	}
+
+	@Test
+	public void shouldThrowFunctionalExceptionForUkjentBostedMottaker() {
+		HentPerson hentPerson = createBostedsadresseWithUkjentBosted();
+
+		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
+				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002));
+		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals("TREG002: Kunne ikke mappe postadresse for UkjentBosted mottaker", e.getMessage());
+	}
+
 
 	@Test
 	public void shouldThrowExceptionWhenKontaktAdresseForDoedsboIsNull() {

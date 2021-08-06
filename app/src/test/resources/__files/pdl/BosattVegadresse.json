@@ -25,7 +25,7 @@
       "kontaktadresse": [
         {
           "gyldigFraOgMed": "2020-06-28T00:00",
-          "gyldigTilOgMed": "2031-06-28T23:59:59",
+          "gyldigTilOgMed": null,
           "type": "Innland",
           "coAdressenavn": null,
           "postboksadresse": null,
@@ -37,7 +37,11 @@
             "postnummer": "7320"
           },
           "utenlandskAdresse": null,
-          "utenlandskAdresseIFrittFormat": null
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
         }
       ],
       "kontaktinformasjonForDoedsbo": [],
@@ -70,17 +74,7 @@
           "ukjentBosted": null,
           "metadata": {
             "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
-            "master": "FREG",
-            "endringer": [
-              {
-                "type": "OPPRETT",
-                "registrert": "2021-06-18T09:21:38",
-                "registrertAv": "Folkeregisteret",
-                "systemkilde": "FREG",
-                "kilde": "Dolly"
-              }
-            ],
-            "historisk": false
+            "master": "FREG"
           }
         }
       ],

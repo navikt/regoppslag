@@ -21,4 +21,6 @@ public class HentMottakerOgAdresseRequest {
 	private String identifikator;
 	@ApiModelProperty(example = "ORGANISASJON", notes = "Sier om identifikatoren er et fnr eller et orgnr. Gyldige verdier er PERSON og ORGANISASJON", required = true, allowableValues = "PERSON, ORGANISASJON")
 	private String type;
+	@ApiModelProperty(example = "FOR", notes = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", required = true, allowableValues = "DAG, FOR, PEN, FRI ....")
+	private String tema;
 }

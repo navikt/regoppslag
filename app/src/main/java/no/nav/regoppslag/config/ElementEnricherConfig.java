@@ -37,9 +37,7 @@ public class ElementEnricherConfig {
 
 	@Bean
 	public ElementEnricher orchestrator(ElementEnricherPluginRegistry registry) {
-		ElementEnricher elementEnricher = new ElementEnricher(registry);
-		elementEnricher.setRegistry(registry);
-		return elementEnricher;
+		return new ElementEnricher(registry);
 	}
 	
 }

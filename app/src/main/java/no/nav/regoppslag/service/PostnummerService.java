@@ -3,12 +3,12 @@ package no.nav.regoppslag.service;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,13 +26,14 @@ public class PostnummerService {
 
 	private final Map<String, PostData> postalCodeTable;
 
+	@Inject
 	public PostnummerService() {
 		postalCodeTable = new HashMap<>();
 	}
 
 	@PostConstruct
 	public void init() throws IOException {
-		
+
 		InputStream in = getClass().getResourceAsStream(FILENAME);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
@@ -57,9 +58,7 @@ public class PostnummerService {
 		private String poststed;
 	}
 
-	@SneakyThrows
 	public String finnPoststed (String postnr) {
-		init();
 		if (postalCodeTable.get(postnr) == null) {
 			LOG.warn("Finner ikke poststed for postnummer: " + postnr + ", sjekk om ny postnummer.txt må lastes ned.");
 			return null;

@@ -41,6 +41,9 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * @author Tsigab Angosom, NAV.
+ */
 @Slf4j
 @Component
 public class PdlGraphQLConsumer {
@@ -125,10 +128,6 @@ public class PdlGraphQLConsumer {
 
 	private String hentNavn = "query hentPerson($ident: ID!){\n" +
 			"  hentPerson(ident: $ident){\n" +
-			"    foedsel{\n" +
-			"      foedselsaar\n" +
-			"      foedselsdato\n" +
-			"    }\n" +
 			"    navn(historikk: false){\n" +
 			"      fornavn\n" +
 			"      mellomnavn\n" +
@@ -249,14 +248,6 @@ public class PdlGraphQLConsumer {
 			"      metadata{\n" +
 			"        opplysningsId\n" +
 			"        master\n" +
-			"        endringer{\n" +
-			"        type\n" +
-			"        registrert\n" +
-			"        registrertAv\n" +
-			"        systemkilde\n" +
-			"        kilde\n" +
-			"        }\n" +
-			"        historisk\n" +
 			"      }\n" +
 			"    }\n" +
 			"    kontaktinformasjonForDoedsbo(historikk: false){\n" +
@@ -299,14 +290,6 @@ public class PdlGraphQLConsumer {
 			"      metadata{\n" +
 			"        opplysningsId\n" +
 			"        master\n" +
-			"        endringer{\n" +
-			"        type\n" +
-			"        registrert\n" +
-			"        registrertAv\n" +
-			"        systemkilde\n" +
-			"        kilde\n" +
-			"        }\n" +
-			"        historisk\n" +
 			"      }\n" +
 			"    }\n" +
 			"    sikkerhetstiltak{\n" +
@@ -349,14 +332,6 @@ public class PdlGraphQLConsumer {
 			"      metadata{\n" +
 			"        opplysningsId\n" +
 			"        master\n" +
-			"        endringer{\n" +
-			"        type\n" +
-			"        registrert\n" +
-			"        registrertAv\n" +
-			"        systemkilde\n" +
-			"        kilde\n" +
-			"        }\n" +
-			"        historisk\n" +
 			"      }\n" +
 			"    }\n" +
 			"    folkeregisterpersonstatus(historikk: false){\n" +
@@ -364,5 +339,5 @@ public class PdlGraphQLConsumer {
 			"    \tforenkletStatus\n" +
 			"    }\n" +
 			"  }\n" +
-			"}";
+			"}\n";
 }

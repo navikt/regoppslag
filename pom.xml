@@ -43,7 +43,7 @@
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<nv-i18n.version>1.26</nv-i18n.version>
-		<logstash-logback-encoder.version>6.5</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
 		<!-- test -->
 		<modig-testcertificates.version>1.2.5</modig-testcertificates.version>
 		<wiremock-standalone.version>2.25.1</wiremock-standalone.version>

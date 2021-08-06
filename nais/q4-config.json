@@ -6,7 +6,7 @@
 	"DOKUMENTTYPEINFO_V3_URL": "https://app-q4.adeo.no/dokkat/rest/dokumenttypeinfo/v3",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.nais.preprod.local/rest/v1/sts",
 	"DKI_API_URL": "https://dkif.nais.preprod.local",
-	"PDL_URL": "https://pdl-api.dev.adeo.no/graphql",
+	"PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"LDAP_USER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
 	"LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=preprod,dc=local",
 	"LDAP_DOMAIN": "PREPROD.LOCAL",
