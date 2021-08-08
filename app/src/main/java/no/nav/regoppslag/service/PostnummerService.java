@@ -27,8 +27,9 @@ public class PostnummerService {
 	private final Map<String, PostData> postalCodeTable;
 
 	@Inject
-	public PostnummerService() {
+	public PostnummerService() throws IOException {
 		postalCodeTable = new HashMap<>();
+		init();
 	}
 
 	@PostConstruct

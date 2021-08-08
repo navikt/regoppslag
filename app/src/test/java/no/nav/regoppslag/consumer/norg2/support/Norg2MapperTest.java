@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class Norg2MapperTest {
 
-	private PostnummerService postnummerService = new PostnummerService();
+	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private static final String NAV_ENHET_ID = "123";
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
@@ -31,7 +31,7 @@ public class Norg2MapperTest {
 
 	@BeforeEach
 	public	void initPostnummer() throws Exception {
-		postnummerService.init();
+		postnummerService = new PostnummerService();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 	}
 

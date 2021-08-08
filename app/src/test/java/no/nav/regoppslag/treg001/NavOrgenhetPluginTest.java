@@ -45,7 +45,7 @@ public class NavOrgenhetPluginTest {
 	private static final String DOKUMENTTYPEID = "I000003";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
-	private PostnummerService postnummerService = new PostnummerService();
+	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
 	private NavOrgenhetBesoksadressePlugin norgBesoksadressePlugin;
@@ -60,6 +60,7 @@ public class NavOrgenhetPluginTest {
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
+		postnummerService = new PostnummerService();
 
 		postnummerService.init();
 		registry = mock(SimpleMeterRegistry.class);

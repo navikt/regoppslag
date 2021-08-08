@@ -81,7 +81,7 @@ public class PersonV3MapperTest {
 	private static final String V_TILLEGGSADRESSE = "V/ someAdress";
 	private static final LocalDateTime DOEDSDATO = LocalDateTime.parse("2020-03-03T10:15:30.000000");
 
-	private PostnummerService postnummerService = new PostnummerService();
+	private PostnummerService postnummerService;
 	private LandkodeService landkodeService = new LandkodeService();
 	private MeterRegistry registry = new SimpleMeterRegistry();
 	private MicrometerMetrics metrics = new MicrometerMetrics();
@@ -90,7 +90,7 @@ public class PersonV3MapperTest {
 
 	@BeforeEach
 	public void initPostnummer() throws Exception {
-		postnummerService.init();
+		postnummerService = new PostnummerService();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 		mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 	}

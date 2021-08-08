@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -96,10 +95,9 @@ public class MapPDLResponseTest {
 
 
 	@BeforeEach
-	public void setUp() throws IOException  {
+	public void setUp() throws IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		mapPDLResponse = new MapPDLResponse(postnummerService);
-		postnummerService.init();
 	}
 
 	@Test

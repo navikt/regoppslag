@@ -11,7 +11,6 @@ import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -49,7 +48,7 @@ public class NavOrgenhetNavnPluginTest {
 	private static final String DOKUMENTTYPEID = "I000003";
 
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
-	private PostnummerService postnummerService = new PostnummerService();
+	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
 	private Map<String, Object> valueMap;
@@ -62,6 +61,7 @@ public class NavOrgenhetNavnPluginTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		postnummerService = new PostnummerService();
 		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);

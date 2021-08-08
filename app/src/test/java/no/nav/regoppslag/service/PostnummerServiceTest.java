@@ -30,11 +30,11 @@ public class PostnummerServiceTest {
 	@Captor
 	private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-	private PostnummerService postnumnmerService = new PostnummerService();
+	private PostnummerService postnumnmerService;
 
 	@BeforeEach
 	public void setUp() throws IOException {
-		postnumnmerService.init();
+		postnumnmerService = new PostnummerService();
 	}
 
 	@AfterEach

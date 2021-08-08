@@ -55,7 +55,7 @@ public class OrganisasjonV4MapperTest {
 
     private static final long VALID_SECONDS = 10000;
 
-    private PostnummerService postnummerService = new PostnummerService();
+    private PostnummerService postnummerService;
     private LandkodeService landkodeService = new LandkodeService();
     private MeterRegistry registry = new SimpleMeterRegistry();
     private MicrometerMetrics metrics = new MicrometerMetrics();
@@ -66,7 +66,7 @@ public class OrganisasjonV4MapperTest {
 
     @BeforeEach
     public void initTests() throws Exception {
-        postnummerService.init();
+        postnummerService = new PostnummerService();
         ReflectionTestUtils.setField(metrics, "registry", registry);
         mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
     }

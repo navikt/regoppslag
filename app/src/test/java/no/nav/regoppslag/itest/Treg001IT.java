@@ -25,7 +25,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
@@ -270,7 +270,7 @@ public class Treg001IT extends AbstractIT {
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 
 	}
 
@@ -283,7 +283,7 @@ public class Treg001IT extends AbstractIT {
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/ORGANISASJON_V4")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
 	@Test
@@ -296,7 +296,7 @@ public class Treg001IT extends AbstractIT {
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_norg2_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/ORGANISASJONENHETKONTAKTINFORMASJON_V1")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
 	@Test
@@ -310,21 +310,21 @@ public class Treg001IT extends AbstractIT {
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionFromDokkat() {
 		//Stub web services:
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
-				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
 	@Test
