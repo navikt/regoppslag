@@ -1,13 +1,8 @@
 package no.nav.regoppslag.consumer.personv3;
 
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3;
-import static no.nav.regoppslag.metrics.MetricLabels.PERSON_DISKRESJONSKODE;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.SamlTokenInterceptorException;
@@ -32,6 +27,13 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSONV3;
+import static no.nav.regoppslag.metrics.MetricLabels.PERSON_DISKRESJONSKODE;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  * @author Ketill Fenne, Visma Consulting AS
@@ -40,7 +42,7 @@ import javax.inject.Inject;
 @Service
 public class PersonV3Consumer {
 	private final PersonV3 personV3;
-	private MicrometerMetrics metrics;
+	private final MicrometerMetrics metrics;
 
 	private static final String PERSON_IKKE_FUNNET = "PersonV3 - Person ikke funnet";
 	private static final String SIKKERHETSBEGRENSNING = "PersonV3 - Sikkerhetsbegrensning";
@@ -55,7 +57,7 @@ public class PersonV3Consumer {
 			unless = "#result != null && #result.diskresjonskode != null && #result.diskresjonskode.value != null && #result.diskresjonskode.value.length() > 0")
 	@Retryable(include = RegOppslagTechnicalException.class, exclude = {RegOppslagFunctionalException.class }, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
-	public Bruker hentPerson(final String personidentifikator, String serviceCode) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public Bruker hentPerson(final String personidentifikator, String serviceCode) throws RegOppslagSecurityException {
 		metrics.cacheMiss(MetricLabels.HENT_PERSON);
 		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
@@ -67,14 +69,14 @@ public class PersonV3Consumer {
 			}
 			return (Bruker)person;
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagFunctionalException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
-					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET);
+			throw new RegOppslagIkkeFunnetException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
+					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET, NOT_FOUND);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
 			throw new RegOppslagSecurityException(String.format("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=%s", hentPersonSikkerhetsbegrensning
 					.getMessage()), hentPersonSikkerhetsbegrensning, SIKKERHETSBEGRENSNING);
 		} catch (Exception e) {
 			if (e.getCause() instanceof SamlTokenInterceptorException){
-				throw new RegOppslagFunctionalException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token");
+				throw new RegOppslagIkkeFunnetException(e.getMessage(), e, "PersonV3 - Mangler/Feil SAML token", NOT_FOUND);
 			}
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til PersonV3.hentPerson. Message=%s", e
 					.getMessage()), e, "PersonV3 - Teknisk feil");

@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
@@ -14,12 +15,14 @@ import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -74,7 +77,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		validateElementType(content);
 		try {
 			if (dokumenttypeId == null) {
-				throw new RegOppslagFunctionalException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), UGYLDIG_INPUT);
+				throw new RegoppslagIllegalArgumentException(String.format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
 			}
 			Sakspart sakspart = unmarshal(content);
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
@@ -109,19 +112,19 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private void validateMottaker(Sakspart sakspart) throws RegOppslagFunctionalException {
 
 		if (sakspart.getTypeKode() == null) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler AktoerTypeKode.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Sakspart mangler AktoerTypeKode.", PLUGIN_NAME), BAD_REQUEST);
 		}
 
 		if (StringUtils.isEmpty(sakspart.getId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Sakspart mangler id", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Sakspart mangler id", PLUGIN_NAME), BAD_REQUEST);
 		}
 
 	}
 
 	private void validateElementType(Node element) throws RegOppslagFunctionalException {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 

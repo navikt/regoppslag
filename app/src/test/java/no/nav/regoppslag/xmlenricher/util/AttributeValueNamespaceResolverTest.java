@@ -6,9 +6,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -69,13 +71,13 @@ public class AttributeValueNamespaceResolverTest {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(MOTTAKER_XPATH_EXPRESSION);
 		Node node = (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
-		assertThat(node.getAttributes().getNamedItem("xmlns:nav"), nullValue());
-		assertThat(node.getAttributes().getNamedItem("something_else:type").getNodeValue(), is("nav:Person"));
+		assertNull(node.getAttributes().getNamedItem("xmlns:nav"));
+		assertEquals("nav:Person", node.getAttributes().getNamedItem("something_else:type").getNodeValue());
 
 		resolver.resolveNamespace(document, node);
 
-		assertThat(node.getAttributes().getNamedItem("xmlns:nav").getNodeValue(), is("http://nav.no/dok/brevdata/felles/v1/NAVFelles"));
-		assertThat(node.getAttributes().getNamedItem("something_else:type").getNodeValue(), is("nav:Person"));
+		assertEquals("http://nav.no/dok/brevdata/felles/v1/NAVFelles", node.getAttributes().getNamedItem("xmlns:nav").getNodeValue());
+		assertEquals("nav:Person", node.getAttributes().getNamedItem("something_else:type").getNodeValue());
 
 	}
 

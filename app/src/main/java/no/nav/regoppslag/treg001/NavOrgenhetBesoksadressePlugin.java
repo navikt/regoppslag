@@ -1,8 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Besoksadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
@@ -10,6 +7,7 @@ import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
@@ -23,6 +21,10 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j
@@ -50,7 +52,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap) {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
@@ -82,16 +84,16 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		}
 	}
 
-	private void validateAdresse(Besoksadresse adresse) throws RegOppslagFunctionalException {
+	private void validateAdresse(Besoksadresse adresse) {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegOppslagFunctionalException(String.format("Feil i %s: Mangler enhetsId.", PLUGIN_NAME), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetsId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element) {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
-			throw new RegOppslagFunctionalException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), UGYLDIG_INPUT);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 }

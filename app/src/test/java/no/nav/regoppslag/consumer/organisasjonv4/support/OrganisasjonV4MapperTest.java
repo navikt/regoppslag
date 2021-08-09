@@ -16,7 +16,7 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -55,7 +55,7 @@ public class OrganisasjonV4MapperTest {
 
     private static final long VALID_SECONDS = 10000;
 
-    private PostnummerService postnummerService = new PostnummerService();
+    private PostnummerService postnummerService;
     private LandkodeService landkodeService = new LandkodeService();
     private MeterRegistry registry = new SimpleMeterRegistry();
     private MicrometerMetrics metrics = new MicrometerMetrics();
@@ -64,9 +64,9 @@ public class OrganisasjonV4MapperTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Before
+    @BeforeEach
     public void initTests() throws Exception {
-        postnummerService.init();
+        postnummerService = new PostnummerService();
         ReflectionTestUtils.setField(metrics, "registry", registry);
         mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
     }

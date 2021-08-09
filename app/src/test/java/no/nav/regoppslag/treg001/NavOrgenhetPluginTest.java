@@ -1,14 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.util.TestUtil.findSingleNode;
-import static no.nav.regoppslag.util.TestUtil.loadDocument;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
@@ -19,17 +10,14 @@ import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -40,16 +28,24 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+import static no.nav.regoppslag.util.TestUtil.findSingleNode;
+import static no.nav.regoppslag.util.TestUtil.loadDocument;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(SpringExtension.class)
 public class NavOrgenhetPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 
 	private static final String NAV_ENHET_NAVN = "Pensjon Inc.";
 	private static final String DOKUMENTTYPEID = "I000003";
-	
+
 	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
-	private PostnummerService postnummerService = new PostnummerService();
+	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
 	private NavOrgenhetBesoksadressePlugin norgBesoksadressePlugin;
@@ -57,16 +53,14 @@ public class NavOrgenhetPluginTest {
 	private Map<String, Object> valueMap;
 	private MicrometerMetrics metrics;
 	private MeterRegistry registry;
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() throws Exception {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
+		postnummerService = new PostnummerService();
 
 		postnummerService.init();
 		registry = mock(SimpleMeterRegistry.class);
@@ -77,23 +71,23 @@ public class NavOrgenhetPluginTest {
 
 		when(norgConsumer.hentKontaktinformasjonForEnhet(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
-	
+
 	@Test
 	public void testOrgEnhetPostadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-		
+
 		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap);
-		
+
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
-		
+
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
@@ -159,13 +153,13 @@ public class NavOrgenhetPluginTest {
 	@Test
 	public void testOrgEnhetBesoksadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-		
+
 		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
-		
+
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
@@ -190,7 +184,7 @@ public class NavOrgenhetPluginTest {
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
 	}
-	
+
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
 		Organisasjonsenhet enhet = new Organisasjonsenhet();
 		enhet.setEnhetNavn(navEnhetNavn);

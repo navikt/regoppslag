@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.support;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -8,6 +9,7 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -107,7 +109,7 @@ public class SpraakKodeMapper {
 		if (Arrays.stream(Spraakkode.values()).anyMatch(spraakkode -> spraakkode.name().equals(spraakKodeValue))) {
 			return Spraakkode.valueOf(spraakKodeValue);
 		} else {
-			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue));
+			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue), BAD_REQUEST);
 		}
 	}
 }

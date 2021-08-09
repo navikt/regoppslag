@@ -6,6 +6,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
@@ -35,6 +36,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -68,7 +70,7 @@ public class OrganisasjonV4Mapper {
     public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
         OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
-                .orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer()));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
 
         return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
                 .trim();
@@ -117,11 +119,11 @@ public class OrganisasjonV4Mapper {
     private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
         if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
             String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato().toGregorianCalendar().getTime()), orgNummer);
-            throw new RegOppslagFunctionalException(message, "Organisasjon har opphørt");
+            throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
         }
 
         GeografiskAdresse activeAddress = selectActiveAddress(orgDet.getPostadresse(), orgDet.getForretningsadresse())
-                .orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige adresser funnet for orgnummer=" + orgDet.getOrgnummer()));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige adresser funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
 
         Postadresse postadresse = Postadresse.builder().build();
         if (activeAddress instanceof SemistrukturertAdresse) {
@@ -158,7 +160,7 @@ public class OrganisasjonV4Mapper {
 
     private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
-                .orElseThrow(() -> new RegOppslagFunctionalException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer()));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
         return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
                 .trim();
     }

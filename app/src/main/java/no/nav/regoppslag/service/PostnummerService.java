@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,13 +26,15 @@ public class PostnummerService {
 
 	private final Map<String, PostData> postalCodeTable;
 
-	public PostnummerService() {
+	@Inject
+	public PostnummerService() throws IOException {
 		postalCodeTable = new HashMap<>();
+		init();
 	}
 
 	@PostConstruct
 	public void init() throws IOException {
-		
+
 		InputStream in = getClass().getResourceAsStream(FILENAME);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 

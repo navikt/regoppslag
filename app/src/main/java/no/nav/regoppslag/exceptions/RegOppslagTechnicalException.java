@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 @Getter
-public class RegOppslagTechnicalException extends Exception {
+public class RegOppslagTechnicalException extends RuntimeException {
 
 	private final String metricMessage;
 	private HttpStatus httpStatus = HttpStatus.OK;

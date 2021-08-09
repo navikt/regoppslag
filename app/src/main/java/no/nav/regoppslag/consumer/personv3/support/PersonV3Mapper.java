@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
@@ -39,6 +40,8 @@ import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.springframework.http.HttpStatus.GONE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Ketill Fenne, Visma Consulting AS
@@ -164,23 +167,23 @@ public class PersonV3Mapper {
 
 	}
 
-	private void validateAdresse(Bruker person, Postadresse postadresse, String serviceCode) throws RegOppslagFunctionalException {
+	private void validateAdresse(Bruker person, Postadresse postadresse, String serviceCode) {
 
 		if (person.getGjeldendePostadressetype() != null && UKJENT_ADRESSE.equals(person.getGjeldendePostadressetype()
 				.getValue())) {
 			if (isPersonDod(person)) {
-				throw new UkjentAdressePersonErDoed(serviceCode + " Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE");
+				throw new UkjentAdressePersonErDoed(serviceCode + " Mottaker er registrert som død og har gjeldendePostadressetype=UKJENT_ADRESSE", GONE);
 			}
-			throw new UkjentAdresseException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE");
+			throw new UkjentAdresseException(serviceCode + " Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE", NOT_FOUND);
 		}
 
 		if (isBlankPostadresse(postadresse)) {
 			if (isPersonDod(person)) {
-				throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land.");
+				throw new UkjentAdressePersonErDoed("Mottaker er registrert som død og har ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land.", GONE);
 			}
-			throw new UkjentAdresseException(String.format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
+			throw new UkjentAdresseException(format("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land. GjeldenePostadresseType=%s", person
 					.getGjeldendePostadressetype() == null ? "Ukjent" : person.getGjeldendePostadressetype()
-					.getValue()));
+					.getValue()), NOT_FOUND);
 		}
 	}
 
