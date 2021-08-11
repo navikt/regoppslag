@@ -81,11 +81,7 @@ public class MapPDLResponse {
 					.kortNavn(getForkortetNavn(hentPerson.getNavn()))
 					.foedselsdato(getFoedselsdato(hentPerson))
 					.doedsdato(getDoedsdato(hentPerson))
-					.postadresse(mapKontaktinformasjonForDoedsbo(isNull(hentPerson.getKontaktinformasjonForDoedsbo()) ? null :
-							hentPerson.getKontaktinformasjonForDoedsbo().stream()
-									.filter(Objects::nonNull)
-									.findAny()
-									.orElseThrow(() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE))))
+					.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson)))
 					.build();
 		} else if (nonNull(getKontaktadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getKontaktadresse(hentPerson).getMetadata())) ||
 				isGyldigDatoOgKilde(getKontaktadresse(hentPerson).getGyldigTilOgMed(), getKontaktadresse(hentPerson).getMetadata()))) {
@@ -111,9 +107,7 @@ public class MapPDLResponse {
 				.kortNavn(getForkortetNavn(hentPerson.getNavn()))
 				.foedselsdato(getFoedselsdato(hentPerson))
 				.doedsdato(getDoedsdato(hentPerson))
-				.postadresse(mapKontaktadresse(hentPerson.getKontaktadresse().stream()
-								.filter(Objects::nonNull)
-								.findAny()
+				.postadresse(mapKontaktadresse(Optional.ofNullable(getKontaktadresse(hentPerson))
 								.orElseThrow(() -> new UkjentAdresseException("Fant ikke adresse for personen i PDL", NOT_FOUND)),
 						hentPerson.getKontaktadresse().stream()
 								.filter(Objects::nonNull)
@@ -170,14 +164,8 @@ public class MapPDLResponse {
 	}
 
 	private PostadresseTo mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
-		if (nonNull(kontaktadresse.getPostboksadresse())) {
-			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
-			return PostadresseTo.builder()
-					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1("Postboks " + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
-					.postnummer(postboksadresse.getPostnummer())
-					.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
-					.build();
+		if (nonNull(kontaktadresse.getVegadresse())) {
+			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).build();
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
 			Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
 			if (isBlank(kontaktadresse.getCoAdressenavn())) {
@@ -199,8 +187,14 @@ public class MapPDLResponse {
 					.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
 					.landkode(isLandkodeEmptyAndHavePostnummer(null, postadresse.getPostnummer()) ? LANDKODE_NORGE : null)
 					.build();
-		} else if (nonNull(kontaktadresse.getVegadresse())) {
-			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).build();
+		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
+			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
+			return PostadresseTo.builder()
+					.adresseType(POSTADRESSE_INNLAND)
+					.adresselinje1("Postboks " + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.postnummer(postboksadresse.getPostnummer())
+					.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
+					.build();
 		}
 		return null;
 	}
@@ -380,19 +374,47 @@ public class MapPDLResponse {
 		return trim(getNavn(personNavn.getFornavn()) + getNavn(personNavn.getMellomnavn()) + getNavn(personNavn.getEtternavn()));
 	}
 
+	private KontaktinformasjonForDoedsbo getKontaktForDoedsbo(HentPerson hentPerson) {
+		if (isNull(hentPerson.getKontaktinformasjonForDoedsbo()) || hentPerson.getKontaktinformasjonForDoedsbo().isEmpty()) {
+			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
+		}
+		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny()
+				.orElseThrow(() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE));
+	}
+
+
 	private Kontaktadresse getKontaktadresse(HentPerson hentPerson) {
-		return isNull(hentPerson.getKontaktadresse()) ? null : hentPerson.getKontaktadresse().stream()
-				.filter(Objects::nonNull)
-				.findAny().orElse(null);
+		Kontaktadresse kontaktadressePdl = isNull(hentPerson.getKontaktadresse()) || hentPerson.getKontaktadresse().isEmpty() ? null :
+				hentPerson.getKontaktadresse().stream()
+						.filter(kontaktadresse ->
+								PDL.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
+						.findFirst()
+						.orElse(null);
+		return nonNull(kontaktadressePdl) ? kontaktadressePdl :
+				hentPerson.getKontaktadresse().stream()
+						.filter(Objects::nonNull)
+						.filter(kontaktadresse ->
+								FREG.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
+						.findFirst()
+						.orElse(null);
+
 	}
 
 	private Oppholdsadresse getOppholdsadresse(HentPerson hentPerson) {
-		return isNull(hentPerson.getOppholdsadresse()) ? null : hentPerson.getOppholdsadresse().stream()
-				.filter(Objects::nonNull).findAny().orElse(null);
+		Oppholdsadresse oppholdsadressePdl = isNull(hentPerson.getOppholdsadresse()) || hentPerson.getOppholdsadresse().isEmpty() ? null :
+				hentPerson.getOppholdsadresse().stream()
+						.filter(oppholdsadresse ->
+								PDL.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
+						.findAny().orElse(null);
+		return nonNull(oppholdsadressePdl) ? oppholdsadressePdl :
+				hentPerson.getOppholdsadresse().stream()
+						.filter(oppholdsadresse ->
+								FREG.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
+						.findAny().orElse(null);
 	}
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
-		return isNull(hentPerson.getBostedsadresse()) ? null : hentPerson.getBostedsadresse().stream()
+		return isNull(hentPerson.getBostedsadresse()) || hentPerson.getBostedsadresse().isEmpty() ? null : hentPerson.getBostedsadresse().stream()
 				.filter(Objects::nonNull).findAny().orElse(null);
 	}
 

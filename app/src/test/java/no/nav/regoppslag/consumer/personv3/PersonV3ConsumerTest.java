@@ -119,7 +119,7 @@ public class PersonV3ConsumerTest {
 			personV3Consumer.hentPerson(FNR, "");
 			fail("Should throw exception");
 		} catch (RegOppslagFunctionalException e) {
-			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson fant ikke person med ident=" + FNR + ", message=Fant ikke person")));
+			assertThat(e.getMessage(), is(equalTo("PersonV3.hentPerson fant ikke person, message=Fant ikke person")));
 			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
 		}
 	}
