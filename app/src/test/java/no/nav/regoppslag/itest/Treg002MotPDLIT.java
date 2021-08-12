@@ -35,6 +35,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -98,6 +99,20 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetMottakerAndAdresseOgPrioriterBySource() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktadresse.json");
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+		assertNotNull(response.getAdresse());
+
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
 	public void shouldGetMottakerWithCoAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattadressemedconavn.json");
@@ -152,6 +167,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 				"Test did not throw exception");
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
+		assertThat(e.getResponseBodyAsString(), containsString("Nav enhet finnes ikke for enhetNr=0102030405, message=Ugyldig inndata: Organisasjonsnummeret (8896407842) er pÃ¥ et ugyldig format"));
 	}
 
 	@Test

@@ -69,7 +69,7 @@ public class PersonV3Consumer {
 			}
 			return (Bruker)person;
 		} catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-			throw new RegOppslagIkkeFunnetException(String.format("PersonV3.hentPerson fant ikke person med ident=%s, message=%s", personidentifikator, hentPersonPersonIkkeFunnet
+			throw new RegOppslagIkkeFunnetException(String.format("PersonV3.hentPerson fant ikke person, message=%s",hentPersonPersonIkkeFunnet
 					.getMessage()), hentPersonPersonIkkeFunnet, PERSON_IKKE_FUNNET, NOT_FOUND);
 		} catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
 			throw new RegOppslagSecurityException(String.format("PersonV3.hentPerson feiler på grunn av sikkerhetsbegresning. Message=%s", hentPersonSikkerhetsbegrensning

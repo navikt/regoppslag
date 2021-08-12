@@ -4,7 +4,7 @@
 	"ORGANISASJON_V4_ENDPOINTURL": "https://modapp.adeo.no/ereg/ws/OrganisasjonService/v4",
 	"VIRKSOMHET_PERSONV3_ENDPOINTURL": "https://app.adeo.no/tpsws-aura/ws/Person/v3",
 	"DOKUMENTTYPEINFO_V3_URL": "https://app.adeo.no/dokkat/rest/dokumenttypeinfo/v3",
-	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts",
+	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
 	"DKI_API_URL": "https://dkif.intern.nav.no",
 	"PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"LDAP_USER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=adeo,dc=no",
