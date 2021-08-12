@@ -1,0 +1,14 @@
+# default namespace -> teamdokumenthandtering namespace
+# for apper med http://regoppslag kubernetes service discovery
+# https://doc.nais.io/clusters/team-namespaces/#example
+# Manuelt lagt inn i default namespace prod-fss:
+#   kubectl config use-context prod-fss
+#   kubectl apply -f p-default-extern-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: regoppslag
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: regoppslag.teamdokumenthandtering.svc.nais.local
