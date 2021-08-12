@@ -384,33 +384,30 @@ public class MapPDLResponse {
 
 
 	private Kontaktadresse getKontaktadresse(HentPerson hentPerson) {
-		Kontaktadresse kontaktadressePdl = isNull(hentPerson.getKontaktadresse()) || hentPerson.getKontaktadresse().isEmpty() ? null :
+		return isNull(hentPerson.getKontaktadresse()) || hentPerson.getKontaktadresse().isEmpty() ? null :
 				hentPerson.getKontaktadresse().stream()
 						.filter(kontaktadresse ->
 								PDL.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
 						.findFirst()
-						.orElse(null);
-		return nonNull(kontaktadressePdl) ? kontaktadressePdl :
-				hentPerson.getKontaktadresse().stream()
-						.filter(Objects::nonNull)
-						.filter(kontaktadresse ->
-								FREG.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
-						.findFirst()
-						.orElse(null);
+						.orElse(hentPerson.getKontaktadresse().stream()
+								.filter(Objects::nonNull)
+								.filter(kontaktadresse ->
+										FREG.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
+								.findFirst()
+								.orElse(null));
 
 	}
 
 	private Oppholdsadresse getOppholdsadresse(HentPerson hentPerson) {
-		Oppholdsadresse oppholdsadressePdl = isNull(hentPerson.getOppholdsadresse()) || hentPerson.getOppholdsadresse().isEmpty() ? null :
+		return isNull(hentPerson.getOppholdsadresse()) || hentPerson.getOppholdsadresse().isEmpty() ? null :
 				hentPerson.getOppholdsadresse().stream()
 						.filter(oppholdsadresse ->
 								PDL.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
-						.findAny().orElse(null);
-		return nonNull(oppholdsadressePdl) ? oppholdsadressePdl :
-				hentPerson.getOppholdsadresse().stream()
-						.filter(oppholdsadresse ->
-								FREG.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
-						.findAny().orElse(null);
+						.findAny().orElse(
+						hentPerson.getOppholdsadresse().stream()
+								.filter(oppholdsadresse ->
+										FREG.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
+								.findAny().orElse(null));
 	}
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
