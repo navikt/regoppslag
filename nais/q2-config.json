@@ -16,6 +16,7 @@
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NAMESPACE": "q2",
 	"INGRESSES": [
-		"https://regoppslag-q2.nais.preprod.local"
+		"https://regoppslag-q2.nais.preprod.local",
+		"https://regoppslag-q2.dev.intern.nav.no"
 	]
 }
