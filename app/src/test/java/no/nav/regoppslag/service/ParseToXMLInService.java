@@ -42,7 +42,7 @@ public class ParseToXMLInService {
 	 * HVIS parsing av brevdata til xml- fra streng-format feiler, SÅ skal funksjonell feil kastes
 	 */
 	@Test
-	public void shouldHandleSaxParserException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public void shouldHandleSaxParserException() throws RegOppslagSecurityException {
 		exception.expect(RegOppslagFunctionalException.class);
 		String brevdataFeilFormat = "<ole>brumm<ole>";
 		KompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdataFeilFormat).build();

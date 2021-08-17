@@ -47,7 +47,7 @@ public class NavOrgenhetNavnPluginTest {
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
+	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer;
 	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
@@ -55,12 +55,15 @@ public class NavOrgenhetNavnPluginTest {
 	private MeterRegistry registry;
 	private MicrometerMetrics metrics;
 
-	private SecurityContext securityContext = new SecurityContextImpl();
-	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
+	private SecurityContext securityContext;
+	private UsernamePasswordAuthenticationToken token;
 
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
+		securityContext = new SecurityContextImpl();
+		token = new UsernamePasswordAuthenticationToken("username", "password");
 		postnummerService = new PostnummerService();
 		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
@@ -87,7 +90,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap);
+		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -106,7 +109,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap);
+		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -125,7 +128,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap);
+		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -144,7 +147,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap);
+		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);

@@ -67,7 +67,7 @@ public class OrganisasjonV4Mapper {
         this.metrics = metrics;
     }
 
-    public String getSakspartNavn(Organisasjon wsOrganisasjon) throws RegOppslagFunctionalException {
+    public String getSakspartNavn(Organisasjon wsOrganisasjon)  {
         OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
                 .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
@@ -77,7 +77,7 @@ public class OrganisasjonV4Mapper {
     }
 
 
-    public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) throws RegOppslagFunctionalException {
+    public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode)  {
         Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
         OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
@@ -116,7 +116,7 @@ public class OrganisasjonV4Mapper {
     }
 
 
-    private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+    private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet)  {
         if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
             String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato().toGregorianCalendar().getTime()), orgNummer);
             throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
@@ -158,7 +158,7 @@ public class OrganisasjonV4Mapper {
                 .trim();
     }
 
-    private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet) throws RegOppslagFunctionalException {
+    private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet)  {
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
                 .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
         return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")

@@ -53,7 +53,7 @@ public class SaksbehandlerPluginTest {
 	private static final String DOKUMENTTYPEID = "I000003";
 	private SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
-	private UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
+	private UsernamePasswordAuthenticationToken token;
 
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
@@ -63,6 +63,7 @@ public class SaksbehandlerPluginTest {
 
 	@BeforeEach
 	public void init() {
+		token = new UsernamePasswordAuthenticationToken("username", "password");
 		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
@@ -84,7 +85,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
@@ -105,7 +106,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);

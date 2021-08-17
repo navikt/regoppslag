@@ -53,7 +53,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
@@ -81,13 +81,13 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		}
 	}
 
-	private void validateAdresse(Postadresse adresse) throws RegOppslagFunctionalException {
+	private void validateAdresse(Postadresse adresse)  {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
 			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element)  {
 		if (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
 					+ " or " + ELEMENT_LOCALNAME_RETUR + ". Found {" + element.getNamespaceURI() + "}" + element

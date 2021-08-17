@@ -3,7 +3,9 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
@@ -21,7 +23,6 @@ import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -37,6 +38,8 @@ import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
@@ -49,76 +52,58 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	private static final String PLUGIN_NAME = "MottakerPlugin";
-
-	private PersonV3Consumer personV3Consumer;
-
-	private PersonV3Mapper personV3Mapper;
-
-	private OrganisasjonV4Consumer organisasjonV4Consumer;
-
-	private OrganisasjonV4Mapper organisasjonV4Mapper;
-
-	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
-
-	private MicrometerMetrics metrics;
-
-	public MottakerPlugin() {
-		super(Mottaker.class);
-	}
+	private final PersonV3Consumer personV3Consumer;
+	private final PersonV3Mapper personV3Mapper;
+	private final OrganisasjonV4Consumer organisasjonV4Consumer;
+	private final OrganisasjonV4Mapper organisasjonV4Mapper;
+	private final MapPdlForTreg001 mapPdlForTreg001;
+	private final MicrometerMetrics metrics;
+	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
+	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
-						  OrganisasjonV4Mapper organisasjonV4Mapper, Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
+	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper,
+						  OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper,
+						  MapPdlForTreg001 mapPdlForTreg001, DigitalKontaktinformasjon digitalKontaktinformasjon,
+						  Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
 						  MicrometerMetrics metrics) {
 		super(Mottaker.class);
 		this.personV3Consumer = personV3Consumer;
 		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
+		this.mapPdlForTreg001 = mapPdlForTreg001;
+		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 		this.metrics = metrics;
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		SpraakKodeMapper spraakKodeMapper = (SpraakKodeMapper) valueMap.get(MAALFORM.name());
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
+
+		if (dokumenttypeId == null) {
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
+		}
+
 		try {
-			if (dokumenttypeId == null) {
-				throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
-			}
+
 			Mottaker mottaker = unmarshal(content);
-			log.info(format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
-
-			MottakerTo mottakerTo = MottakerTo.builder().build();
-			//Skal elementet berikes?
-			if (mottaker.isBerik()) {
-				validateMottaker(mottaker);
-				if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-					Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
-					mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
-				} else {
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
-					mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
-				}
-
-				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
-				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
-				mottaker.setNavn(mottakerTo.getMottaker().getNavn());
+			validateMottaker(mottaker);
+			Mottaker newMottaker;
+			if (isBlank(tema)) {
+				newMottaker = getMottakerFraPersonV3(spraakKodeMapper, mottaker, dokumenttypeId);
+			} else {
+				newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker);
+				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, "", tema);
+				newMottaker.setSpraakkode(spraakkode);
 			}
 
-			//Sjekker språket på malen opp mot mottakers preferanser
-			List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
-			if (sprakinfos == null || sprakinfos.isEmpty()) {
-				log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
-			}
-
-			mottaker.setSpraakkode(spraakKodeMapper.getSpraakKode(mottaker, mottakerTo.getSpraakKode(), sprakinfos));
-
-			Document newNode = convertObjectToDocument(mottaker);
+			Document newNode = convertObjectToDocument(newMottaker);
 			Element documentElement = newNode.getDocumentElement();
 
 			log.info(format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
@@ -132,19 +117,55 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	}
 
-	private void validateMottaker(Mottaker mottaker) throws RegOppslagFunctionalException {
+	private Mottaker getMottakerFraPersonV3(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId) {
+		MottakerTo mottakerTo = MottakerTo.builder().build();
+		//Skal elementet berikes?
+		if (mottaker.isBerik()) {
+			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
+				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
+				mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
+			} else {
+				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
+				mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+			}
+
+			mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
+			mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
+			mottaker.setNavn(mottakerTo.getMottaker().getNavn());
+		}
+
+		mottaker.setSpraakkode(getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, mottakerTo.getSpraakKode(), null));
+		return mottaker;
+
+	}
+
+	public Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak, String tema) {
+		log.info(format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
+		//Sjekker språket på malen opp mot mottakers preferanser
+		List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
+		if (sprakinfos == null || sprakinfos.isEmpty()) {
+			log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
+		}
+		if (isNotBlank(tema)) {
+			spraak = digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false);
+			return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
+		}
+		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
+	}
+
+	private void validateMottaker(Mottaker mottaker)  {
 
 		if (mottaker.getTypeKode() == null) {
 			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), BAD_REQUEST);
 		}
 
-		if (StringUtils.isEmpty(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
+		if (isBlank(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
 			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler mottakerId", PLUGIN_NAME), BAD_REQUEST);
 		}
 
 	}
 
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element)  {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);

@@ -53,7 +53,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 	
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
@@ -85,13 +85,13 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		}
 	}
 	
-	private void validateEnhet(NavEnhet navEnhet) throws RegOppslagFunctionalException {
+	private void validateEnhet(NavEnhet navEnhet)  {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
 			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mangler enhetdId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 	
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element)  {
 		if (!(ELEMENT_LOCALNAME.equals(element.getLocalName()) || ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found " + element.getLocalName(), BAD_REQUEST);

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brevdata>
+	<NAVFelles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			   xmlns:f="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			   xmlns:test="test">
+		<test:mottaker xsi:type="f:Person" f:berik="false" >
+			<f:id>20096828390</f:id>
+			<f:typeKode>PERSON</f:typeKode>
+		</test:mottaker>
+		<test:signerendeSaksbehandler f:berik="false">
+			<f:navAnsatt>
+				<f:ansattId>Z991006</f:ansattId>
+			</f:navAnsatt>
+			<f:navEnhet>
+				<f:enhetsId>0136</f:enhetsId>
+			</f:navEnhet>
+		</test:signerendeSaksbehandler>
+		<test:signerendeBeslutter f:berik="false">
+			<f:navAnsatt>
+				<f:ansattId>Z991006</f:ansattId>
+			</f:navAnsatt>
+			<f:navEnhet>
+				<f:enhetsId>0136</f:enhetsId>
+			</f:navEnhet>
+		</test:signerendeBeslutter>
+		<test:behandlendeEnhet f:berik="false">
+				<f:enhetsId>0136</f:enhetsId>
+		</test:behandlendeEnhet>
+		<test:kontaktinformasjon f:berik="false">
+			<f:postadresse f:berik="false">
+				<f:enhetsId>0136</f:enhetsId>
+			</f:postadresse>
+			<f:besoksadresse f:berik="false">
+				<f:enhetsId>0136</f:enhetsId>
+			</f:besoksadresse>
+		</test:kontaktinformasjon>
+	</NAVFelles>
+</brevdata>

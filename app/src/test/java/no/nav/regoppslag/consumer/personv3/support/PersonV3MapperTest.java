@@ -123,7 +123,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldMapSpraakKode() throws RegOppslagFunctionalException {
+	public void shouldMapSpraakKode()  {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		person.setMaalform(createSpraak("NO"));
 		settBostedadresseMedGateadresse(person);

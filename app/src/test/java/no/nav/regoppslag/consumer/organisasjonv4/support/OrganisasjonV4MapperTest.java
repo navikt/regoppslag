@@ -82,7 +82,7 @@ public class OrganisasjonV4MapperTest {
     private static final String SERVICECODE = "SERVICECODE";
 
     @Test
-    public void shouldMapSpraakKode() throws RegOppslagFunctionalException, DatatypeConfigurationException {
+    public void shouldMapSpraakKode() throws DatatypeConfigurationException {
         Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
         org.getOrganisasjonDetaljer().setGjeldendeMaalform(createSpraak("NO"));
         settSemistrukturertAdresse(org, "POSTADRESSE", VALID_SECONDS);

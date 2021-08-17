@@ -49,7 +49,7 @@ public class RegisteroppslagRestControllerTest {
 	}
 
 	@Test
-	public void shouldGetHentMottakerOgAdresse() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public void shouldGetHentMottakerOgAdresse() throws RegOppslagSecurityException {
 		HentMottakerOgAdresseResponse actualResponse = registeroppslagRestController.hentMottakerOgAdresse(mottakerOgAdresseRequest);
 		assertEquals(responseMogA, actualResponse);
 		Mockito.verify(hentMottakerOgAdresseService, Mockito.times(1)).hentMottakerOgAdresseInfo(any(HentMottakerOgAdresseRequest.class));

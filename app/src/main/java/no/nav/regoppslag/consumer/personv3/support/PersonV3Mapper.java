@@ -81,7 +81,7 @@ public class PersonV3Mapper {
 		}
 	}
 
-	public MottakerTo map(Bruker person, String serviceCode) throws RegOppslagFunctionalException {
+	public MottakerTo map(Bruker person, String serviceCode)  {
 
 		Mottaker mottaker = new Person();
 
@@ -113,7 +113,7 @@ public class PersonV3Mapper {
 		return null;
 	}
 
-	private Postadresse mapAdresse(Bruker person) throws RegOppslagFunctionalException {
+	private Postadresse mapAdresse(Bruker person)  {
 		if (person.getGjeldendePostadressetype() != null) {
 			if (BOSTEDSADRESSE.equals(person.getGjeldendePostadressetype()
 					.getValue()) && person.getBostedsadresse() != null) {

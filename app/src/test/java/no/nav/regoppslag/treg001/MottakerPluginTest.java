@@ -6,6 +6,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
@@ -27,13 +28,13 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -60,11 +61,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class MottakerPluginTest {
 	private static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String BREVDATA_MOTTAKER_SPRAAKKODE_EN = "src/test/resources/brevdata/brevdata_mottaker_spraakkode_en.xml";
@@ -85,19 +88,28 @@ public class MottakerPluginTest {
 	private static final String SPRAAK_NB = "NB";
 	private static final String MOTTAKER_ID = "30085849677";
 
-	private static PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
-	private static PostnummerService postnummerService;
-	private static LandkodeService landkodeService = new LandkodeService();
-	private static OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-	private static OrganisasjonV4Mapper organisasjonV4Mapper;
-	private static Tkat020DokumenttypeInfo tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-	private static Map<String, Object> valueMap;
-	private static SecurityContext securityContext = new SecurityContextImpl();
-	private static PersonV3Mapper personV3Mapper;
-	private static MottakerPlugin mottakerPlugin;
+	private PersonV3Consumer personV3Consumer;
+	private PostnummerService postnummerService;
+	private LandkodeService landkodeService;
+	private OrganisasjonV4Consumer organisasjonV4Consumer;
+	private OrganisasjonV4Mapper organisasjonV4Mapper;
+	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
+	private Map<String, Object> valueMap;
+	private SecurityContext securityContext;
+	private PersonV3Mapper personV3Mapper;
+	private MottakerPlugin mottakerPlugin;
+	private MapPdlForTreg001 mapPdlForTreg001;
+	private DigitalKontaktinformasjon digitalKontaktinformasjon;
 
-	@BeforeAll
-	public static void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
+	@BeforeEach
+	public void setUp() throws RegOppslagSecurityException, IOException {
+		personV3Consumer = mock(PersonV3Consumer.class);
+		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
+		landkodeService = new LandkodeService();
+		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+		mapPdlForTreg001 = mock(MapPdlForTreg001.class);
+		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
@@ -108,18 +120,18 @@ public class MottakerPluginTest {
 		MicrometerMetrics metrics = new MicrometerMetrics();
 		MeterRegistry registry = new SimpleMeterRegistry();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
+
 		personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, metrics);
+		mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer,
+				organisasjonV4Mapper, mapPdlForTreg001, digitalKontaktinformasjon, tkat020DokumenttypeInfo, metrics);
 
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 
 	}
 
 	@Test
 	public void testMottakerPluginPerson() throws Exception {
+		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -129,7 +141,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+		Node processed = mottakerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -156,7 +168,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+		Node processed = mottakerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -179,7 +191,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+		Node processed = mottakerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -197,7 +209,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+		Node processed = mottakerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -210,6 +222,8 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
+		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList("NN")));
 
 		File xmlFile = new File(BREVDATA_ORG);
@@ -221,7 +235,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap);
+		Node processed = mottakerPlugin.processElement(node, valueMap, null);
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
@@ -235,7 +249,6 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
 
@@ -245,7 +258,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap),
+				() -> mottakerPlugin.processElement(node, valueMap, null),
 				"Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 		assertEquals(exception.getMessage(), "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 
@@ -253,7 +266,6 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
 
@@ -263,7 +275,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
+				() -> mottakerPlugin.processElement(node, valueMap, null), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
 
 	}
 
