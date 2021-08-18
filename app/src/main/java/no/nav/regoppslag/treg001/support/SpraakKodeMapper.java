@@ -1,5 +1,6 @@
 package no.nav.regoppslag.treg001.support;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 public class SpraakKodeMapper {
 
 	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
-		if (StringUtils.isEmpty(mottakerSpraakKode)) {
+		if (isBlank(mottakerSpraakKode)) {
 			return getMaalFormNaarMottakerIkkeHarSattMaalform(mottaker, spraakInfoMal);
 		} else { //Bruker har ikke satt språk
 			return getMaalFormNaarMottakerHarSattMaalform(mottakerSpraakKode, spraakInfoMal);

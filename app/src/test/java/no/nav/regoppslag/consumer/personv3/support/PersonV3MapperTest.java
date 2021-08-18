@@ -8,7 +8,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -123,7 +122,7 @@ public class PersonV3MapperTest {
 	}
 
 	@Test
-	public void shouldMapSpraakKode()  {
+	public void shouldMapSpraakKode() {
 		Bruker person = createPerson(FORNAVN, MELLOMNAVN, ETTERNAVN);
 		person.setMaalform(createSpraak("NO"));
 		settBostedadresseMedGateadresse(person);

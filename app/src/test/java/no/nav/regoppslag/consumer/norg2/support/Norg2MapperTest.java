@@ -12,7 +12,7 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informa
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Postnummer;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Norg2MapperTest {
 

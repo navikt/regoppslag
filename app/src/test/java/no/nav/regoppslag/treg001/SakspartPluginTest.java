@@ -51,6 +51,7 @@ import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -146,6 +147,27 @@ public class SakspartPluginTest {
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
 		assertEquals(FULLT_NAVN, sakspart.getNavn());
+	}
+
+	@Test
+	public void testSakspartPluginPDLReturnNull() throws Exception {
+
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(null);
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'sakspart']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = sakspartPlugin.processElement(node, valueMap, TEMA);
+
+		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
+		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
+
+		assertNull(sakspart.getNavn());
 	}
 
 	@Test

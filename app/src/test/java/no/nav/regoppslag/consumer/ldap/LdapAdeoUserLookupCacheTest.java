@@ -1,17 +1,11 @@
 package no.nav.regoppslag.consumer.ldap;
 
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.itest.config.CacheTestConfig;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.springframework.cache.CacheManager;
@@ -28,6 +22,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -51,7 +51,7 @@ public class LdapAdeoUserLookupCacheTest {
 	private static final String NAME2 = "Nils Nilsen";
 
 	@Test
-	public void shouldCache() throws Exception {
+	public void shouldCache() {
 		cacheManager.getCache(HENT_FULLT_NAVN).clear();
 
 		when(ldapTemplate.search(any(LdapQuery.class), ArgumentMatchers.<AttributesMapper<String>>any())).thenReturn(new ArrayList<String>() {{

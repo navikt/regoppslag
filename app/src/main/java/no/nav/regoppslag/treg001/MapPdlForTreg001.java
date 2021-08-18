@@ -7,7 +7,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -41,8 +40,8 @@ public class MapPdlForTreg001 {
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 
 	@Inject
-	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer,
-							MapPDLResponse mapPDLResponse, LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
+	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
+							LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
 							OrganisasjonV4Mapper organisasjonV4Mapper) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;

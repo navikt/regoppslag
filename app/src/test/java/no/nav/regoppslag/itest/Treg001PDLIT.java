@@ -7,7 +7,6 @@ import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -38,7 +37,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@Disabled
 public class Treg001PDLIT extends AbstractIT {
 
 	private static final String DOKUMENTTYPEID = "123";
@@ -147,19 +145,6 @@ public class Treg001PDLIT extends AbstractIT {
 				.replaceAll("[\n\t\r ]", ""));
 	}
 
-	@Test
-	public void shouldGetKomplettBrevdataOrgDansk() {
-		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy-da.json");
-		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_dansk.xml"))); //mottakerPlugin
-		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
-		assertEquals(classpathToString("__files/treg001pdl/treg001_full_response_orgv4.xml").replaceAll("[\n\t\r ]", ""), actualResponse
-				.getBrevdata()
-				.replaceAll("[\n\t\r ]", ""));
-	}
-
 
 	@Test
 	public void shouldNotMapWhenIsBerikIsFalse() {
@@ -219,15 +204,15 @@ public class Treg001PDLIT extends AbstractIT {
 	@Test
 	public void shouldThrowTechnicalIfPersonIsMissingAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/ukjentbosted.json");
 		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Should throw techical Exception");
 
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertEquals(NOT_FOUND, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Ugyldig postadresse. Adresse mangler adresselinje1, postnummer, poststed og land."));
+		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Funksjonell feil: dokumenttypeId=123 feilmelding=TREG001: Kunne ikke mappe postadresse for UkjentBosted mottaker"));
 	}
 
 	@Test
@@ -246,13 +231,13 @@ public class Treg001PDLIT extends AbstractIT {
 	@Test
 	public void shouldThrowWhenPersonHasUkjentAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json"); //mottakerPlugin
-		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktinformasjonfordoedsbo.json"); //mottakerPlugin
+		getPdlDkif(BAD_REQUEST.value(), "dkif/dkif-happy.json");
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
-		assertEquals(NOT_FOUND, e.getStatusCode());
-		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Kunne ikke mappe postadresse for mottaker fordi gjeldendePostadressetype=UKJENT_ADRESSE"));
+		assertEquals(BAD_REQUEST, e.getStatusCode());
+		assertThat(e.getResponseBodyAsString(), CoreMatchers.containsString("Funksjonell feil: dokumenttypeId=123 feilmelding=Funksjonell feil ved kall mot DigitalKontaktinformasjonV1.kontaktinformasjon. Feilmelding=400 Bad Request"));
 	}
 
 	@Test
@@ -286,7 +271,7 @@ public class Treg001PDLIT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
 		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_norg2_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 

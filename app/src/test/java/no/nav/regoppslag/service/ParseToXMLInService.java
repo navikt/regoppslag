@@ -1,19 +1,18 @@
 package no.nav.regoppslag.service;
 
-import static org.mockito.Mockito.mock;
-
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.xmlenricher.ElementEnricher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -33,6 +32,7 @@ public class ParseToXMLInService {
 
 	@Parameterized.Parameter
 	public String brevdataFeilFormat;
+
 	@Parameterized.Parameters
 	public static Collection parameters() {
 		return Arrays.asList(new String[]{"", "<ole>brumm<ole>", "<ole>brumm/ole>", "\"<ole>brumm<ole>", "<ole><idolet>brumm</ole>"});
