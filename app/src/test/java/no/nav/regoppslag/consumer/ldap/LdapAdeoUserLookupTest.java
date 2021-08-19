@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.inject.Inject;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -42,7 +43,7 @@ public class LdapAdeoUserLookupTest {
 	public void shouldHentFulltNavn() {
 		when(ldapTemplateMock.search(any(LdapQuery.class), any(AttributesMapper.class))).thenReturn(Collections.singletonList("Itest Itestesen"));
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
-		Assertions.assertEquals("Itest Itestesen", fulltNavn);
+		assertEquals("Itest Itestesen", fulltNavn);
 	}
 
 	@Test

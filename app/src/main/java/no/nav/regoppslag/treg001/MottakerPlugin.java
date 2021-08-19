@@ -12,7 +12,6 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -39,7 +38,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
@@ -99,7 +97,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 				newMottaker = getMottakerFraPersonV3(spraakKodeMapper, mottaker, dokumenttypeId);
 			} else {
 				newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker);
-				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, "", tema);
+				final Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
 				newMottaker.setSpraakkode(spraakkode);
 			}
 
@@ -134,21 +132,17 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			mottaker.setNavn(mottakerTo.getMottaker().getNavn());
 		}
 
-		mottaker.setSpraakkode(getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, mottakerTo.getSpraakKode(), null));
+		mottaker.setSpraakkode(getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, mottakerTo.getSpraakKode()));
 		return mottaker;
 
 	}
 
-	public Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak, String tema) {
+	public Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak) {
 		log.info(format("Henter mottaker info. dokumentTypeId=%s", dokumenttypeId));
 		//Sjekker språket på malen opp mot mottakers preferanser
 		List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 		if (sprakinfos == null || sprakinfos.isEmpty()) {
 			log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
-		}
-		if (isNotBlank(tema)) {
-			spraak = digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false);
-			return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
 		}
 		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
 	}
