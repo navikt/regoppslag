@@ -31,7 +31,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandiskAdresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -81,7 +81,7 @@ class MapPdlForTreg001Test {
 
 	@Test
 	public void shouldMapUtenlandiskAdresseFraPdl() {
-		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonUtenlandiskAdresse());
+		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createMottaker());
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 

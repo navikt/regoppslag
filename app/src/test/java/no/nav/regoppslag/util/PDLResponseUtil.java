@@ -376,7 +376,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static HentPerson createPdlHentPersonUtenlandiskAdresse() {
+	public static HentPerson createPdlHentPersonUtenlandskAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)

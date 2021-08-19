@@ -10,7 +10,6 @@ import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +39,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -89,7 +89,7 @@ public class Tkat020DokumenttypeInfoTest {
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
 	}
@@ -99,7 +99,7 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
@@ -111,7 +111,7 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));

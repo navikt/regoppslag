@@ -70,7 +70,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandiskAdresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
@@ -275,7 +275,7 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldMapUtenlandskAdresseFraPdl() throws Exception {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonUtenlandiskAdresse());
+		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);

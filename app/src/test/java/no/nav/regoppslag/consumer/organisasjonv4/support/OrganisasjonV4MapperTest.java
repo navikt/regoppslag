@@ -16,7 +16,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +52,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
@@ -114,7 +113,7 @@ public class OrganisasjonV4MapperTest {
 	@Test
 	public void shouldThrowWhenMissingAdresse() throws Exception {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
@@ -123,7 +122,7 @@ public class OrganisasjonV4MapperTest {
 	public void shouldThrowWhenExpiredAdresse() throws Exception {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settSemistrukturertAdresse(org, "POSTADRESSE", -20000);
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
@@ -133,7 +132,7 @@ public class OrganisasjonV4MapperTest {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		((Gateadresse) org.getOrganisasjonDetaljer().getPostadresse().get(0)).setPoststed(null);
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
@@ -144,7 +143,7 @@ public class OrganisasjonV4MapperTest {
 		Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		org.getOrganisasjonDetaljer().setOpphoersdato(dateToGregorian(Date.from(Instant.now().minusSeconds(10000))));
 
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 

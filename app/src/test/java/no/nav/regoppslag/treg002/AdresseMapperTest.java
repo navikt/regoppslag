@@ -30,7 +30,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandiskAdresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE2;
@@ -116,7 +116,7 @@ public class AdresseMapperTest {
 	@SneakyThrows
 	@Test
 	public void shouldMapPDLWithUtenlandskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandiskAdresse(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());

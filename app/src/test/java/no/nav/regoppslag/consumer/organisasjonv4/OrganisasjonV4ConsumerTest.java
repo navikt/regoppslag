@@ -11,7 +11,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SammensattNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -20,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,7 +60,7 @@ public class OrganisasjonV4ConsumerTest {
 	public void shouldThrowExceptionWhenOrganisasjonNotFound() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Nav enhet finnes ikke for enhetNr=999999999");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
@@ -69,7 +69,7 @@ public class OrganisasjonV4ConsumerTest {
 	public void shouldThrowTechnicalExceptionWhenRuntimeExceptionThrown() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new RuntimeException());
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
 		assertEquals("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999, message=null", e.getMessage());
 	}
