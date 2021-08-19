@@ -16,7 +16,6 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 
-import java.security.PublicKey;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -57,7 +56,7 @@ public class PDLResponseUtil {
 	public static final int FOEDSELSAAR = 1984;
 	public static final LocalDate FOEDSELDATO = LocalDate.of(1984, Month.APRIL, 24);
 	public static final LocalDate DOEDSDATO = LocalDate.now();
-	public static final String FORKOORETNAVN = "GYNGEHEST ÅPENHJERTIG";
+	public static final String KORT_NAVN = "GYNGEHEST ÅPENHJERTIG";
 	public static final String FULLT_NAVN = "GYNGEHEST A. ÅPENHJERTIG";
 	public static final String FORNAVN = "GYNGEHEST";
 	public static final String MELLOMNAVN = "A.";
@@ -83,6 +82,7 @@ public class PDLResponseUtil {
 	public static final String BYSTED = "Haworth";
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
+	public static final String LAND_UTENLANDSK = "Sweden";
 	public static final String LANDKODE_NORGE = "NOR";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
@@ -151,7 +151,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -188,7 +188,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -223,7 +223,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -257,7 +257,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -290,7 +290,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -304,7 +304,7 @@ public class PDLResponseUtil {
 
 	public static HentPerson.PersonNavn createPersonnavn() {
 		return HentPerson.PersonNavn.builder()
-				.forkortetNavn(FORKOORETNAVN)
+				.forkortetNavn(KORT_NAVN)
 				.fornavn(FORNAVN)
 				.mellomnavn(MELLOMNAVN)
 				.etternavn(ETTERNAVN)
@@ -328,7 +328,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -357,7 +357,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)
@@ -376,7 +376,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static HentPerson createPdlHentPersonUtelandsk() {
+	public static HentPerson createPdlHentPersonUtenlandskAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
 						.gradering(HentPerson.Gradering.FORTROLIG)
@@ -387,7 +387,7 @@ public class PDLResponseUtil {
 						.foedselsdato(FOEDSELDATO)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
-						.forkortetNavn(FORKOORETNAVN)
+						.forkortetNavn(KORT_NAVN)
 						.fornavn(FORNAVN)
 						.mellomnavn(MELLOMNAVN)
 						.etternavn(ETTERNAVN)

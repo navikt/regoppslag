@@ -46,7 +46,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	private MicrometerMetrics metrics;
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagFunctionalException, RegOppslagTechnicalException {
+	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
@@ -74,13 +74,13 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		}
 	}
 
-	private void validateSaksbehandler(NavAnsatt navAnsatt) throws RegOppslagFunctionalException {
+	private void validateSaksbehandler(NavAnsatt navAnsatt) {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
 			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Saksbehandlerdata mangler ansattId", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
-	private void validateElementType(Node element) throws RegOppslagFunctionalException {
+	private void validateElementType(Node element) {
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME

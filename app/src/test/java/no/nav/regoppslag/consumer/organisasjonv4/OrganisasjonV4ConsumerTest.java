@@ -1,12 +1,5 @@
 package no.nav.regoppslag.consumer.organisasjonv4;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -18,13 +11,19 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SammensattNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.HentOrganisasjonResponse;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -38,45 +37,41 @@ public class OrganisasjonV4ConsumerTest {
 	private MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 	private OrganisasjonV4Consumer organisasjonV4Consumer = new OrganisasjonV4Consumer(organisasjonV4, metrics);
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldHentOrganisasjon() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(defaultResponse());
-		
+
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN));
+		assertEquals(ORGNAVN, sammensattNavn(organisasjon.getNavn()));
 	}
 
 	@Test
 	public void shouldHentOrganisasjonWithMultipleNavnelinje() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(createResponse(Arrays.asList(ORGNAVN, ORGNAVN_2)));
-		
+
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(sammensattNavn(organisasjon.getNavn()), is(ORGNAVN + " " + ORGNAVN_2));
+		assertEquals(ORGNAVN + " " + ORGNAVN_2, sammensattNavn(organisasjon.getNavn()));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenOrganisasjonNotFound() throws Exception {
-		thrown.expect(RegOppslagFunctionalException.class);
-		thrown.expectMessage("Nav enhet finnes ikke for enhetNr=999999999");
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
-		
-		organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
+				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Nav enhet finnes ikke for enhetNr=999999999");
+		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenRuntimeExceptionThrown() throws Exception {
-		thrown.expect(RegOppslagTechnicalException.class);
-		thrown.expectMessage("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new RuntimeException());
-		
-		organisasjonV4Consumer.hentOrganisasjon(ORGNR);
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
+				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
+		assertEquals("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999, message=null", e.getMessage());
 	}
 
 
@@ -85,10 +80,10 @@ public class OrganisasjonV4ConsumerTest {
 		HentOrganisasjonResponse response = defaultResponse();
 		response.setOrganisasjon(null);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
-		
+
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(organisasjon, nullValue());
+		assertNull(organisasjon);
 	}
 
 	@Test
@@ -99,10 +94,10 @@ public class OrganisasjonV4ConsumerTest {
 		});
 		response.setOrganisasjon(org);
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class))).thenReturn(response);
-		
+
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		assertThat(sammensattNavn(organisasjon.getNavn()), nullValue());
+		assertNull(sammensattNavn(organisasjon.getNavn()));
 	}
 
 	private HentOrganisasjonResponse defaultResponse() {

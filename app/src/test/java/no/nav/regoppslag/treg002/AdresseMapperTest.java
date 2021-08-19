@@ -9,7 +9,7 @@ import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.util.PDLResponseUtil;
+import no.nav.regoppslag.util.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,15 +28,15 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtelandsk;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE2;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE3;
 import static no.nav.regoppslag.util.TestDataUtil.LANDKODE;
 import static no.nav.regoppslag.util.TestDataUtil.POSTNUMMER;
-import static no.nav.regoppslag.util.TestDataUtil.POSTSTED;
 import static no.nav.regoppslag.util.TestDataUtil.SVENSK_LANDKODE;
 import static no.nav.regoppslag.util.TestDataUtil.UTENLANDSK_ADRESSELINJE1;
 import static no.nav.regoppslag.util.TestDataUtil.UTENLANDSK_ADRESSELINJE2;
@@ -84,7 +84,7 @@ public class AdresseMapperTest {
 		assertThat(adresse.getAdresselinje3(), is(ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), is(LANDKODE));
 		assertThat(adresse.getPostnummer(), is(POSTNUMMER));
-		assertThat(adresse.getPoststed(), is(POSTSTED));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 	@Test
@@ -110,13 +110,13 @@ public class AdresseMapperTest {
 		assertNull(adresse.getAdresselinje3());
 		assertEquals(LANDKODE_NORGE, adresse.getLandkode());
 		assertEquals(FRITTFORMAT_POSTNUMMER, adresse.getPostnummer());
-		assertEquals(PDLResponseUtil.POSTSTED, adresse.getPoststed());
+		assertEquals(POSTSTED, adresse.getPoststed());
 	}
 
 	@SneakyThrows
 	@Test
 	public void shouldMapPDLWithUtenlandskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtelandsk(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
@@ -142,7 +142,7 @@ public class AdresseMapperTest {
 		assertThat(adresse.getAdresselinje3(), is(ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), is("???"));
 		assertThat(adresse.getPostnummer(), is(POSTNUMMER));
-		assertThat(adresse.getPoststed(), is(POSTSTED));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 

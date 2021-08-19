@@ -15,7 +15,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -49,7 +49,7 @@ public class RegisteroppslagRestControllerTest {
 	}
 
 	@Test
-	public void shouldGetHentMottakerOgAdresse() throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	public void shouldGetHentMottakerOgAdresse() throws RegOppslagSecurityException {
 		HentMottakerOgAdresseResponse actualResponse = registeroppslagRestController.hentMottakerOgAdresse(mottakerOgAdresseRequest);
 		assertEquals(responseMogA, actualResponse);
 		Mockito.verify(hentMottakerOgAdresseService, Mockito.times(1)).hentMottakerOgAdresseInfo(any(HentMottakerOgAdresseRequest.class));

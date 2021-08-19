@@ -5,9 +5,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.regoppslag.config.ldap.LdapConfig;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -21,8 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.inject.Inject;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,25 +36,21 @@ public class LdapAdeoUserLookupTest {
 
 	private static final LdapTemplate ldapTemplateMock = mock(LdapTemplate.class);
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Inject
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
 	@Test
-	public void shouldHentFulltNavn() throws Exception {
+	public void shouldHentFulltNavn() {
 		when(ldapTemplateMock.search(any(LdapQuery.class), any(AttributesMapper.class))).thenReturn(Collections.singletonList("Itest Itestesen"));
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
-		assertThat(fulltNavn, is("Itest Itestesen"));
+		assertEquals("Itest Itestesen", fulltNavn);
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenAdeoIdentNotFound() throws Exception {
+	public void shouldThrowExceptionWhenAdeoIdentNotFound() {
 		when(ldapTemplateMock.search(any(LdapQuery.class), any(AttributesMapper.class))).thenReturn(Collections.emptyList());
-		thrown.expect(RegOppslagFunctionalException.class);
-		thrown.expectMessage("Ldap.hentFulltNavn finner ikke bruker med ident=bxxxxxx");
-		ldapAdeoUserLookup.hentFulltNavn("bxxxxxx");
+		assertThrows(RegOppslagFunctionalException.class, () ->
+				ldapAdeoUserLookup.hentFulltNavn("bxxxxxx"), "Ldap.hentFulltNavn finner ikke bruker med ident=bxxxxxx");
 	}
 
 	static class Config {

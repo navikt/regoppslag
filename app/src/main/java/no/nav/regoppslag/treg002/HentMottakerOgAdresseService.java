@@ -105,7 +105,7 @@ public class HentMottakerOgAdresseService {
 				.build();
 	}
 
-	private void validateInput(HentMottakerOgAdresseRequest request) throws RegOppslagFunctionalException {
+	private void validateInput(HentMottakerOgAdresseRequest request)  {
 
 		if (request == null) {
 			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
@@ -125,7 +125,7 @@ public class HentMottakerOgAdresseService {
 	}
 
 
-	private void logAndRethrowException(Exception e) throws RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
+	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			log.error(format(TREG002_FUNK_FEIL, e.getMessage()), e);
 		} else if (e instanceof RegOppslagSecurityException) {

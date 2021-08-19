@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -43,11 +44,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -61,6 +65,7 @@ public class SakspartPluginTest {
 	private static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
 	private static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
+	private static final String TEMA = "PEN";
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
 	private static final String FORNAVN = "TOM";
@@ -71,16 +76,22 @@ public class SakspartPluginTest {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private PersonV3Consumer personV3Consumer = mock(PersonV3Consumer.class);
+	private PersonV3Consumer personV3Consumer;
 	private PostnummerService postnummerService;
-	private LandkodeService landkodeService = new LandkodeService();
-	private OrganisasjonV4Consumer organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+	private LandkodeService landkodeService;
+	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private Map<String, Object> valueMap;
-	private SecurityContext securityContext = new SecurityContextImpl();
+	private SecurityContext securityContext;
 	private SakspartPlugin sakspartPlugin;
+	private PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
+		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
+		personV3Consumer = mock(PersonV3Consumer.class);
+		landkodeService = new LandkodeService();
+		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
@@ -92,7 +103,7 @@ public class SakspartPluginTest {
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, metrics);
+		sakspartPlugin = new SakspartPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
 		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
@@ -109,12 +120,54 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap);
+		Node processed = sakspartPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
 		assertThat(sakspart.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+	}
+
+	@Test
+	public void testSakspartPluginPDL() throws Exception {
+
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(FULLT_NAVN);
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'sakspart']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = sakspartPlugin.processElement(node, valueMap, TEMA);
+
+		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
+		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
+
+		assertEquals(FULLT_NAVN, sakspart.getNavn());
+	}
+
+	@Test
+	public void testSakspartPluginPDLReturnNull() throws Exception {
+
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(null);
+		File xmlFile = new File(BREVDATA1);
+		Document document = loadDocument(xmlFile);
+
+		String expression1 = "//*[local-name() = 'sakspart']";
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		XPathExpression xPathExpression = xPath.compile(expression1);
+
+		Node node = findSingleNode(xPathExpression, document);
+
+		Node processed = sakspartPlugin.processElement(node, valueMap, TEMA);
+
+		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
+		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
+
+		assertNull(sakspart.getNavn());
 	}
 
 	@Test
@@ -128,7 +181,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap);
+		Node processed = sakspartPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
@@ -147,7 +200,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap);
+		Node processed = sakspartPlugin.processElement(node, valueMap, null);
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
@@ -166,7 +219,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
+				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
 	}
 
 	@Test
@@ -181,7 +234,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler id");
+				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler id");
 
 	}
 

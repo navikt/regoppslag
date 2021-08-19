@@ -99,7 +99,7 @@ public class PdlGraphQLConsumer {
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
 			}
-			return nonNull(response.getData()) ? mapHentNavnResponse.mapNavn(response) : null;
+			return mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
 		} catch (HttpServerErrorException e) {

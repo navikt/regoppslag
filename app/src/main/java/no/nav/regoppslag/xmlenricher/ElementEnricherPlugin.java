@@ -33,6 +33,6 @@ public interface ElementEnricherPlugin {
 	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 * @NOTE If the element is already pre-populated, this method should not attempt to overwrite existing contents.
 	 */
-	Node processElement(Node content, Map<String, Object> propertyMap) throws RegOppslagSecurityException;
+	Node processElement(Node content, Map<String, Object> propertyMap, String tema) throws RegOppslagSecurityException;
 
 }

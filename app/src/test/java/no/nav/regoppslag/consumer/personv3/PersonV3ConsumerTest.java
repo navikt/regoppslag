@@ -1,17 +1,5 @@
 package no.nav.regoppslag.consumer.personv3;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -26,11 +14,11 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +28,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -53,13 +53,13 @@ public class PersonV3ConsumerTest {
 	private static final String MELLOMNAVN = "MARVOLO";
 	private static final String ETTERNAVN = "RIDDLE";
 	private static final String PRINCIPAL = "RIDDLE";
-	
+
 	@Inject
 	private PersonV3Consumer personV3Consumer;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+
 	@Inject
 	private PersonV3 personV3;
 
@@ -72,40 +72,40 @@ public class PersonV3ConsumerTest {
 	}
 
 	@Test
-	public void shouldHentPersonnavn() throws Exception{
+	public void shouldHentPersonnavn() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(defaultResponse());
-		
+
 		Bruker person = personV3Consumer.hentPerson(FNR, "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + MELLOMNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
-	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception{
+	public void shouldHentPersonNavnWhenMissingMellomnavn() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(createResponse(FORNAVN, null, ETTERNAVN));
-		
+
 		Bruker person = personV3Consumer.hentPerson(FNR, "");
 
 		assertThat(person.getPersonnavn().getSammensattNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
-	public void shouldReturnNullWhenNavnInResponse() throws Exception{
+	public void shouldReturnNullWhenNavnInResponse() throws Exception {
 		HentPersonResponse response = defaultResponse();
 		response.setPerson(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
-		
+
 		Bruker person = personV3Consumer.hentPerson(FNR, "");
 
 		assertThat(person, nullValue());
 	}
 
 	@Test
-	public void shouldReturnNullWhenNameNotInResponse() throws Exception{
+	public void shouldReturnNullWhenNameNotInResponse() throws Exception {
 		HentPersonResponse response = defaultResponse();
 		response.getPerson().setPersonnavn(null);
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(response);
-		
+
 		Bruker person = personV3Consumer.hentPerson(FNR, "");
 
 		assertThat(person.getPersonnavn(), nullValue());
@@ -114,7 +114,7 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldThrowFunctionalExceptionWhenPersonIkkeFunnet() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("Fant ikke person", new PersonIkkeFunnet()));
-		
+
 		try {
 			personV3Consumer.hentPerson(FNR, "");
 			fail("Should throw exception");
@@ -127,7 +127,7 @@ public class PersonV3ConsumerTest {
 	@Test
 	public void shouldThrowFunctionalExceptionWhenSikkerhetsbegrensning() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("Ingen adgang", new Sikkerhetsbegrensning()));
-		
+
 		try {
 			personV3Consumer.hentPerson(FNR, "");
 			fail("Should throw exception");
@@ -136,11 +136,11 @@ public class PersonV3ConsumerTest {
 			verify(personV3, times(1)).hentPerson(any(HentPersonRequest.class));
 		}
 	}
-	
+
 	@Test
 	public void shouldRetryWhenTechnicalExceptionThrown() throws Exception {
 		when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new RuntimeException());
-		
+
 		try {
 			personV3Consumer.hentPerson(FNR, "");
 			fail("Should throw exception");
@@ -148,8 +148,8 @@ public class PersonV3ConsumerTest {
 			verify(personV3, times(5)).hentPerson(any(HentPersonRequest.class));
 		}
 	}
-	
-	
+
+
 	private HentPersonResponse defaultResponse() {
 		return createResponse(FORNAVN, MELLOMNAVN, ETTERNAVN);
 	}
@@ -170,16 +170,16 @@ public class PersonV3ConsumerTest {
 		response.setPerson(person);
 		return response;
 	}
-	
+
 	@EnableRetry
 	@Configuration
 	static class Config {
-		
+
 		@Bean
 		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
-		
+
 		@Bean
 		public PersonV3 personV3() {
 			return mock(PersonV3.class);

@@ -41,7 +41,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
-import static no.nav.regoppslag.util.PDLResponseUtil.FORKOORETNAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_FRA_MED_DATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_TIL_MED_DATO;
@@ -95,7 +95,7 @@ public class MapPDLResponseTest {
 
 
 	@BeforeEach
-	public void setUp() throws IOException {
+	public void setUp() {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		mapPDLResponse = new MapPDLResponse(postnummerService);
 	}
@@ -141,7 +141,7 @@ public class MapPDLResponseTest {
 
 		assertNull(mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
-		assertEquals(FORKOORETNAVN, mottakerInfo.getKortNavn());
+		assertEquals(KORT_NAVN, mottakerInfo.getKortNavn());
 		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertNull(mottakerInfo.getPostadresse().getAdresselinje2());
 		assertEquals(POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
@@ -158,7 +158,7 @@ public class MapPDLResponseTest {
 
 		assertNull(mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
-		assertEquals(FORKOORETNAVN, mottakerInfo.getKortNavn());
+		assertEquals(KORT_NAVN, mottakerInfo.getKortNavn());
 		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertNull(mottakerInfo.getPostadresse().getAdresselinje2());
 		assertEquals(POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());

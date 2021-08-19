@@ -3,7 +3,6 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagParsingException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -71,12 +70,12 @@ public class KompletterBrevdataService {
 
 	@Retryable(include = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
-		String responseBrevdata;
+
 		try {
 			Document brevdata = stringToDocument(request.getBrevdata());
-			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
+			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId(), request.getTema());
 
-			responseBrevdata = documentToString(brevdataUtfylt);
+			return KompletterBrevdataResponse.builder().brevdata(documentToString(brevdataUtfylt)).build();
 		} catch (MarshallerTechnicalException e) {
 			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
@@ -104,7 +103,5 @@ public class KompletterBrevdataService {
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		}
-		return KompletterBrevdataResponse.builder().brevdata(responseBrevdata).build();
-
 	}
 }
