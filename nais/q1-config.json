@@ -14,9 +14,9 @@
 	"LDAP_URL": "ldaps://ldapgw.preprod.local",
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
-	"NAMESPACE": "teamdokumenthandtering",
+	"NAMESPACE": "q1",
 	"INGRESSES": [
 		"https://regoppslag-q1.nais.preprod.local",
-		"https://regoppslag.dev.intern.nav.no"
+		"https://regoppslag-q1.dev.intern.nav.no"
 	]
 }
