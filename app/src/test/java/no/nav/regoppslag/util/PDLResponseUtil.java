@@ -83,7 +83,7 @@ public class PDLResponseUtil {
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
 	public static final String LAND_UTENLANDSK = "Sweden";
-	public static final String LANDKODE_NORGE = "NOR";
+	public static final String LANDKODE_NORGE = "NO";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";

@@ -453,7 +453,7 @@ public class MapPDLResponseTest {
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertNull(response.getLandkode());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}

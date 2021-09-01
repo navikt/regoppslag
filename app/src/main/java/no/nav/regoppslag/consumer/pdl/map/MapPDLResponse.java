@@ -52,7 +52,7 @@ public class MapPDLResponse {
 
 	private final PostnummerService postnummerService;
 
-	private static final String LANDKODE_NORGE = "NOR";
+	private static final String LANDKODE_NORGE = "NO";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
 	private static final String CARE_OF = "C/O ";
@@ -175,7 +175,7 @@ public class MapPDLResponse {
 						.adresselinje2(postadresse.getAdresselinje2()).adresselinje3(postadresse.getAdresselinje3())
 						.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 						.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
-						.landkode(isLandkodeEmptyAndHavePostnummer(null, postadresse.getPostnummer()) ? LANDKODE_NORGE : null)
+						.landkode(LANDKODE_NORGE)
 						.build();
 			}
 			return PostadresseTo.builder()
@@ -185,7 +185,7 @@ public class MapPDLResponse {
 					.adresselinje3(postadresse.getAdresselinje2())
 					.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 					.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
-					.landkode(isLandkodeEmptyAndHavePostnummer(null, postadresse.getPostnummer()) ? LANDKODE_NORGE : null)
+					.landkode(LANDKODE_NORGE)
 					.build();
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
 			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
@@ -259,7 +259,7 @@ public class MapPDLResponse {
 					.adresselinje3(getAdresselinje(kontaktAdresse.getAdresselinje2()))
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
-					.landkode(kontaktAdresse.getLandkode())
+					.landkode(LANDKODE_NORGE)
 					.build();
 
 		}
@@ -286,7 +286,7 @@ public class MapPDLResponse {
 						.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 						.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktinformasjonForDoedsbo.getAdresse().getPostnummer())
 								: adresse.getPoststedsnavn())
-						.landkode(isLandkodeEmptyAndHavePostnummer(adresse.getLandkode(), adresse.getPostnummer()) ? LANDKODE_NORGE : adresse.getLandkode())
+						.landkode(LANDKODE_NORGE)
 						.build() : null;
 	}
 
@@ -314,7 +314,7 @@ public class MapPDLResponse {
 								.orElse("") + Optional.ofNullable(vegadresse.getHusbokstav()).orElse(""))
 						.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 						.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
-						.landkode(isLandkodeEmptyAndHavePostnummer(null, vegadresse.getPostnummer()) ? LANDKODE_NORGE : null) :
+						.landkode(LANDKODE_NORGE) :
 				PostadresseTo.builder()
 						.adresseType(POSTADRESSE_INNLAND)
 						.adresselinje1(coAdressenavn)
@@ -323,7 +323,7 @@ public class MapPDLResponse {
 								.orElse("") + Optional.ofNullable(vegadresse.getHusbokstav()).orElse(""))
 						.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 						.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
-						.landkode(isLandkodeEmptyAndHavePostnummer(null, vegadresse.getPostnummer()) ? LANDKODE_NORGE : null);
+						.landkode(LANDKODE_NORGE);
 	}
 
 	private PostadresseTo.PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse) {
@@ -343,7 +343,7 @@ public class MapPDLResponse {
 				.adresselinje1(matrikkeladresse.getTilleggsnavn())
 				.postnummer(matrikkeladresse.getPostnummer())
 				.poststed(postnummerService.finnPoststed(matrikkeladresse.getPostnummer()))
-				.landkode(isLandkodeEmptyAndHavePostnummer(null, matrikkeladresse.getPostnummer()) ? LANDKODE_NORGE : null)
+				.landkode(LANDKODE_NORGE)
 				.build();
 	}
 
