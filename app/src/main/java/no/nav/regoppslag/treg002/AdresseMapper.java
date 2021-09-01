@@ -35,7 +35,7 @@ public class AdresseMapper {
 	@Inject
 	private MicrometerMetrics metrics;
 
-	private static final String LANDKODE_NORGE = "NOR";
+	private static final String LANDKODE_NORGE = "NO";
 	private static final String UNKNOWN_LANDKODE = "???";
 	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
 	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
