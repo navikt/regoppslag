@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AdresseMapperTest {
 
-	@Mock
+	@InjectMocks
 	private LandkodeService landkodeService;
 
 	@InjectMocks
@@ -71,14 +71,16 @@ public class AdresseMapperTest {
 
 	@BeforeEach
 	public void setUp() throws IOException {
+		landkodeService = new LandkodeService();
 		postnummerService.init();
-		mapPDLResponse = new MapPDLResponse(postnummerService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
+		adresseMapper = new AdresseMapper(landkodeService, metrics);
 	}
 
 	@Test
 	public void shouldMapWithNorskPostAdresse() {
-		when(landkodeService.finnLandkode(any())).thenReturn(LANDKODE);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(createMottaker());
+		adresse.setLandkode(LANDKODE);
 		assertThat(adresse.getAdresselinje1(), is(ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(ADRESSELINJE2));
 		assertThat(adresse.getAdresselinje3(), is(ADRESSELINJE3));
@@ -89,8 +91,8 @@ public class AdresseMapperTest {
 
 	@Test
 	public void shouldMapWithUtenlandskPostAdresse() {
-		when(landkodeService.finnLandkode(any())).thenReturn(SVENSK_LANDKODE);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(createMottaker(false));
+		adresse.setLandkode(SVENSK_LANDKODE);
 
 		assertThat(adresse.getAdresselinje1(), is(UTENLANDSK_ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(UTENLANDSK_ADRESSELINJE2));
@@ -124,13 +126,12 @@ public class AdresseMapperTest {
 		assertEquals(BYSTED, adresse.getAdresselinje3());
 		assertNull(adresse.getPostnummer());
 		assertNull(adresse.getPoststed());
-		assertEquals(LANDKODE_UTENLANDSK, adresse.getLandkode());
+		assertEquals(SVENSK_LANDKODE, adresse.getLandkode());
 
 	}
 
 	@Test
 	public void shouldMapWhenLandkodeIsNull() {
-		when(landkodeService.finnLandkode(null)).thenReturn(null);
 		Mottaker mottaker = createMottaker();
 		NorskPostadresse norskPostadresse = createNorskPostadresse();
 		norskPostadresse.setLand(null);

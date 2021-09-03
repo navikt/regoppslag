@@ -5,6 +5,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -28,18 +29,20 @@ import javax.inject.Inject;
 @Component
 @Slf4j
 public class AdresseMapper {
-	
-	@Inject
-	private LandkodeService landkodeService;
 
-	@Inject
-	private MicrometerMetrics metrics;
+	private final LandkodeService landkodeService;
+	private final MicrometerMetrics metrics;
 
 	private static final String LANDKODE_NORGE = "NO";
-	private static final String UNKNOWN_LANDKODE = "???";
 	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
 	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
-	
+
+	@Inject
+	public AdresseMapper(LandkodeService landkodeService, MicrometerMetrics metrics) {
+		this.landkodeService = landkodeService;
+		this.metrics = metrics;
+	}
+
 	public HentMottakerOgAdresseResponse.Adresse map(Mottaker mottaker){
 
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){

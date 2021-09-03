@@ -16,6 +16,8 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.metrics.MetricLabels;
+import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,10 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
+import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -51,6 +57,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class MapPDLResponse {
 
 	private final PostnummerService postnummerService;
+	private final LandkodeService landkodeService;
 
 	private static final String LANDKODE_NORGE = "NO";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
@@ -63,9 +70,11 @@ public class MapPDLResponse {
 
 	@Inject
 	public MapPDLResponse(
-			PostnummerService postnummerService
+			PostnummerService postnummerService,
+			LandkodeService landkodeService
 	) {
 		this.postnummerService = postnummerService;
+		this.landkodeService = landkodeService;
 	}
 
 	private boolean isDoed(HentPerson hentPerson) {
@@ -211,7 +220,7 @@ public class MapPDLResponse {
 					.adresselinje2(utenlandskAdresse.getAdresselinje2())
 					.adresselinje3(utenlandskAdresse.getAdresselinje3())
 					.poststed(utenlandskAdresse.getByEllerStedsnavn())
-					.landkode(requireNonNull(utenlandskAdresse.getLandkode(), format(ERROR_UTENLANDSKADRESSE, "landkode")))
+					.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")))
 					.build();
 		}
 		return null;
@@ -334,7 +343,7 @@ public class MapPDLResponse {
 						utenlandskAdresse.getAdressenavnNummer(), format(ERROR_UTENLANDSKADRESSE, "adresselinje1")))
 				.adresselinje2(utenlandskAdresse.getPostkode())
 				.adresselinje3(isNotBlank(utenlandskAdresse.getBySted()) ? utenlandskAdresse.getBySted() : utenlandskAdresse.getRegionDistriktOmraade())
-				.landkode(requireNonNull(utenlandskAdresse.getLandkode(), format(ERROR_UTENLANDSKADRESSE, "landkode")));
+				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 
 	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
@@ -445,8 +454,13 @@ public class MapPDLResponse {
 				.findAny().orElse(null);
 	}
 
-	private boolean isLandkodeEmptyAndHavePostnummer(String landkode, String postnummer) {
-		return isBlank(landkode) && isNotBlank(postnummerService.finnPoststed(postnummer));
+	private String getAlpha2Landkode(String alpha3Landkode) {
+		String alpha2Landkode = landkodeService.finnLandkodeAlpha2FraAlpha3(alpha3Landkode);
+		if (alpha2Landkode == null) {
+			log.info("Mottaker har ingen landkode registert. Setter landkode til {}", UNKNOWN_LANDKODE);
+			return UNKNOWN_LANDKODE;
+		}
+		return alpha2Landkode;
 	}
 
 	public String getFulltnavn(KontaktinformasjonForDoedsbo.Personnavn personnavn) {

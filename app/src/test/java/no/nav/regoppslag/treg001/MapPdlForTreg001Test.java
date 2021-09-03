@@ -58,7 +58,7 @@ class MapPdlForTreg001Test {
 		landkodeService = new LandkodeService();
 		postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
 		organisasjonV4Mapper = mock(OrganisasjonV4Mapper.class);
 		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper);
