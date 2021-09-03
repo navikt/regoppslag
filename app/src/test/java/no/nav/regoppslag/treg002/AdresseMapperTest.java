@@ -57,14 +57,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AdresseMapperTest {
 
-	@InjectMocks
 	private LandkodeService landkodeService;
-
-	@InjectMocks
 	private MapPDLResponse mapPDLResponse;
 	@Mock
 	private MicrometerMetrics metrics;
-	@InjectMocks
 	private AdresseMapper adresseMapper;
 	@InjectMocks
 	private PostnummerService postnummerService;

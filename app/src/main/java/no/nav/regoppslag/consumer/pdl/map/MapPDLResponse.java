@@ -16,7 +16,6 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
-import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
@@ -37,10 +36,7 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
-import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -152,7 +148,6 @@ public class MapPDLResponse {
 				null, oppholdsadresse.getCoAdressenavn(), serviceCode) : null;
 
 	}
-
 
 	private String getIdentifikasjonsnummer(List<HentPerson.Folkeregisteridentifikator> folkeregisteridentifikator) {
 		return folkeregisteridentifikator.stream()
@@ -391,7 +386,6 @@ public class MapPDLResponse {
 				.orElseThrow(() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE));
 	}
 
-
 	private Kontaktadresse getKontaktadresse(HentPerson hentPerson) {
 		return isNull(hentPerson.getKontaktadresse()) || hentPerson.getKontaktadresse().isEmpty() ? null :
 				hentPerson.getKontaktadresse().stream()
@@ -481,5 +475,4 @@ public class MapPDLResponse {
 			throw new RegoppslagIllegalArgumentException(message, BAD_REQUEST);
 		return obj;
 	}
-
 }
