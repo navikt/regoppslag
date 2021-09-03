@@ -1,11 +1,15 @@
 package no.nav.regoppslag.service;
 
 import com.neovisionaries.i18n.CountryCode;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Source: https://unstats.un.org/unsd/methodology/m49/
@@ -41,7 +45,7 @@ public class LandkodeService {
 
 	public String finnLandkode(String landnavn) {
 
-		if (landnavn == null) {
+		if (isBlank(landnavn)) {
 			return null;
 		}
 
@@ -55,6 +59,10 @@ public class LandkodeService {
 
 		List<CountryCode> countryCodeList = CountryCode.findByName(landnavn);
 		return countryCodeList.get(0).getAlpha2();
+	}
+
+	public String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
+		 return isBlank(landkodeAlpha3) ? null : CountryCode.getByAlpha3Code(landkodeAlpha3).name();
 	}
 
 }

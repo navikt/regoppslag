@@ -40,7 +40,8 @@ public class PDLResponseUtil {
 	public static final String UTENLANDSK_POSTKODE = "Ottawa ON K1A 0B1";
 	public static final String UTENLANDSK_BYSTED = "Ottawa";
 	public static final String UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
-	public static final String UTENLANDSK_LANDKODE = "CA";
+	public static final String CANADA_ALPHA3_LANDKODE = "CAN";
+	public static final String CANADA_ALPHA2_LANDKODE = "CA";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
@@ -83,7 +84,7 @@ public class PDLResponseUtil {
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
 	public static final String LAND_UTENLANDSK = "Sweden";
-	public static final String LANDKODE_NORGE = "NOR";
+	public static final String LANDKODE_NORGE = "NO";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";
@@ -581,7 +582,7 @@ public class PDLResponseUtil {
 
 	public static Kontaktadresse.UtenlandskAdresseIFrittFormat createUtenlandskAdresseIFrittFormat() {
 		return Kontaktadresse.UtenlandskAdresseIFrittFormat.builder()
-				.landkode(UTENLANDSK_LANDKODE)
+				.landkode(CANADA_ALPHA3_LANDKODE)
 				.adresselinje1(UTENLANDSK_POSTBOKSNUMMERNAVN)
 				.adresselinje2(UTENLANDSK_POSTKODE)
 				.adresselinje3(UTENLANDSK_BYSTED)

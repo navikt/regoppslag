@@ -40,6 +40,7 @@ public final class MetricLabels {
 	public static final String PERSON_DISKRESJONSKODE = "person_diskresjonskode";
 	public static final String LAND = "land";
 	public static final String UKJENT_LAND = "ukjent_land";
+	public static final String UNKNOWN_LANDKODE = "???";
 	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";

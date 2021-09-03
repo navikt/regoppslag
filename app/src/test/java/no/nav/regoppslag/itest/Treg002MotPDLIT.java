@@ -314,7 +314,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals("Postboks 5 St Olavs Plass", response.getAdresse().getAdresselinje1());
 		assertNull(response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
-		assertEquals("NO", response.getAdresse().getLandkode());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertEquals("0130", response.getAdresse().getPostnummer());
 		assertEquals("OSLO", response.getAdresse().getPoststed());
 	}
