@@ -1,6 +1,7 @@
 package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
@@ -55,6 +56,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
+		initialConfigs.put(RESTSTS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME))
