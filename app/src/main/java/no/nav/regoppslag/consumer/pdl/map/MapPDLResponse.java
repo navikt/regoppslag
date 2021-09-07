@@ -90,41 +90,35 @@ public class MapPDLResponse {
 					.build();
 		} else if (nonNull(getKontaktadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getKontaktadresse(hentPerson).getMetadata())) ||
 				isGyldigDatoOgKilde(getKontaktadresse(hentPerson).getGyldigTilOgMed(), getKontaktadresse(hentPerson).getMetadata()))) {
-			log.info("starter adresseoppslag mot pdl kontaktadresse");
-			return getMottkerKontaktadresse(hentPerson, serviceCode);
+			return getMottakerKontaktadresse(hentPerson, serviceCode);
 		} else if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
 				FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
-			log.info("starter adresseoppslag mot pdl oppholdadresse");
 			PdlMottakerInfo pdlMottakerInfo = mapOppholdsadresse(hentPerson, serviceCode);
 			return nonNull(pdlMottakerInfo.getPostadresse()) ? pdlMottakerInfo : mapBostedsadresse(hentPerson, serviceCode);
 		} else if (nonNull(getBostedsadresse(hentPerson))) {
-			log.info("starter adresseoppslag mot pdl bostedsadresse");
 			return mapBostedsadresse(hentPerson, serviceCode);
 		}
 		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", NOT_FOUND);
 	}
 
-	private PdlMottakerInfo getMottkerKontaktadresse(HentPerson hentPerson, String serviceCode) {
-		PdlMottakerInfo pdlMottakerInfo;
-		pdlMottakerInfo = mapKontaktadresse(hentPerson);
+	private PdlMottakerInfo getMottakerKontaktadresse(HentPerson hentPerson, String serviceCode) {
+		PdlMottakerInfo pdlMottakerInfo = mapKontaktadresse(hentPerson);
 		if (isNull(pdlMottakerInfo.getPostadresse())) {
 			log.info("Fant ikke kontaktadresse og søker etter oppholdsadresse for personen i PDL data");
 			if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
 					FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
-				pdlMottakerInfo = mapOppholdsadresse(hentPerson, serviceCode);
-				if (isNull(pdlMottakerInfo.getPostadresse())) {
-					log.info("Fant ikke oppholdsadresse og søker etter bostedsadresse for personen i PDL data");
-					if (nonNull(getBostedsadresse(hentPerson))) {
-						pdlMottakerInfo = mapBostedsadresse(hentPerson, serviceCode);
-					}
-				}
+				PdlMottakerInfo oppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode);
+				return nonNull(oppholdsadresse.getPostadresse()) ? oppholdsadresse : mapBostedsadresse(hentPerson, serviceCode);
 			}
-
 		}
 		return pdlMottakerInfo;
 	}
 
 	private PdlMottakerInfo mapBostedsadresse(HentPerson hentPerson, String serviceCode) {
+
+		if (isNull(getBostedsadresse(hentPerson))) {
+			throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND);
+		}
 		return PdlMottakerInfo.builder()
 				.identifikasjonsnummer(getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
 				.navn(getFulltnavn(hentPerson.getNavn()))
@@ -133,6 +127,7 @@ public class MapPDLResponse {
 				.postadresse(mapPostadresseFraBostedsadresse(Optional.ofNullable(getBostedsadresse(hentPerson))
 						.orElseThrow(() -> new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND)), serviceCode))
 				.build();
+
 	}
 
 	private PdlMottakerInfo mapKontaktadresse(HentPerson hentPerson) {
@@ -178,7 +173,8 @@ public class MapPDLResponse {
 
 	}
 
-	private String getIdentifikasjonsnummer(List<HentPerson.Folkeregisteridentifikator> folkeregisteridentifikator) {
+	private String getIdentifikasjonsnummer
+			(List<HentPerson.Folkeregisteridentifikator> folkeregisteridentifikator) {
 		return folkeregisteridentifikator.stream()
 				.filter(Objects::nonNull)
 				.map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
@@ -188,17 +184,15 @@ public class MapPDLResponse {
 	}
 
 	private PostadresseTo mapKontaktadresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
-		PostadresseTo postadresseTo = PostadresseTo.builder().build();
-
 		if (nonNull(kontaktadresse)) {
 			if (POSTADRESSE_INNLAND.equalsIgnoreCase(kontaktadresse.getType())) {
-				postadresseTo = mapNorskPostAdresse(kontaktadresse, coAdressenavn);
+				return mapNorskPostAdresse(kontaktadresse, coAdressenavn);
 			} else if (POSTADRESSE_UTLAND.equalsIgnoreCase(kontaktadresse.getType()) || nonNull(kontaktadresse.getUtenlandskAdresse())
 					|| nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
-				postadresseTo = mapUtenlandskPostAdresse(kontaktadresse);
+				return mapUtenlandskPostAdresse(kontaktadresse);
 			}
 		}
-		return postadresseTo;
+		return null;
 	}
 
 	private PostadresseTo mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
@@ -450,7 +444,7 @@ public class MapPDLResponse {
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
 		return isNull(hentPerson.getBostedsadresse()) || hentPerson.getBostedsadresse().isEmpty() ? null : hentPerson.getBostedsadresse().stream()
-				.filter(Objects::nonNull).findAny().orElse(null);
+				.filter(Objects::nonNull).findAny().orElseThrow(() -> new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND));
 	}
 
 	private String getForkortetNavn(List<HentPerson.PersonNavn> navns) {
