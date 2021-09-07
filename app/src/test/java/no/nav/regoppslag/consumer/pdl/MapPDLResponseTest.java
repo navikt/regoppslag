@@ -14,6 +14,7 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,7 +36,9 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_MIDLERT
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
+import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
@@ -49,7 +51,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_BYSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_LANDKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsadresseWithUkjentBosted;
@@ -72,6 +74,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
 import static no.nav.regoppslag.util.PDLResponseUtil.organisasjonSomKontakt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -89,6 +92,7 @@ public class MapPDLResponseTest {
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
+	private LandkodeService landkodeService;
 
 	@InjectMocks
 	private PostnummerService postnummerService;
@@ -96,8 +100,9 @@ public class MapPDLResponseTest {
 
 	@BeforeEach
 	public void setUp() {
+		landkodeService = new LandkodeService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
 	}
 
 	@Test
@@ -312,7 +317,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void ShouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
-		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(UTENLANDSK_LANDKODE);
+		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
@@ -333,7 +338,7 @@ public class MapPDLResponseTest {
 		assertEquals(adresse.getBySted(), response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
-		assertEquals(UTENLANDSK_LANDKODE, response.getLandkode());
+		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
 	}
@@ -352,10 +357,10 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () -> mapPDLResponse.mapHentPerson(hentPerson, null));
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
 
-		assertEquals(BAD_REQUEST, e.getHttpStatus());
-		assertEquals(LANDKODE_FEILMELDING, e.getMessage());
+		assertNotNull(mottakerInfo);
+		assertEquals(UNKNOWN_LANDKODE, mottakerInfo.getPostadresse().getLandkode());
 	}
 
 	@Test
@@ -383,7 +388,7 @@ public class MapPDLResponseTest {
 		assertEquals(UTENLANDSK_BYSTED, response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
-		assertEquals(UTENLANDSK_LANDKODE, response.getLandkode());
+		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
 	}
@@ -453,7 +458,7 @@ public class MapPDLResponseTest {
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertNull(response.getLandkode());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}

@@ -134,7 +134,7 @@ public class MottakerPluginTest {
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
