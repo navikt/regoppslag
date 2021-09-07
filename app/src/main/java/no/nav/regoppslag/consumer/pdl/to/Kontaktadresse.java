@@ -16,7 +16,7 @@ public class Kontaktadresse {
 	private Vegadresse vegadresse;
 	private UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
 	private Postboksadresse postboksadresse;
-	private no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse UtenlandskAdresse;
+	private UtenlandskAdresse UtenlandskAdresse;
 	private Metadata metadata;
 
 	@Data
