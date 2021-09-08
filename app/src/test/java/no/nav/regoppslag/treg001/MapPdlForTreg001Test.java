@@ -29,8 +29,10 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.SWEDEN_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,8 +91,8 @@ class MapPdlForTreg001Test {
 		assertEquals(KORT_NAVN, mottaker.getKortNavn());
 		assertEquals(FULLT_NAVN, mottaker.getNavn());
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		assertEquals(POSTKODE, adresse.getAdresselinje2());
-		assertEquals(LAND_UTENLANDSK, adresse.getLand());
+		assertEquals(POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
+		assertEquals(SWEDEN_UTENLANDSK, adresse.getLand());
 	}
 
 	private Mottaker createMottaker() {

@@ -28,7 +28,9 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.REGION_DISTRIKTOMRAADE;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
@@ -118,8 +120,8 @@ public class AdresseMapperTest {
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		assertEquals(POSTKODE, adresse.getAdresselinje2());
-		assertEquals(BYSTED, adresse.getAdresselinje3());
+		assertEquals(POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
+		assertEquals(REGION_DISTRIKTOMRAADE, adresse.getAdresselinje3());
 		assertNull(adresse.getPostnummer());
 		assertNull(adresse.getPoststed());
 		assertEquals(SVENSK_LANDKODE, adresse.getLandkode());
