@@ -37,11 +37,12 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 public class PDLResponseUtil {
 
 	public static final String UTENLANDSK_NAVN = "Herr H. C. Andersen";
-	public static final String UTENLANDSK_POSTKODE = "Ottawa ON K1A 0B1";
+	public static final String UTENLANDSK_POSTKODE = "K1A 0B1";
 	public static final String UTENLANDSK_BYSTED = "Ottawa";
 	public static final String UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
 	public static final String CANADA_ALPHA3_LANDKODE = "CAN";
 	public static final String CANADA_ALPHA2_LANDKODE = "CA";
+	public static final String CANADA = "Canada";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
@@ -80,10 +81,15 @@ public class PDLResponseUtil {
 	public static final String ADRESSENAVN_NUMMER = "";
 	public static final String POSTBOKSNUMMERNAVN = "P.O.Box 7320 Place";
 	public static final String POSTKODE = "SE-12345";
+	public static final String POSTKODE_AND_BYSTED = "SE-12345 Haworth";
 	public static final String BYSTED = "Haworth";
 	public static final String REGION_DISTRIKTOMRAADE = "Yorkshire";
 	public static final String LANDKODE_UTENLANDSK = "SWE";
-	public static final String LAND_UTENLANDSK = "Sweden";
+	public static final String ALPHA2_SWEDEN_LANDKODE = "SE";
+	public static final String LAND_UTENLANDSK = "SVERIGE";
+	public static final String SWEDEN_UTENLANDSK = "Sweden";
+	public static final String GREECE_LANDKODE = "GR";
+	public static final String GREECE = "Greece";
 	public static final String LANDKODE_NORGE = "NO";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";

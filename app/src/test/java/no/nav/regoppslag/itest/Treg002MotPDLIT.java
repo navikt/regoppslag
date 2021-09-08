@@ -3,8 +3,6 @@ package no.nav.regoppslag.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
-import no.nav.regoppslag.consumer.pdl.to.Metadata;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,9 +24,13 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKER
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
+import static no.nav.regoppslag.util.PDLResponseUtil.ALPHA2_SWEDEN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.GREECE;
+import static no.nav.regoppslag.util.PDLResponseUtil.GREECE_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
+import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
@@ -106,6 +108,37 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
+
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
+	public void shouldGetMottakerAndAdresseForUtenlandskFrittKontakadresee() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandskfritt_kontaktadresse.json");
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+		assertNotNull(response.getAdresse());
+		assertEquals(LAND_UTENLANDSK, response.getAdresse().getAdresselinje3());
+		assertEquals(ALPHA2_SWEDEN_LANDKODE, response.getAdresse().getLandkode());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
+	public void shouldGetMottakerAndAdresseForUtenlandskKontakadresee() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandsk_kontaktadresse.json");
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+		assertNotNull(response.getAdresse());
+		assertEquals(GREECE, response.getAdresse().getAdresselinje3());
+		assertEquals(GREECE_LANDKODE, response.getAdresse().getLandkode());
 
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));

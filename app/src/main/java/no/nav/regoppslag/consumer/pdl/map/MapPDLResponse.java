@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl.map;
 
+import com.neovisionaries.i18n.CountryCode;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
@@ -28,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
@@ -92,7 +92,7 @@ public class MapPDLResponse {
 				isGyldigDatoOgKilde(getKontaktadresse(hentPerson).getGyldigTilOgMed(), getKontaktadresse(hentPerson).getMetadata()))) {
 			return getMottakerKontaktadresse(hentPerson, serviceCode);
 		} else if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
-				FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
+				FREG.name().equalsIgnoreCase(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
 			PdlMottakerInfo pdlMottakerInfo = mapOppholdsadresse(hentPerson, serviceCode);
 			return nonNull(pdlMottakerInfo.getPostadresse()) ? pdlMottakerInfo : mapBostedsadresse(hentPerson, serviceCode);
 		} else if (nonNull(getBostedsadresse(hentPerson))) {
@@ -365,8 +365,8 @@ public class MapPDLResponse {
 				.adresselinje1(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer())
-				.adresselinje2(utenlandskAdresse.getPostkode())
-				.adresselinje3(isNotBlank(utenlandskAdresse.getBySted()) ? utenlandskAdresse.getBySted() : utenlandskAdresse.getRegionDistriktOmraade())
+				.adresselinje2(format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted()))
+				.adresselinje3(isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : getLand(utenlandskAdresse.getLandkode()))
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 
@@ -385,11 +385,11 @@ public class MapPDLResponse {
 	}
 
 	private boolean isGyldigDatoOgKilde(LocalDateTime gyldigDato, Metadata metadata) {
-		return FREG.name().equals(getMasterKilde(metadata)) && (nonNull(gyldigDato) && now().isBefore(gyldigDato));
+		return FREG.name().equalsIgnoreCase(getMasterKilde(metadata));
 	}
 
 	private boolean isSourcePdl(String source) {
-		return PDL.name().equals(source);
+		return PDL.name().equalsIgnoreCase(source);
 	}
 
 	public String getFulltnavn(List<HentPerson.PersonNavn> navns) {
@@ -419,12 +419,12 @@ public class MapPDLResponse {
 		return isNull(hentPerson.getKontaktadresse()) || hentPerson.getKontaktadresse().isEmpty() ? null :
 				hentPerson.getKontaktadresse().stream()
 						.filter(kontaktadresse ->
-								PDL.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
+								PDL.name().equalsIgnoreCase(getMasterKilde(kontaktadresse.getMetadata())))
 						.findFirst()
 						.orElse(hentPerson.getKontaktadresse().stream()
 								.filter(Objects::nonNull)
 								.filter(kontaktadresse ->
-										FREG.name().equals(getMasterKilde(kontaktadresse.getMetadata())))
+										FREG.name().equalsIgnoreCase(getMasterKilde(kontaktadresse.getMetadata())))
 								.findFirst()
 								.orElse(null));
 
@@ -434,11 +434,11 @@ public class MapPDLResponse {
 		return isNull(hentPerson.getOppholdsadresse()) || hentPerson.getOppholdsadresse().isEmpty() ? null :
 				hentPerson.getOppholdsadresse().stream()
 						.filter(oppholdsadresse ->
-								PDL.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
+								PDL.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
 						.findAny().orElse(
 						hentPerson.getOppholdsadresse().stream()
 								.filter(oppholdsadresse ->
-										FREG.name().equals(getMasterKilde(oppholdsadresse.getMetadata())))
+										FREG.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
 								.findAny().orElse(null));
 	}
 
@@ -484,6 +484,10 @@ public class MapPDLResponse {
 			return UNKNOWN_LANDKODE;
 		}
 		return alpha2Landkode;
+	}
+
+	private String getLand(String alpha3Landkode) {
+		return isBlank(alpha3Landkode) ? null : CountryCode.getByAlpha3Code(alpha3Landkode).getName();
 	}
 
 	public String getFulltnavn(KontaktinformasjonForDoedsbo.Personnavn personnavn) {

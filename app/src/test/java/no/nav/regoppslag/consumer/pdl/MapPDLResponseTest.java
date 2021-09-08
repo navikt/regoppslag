@@ -38,6 +38,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
+import static no.nav.regoppslag.util.PDLResponseUtil.CANADA;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
@@ -334,8 +335,8 @@ public class MapPDLResponseTest {
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(adresse.getPostboksNummerNavn(), response.getAdresselinje1());
-		assertEquals(adresse.getPostkode(), response.getAdresselinje2());
-		assertEquals(adresse.getBySted(), response.getAdresselinje3());
+		assertEquals(adresse.getPostkode() + " " + adresse.getBySted(), response.getAdresselinje2());
+		assertEquals(CANADA, response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
 		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
