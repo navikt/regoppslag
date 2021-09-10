@@ -47,7 +47,7 @@ public class HentMottakerOgAdresseService {
 	private final MapPDLResponse mapPDLResponse;
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
-	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: %s";
+	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
 	@Inject
 	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper,
@@ -127,12 +127,12 @@ public class HentMottakerOgAdresseService {
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-			log.error(format(TREG002_FUNK_FEIL, e.getMessage()), e);
+			log.error(format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
 		} else if (e instanceof RegOppslagSecurityException) {
-			log.warn(format("TREG002 Sikkerhetsfeil: %s", e.getMessage()));
+			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
-		} else if (e instanceof RegOppslagFunctionalException | e instanceof NullPointerException) {
-			log.warn(format(TREG002_FUNK_FEIL, e.getMessage()));
+		} else if (e instanceof RegOppslagFunctionalException) {
+			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatus());
 			}

@@ -334,10 +334,8 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldLogWithStatusCodeGoneIfPersonErDoedOgUtenKontaktAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
-		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
+		restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 		verify(postRequestedFor(urlEqualTo("/graphql")));
-		assertThat(e.getStatusCode()).isEqualTo(GONE);
 	}
 
 	private KompletterBrevdataRequest createRequest(String path) {

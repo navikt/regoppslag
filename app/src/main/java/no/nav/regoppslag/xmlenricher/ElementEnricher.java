@@ -51,7 +51,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 public class ElementEnricher {
 
-	private static final String TREG001_FUN_FEIL = "TREG001 Funksjonell feil: {}";
+	private static final String TREG001_FUN_FEIL = "TREG001 Funksjonell feil: %s";
 
 	private ElementEnricherPluginRegistry registry;
 	private AttributeValueNamespaceResolver attributeValueNamespaceResolver;
@@ -147,8 +147,7 @@ public class ElementEnricher {
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			log.error(format(TREG001_FUN_FEIL, e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
-		} else if (e instanceof RegOppslagFunctionalException | e instanceof NullPointerException) {
+		} else if (e instanceof RegOppslagFunctionalException) {
 			log.warn(format(TREG001_FUN_FEIL, e.getMessage()));
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
