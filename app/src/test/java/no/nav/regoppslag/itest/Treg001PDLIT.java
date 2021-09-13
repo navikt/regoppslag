@@ -83,6 +83,15 @@ public class Treg001PDLIT extends AbstractIT {
 		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001pdl_forkortetnavn_response.xml"));
 	}
 
+	@Test
+	public void shouldMapAndGetKomplettBrevdataForPersonWithBosattadresseMedMatrikkeladresse() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattadressemedmatrikkeladresse.json");
+		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001_response_matrikkeladresse.xml"));
+	}
+
 
 	@Test
 	public void shouldGetKomplettBrevdataPersonMaalFormEN() {
