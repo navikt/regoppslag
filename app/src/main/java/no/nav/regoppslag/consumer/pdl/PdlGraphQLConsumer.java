@@ -325,7 +325,14 @@ public class PdlGraphQLConsumer {
 			"        bySted\n" +
 			"        regionDistriktOmraade\n" +
 			"        landkode\n" +
-			"      }\n" +
+			"      },\n" +
+			"      matrikkeladresse{\n" +
+			"        matrikkelId\n" +
+			"        bruksenhetsnummer\n" +
+			"        tilleggsnavn\n" +
+			"        postnummer\n" +
+			"        kommunenummer\n" +
+			"      },\n" +
 			"      ukjentBosted{\n" +
 			"        bostedskommune\n" +
 			"      }\n" +
@@ -342,5 +349,5 @@ public class PdlGraphQLConsumer {
 			"      }\n" +
 			"    }\n" +
 			"  }\n" +
-			"}";
+			"}\n";
 }

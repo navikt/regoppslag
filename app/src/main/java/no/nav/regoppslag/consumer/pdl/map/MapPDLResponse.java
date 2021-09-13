@@ -165,9 +165,12 @@ public class MapPDLResponse {
 	}
 
 	private PostadresseTo mapPostadresseFraBostedsadresse(Bostedsadresse bostedsadresse, String serviceCode) {
-		return (harBostedsadresse(bostedsadresse)) ? getValidAdresse(bostedsadresse.getVegadresse(), bostedsadresse.getUtenlandskAdresse(),
+		if(!harBostedsadresse(bostedsadresse)) {
+			throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND);
+		}
+		return getValidAdresse(bostedsadresse.getVegadresse(), bostedsadresse.getUtenlandskAdresse(),
 				bostedsadresse.getMatrikkeladresse(),
-				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode) : null;
+				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode);
 	}
 
 	private PostadresseTo mapPostadresseFraOppholdsadresse(Oppholdsadresse oppholdsadresse, String serviceCode) {
