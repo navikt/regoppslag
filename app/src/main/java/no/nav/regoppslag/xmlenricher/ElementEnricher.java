@@ -147,6 +147,7 @@ public class ElementEnricher {
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			log.error(format(TREG001_FUN_FEIL, e.getMessage()), e);
+			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagFunctionalException) {
 			log.warn(format(TREG001_FUN_FEIL, e.getMessage()));
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {

@@ -65,6 +65,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonFor
 import static no.nav.regoppslag.util.PDLResponseUtil.createMetadata;
 import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrginasjonSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonStatusUtflyttet;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithOppholdsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
@@ -465,6 +466,30 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
+	public void shouldMapKontaktinformasjonForDoedsboWithKontaktPersonNull() {
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrginasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), createPersonKontaktAdresse());
+		HentPerson hentPerson = createHentePersonBuilder()
+				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
+				.build();
+
+		kontaktinformasjon.getOrganisasjonSomKontakt().setKontaktperson(null);
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje1());
+		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje2(), response.getAdresselinje2());
+		assertNull(response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
+		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
+		assertEquals(POSTSTED, response.getPoststed());
+	}
+
+	@Test
 	public void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 
@@ -520,6 +545,15 @@ public class MapPDLResponseTest {
 		assertEquals("TREG002: Kunne ikke mappe postadresse for UkjentBosted mottaker", e.getMessage());
 	}
 
+	@Test
+	public void shouldThrowFunctionalExceptionForUkjentBostedMedStatusUtflyttet() {
+		HentPerson hentPerson = createPdlHentPersonStatusUtflyttet();
+
+		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
+				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002));
+		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getMessage());
+	}
 
 	@Test
 	public void shouldThrowExceptionWhenKontaktAdresseForDoedsboIsNull() {

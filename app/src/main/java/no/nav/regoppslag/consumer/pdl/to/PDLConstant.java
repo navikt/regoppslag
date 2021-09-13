@@ -6,4 +6,5 @@ public class PDLConstant {
     public static final String PERSONSTATUS_BOSATT = "bosatt";
     public static final String PERSONSTATUS_MIDLERTIDIG = "midlertidig";
     public static final String PERSONSTATUS_DOED = "doed";
+    public static final String PERSONSTATUS_UTFLYTTET = "utflyttet";
 }

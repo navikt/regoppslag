@@ -31,6 +31,7 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 
 
@@ -379,6 +380,37 @@ public class PDLResponseUtil {
 				.folkeregisterpersonstatus(singletonList(HentPerson.Folkeregisterpersonstatus.builder()
 						.status(PERSONSTATUS_DOED)
 						.forenkletStatus("bosattEtterFolkeregisterloven")
+						.build()))
+				.build();
+	}
+
+	public static HentPerson createPdlHentPersonStatusUtflyttet() {
+		return HentPerson.builder()
+				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
+						.gradering(HentPerson.Gradering.FORTROLIG)
+						.build()))
+				.doedsfall(Collections.emptyList())
+				.foedsel(singletonList(HentPerson.Foedsel.builder()
+						.foedselsaar(FOEDSELSAAR)
+						.foedselsdato(FOEDSELDATO)
+						.build()))
+				.navn(singletonList(HentPerson.PersonNavn.builder()
+						.forkortetNavn(KORT_NAVN)
+						.fornavn(FORNAVN)
+						.mellomnavn(MELLOMNAVN)
+						.etternavn(ETTERNAVN)
+						.build()))
+				.folkeregisteridentifikator(singletonList(HentPerson.Folkeregisteridentifikator.builder()
+						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
+						.type(IDENTTYPE_FNR)
+						.status(STATUS)
+						.build()))
+				.folkeregisterpersonstatus(singletonList(HentPerson.Folkeregisterpersonstatus.builder()
+						.status(PERSONSTATUS_UTFLYTTET)
+						.forenkletStatus("ikkeBosatt")
+						.folkeregistermetadata(HentPerson.Folkeregistermetadata.builder()
+								.kilde("KILDE_DSF")
+								.build())
 						.build()))
 				.build();
 	}

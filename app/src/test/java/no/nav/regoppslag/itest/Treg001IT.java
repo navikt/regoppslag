@@ -334,10 +334,12 @@ public class Treg001IT extends AbstractIT {
 		stubFor(post("/VIRKSOMHET_PERSONV3")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/personV3/hentperson-dod_mangler_adresse.xml")));
-
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH,
-						createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+						createRequest("__files/treg001/treg001_full_request.xml"), KompletterBrevdataResponse.class), "Should throw techical Exception");
+
 		verify(postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
+		assertEquals(HttpStatus.GONE, e.getStatusCode());
 	}
 
 	private KompletterBrevdataRequest createRequest(String path) {

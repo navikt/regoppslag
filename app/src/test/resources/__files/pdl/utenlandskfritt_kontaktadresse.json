@@ -72,7 +72,10 @@
       "folkeregisterpersonstatus": [
         {
           "status": "utflyttet",
-          "forenkletStatus": "ikkeBosatt"
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
         }
       ]
     }

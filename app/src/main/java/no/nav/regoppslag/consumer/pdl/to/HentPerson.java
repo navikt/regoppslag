@@ -107,7 +107,18 @@ public class HentPerson {
 	public static class Folkeregisterpersonstatus {
 		private String status;  //midlertidig,doed, bosatt
 		private String forenkletStatus;
+		private Folkeregistermetadata folkeregistermetadata;
 	}
+
+	@Getter
+	@Setter
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class Folkeregistermetadata {
+		private String kilde;
+	}
+
 
 	@Getter
 	@Setter
