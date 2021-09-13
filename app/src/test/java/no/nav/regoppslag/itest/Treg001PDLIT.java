@@ -32,6 +32,7 @@ import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -343,8 +344,10 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldLogWithStatusCodeGoneIfPersonErDoedOgUtenKontaktAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
-		restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 		verify(postRequestedFor(urlEqualTo("/graphql")));
+		assertThat(e.getStatusCode()).isEqualTo(GONE);
 	}
 
 	private KompletterBrevdataRequest createRequest(String path) {

@@ -141,7 +141,7 @@ public class PdlGraphQLConsumer {
 	private String hentPerson = "query hentPerson($ident: ID!){\n" +
 			"  hentPerson(ident: $ident){\n" +
 			"    adressebeskyttelse(historikk: false){\n" +
-			"    \tgradering\n" +
+			"      gradering\n" +
 			"    }\n" +
 			"    doedsfall{\n" +
 			"      doedsdato\n" +
@@ -204,11 +204,11 @@ public class PdlGraphQLConsumer {
 			"        opplysningsId\n" +
 			"        master\n" +
 			"        endringer{\n" +
-			"        type\n" +
-			"        registrert\n" +
-			"        registrertAv\n" +
-			"        systemkilde\n" +
-			"        kilde\n" +
+			"          type\n" +
+			"          registrert\n" +
+			"          registrertAv\n" +
+			"          systemkilde\n" +
+			"          kilde\n" +
 			"        }\n" +
 			"        historisk\n" +
 			"      }\n" +
@@ -336,8 +336,11 @@ public class PdlGraphQLConsumer {
 			"    }\n" +
 			"    folkeregisterpersonstatus(historikk: false){\n" +
 			"      status\n" +
-			"    \tforenkletStatus\n" +
+			"      forenkletStatus\n" +
+			"      folkeregistermetadata{\n" +
+			"        kilde\n" +
+			"      }\n" +
 			"    }\n" +
 			"  }\n" +
-			"}\n";
+			"}";
 }
