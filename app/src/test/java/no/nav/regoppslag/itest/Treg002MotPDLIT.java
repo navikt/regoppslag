@@ -219,8 +219,9 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldThrowIfPersonIsDoedAndMissingAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
-		assertNull(response);
+		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class));
+		assertEquals(HttpStatus.GONE, e.getStatusCode());
 	}
 
 	@Test

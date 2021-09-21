@@ -16,6 +16,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
@@ -128,6 +129,7 @@ public class HentMottakerOgAdresseService {
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			log.error(format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
+			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
