@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
@@ -149,10 +150,10 @@ public class Treg002IT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/personV3/hentperson-dod_mangler_adresse.xml"))); //mottakerPlugin
 
-		HentMottakerOgAdresseResponse person = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class));
 
 		verify(1, postRequestedFor(urlEqualTo("/VIRKSOMHET_PERSONV3")));
-		assertNull(person);
+		assertEquals(GONE, e.getStatusCode());
 	}
 
 	@Test
