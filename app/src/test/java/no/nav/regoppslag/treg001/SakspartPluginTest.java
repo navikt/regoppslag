@@ -53,6 +53,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -131,7 +132,7 @@ public class SakspartPluginTest {
 	@Test
 	public void testSakspartPluginPDL() throws Exception {
 
-		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(FULLT_NAVN);
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString(), anyBoolean())).thenReturn(FULLT_NAVN);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -152,7 +153,7 @@ public class SakspartPluginTest {
 	@Test
 	public void testSakspartPluginPDLReturnNull() throws Exception {
 
-		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(null);
+		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString(), anyBoolean())).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 

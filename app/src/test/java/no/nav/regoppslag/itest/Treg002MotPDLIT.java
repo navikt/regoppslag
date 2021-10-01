@@ -34,6 +34,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
@@ -80,7 +81,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
-		assertPersonAdresseWithCO(response);
+		assertPersonAdresseWithV(response);
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
@@ -327,7 +328,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	private void assertPersonAdresseWithCO(HentMottakerOgAdresseResponse response) {
-		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, response.getAdresse().getAdresselinje1());
 		assertEquals(ADRESSELINJE_POSTBOKS, response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
@@ -338,6 +339,15 @@ public class Treg002MotPDLIT extends AbstractIT {
 	private void assertPersonCOAdresse(HentMottakerOgAdresseResponse response) {
 		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
 		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
+		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
+		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+	}
+
+	private void assertPersonAdresseWithV(HentMottakerOgAdresseResponse response) {
+		assertEquals(V_ADRESSENAVN, response.getAdresse().getAdresselinje1());
+		assertEquals(ADRESSELINJE_POSTBOKS, response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());

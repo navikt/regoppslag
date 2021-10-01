@@ -90,7 +90,7 @@ public class PdlGraphQLConsumer {
 
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
-	public String hentNavn(final String aktoerId, final String tema) {
+	public String hentNavn(final String aktoerId, final String tema, boolean isDoedsbo) {
 		try {
 			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentNavn);
 
@@ -99,7 +99,7 @@ public class PdlGraphQLConsumer {
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
 			}
-			return mapHentNavnResponse.mapNavn(response);
+			return isDoedsbo ? mapHentNavnResponse.mapNavnForDoedsbo(response) : mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
 		} catch (HttpServerErrorException e) {
