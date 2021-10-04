@@ -82,7 +82,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
 					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), SERVICE_CODE_TREG001);
 					String navn = StringUtils.isBlank(tema) ? personV3Mapper.getSakspartNavn(person) :
-							pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema, false);
+							pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
 					sakspart.setNavn(navn);
 
 				} else {

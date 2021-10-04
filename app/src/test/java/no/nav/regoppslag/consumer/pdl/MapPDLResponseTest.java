@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -80,7 +81,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -455,7 +455,7 @@ public class MapPDLResponseTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString(), anyBoolean())).thenReturn(FULLT_NAVN);
+		when(pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(anyString(), anyString())).thenReturn(Optional.ofNullable(FULLT_NAVN));
 
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 

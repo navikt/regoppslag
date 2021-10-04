@@ -464,7 +464,8 @@ public class MapPDLResponse {
 		if (nonNull(personSomKontakt.getPersonnavn()) && nonNull(personSomKontakt.getPersonnavn())) {
 			return getFulltnavn(personSomKontakt.getPersonnavn());
 		}
-		return nonNull(personSomKontakt) && isNotBlank(personSomKontakt.getIdentifikasjonsnummer()) ? pdlGraphQLConsumer.hentNavn(personSomKontakt.getIdentifikasjonsnummer(), tema, true) : null;
+		return nonNull(personSomKontakt) && isNotBlank(personSomKontakt.getIdentifikasjonsnummer()) ?
+				pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(personSomKontakt.getIdentifikasjonsnummer(), tema).orElse(null) : null;
 	}
 
 	private String getForkortetNavn(List<HentPerson.PersonNavn> navns) {
