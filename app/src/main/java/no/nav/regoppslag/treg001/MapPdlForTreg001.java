@@ -56,7 +56,7 @@ public class MapPdlForTreg001 {
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 				final String id = mottaker.getId();
 				PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
-						pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), SERVICE_CODE_TREG001);
+						pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), SERVICE_CODE_TREG001, tema);
 				Mottaker mottakerFraPdl = mapAdresseFraPdl(hentPerson);
 				mottaker.setKortNavn(isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());
 				mottaker.setNavn(mottakerFraPdl.getNavn());

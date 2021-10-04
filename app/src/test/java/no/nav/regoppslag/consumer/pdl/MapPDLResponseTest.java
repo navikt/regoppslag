@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -40,21 +41,22 @@ import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
-import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
-import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_FRA_MED_DATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_TIL_MED_DATO;
+import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_BYSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
+import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsadresseWithUkjentBosted;
 import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
@@ -104,19 +106,19 @@ public class MapPDLResponseTest {
 	public void setUp() {
 		landkodeService = new LandkodeService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
 	}
 
 	@Test
 	public void shouldMapMottakerInfoForDoedWithAdvokatSomKontakt() {
 		List<KontaktinformasjonForDoedsbo> kontaktinformasjon = singletonList(createKontaktinformasjonForDoedsbo());
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), SERVICE_CODE_TREG002, TEMA);
 
 		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
 		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
-		assertEquals(COADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje2());
 		assertEquals(POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
@@ -127,7 +129,7 @@ public class MapPDLResponseTest {
 	@Test
 	public void shouldMapMidlertidigKontaktWithVegadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithVegadresse(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithVegadresse(), SERVICE_CODE_TREG002, TEMA);
 
 		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
 		assertNull(mottakerInfo.getDoedsdato());
@@ -144,7 +146,7 @@ public class MapPDLResponseTest {
 	@Test
 	public void shouldMapMidlertidigKontaktWithOppholdsadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithOppholdsadresse(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithOppholdsadresse(), SERVICE_CODE_TREG002, TEMA);
 
 		assertNull(mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
@@ -161,7 +163,7 @@ public class MapPDLResponseTest {
 	@Test
 	public void shouldMapMidlertidigKontaktWithBostedsadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithBostedsadresse(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithBostedsadresse(), SERVICE_CODE_TREG002, TEMA);
 
 		assertNull(mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
@@ -187,7 +189,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -208,7 +210,7 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
 				.type(POSTADRESSE_INNLAND)
-				.coAdressenavn(COADRESSENAVN)
+				.coAdressenavn(V_ADRESSENAVN)
 				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
 
@@ -217,11 +219,11 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(COADRESSENAVN, response.getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
 		assertEquals(adresse.getAdresselinje1(), response.getAdresselinje2());
 		assertEquals(adresse.getAdresselinje2(), response.getAdresselinje3());
 
@@ -245,7 +247,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -273,7 +275,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -303,7 +305,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -331,7 +333,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -359,7 +361,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		assertNotNull(mottakerInfo);
 		assertEquals(UNKNOWN_LANDKODE, mottakerInfo.getPostadresse().getLandkode());
@@ -381,7 +383,7 @@ public class MapPDLResponseTest {
 				.kontaktadresse(singletonList(kontaktadresse))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
@@ -405,12 +407,12 @@ public class MapPDLResponseTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 
-		assertEquals(COADRESSENAVN, response.getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
@@ -429,11 +431,37 @@ public class MapPDLResponseTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(COADRESSENAVN, response.getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
+		assertNull(response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
+		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
+		assertEquals(POSTSTED, response.getPoststed());
+	}
+
+	@Test
+	public void shouldMapKontaktinformasjonForDoedsboSomHenteKontaktFraPDL() {
+		KontaktinformasjonForDoedsbo kontaktinformasjon = PDLResponseUtil.createKontaktinformasjonForDoedsboWithPerson();
+		kontaktinformasjon.getPersonSomKontakt().setPersonnavn(null);
+		HentPerson hentPerson = createHentePersonBuilder()
+				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
+				.build();
+
+		when(pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(anyString(), anyString())).thenReturn(Optional.ofNullable(FULLT_NAVN));
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals("v/ " + FULLT_NAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
@@ -452,7 +480,7 @@ public class MapPDLResponseTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
@@ -476,11 +504,11 @@ public class MapPDLResponseTest {
 
 		kontaktinformasjon.getOrganisasjonSomKontakt().setKontaktperson(null);
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje2(), response.getAdresselinje2());
+		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
+		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -494,14 +522,14 @@ public class MapPDLResponseTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 
 		assertThrows(UkjentAdresseException.class,
-				() -> mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithNoAdresse(), SERVICE_CODE_TREG002), "Fant ikke adresse for personen i PDL");
+				() -> mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithNoAdresse(), SERVICE_CODE_TREG002, TEMA), "Fant ikke adresse for personen i PDL");
 	}
 
 	@Test
 	public void shouldThrowFunctionalExceptionIfPersonErDoedOgHarIngenAdresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), SERVICE_CODE_TREG002, TEMA));
 		assertEquals(GONE, e.getHttpStatus());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
@@ -510,7 +538,7 @@ public class MapPDLResponseTest {
 	public void shouldThrowFunctionalExceptionWhenPersonnavnIsNull() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPerson(null));
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPerson(null), SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(null), SERVICE_CODE_TREG002, TEMA));
 		assertEquals(BAD_REQUEST, e.getHttpStatus());
 		assertEquals("Feltet Personnavn kan ikke være null eller tomt", e.getMessage());
 	}
@@ -520,7 +548,7 @@ public class MapPDLResponseTest {
 		HentPerson.PersonNavn personNavn = createPersonnavn();
 		personNavn.setFornavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002, TEMA));
 		assertEquals(BAD_REQUEST, e.getHttpStatus());
 		assertEquals("Feltet Fornavn kan ikke være null eller tomt", e.getMessage());
 	}
@@ -530,7 +558,7 @@ public class MapPDLResponseTest {
 		HentPerson.PersonNavn personNavn = createPersonnavn();
 		personNavn.setEtternavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002, TEMA));
 		assertEquals(BAD_REQUEST, e.getHttpStatus());
 		assertEquals("Feltet Etternavn kan ikke være null eller tomt", e.getMessage());
 	}
@@ -540,7 +568,7 @@ public class MapPDLResponseTest {
 		HentPerson hentPerson = createBostedsadresseWithUkjentBosted();
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
-				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 		assertEquals("TREG002: Kunne ikke mappe postadresse for UkjentBosted mottaker", e.getMessage());
 	}
@@ -550,7 +578,7 @@ public class MapPDLResponseTest {
 		HentPerson hentPerson = createPdlHentPersonStatusUtflyttet();
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
-				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002));
+				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
 		assertEquals(NOT_FOUND, e.getHttpStatus());
 		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getMessage());
 	}
@@ -566,7 +594,7 @@ public class MapPDLResponseTest {
 				.build();
 
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
-				mapPDLResponse.mapHentPerson(hentPerson, null));
+				mapPDLResponse.mapHentPerson(hentPerson, null, TEMA));
 
 		assertEquals(GONE, e.getHttpStatus());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
@@ -582,7 +610,7 @@ public class MapPDLResponseTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, null));
+		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, null, TEMA));
 
 		assertEquals(GONE, e.getHttpStatus());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
@@ -600,7 +628,7 @@ public class MapPDLResponseTest {
 						.forenkletStatus("bosattEtterFolkeregisterloven")
 						.build()))
 				.build();
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, "TREG002"),
+		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, "TREG002", TEMA),
 				"Mottaker er registrert som død og har ugyldig postadresse");
 		assertEquals(GONE, e.getHttpStatus());
 	}
@@ -615,17 +643,17 @@ public class MapPDLResponseTest {
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.type(POSTADRESSE_INNLAND)
-						.coAdressenavn(COADRESSENAVN)
+						.coAdressenavn(V_ADRESSENAVN)
 						.vegadresse(vegadresse)
 						.metadata(Metadata.builder().master(FREG.name()).build())
 						.build()))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(COADRESSENAVN, response.getAdresselinje1());
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
 		assertEquals(ADRESSENAVN_1, response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
@@ -649,7 +677,7 @@ public class MapPDLResponseTest {
 						.build()))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 

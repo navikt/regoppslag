@@ -88,7 +88,7 @@ public class HentMottakerOgAdresseService {
 					.build();
 		}
 
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema()), SERVICE_CODE_TREG002);
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema()), SERVICE_CODE_TREG002, request.getTema());
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(pdlMottakerInfo.getNavn())
@@ -106,7 +106,7 @@ public class HentMottakerOgAdresseService {
 				.build();
 	}
 
-	private void validateInput(HentMottakerOgAdresseRequest request)  {
+	private void validateInput(HentMottakerOgAdresseRequest request) {
 
 		if (request == null) {
 			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);

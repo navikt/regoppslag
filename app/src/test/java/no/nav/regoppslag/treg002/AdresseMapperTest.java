@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -20,17 +21,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
-import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
-import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.REGION_DISTRIKTOMRAADE;
+import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
@@ -50,8 +49,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -64,14 +62,16 @@ public class AdresseMapperTest {
 	@Mock
 	private MicrometerMetrics metrics;
 	private AdresseMapper adresseMapper;
+	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	@InjectMocks
 	private PostnummerService postnummerService;
 
 	@BeforeEach
 	public void setUp() throws IOException {
+		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
 		postnummerService.init();
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService);
+		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
 		adresseMapper = new AdresseMapper(landkodeService, metrics);
 	}
 
@@ -102,7 +102,7 @@ public class AdresseMapperTest {
 
 	@Test
 	public void shouldMapPDLWithNorskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPerson(createPersonnavn()), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPerson(createPersonnavn()), SERVICE_CODE_TREG002, TEMA);
 
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 		assertEquals(FRITTFORMAT_ADRESSELINJE1, adresse.getAdresselinje1());
@@ -116,7 +116,7 @@ public class AdresseMapperTest {
 	@SneakyThrows
 	@Test
 	public void shouldMapPDLWithUtenlandskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002, TEMA);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());

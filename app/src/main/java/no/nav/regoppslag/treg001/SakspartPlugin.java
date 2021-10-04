@@ -1,9 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
@@ -13,7 +9,6 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
 import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -31,6 +26,10 @@ import org.w3c.dom.Node;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * @author Hans Petter Simonsen - Miles
@@ -75,7 +74,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			}
 			Sakspart sakspart = unmarshal(content);
 			log.info(String.format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
-			
+
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
 				validateMottaker(sakspart);
@@ -105,7 +104,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		}
 	}
 
-	private void validateMottaker(Sakspart sakspart)  {
+	private void validateMottaker(Sakspart sakspart) {
 
 		if (sakspart.getTypeKode() == null) {
 			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Sakspart mangler AktoerTypeKode.", PLUGIN_NAME), BAD_REQUEST);
@@ -117,7 +116,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 	}
 
-	private void validateElementType(Node element)  {
+	private void validateElementType(Node element) {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);

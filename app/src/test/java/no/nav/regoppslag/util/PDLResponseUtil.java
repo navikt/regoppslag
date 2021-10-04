@@ -101,10 +101,12 @@ public class PDLResponseUtil {
 	public static final String ORGANISASJONNAVN = "Fred Advokat AS";
 	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
 	public static final String COADRESSENAVN = "C/O Herr Andersen";
-	public static final String CO_ORGINASJON_NAVN = "C/O Fred Advokat AS";
+	public static final String V_ADRESSENAVN = "v/ Herr Andersen";
+	public static final String CO_ORGINASJON_NAVN = "v/ Fred Advokat AS";
 
+	public static final String TEMA = "DAG";
 	public static final String POSTSTED_OSLO = "OSLO";
-	public static final String ADRESSELINJE_POSTBOKS= "Postboks 15";
+	public static final String ADRESSELINJE_POSTBOKS = "Postboks 15";
 
 	public static final LocalDateTime GYLDIG_TIL_MED_DATO = LocalDateTime.now().plusMonths(10L);
 	public static final LocalDateTime GYLDIG_FRA_MED_DATO = LocalDateTime.now().minusDays(2L);
@@ -318,6 +320,7 @@ public class PDLResponseUtil {
 				.etternavn(ETTERNAVN)
 				.build();
 	}
+
 	public static HentPerson.Folkeregisterpersonstatus createFolkeregisterpersonstatus(String status) {
 		return HentPerson.Folkeregisterpersonstatus.builder()
 				.status(status)
@@ -448,7 +451,7 @@ public class PDLResponseUtil {
 	}
 
 	public static HentPerson.Doedsfall createDoedsfall(LocalDate date) {
-		return  HentPerson.Doedsfall.builder().doedsdato(date).build();
+		return HentPerson.Doedsfall.builder().doedsdato(date).build();
 	}
 
 	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsbo() {

@@ -27,6 +27,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -88,13 +89,17 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
+
+	public PDLHentNavnResponse hentPersonnavn(final String aktoerId, final String tema) {
+		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentNavn);
+		return requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
+	}
+
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentNavn(final String aktoerId, final String tema) {
 		try {
-			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentNavn);
-
-			final PDLHentNavnResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
+			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
 
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
@@ -102,6 +107,20 @@ public class PdlGraphQLConsumer {
 			return mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
+		} catch (HttpServerErrorException e) {
+			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
+		}
+	}
+
+
+	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, "hentDoedsBoKontaktPersonnavn"}, percentiles = {0.5, 0.95}, histogram = true)
+	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId, final String tema) {
+		try {
+			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
+			return (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) ? null : Optional.ofNullable(mapHentNavnResponse.mapNavnForDoedsbo(response));
+		} catch (HttpClientErrorException e) {
+			return Optional.empty();
 		} catch (HttpServerErrorException e) {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
