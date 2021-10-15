@@ -53,8 +53,8 @@ spec:
     initialDelay: 30
     timeout: 4
   replicas:
-    min: 2
-    max: 5
+    min: {{ MIN_REPLICAS }}
+    max: {{ MAX_REPLICAS }}
     cpuThresholdPercentage: 50
   resources:
     limits:
