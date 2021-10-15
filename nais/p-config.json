@@ -15,6 +15,8 @@
 	"LDAP": "/serviceuser/data/prod/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/prod/srvregoppslag",
 	"NAMESPACE": "teamdokumenthandtering",
+	"MIN_REPLICAS": 2,
+	"MAX_REPLICAS": 5,
 	"INGRESSES": [
 		"https://regoppslag.nais.adeo.no",
 		"https://regoppslag.intern.nav.no"

@@ -15,6 +15,8 @@
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NAMESPACE": "q1",
+	"MIN_REPLICAS": 1,
+	"MAX_REPLICAS": 2,
 	"INGRESSES": [
 		"https://regoppslag-q1.nais.preprod.local",
 		"https://regoppslag-q1.dev.intern.nav.no"
