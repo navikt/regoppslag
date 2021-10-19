@@ -30,9 +30,6 @@ public final class MetricLabels {
 	}
 
 	//Counter event and type
-	public static final String MOTTAKERTYPE = "mottakerType";
-	public static final String PLUGIN = "plugin";
-	public static final String GENERELT = "generelt";
 	public static final String ADRESSETYPE = "adresse_type";
 	public static final String POSTNUMMER = "postnummer";
 	public static final String UKJENT_POSTNUMMER = "ukjent_postnummer";
@@ -41,16 +38,14 @@ public final class MetricLabels {
 	public static final String LAND = "land";
 	public static final String UKJENT_LAND = "ukjent_land";
 	public static final String UNKNOWN_LANDKODE = "???";
+	public static final String KOSOVO = "Kosovo, Republic of";
+	public static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
 	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
 	public static final String PERSONV3 = "PersonV3";
 	public static final String PERSONV3_MAPPER = "PersonV3Mapper";
 	public static final String ORGANISASJONV4_MAPPER = "OrganisasjonV4Mapper";
 	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
-	public static final String ORGANISASJONV4 = "OrganisasjonV4";
-	public static final String NORG2 = "NORG2";
-	public static final String LDAP = "LDAP";
-	public static final String RECEIVED = "received";
-	public static final String PROCESSED_OK = "processed_ok";
+
 
 }

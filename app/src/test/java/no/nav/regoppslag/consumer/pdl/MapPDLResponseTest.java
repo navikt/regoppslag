@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl;
 
+import com.neovisionaries.i18n.CountryCode;
 import lombok.SneakyThrows;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
@@ -36,6 +38,8 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_MIDLERTIDIG;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO;
+import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
@@ -343,6 +347,34 @@ public class MapPDLResponseTest {
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
 		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
+		assertNull(response.getPostnummer());
+		assertNull(response.getPoststed());
+	}
+
+	@Test
+	public void ShouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
+		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
+		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
+				.UtenlandskAdresse(adresse)
+				.type(POSTADRESSE_UTLAND)
+				.build();
+		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
+
+		HentPerson hentPerson = createHentePersonBuilder()
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_MIDLERTIDIG)))
+				.kontaktadresse(singletonList(kontaktadresse))
+				.build();
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(adresse.getPostboksNummerNavn(), response.getAdresselinje1());
+		assertEquals(adresse.getPostkode() + " " + adresse.getBySted(), response.getAdresselinje2());
+		assertEquals(KOSOVO, response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
+		assertEquals(XK.name(), response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
 	}
