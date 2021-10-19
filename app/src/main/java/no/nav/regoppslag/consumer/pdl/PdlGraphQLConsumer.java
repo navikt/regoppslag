@@ -78,7 +78,7 @@ public class PdlGraphQLConsumer {
 			final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
 
 			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
-				log.error("Kunne ikke hente person fra Pdl = {}", response.getErrors());
+				log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", response.getErrors());
 				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
 			}
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
