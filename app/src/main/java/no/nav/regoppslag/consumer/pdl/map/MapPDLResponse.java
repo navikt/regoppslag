@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.neovisionaries.i18n.CountryCode.XK;
+import static com.neovisionaries.i18n.CountryCode.getByAlpha3Code;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -38,6 +40,8 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO;
+import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -445,10 +449,10 @@ public class MapPDLResponse {
 						.filter(oppholdsadresse ->
 								PDL.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
 						.findAny().orElse(
-								hentPerson.getOppholdsadresse().stream()
-										.filter(oppholdsadresse ->
-												FREG.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
-										.findAny().orElse(null));
+						hentPerson.getOppholdsadresse().stream()
+								.filter(oppholdsadresse ->
+										FREG.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
+								.findAny().orElse(null));
 	}
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
@@ -499,7 +503,7 @@ public class MapPDLResponse {
 	}
 
 	private String getAlpha2Landkode(String alpha3Landkode) {
-		String alpha2Landkode = landkodeService.finnLandkodeAlpha2FraAlpha3(alpha3Landkode);
+		String alpha2Landkode = KOSOVO_LANDKODE_NAV_REGISTRENE.equalsIgnoreCase(alpha3Landkode) ? XK.name() : landkodeService.finnLandkodeAlpha2FraAlpha3(alpha3Landkode);
 		if (alpha2Landkode == null) {
 			log.info("Mottaker har ingen landkode registert. Setter landkode til {}", UNKNOWN_LANDKODE);
 			return UNKNOWN_LANDKODE;
@@ -518,7 +522,10 @@ public class MapPDLResponse {
 	}
 
 	private String getLand(String alpha3Landkode) {
-		return isBlank(alpha3Landkode) ? null : CountryCode.getByAlpha3Code(alpha3Landkode).getName();
+		if (isBlank(alpha3Landkode)) {
+			return null;
+		}
+		return KOSOVO_LANDKODE_NAV_REGISTRENE.equals(alpha3Landkode) ? KOSOVO : getByAlpha3Code(alpha3Landkode).getName();
 	}
 
 	public String getFulltnavn(KontaktinformasjonForDoedsbo.Personnavn personnavn) {
