@@ -68,6 +68,8 @@ public class PDLResponseUtil {
 	public static final String HUSNUMMER = "45";
 	public static final String HUSBOKSTAV = "B";
 	public static final String BRUKSENETSNUMMER = "H0101";
+	public static final String ADRESSELINJE1_POSTBOKS = "C/O Finnesveien 27";
+	public static final String ADRESSELINJE2_POSTBOKS = "Postboks 7320";
 	public static final String ADRESSENAVN = "Finnesveien";
 	public static final String KOMMUNENUMMER = "5432";
 	public static final String BYDERLSNUMMER = "030110";
@@ -642,7 +644,7 @@ public class PDLResponseUtil {
 	public static Kontaktadresse.Postboksadresse createPostboksadresse() {
 		return Kontaktadresse.Postboksadresse.builder()
 				.postbokseier(POSTBOKSEIER)
-				.postboks(POSTBOKS)
+				.postboks("7320")
 				.postnummer(POSTNUMMER)
 				.build();
 	}
