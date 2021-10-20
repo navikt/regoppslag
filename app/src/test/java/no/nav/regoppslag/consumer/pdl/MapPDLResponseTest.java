@@ -1,6 +1,5 @@
 package no.nav.regoppslag.consumer.pdl;
 
-import com.neovisionaries.i18n.CountryCode;
 import lombok.SneakyThrows;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
@@ -283,12 +282,12 @@ public class MapPDLResponseTest {
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals("Postboks " + adresse.getPostboks(), response.getAdresselinje1());
-		assertNull(response.getAdresselinje2());
+		assertEquals("C/O Byggfirma A/S", response.getAdresselinje1());
+		assertEquals("Postboks " + adresse.getPostboks(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertNull(response.getLandkode());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
@@ -313,12 +312,12 @@ public class MapPDLResponseTest {
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals("Postboks " + adresse.getPostboks(), response.getAdresselinje1());
-		assertNull(response.getAdresselinje2());
+		assertEquals("C/O Byggfirma A/S", response.getAdresselinje1());
+		assertEquals("Postboks " + adresse.getPostboks(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertNull(response.getLandkode());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}

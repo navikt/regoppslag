@@ -39,6 +39,8 @@ public class MapPdlForTreg001 {
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 
+	private static final String LAND_NORGE = "Norge";
+
 	@Inject
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
 							LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
@@ -86,7 +88,7 @@ public class MapPdlForTreg001 {
 
 		if (isNotBlank(postadresse.getAdresseType()) && POSTADRESSE_INNLAND.equalsIgnoreCase(postadresse.getAdresseType())) {
 			NorskPostadresse norskPostadresse = new NorskPostadresse();
-			norskPostadresse.setLand(isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : null);
+			norskPostadresse.setLand(isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : LAND_NORGE);
 			norskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
 			norskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
 			norskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());

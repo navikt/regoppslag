@@ -1,6 +1,5 @@
 package no.nav.regoppslag.consumer.pdl.map;
 
-import com.neovisionaries.i18n.CountryCode;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
@@ -66,6 +65,8 @@ public class MapPDLResponse {
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
 	private static final String ON_BEHALF_OF = "v/ ";
+	private static final String CARE_OF = "C/O ";
+	private static final String POSTBOKS = "Postboks ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String POSTNUMMER = "postnummer";
 	private static final String FORNAVN = "Fornavn";
@@ -238,9 +239,11 @@ public class MapPDLResponse {
 			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
 			return PostadresseTo.builder()
 					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1("Postboks " + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.adresselinje1(isNotBlank(postboksadresse.getPostbokseier()) ? CARE_OF + postboksadresse.getPostbokseier() : POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.adresselinje2(isNotBlank(postboksadresse.getPostbokseier()) ? POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")) : null)
 					.postnummer(postboksadresse.getPostnummer())
 					.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
+					.landkode(LANDKODE_NORGE)
 					.build();
 		}
 		return null;

@@ -22,6 +22,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE1_POSTBOKS;
+import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE2_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.ALPHA2_SWEDEN_LANDKODE;
@@ -72,6 +74,23 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertNull(response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
+		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+	}
+
+	@Test
+	public void shouldGetMottakerAndAdresseForPersonWhenAdressenErFraPostboks() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/postbokskontaktadresse.json");
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+		assertEquals(PERSON_IDENT, response.getIdentifikator());
+		assertEquals(ADRESSELINJE1_POSTBOKS, response.getAdresse().getAdresselinje1());
+		assertEquals(ADRESSELINJE2_POSTBOKS, response.getAdresse().getAdresselinje2());
+		assertEquals(FULLT_NAVN, response.getNavn());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
 		assertEquals(POSTSTED, response.getAdresse().getPoststed());
 	}
