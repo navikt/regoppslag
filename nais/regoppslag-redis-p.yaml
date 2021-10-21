@@ -1,11 +1,14 @@
 # Manuell instans av regoppslag-redis
 # Lagt inn med:
-#  kubectl apply -f regoppslag-redis.yaml
+#  kubectl apply -f regoppslag-redis-p.yaml
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   labels:
     team: teamdokumenthandtering
+  annotations:
+    nais.io/read-only-file-system: "false"
+    nais.io/run-as-user: "999"
   name: regoppslag-redis
   namespace: teamdokumenthandtering
 spec:
