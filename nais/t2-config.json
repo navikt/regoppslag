@@ -15,6 +15,7 @@
 	"LDAP": "/serviceuser/data/test/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/test/srvregoppslag",
 	"NAMESPACE": "t2",
+	"APP_NAME": "regoppslag",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [

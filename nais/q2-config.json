@@ -15,6 +15,7 @@
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NAMESPACE": "teamdokumenthandtering",
+	"APP_NAME": "regoppslag",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
