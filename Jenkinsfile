@@ -2,5 +2,5 @@ naiseratorPipeline {
     applicationName = "regoppslag"
     dockerfileDir = "."
     javaVersion = "11"
-    deployEnvironmentQ = "q1,q2,t4"
+    deployEnvironmentQ = "q1,q2"
 }
