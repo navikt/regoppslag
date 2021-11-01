@@ -116,15 +116,27 @@ public class MapPDLResponse {
 
 	private PdlMottakerInfo getMottakerKontaktadresse(HentPerson hentPerson, String serviceCode) {
 		PdlMottakerInfo pdlMottakerInfo = mapKontaktadresse(hentPerson);
-		if (isNull(pdlMottakerInfo.getPostadresse())) {
+		if (isNull(pdlMottakerInfo.getPostadresse()) || POSTADRESSE_UTLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType())) {
 			log.info("Fant ikke kontaktadresse og søker etter oppholdsadresse for personen i PDL data");
 			if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
 					FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
 				PdlMottakerInfo oppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode);
 				return nonNull(oppholdsadresse.getPostadresse()) ? oppholdsadresse : mapBostedsadresse(hentPerson, serviceCode);
 			}
+		} else if (isNull(pdlMottakerInfo.getPostadresse()) || isBlank(pdlMottakerInfo.getPostadresse().getPostnummer())) {
+			return getInnlandAdresseFromOppholdOrBostedadresse(hentPerson, serviceCode);
 		}
 		return pdlMottakerInfo;
+	}
+
+	private PdlMottakerInfo getInnlandAdresseFromOppholdOrBostedadresse(HentPerson hentPerson, String serviceCode) {
+		if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
+				FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
+			PdlMottakerInfo oppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode);
+			return nonNull(oppholdsadresse.getPostadresse()) ? oppholdsadresse : mapBostedsadresse(hentPerson, serviceCode);
+		} else {
+			return mapBostedsadresse(hentPerson, serviceCode);
+		}
 	}
 
 	private PdlMottakerInfo mapBostedsadresse(HentPerson hentPerson, String serviceCode) {
@@ -221,8 +233,8 @@ public class MapPDLResponse {
 						.adresseType(POSTADRESSE_INNLAND)
 						.adresselinje1(isBlank(postadresse.getAdresselinje1()) ? null : postadresse.getAdresselinje1())
 						.adresselinje2(postadresse.getAdresselinje2()).adresselinje3(postadresse.getAdresselinje3())
-						.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-						.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
+						.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
+						.poststed(isBlank(postadresse.getPostnummer()) ? null : postnummerService.finnPoststed(postadresse.getPostnummer()))
 						.landkode(LANDKODE_NORGE)
 						.build();
 			}
@@ -231,8 +243,8 @@ public class MapPDLResponse {
 					.adresselinje1(kontaktadresse.getCoAdressenavn())
 					.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
 					.adresselinje3(postadresse.getAdresselinje2())
-					.postnummer(requireNonNull(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-					.poststed(postnummerService.finnPoststed(postadresse.getPostnummer()))
+					.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
+					.poststed(isBlank(postadresse.getPostnummer()) ? null : postnummerService.finnPoststed(postadresse.getPostnummer()))
 					.landkode(LANDKODE_NORGE)
 					.build();
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
@@ -452,10 +464,10 @@ public class MapPDLResponse {
 						.filter(oppholdsadresse ->
 								PDL.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
 						.findAny().orElse(
-						hentPerson.getOppholdsadresse().stream()
-								.filter(oppholdsadresse ->
-										FREG.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
-								.findAny().orElse(null));
+								hentPerson.getOppholdsadresse().stream()
+										.filter(oppholdsadresse ->
+												FREG.name().equalsIgnoreCase(getMasterKilde(oppholdsadresse.getMetadata())))
+										.findAny().orElse(null));
 	}
 
 	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {

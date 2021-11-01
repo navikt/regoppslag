@@ -61,6 +61,7 @@ public class PDLResponseUtil {
 	public static final LocalDate DOEDSDATO = LocalDate.now();
 	public static final String KORT_NAVN = "GYNGEHEST ÅPENHJERTIG";
 	public static final String FULLT_NAVN = "GYNGEHEST A. ÅPENHJERTIG";
+	public static final String FULLT_NAVN2 = "AREMARK TESTFAMILIEN";
 	public static final String FORNAVN = "GYNGEHEST";
 	public static final String MELLOMNAVN = "A.";
 	public static final String ETTERNAVN = "ÅPENHJERTIG";
