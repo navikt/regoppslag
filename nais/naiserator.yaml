@@ -1,8 +1,8 @@
 kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
-  name: regoppslag
-  namespace: {{ NAMESPACE }}
+  name: {{ APP_NAME }}
+  namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
 spec:

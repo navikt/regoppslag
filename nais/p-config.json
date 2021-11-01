@@ -14,7 +14,7 @@
 	"LDAP_URL": "ldaps://ldapgw.adeo.no",
 	"LDAP": "/serviceuser/data/prod/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/prod/srvregoppslag",
-	"NAMESPACE": "teamdokumenthandtering",
+	"APP_NAME": "regoppslag",
 	"MIN_REPLICAS": 2,
 	"MAX_REPLICAS": 5,
 	"INGRESSES": [
