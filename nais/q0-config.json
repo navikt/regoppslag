@@ -14,12 +14,10 @@
 	"LDAP_URL": "ldaps://ldapgw.preprod.local",
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
-	"NAMESPACE": "q0",
-	"APP_NAME": "regoppslag",
+	"APP_NAME": "regoppslag-q0",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
-		"https://regoppslag-q0.nais.preprod.local",
 		"https://regoppslag-q0.dev.intern.nav.no"
 	]
 }

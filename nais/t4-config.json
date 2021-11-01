@@ -14,7 +14,6 @@
 	"LDAP_URL": "ldaps://ldapgw.test.local",
 	"LDAP": "/serviceuser/data/test/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/test/srvregoppslag",
-	"NAMESPACE": "teamdokumenthandtering",
 	"APP_NAME": "regoppslag-t4",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,

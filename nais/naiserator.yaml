@@ -2,7 +2,7 @@ kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
   name: {{ APP_NAME }}
-  namespace: {{ NAMESPACE }}
+  namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
 spec:

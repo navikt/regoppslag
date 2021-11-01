@@ -14,8 +14,7 @@
 	"LDAP_URL": "ldaps://ldapgw.test.local",
 	"LDAP": "/serviceuser/data/test/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/test/srvregoppslag",
-	"NAMESPACE": "t0",
-	"APP_NAME": "regoppslag",
+	"APP_NAME": "regoppslag-t0",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
