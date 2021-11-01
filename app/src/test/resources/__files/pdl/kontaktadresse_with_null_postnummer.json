@@ -1,0 +1,98 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1980,
+          "foedselsdato": "1980-10-10"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "AREMARK",
+          "mellomnavn": "",
+          "etternavn": "TESTFAMILIEN",
+          "forkortetNavn": ""
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-03-24T00:00",
+          "gyldigTilOgMed": null,
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": {
+            "adresselinje1": "Finnesveien",
+            "adresselinje2": "5109 Finnesveien",
+            "adresselinje3": "Norge",
+            "postnummer": null
+          },
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "ad35b2d7-2e50-4b64-89e6-ab220d66e9fa",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-24T13:07:20",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "10108000398",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1984-03-01",
+          "gyldigFraOgMed": "1984-03-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": 275433480,
+            "husnummer": "45",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

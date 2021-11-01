@@ -29,6 +29,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.ALPHA2_SWEDEN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN2;
 import static no.nav.regoppslag.util.PDLResponseUtil.GREECE;
 import static no.nav.regoppslag.util.PDLResponseUtil.GREECE_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
@@ -71,6 +72,24 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN, response.getNavn());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
+		assertNull(response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
+		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+	}
+
+	@Test
+	public void shouldGetMottakerAndAdresseFraBosattAdresseWhenPostnummerIKontaktadresseErNull() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktadresse_with_null_postnummer.json");
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+		assertEquals(PERSON_IDENT, response.getIdentifikator());
+		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
+		assertEquals(FULLT_NAVN2, response.getNavn());
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertNull(response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
