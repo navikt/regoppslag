@@ -66,7 +66,7 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException{
+	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException {
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -87,7 +87,7 @@ public class ElementEnricher {
 			Node node = findSingleNode(xpathExpression, document);
 			attributeValueNamespaceResolver.resolveNamespace(document, node);
 			if (node != null) {
-				Node clonedNode=node.cloneNode(true);
+				Node clonedNode = node.cloneNode(true);
 				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
@@ -109,11 +109,11 @@ public class ElementEnricher {
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-					valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
+							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
-					if(isBlank(tema)){
-						log.info("tema er blank så callid: {} vil bruke PersonV3", callId);
-					}
+							if (isBlank(tema)) {
+								log.info("tema er blank så callid: {} vil bruke PersonV3", callId);
+							}
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
 						}
