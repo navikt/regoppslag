@@ -79,6 +79,7 @@ public class HentMottakerOgAdresseService {
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
 		if (isBlank(request.getTema()) && PERSON.name().equals(request.getType())) {
+			log.info("hentMottakerOgAdresseForPerson kaller personV3Consumer. Tema er ikke satt, og callId er ikke tilgjengelig");
 			Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), SERVICE_CODE_TREG002);
 			MottakerTo mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			return HentMottakerOgAdresseResponse.builder()
