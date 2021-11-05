@@ -79,7 +79,7 @@ public class HentMottakerOgAdresseService {
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
 		if (isBlank(request.getTema()) && PERSON.name().equals(request.getType())) {
-			log.info("hentMottakerOgAdresseForPerson kaller personV3Consumer. Tema er ikke satt, og callId er ikke tilgjengelig");
+			log.info("Treg002 hentMottakerOgAdresse bruker TPS PersonV3. Tema er ikke satt.");
 			Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), SERVICE_CODE_TREG002);
 			MottakerTo mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			return HentMottakerOgAdresseResponse.builder()
@@ -89,6 +89,7 @@ public class HentMottakerOgAdresseService {
 					.build();
 		}
 
+		log.info("Treg002 hentMottakerOgAdresse bruker PDL PersonV3. Tema er satt.");
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema()), SERVICE_CODE_TREG002, request.getTema());
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())

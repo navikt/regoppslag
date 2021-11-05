@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import static net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -72,6 +73,12 @@ public class KompletterBrevdataService {
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
+			if(isBlank(request.getTema())){
+				log.info("Treg001 hentBrevdataFraRegistre bruker TPS PersonV3. Tema er ikke satt.");
+			}else{
+				log.info("Treg001 hentBrevdataFraRegistre bruker PDL PersonV3. Tema er satt.");
+			}
+
 			Document brevdata = stringToDocument(request.getBrevdata());
 			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId(), request.getTema());
 
