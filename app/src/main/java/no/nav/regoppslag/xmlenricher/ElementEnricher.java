@@ -111,9 +111,6 @@ public class ElementEnricher {
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
-							if (isBlank(tema)) {
-								log.info("tema er blank så callid: {} vil bruke PersonV3", callId);
-							}
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
 						}
