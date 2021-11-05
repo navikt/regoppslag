@@ -59,7 +59,6 @@ public class PersonV3Consumer {
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Bruker hentPerson(final String personidentifikator, String serviceCode) throws RegOppslagSecurityException {
 		metrics.cacheMiss(MetricLabels.HENT_PERSON);
-		
 		HentPersonRequest request = mapHentPersonRequest(personidentifikator);
 
 		try {

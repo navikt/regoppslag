@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils.isBlank;
 import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
 import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
@@ -65,7 +66,7 @@ public class ElementEnricher {
 		this.registry = registry;
 	}
 
-	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException{
+	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException {
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -86,7 +87,7 @@ public class ElementEnricher {
 			Node node = findSingleNode(xpathExpression, document);
 			attributeValueNamespaceResolver.resolveNamespace(document, node);
 			if (node != null) {
-				Node clonedNode=node.cloneNode(true);
+				Node clonedNode = node.cloneNode(true);
 				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
@@ -108,7 +109,7 @@ public class ElementEnricher {
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-					valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
+							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
