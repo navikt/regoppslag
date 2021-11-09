@@ -1,0 +1,23 @@
+{
+	"SECURITYTOKENSERVICE_URL": "https://sts-q5.preprod.local/SecurityTokenServiceProvider/",
+	"ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL": "https://app-q5.adeo.no/norg2/ws/OrganisasjonEnhetKontaktinformasjon/v1",
+	"ORGANISASJON_V4_ENDPOINTURL": "https://modapp-q5.adeo.no/ereg/ws/OrganisasjonService/v4",
+	"VIRKSOMHET_PERSONV3_ENDPOINTURL": "https://app-q5.adeo.no/tpsws-aura/ws/Person/v3",
+	"DOKUMENTTYPEINFO_V3_URL": "https://app-q5.adeo.no/dokkat/rest/dokumenttypeinfo/v3",
+	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
+	"DKI_API_URL": "https://dkif.dev.intern.nav.no",
+	"PDL_URL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
+	"LDAP_USER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
+	"LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=preprod,dc=local",
+	"LDAP_DOMAIN": "PREPROD.LOCAL",
+	"LDAP_BASEDN": "dc=preprod,dc=local",
+	"LDAP_URL": "ldaps://ldapgw.preprod.local",
+	"LDAP": "/serviceuser/data/dev/srvssolinux",
+	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
+	"APP_NAME": "regoppslag-q5",
+	"MIN_REPLICAS": 1,
+	"MAX_REPLICAS": 2,
+	"INGRESSES": [
+		"https://regoppslag-q5.dev.intern.nav.no"
+	]
+}
