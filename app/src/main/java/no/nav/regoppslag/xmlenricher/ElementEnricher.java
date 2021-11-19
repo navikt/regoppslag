@@ -52,7 +52,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 public class ElementEnricher {
 
-	private static final String TREG001_FUN_FEIL = "TREG001 Funksjonell feil: %s";
+	private static final String TREG001 = "TREG001";
 
 	private ElementEnricherPluginRegistry registry;
 	private AttributeValueNamespaceResolver attributeValueNamespaceResolver;
@@ -117,8 +117,8 @@ public class ElementEnricher {
 				)
 				.sequential()
 				.blockingSubscribe(
-						onNextElement -> aggregateList.add(onNextElement),
-						error -> unhandledError.add(error)
+						aggregateList::add,
+						unhandledError::add
 				);
 
 
@@ -147,14 +147,12 @@ public class ElementEnricher {
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-			log.error(format(TREG001_FUN_FEIL, e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagFunctionalException) {
-			log.warn(format(TREG001_FUN_FEIL, e.getMessage()));
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, "TREG001", ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagSecurityException) {
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {
