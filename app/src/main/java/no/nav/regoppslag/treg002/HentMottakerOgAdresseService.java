@@ -79,7 +79,7 @@ public class HentMottakerOgAdresseService {
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
 		if (isBlank(request.getTema()) && PERSON.name().equals(request.getType())) {
-			log.info("Treg002 hentMottakerOgAdresse bruker TPS PersonV3. Tema er ikke satt.");
+			log.info("hentPersonV3 fra HentMottakerOgAdresseService"); //TODO: remove this log when is ready MMA-5754
 			Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), SERVICE_CODE_TREG002);
 			MottakerTo mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
 			return HentMottakerOgAdresseResponse.builder()

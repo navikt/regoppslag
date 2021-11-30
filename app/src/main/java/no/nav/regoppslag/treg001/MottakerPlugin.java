@@ -120,6 +120,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		//Skal elementet berikes?
 		if (mottaker.isBerik()) {
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
+				log.info("hentPersonV3 fra mottakerPlugin"); //TODO: remove this log when is ready MMA-5754
 				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
 				mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 			} else {
