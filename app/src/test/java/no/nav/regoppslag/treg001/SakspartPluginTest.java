@@ -6,8 +6,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -76,7 +74,6 @@ public class SakspartPluginTest {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private PersonV3Consumer personV3Consumer;
 	private PostnummerService postnummerService;
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
@@ -88,7 +85,6 @@ public class SakspartPluginTest {
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		personV3Consumer = mock(PersonV3Consumer.class);
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
 		securityContext = new SecurityContextImpl();
@@ -101,10 +97,8 @@ public class SakspartPluginTest {
 
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}

@@ -9,8 +9,6 @@ import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -50,8 +48,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String UGYLDIG_INPUT = "MottakerPlugin - Ugyldig input";
 	private static final String PLUGIN_NAME = "MottakerPlugin";
-	private final PersonV3Consumer personV3Consumer;
-	private final PersonV3Mapper personV3Mapper;
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final MapPdlForTreg001 mapPdlForTreg001;
@@ -60,14 +56,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 
 	@Inject
-	public MottakerPlugin(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper,
-						  OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper,
+	public MottakerPlugin(OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper,
 						  MapPdlForTreg001 mapPdlForTreg001, DigitalKontaktinformasjon digitalKontaktinformasjon,
 						  Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
 						  MicrometerMetrics metrics) {
 		super(Mottaker.class);
-		this.personV3Consumer = personV3Consumer;
-		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.mapPdlForTreg001 = mapPdlForTreg001;
@@ -93,8 +86,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Mottaker mottaker = unmarshal(content);
 			validateMottaker(mottaker);
 			Mottaker newMottaker;
-			if (isBlank(tema)) {
-				newMottaker = getMottakerFraPersonV3(spraakKodeMapper, mottaker, dokumenttypeId);
+			if (isBlank(tema)) { //TODO: Kan denne delen av ifsetningen bare slettes, eller er det behov for å få tak i organisassjon i
+//				newMottaker = getMottakerFraPersonV3(spraakKodeMapper, mottaker, dokumenttypeId);
+				newMottaker = null; //
 			} else {
 				newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker);
 				final Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
@@ -119,10 +113,10 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		MottakerTo mottakerTo = MottakerTo.builder().build();
 		//Skal elementet berikes?
 		if (mottaker.isBerik()) {
-			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				log.info("hentPersonV3 fra mottakerPlugin"); //TODO: remove this log when is ready MMA-5754
-				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
-				mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
+			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) { //TODO: slett innhold i if, ta vare på else?
+//				log.info("hentPersonV3 fra mottakerPlugin"); //TODO: remove this log when is ready MMA-5754
+//				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
+//				mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 				mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);

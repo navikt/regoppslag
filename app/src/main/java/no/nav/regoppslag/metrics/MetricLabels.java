@@ -2,7 +2,7 @@ package no.nav.regoppslag.metrics;
 
 public final class MetricLabels {
 	public static final String DOK_REQUEST = "dok_request";
-	public static final String DOK_CONSUMER_REQUEST = "dok_consumer_request";
+	public static final String DOK_CONSUMER_REQUEST = "dok_consumer_request"; //TODO: Slette de ubrukte statiske variablene her når vi er i gang med rydding?
 	public static final String DOK_CONSUMER = "dok_consumer";
 	public static final String CONSUMER = "consumer";
 	public static final String CONSUMER_NAME = "consumer_name";
@@ -42,8 +42,6 @@ public final class MetricLabels {
 	public static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
 	public static final String POSTSTED = "poststed";
 	public static final String REST = "Rest";
-	public static final String PERSONV3 = "PersonV3";
-	public static final String PERSONV3_MAPPER = "PersonV3Mapper";
 	public static final String ORGANISASJONV4_MAPPER = "OrganisasjonV4Mapper";
 	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
 

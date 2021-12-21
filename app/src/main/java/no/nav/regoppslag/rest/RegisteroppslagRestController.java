@@ -9,9 +9,7 @@ import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.api.KompletterBrevdataResponse;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
@@ -44,7 +42,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @Api(value = "Registeroppslag")
 @Slf4j
 public class RegisteroppslagRestController {
-
+//TODO: Brukes hele denne kontrolleren til personV3 oppslag?
 
 	public static final String REST = "rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = "kompletterBrevdata";

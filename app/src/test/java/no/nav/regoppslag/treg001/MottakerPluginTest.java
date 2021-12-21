@@ -13,8 +13,6 @@ import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -101,14 +99,12 @@ public class MottakerPluginTest {
 	private static final String MOTTAKER_ID = "30085849677";
 	private static final String TEMA = "PEN";
 
-	private PersonV3Consumer personV3Consumer;
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
-	private PersonV3Mapper personV3Mapper;
 	private MottakerPlugin mottakerPlugin;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
@@ -124,7 +120,6 @@ public class MottakerPluginTest {
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		personV3Consumer = mock(PersonV3Consumer.class);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
@@ -142,10 +137,9 @@ public class MottakerPluginTest {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 
-		personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper);
-		mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer,
+		mottakerPlugin = new MottakerPlugin(organisasjonV4Consumer,
 				organisasjonV4Mapper, mapPdlForTreg001, digitalKontaktinformasjon, tkat020DokumenttypeInfo, metrics);
 
 
@@ -153,7 +147,7 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginPerson() throws Exception {
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN)); //TODO: Slette kanskje?
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -178,7 +172,7 @@ public class MottakerPluginTest {
 		Spraak spraak = new Spraak();
 		spraak.setValue("EN");
 		person.setMaalform(spraak);
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person); //TODO: slette kanskje?
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
@@ -201,7 +195,7 @@ public class MottakerPluginTest {
 	public void shouldUseMottakerMaalform() throws Exception {
 		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);//TODO: slette kanskje?
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
