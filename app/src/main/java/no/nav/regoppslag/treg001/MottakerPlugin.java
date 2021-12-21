@@ -19,7 +19,6 @@ import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -85,15 +84,9 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			Mottaker mottaker = unmarshal(content);
 			validateMottaker(mottaker);
-			Mottaker newMottaker;
-			if (isBlank(tema)) { //TODO: Kan denne delen av ifsetningen bare slettes, eller er det behov for å få tak i organisassjon i
-//				newMottaker = getMottakerFraPersonV3(spraakKodeMapper, mottaker, dokumenttypeId);
-				newMottaker = null; //
-			} else {
-				newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker);
-				final Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
-				newMottaker.setSpraakkode(spraakkode);
-			}
+			Mottaker newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker);
+			final Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
+			newMottaker.setSpraakkode(spraakkode);
 
 			Document newNode = convertObjectToDocument(newMottaker);
 			Element documentElement = newNode.getDocumentElement();
@@ -142,7 +135,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
 	}
 
-	private void validateMottaker(Mottaker mottaker)  {
+	private void validateMottaker(Mottaker mottaker) {
 
 		if (mottaker.getTypeKode() == null) {
 			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), BAD_REQUEST);
@@ -154,7 +147,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	}
 
-	private void validateElementType(Node element)  {
+	private void validateElementType(Node element) {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);

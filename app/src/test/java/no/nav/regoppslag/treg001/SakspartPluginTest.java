@@ -66,8 +66,6 @@ public class SakspartPluginTest {
 	private static final String TEMA = "PEN";
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
-	private static final String FORNAVN = "TOM";
-	private static final String ETTERNAVN = "RIDDLE";
 	private static final String ORGNAVN = "Orgnavn 1";
 	private static final String ORGNAVN_2 = "Orgnavn_2";
 	private static final String ORGKORTNAVN = "OrgKortnavn 1";
@@ -101,25 +99,6 @@ public class SakspartPluginTest {
 		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
-	}
-
-	@Test
-	public void testSakspartPluginPerson() throws Exception {
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "//*[local-name() = 'sakspart']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-
-		Node node = findSingleNode(xPathExpression, document);
-
-		Node processed = sakspartPlugin.processElement(node, valueMap, null);
-
-		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
-		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
-
-		assertThat(sakspart.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
 	@Test

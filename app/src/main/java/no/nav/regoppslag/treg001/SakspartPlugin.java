@@ -73,11 +73,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					log.info("hentPersonV3 fra sakspartPlugin"); //TODO: remove this log when is ready MMA-5754
-//					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), SERVICE_CODE_TREG001); //TODO: denne skal slettes, ikke erstattes med pdl-kall?
-//					String navn = StringUtils.isBlank(tema) ? personV3Mapper.getSakspartNavn(person) :
-//							pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
-//					sakspart.setNavn(navn);
+					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
+					sakspart.setNavn(navn);
 
 				} else {
 					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());

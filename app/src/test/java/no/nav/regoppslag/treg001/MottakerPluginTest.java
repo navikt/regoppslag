@@ -13,6 +13,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -63,8 +64,10 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
+import static no.nav.regoppslag.util.TestDataUtil.createMottaker;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -72,6 +75,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -147,7 +151,10 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginPerson() throws Exception {
-//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN)); //TODO: Slette kanskje?
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
+
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -157,7 +164,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -168,11 +175,13 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldUsePersonMaalform() throws Exception {
 		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
 		Spraak spraak = new Spraak();
 		spraak.setValue("EN");
 		person.setMaalform(spraak);
-//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person); //TODO: slette kanskje?
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
@@ -184,7 +193,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "FOR");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -194,8 +203,10 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldUseMottakerMaalform() throws Exception {
 		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-//		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);//TODO: slette kanskje?
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
@@ -207,7 +218,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -393,5 +404,9 @@ public class MottakerPluginTest {
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		return org;
+	}
+
+	private HentPerson.PersonNavn createPersonNavn() {
+		return HentPerson.PersonNavn.builder().fornavn(FORNAVN).etternavn(ETTERNAVN).build();
 	}
 }
