@@ -2,7 +2,6 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
-import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
@@ -15,10 +14,8 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -99,29 +96,6 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		} finally {
 			invalidateSecurityContext();
 		}
-
-	}
-
-	private Mottaker getMottakerFraPersonV3(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId) {
-		MottakerTo mottakerTo = MottakerTo.builder().build();
-		//Skal elementet berikes?
-		if (mottaker.isBerik()) {
-			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) { //TODO: slett innhold i if, ta vare på else?
-//				log.info("hentPersonV3 fra mottakerPlugin"); //TODO: remove this log when is ready MMA-5754
-//				Bruker person = personV3Consumer.hentPerson(mottaker.getId(), SERVICE_CODE_TREG001);
-//				mottakerTo = personV3Mapper.map(person, SERVICE_CODE_TREG001);
-			} else {
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
-				mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
-			}
-
-			mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
-			mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
-			mottaker.setNavn(mottakerTo.getMottaker().getNavn());
-		}
-
-		mottaker.setSpraakkode(getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, mottakerTo.getSpraakKode()));
-		return mottaker;
 
 	}
 

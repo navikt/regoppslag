@@ -14,7 +14,6 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
