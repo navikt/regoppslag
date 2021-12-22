@@ -18,8 +18,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -209,21 +207,6 @@ public class SakspartPluginTest {
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler id");
 
-	}
-
-	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		return person;
 	}
 
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {

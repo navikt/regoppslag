@@ -24,12 +24,6 @@ import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -174,12 +168,8 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldUsePersonMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		Spraak spraak = new Spraak();
-		spraak.setValue("EN");
-		person.setMaalform(spraak);
 		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
@@ -202,7 +192,6 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldUseMottakerMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
 		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
@@ -355,38 +344,6 @@ public class MottakerPluginTest {
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> mottakerPlugin.processElement(node, valueMap, null), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
 
-	}
-
-	private static Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		settPostadresse(person);
-
-		return person;
-	}
-
-	private static void settPostadresse(Bruker person) {
-		Postadressetyper postadressetyper = new Postadressetyper();
-		postadressetyper.setKodeverksRef("POSTADRESSE");
-		postadressetyper.setValue("POSTADRESSE");
-		person.setGjeldendePostadressetype(postadressetyper);
-
-		UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
-		ustrukturertAdresse.setAdresselinje1("test");
-
-		Postadresse postadresse = new Postadresse();
-		postadresse.setUstrukturertAdresse(ustrukturertAdresse);
-
-		person.setPostadresse(postadresse);
 	}
 
 	private static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
