@@ -11,6 +11,9 @@
 
 	<modules>
 		<module>app</module>
+		<module>core</module>
+		<module>registerinfo</module>
+		<module>postadresse</module>
 	</modules>
 
 	<parent>
