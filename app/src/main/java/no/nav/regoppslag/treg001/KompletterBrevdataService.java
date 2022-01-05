@@ -74,7 +74,7 @@ public class KompletterBrevdataService {
 
 		try {
 			if(isBlank(request.getTema())){
-				log.info("Tema er ikke satt.");
+				log.error("Tema er ikke satt.");
 			}
 
 			Document brevdata = stringToDocument(request.getBrevdata());

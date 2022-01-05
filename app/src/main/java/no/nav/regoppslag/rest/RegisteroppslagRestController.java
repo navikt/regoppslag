@@ -42,7 +42,6 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @Api(value = "Registeroppslag")
 @Slf4j
 public class RegisteroppslagRestController {
-//TODO: Brukes hele denne kontrolleren til personV3 oppslag?
 
 	public static final String REST = "rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = "kompletterBrevdata";
