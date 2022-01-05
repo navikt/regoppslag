@@ -6,8 +6,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -20,8 +18,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,15 +64,12 @@ public class SakspartPluginTest {
 	private static final String TEMA = "PEN";
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
-	private static final String FORNAVN = "TOM";
-	private static final String ETTERNAVN = "RIDDLE";
 	private static final String ORGNAVN = "Orgnavn 1";
 	private static final String ORGNAVN_2 = "Orgnavn_2";
 	private static final String ORGKORTNAVN = "OrgKortnavn 1";
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private PersonV3Consumer personV3Consumer;
 	private PostnummerService postnummerService;
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
@@ -88,7 +81,6 @@ public class SakspartPluginTest {
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		personV3Consumer = mock(PersonV3Consumer.class);
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
 		securityContext = new SecurityContextImpl();
@@ -101,31 +93,10 @@ public class SakspartPluginTest {
 
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		PersonV3Mapper personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
-	}
-
-	@Test
-	public void testSakspartPluginPerson() throws Exception {
-		File xmlFile = new File(BREVDATA1);
-		Document document = loadDocument(xmlFile);
-
-		String expression1 = "//*[local-name() = 'sakspart']";
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		XPathExpression xPathExpression = xPath.compile(expression1);
-
-		Node node = findSingleNode(xPathExpression, document);
-
-		Node processed = sakspartPlugin.processElement(node, valueMap, null);
-
-		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
-		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
-
-		assertThat(sakspart.getNavn(), is(FORNAVN + " " + ETTERNAVN));
 	}
 
 	@Test
@@ -236,21 +207,6 @@ public class SakspartPluginTest {
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler id");
 
-	}
-
-	private Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		return person;
 	}
 
 	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {

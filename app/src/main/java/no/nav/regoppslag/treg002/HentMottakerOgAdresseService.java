@@ -9,8 +9,6 @@ import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -19,7 +17,6 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -27,7 +24,6 @@ import javax.inject.Inject;
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -39,8 +35,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class HentMottakerOgAdresseService {
 
-	private final PersonV3Consumer personV3Consumer;
-	private final PersonV3Mapper personV3Mapper;
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final AdresseMapper adresseMapper;
@@ -51,11 +45,11 @@ public class HentMottakerOgAdresseService {
 	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
 	@Inject
-	public HentMottakerOgAdresseService(PersonV3Consumer personV3Consumer, PersonV3Mapper personV3Mapper,
-										OrganisasjonV4Consumer organisasjonV4Consumer, OrganisasjonV4Mapper organisasjonV4Mapper,
-										AdresseMapper adresseMapper, PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse) {
-		this.personV3Consumer = personV3Consumer;
-		this.personV3Mapper = personV3Mapper;
+	public HentMottakerOgAdresseService(OrganisasjonV4Consumer organisasjonV4Consumer,
+										OrganisasjonV4Mapper organisasjonV4Mapper,
+										AdresseMapper adresseMapper,
+										PdlGraphQLConsumer pdlGraphQLConsumer,
+										MapPDLResponse mapPDLResponse) {
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.adresseMapper = adresseMapper;
@@ -78,19 +72,11 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
-		if (isBlank(request.getTema()) && PERSON.name().equals(request.getType())) {
-			log.info("hentPersonV3 fra HentMottakerOgAdresseService"); //TODO: remove this log when is ready MMA-5754
-			Bruker bruker = personV3Consumer.hentPerson(request.getIdentifikator(), SERVICE_CODE_TREG002);
-			MottakerTo mottakerTo = personV3Mapper.map(bruker, SERVICE_CODE_TREG002);
-			return HentMottakerOgAdresseResponse.builder()
-					.identifikator(request.getIdentifikator())
-					.navn(mottakerTo.getMottaker().getNavn())
-					.adresse(adresseMapper.map(mottakerTo.getMottaker()))
-					.build();
-		}
-
-		log.info("Treg002 hentMottakerOgAdresse bruker PDL PersonV3. Tema er satt.");
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema()), SERVICE_CODE_TREG002, request.getTema());
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(
+				pdlGraphQLConsumer.hentPerson(request.getIdentifikator(),
+				request.getTema()),
+				SERVICE_CODE_TREG002,
+				request.getTema());
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(pdlMottakerInfo.getNavn())

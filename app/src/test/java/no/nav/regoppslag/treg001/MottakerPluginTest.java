@@ -13,8 +13,7 @@ import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
+import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -25,12 +24,6 @@ import no.nav.regoppslag.util.TestDataUtil;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadressetyper;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Spraak;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,8 +58,10 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
+import static no.nav.regoppslag.util.TestDataUtil.createMottaker;
 import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
@@ -74,6 +69,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -101,14 +97,12 @@ public class MottakerPluginTest {
 	private static final String MOTTAKER_ID = "30085849677";
 	private static final String TEMA = "PEN";
 
-	private PersonV3Consumer personV3Consumer;
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
-	private PersonV3Mapper personV3Mapper;
 	private MottakerPlugin mottakerPlugin;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
@@ -124,7 +118,6 @@ public class MottakerPluginTest {
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		personV3Consumer = mock(PersonV3Consumer.class);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
@@ -142,10 +135,9 @@ public class MottakerPluginTest {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 
-		personV3Mapper = new PersonV3Mapper(postnummerService, landkodeService, metrics);
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper);
-		mottakerPlugin = new MottakerPlugin(personV3Consumer, personV3Mapper, organisasjonV4Consumer,
+		mottakerPlugin = new MottakerPlugin(organisasjonV4Consumer,
 				organisasjonV4Mapper, mapPdlForTreg001, digitalKontaktinformasjon, tkat020DokumenttypeInfo, metrics);
 
 
@@ -153,7 +145,10 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginPerson() throws Exception {
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(createPerson(FORNAVN, null, ETTERNAVN));
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
+
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -163,7 +158,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -173,12 +168,10 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldUsePersonMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		Spraak spraak = new Spraak();
-		spraak.setValue("EN");
-		person.setMaalform(spraak);
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
@@ -190,7 +183,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "FOR");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -199,9 +192,10 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldUseMottakerMaalform() throws Exception {
-		Bruker person = createPerson(FORNAVN, null, ETTERNAVN);
+		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		when(personV3Consumer.hentPerson(anyString(), anyString())).thenReturn(person);
+		when(pdlGraphQLConsumer.hentPerson(anyString(),anyString())).thenReturn(hentPerson);
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
@@ -213,7 +207,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -352,38 +346,6 @@ public class MottakerPluginTest {
 
 	}
 
-	private static Bruker createPerson(String fornavn, String mellomnavn, String etternavn) {
-		Personnavn personnavn = new Personnavn();
-		personnavn.setFornavn(fornavn);
-		if (mellomnavn != null) {
-			personnavn.setMellomnavn(mellomnavn);
-			personnavn.setSammensattNavn(fornavn + " " + mellomnavn + " " + etternavn);
-		} else {
-			personnavn.setSammensattNavn(fornavn + " " + etternavn);
-		}
-		personnavn.setEtternavn(etternavn);
-		Bruker person = new Bruker();
-		person.setPersonnavn(personnavn);
-		settPostadresse(person);
-
-		return person;
-	}
-
-	private static void settPostadresse(Bruker person) {
-		Postadressetyper postadressetyper = new Postadressetyper();
-		postadressetyper.setKodeverksRef("POSTADRESSE");
-		postadressetyper.setValue("POSTADRESSE");
-		person.setGjeldendePostadressetype(postadressetyper);
-
-		UstrukturertAdresse ustrukturertAdresse = new UstrukturertAdresse();
-		ustrukturertAdresse.setAdresselinje1("test");
-
-		Postadresse postadresse = new Postadresse();
-		postadresse.setUstrukturertAdresse(ustrukturertAdresse);
-
-		person.setPostadresse(postadresse);
-	}
-
 	private static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
 		List<SpraakInfoTo> list = new ArrayList<>();
 		langs.forEach(lang -> {
@@ -399,5 +361,9 @@ public class MottakerPluginTest {
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settStrukturertAdresse(org, "POSTADRESSE");
 		return org;
+	}
+
+	private HentPerson.PersonNavn createPersonNavn() {
+		return HentPerson.PersonNavn.builder().fornavn(FORNAVN).etternavn(ETTERNAVN).build();
 	}
 }

@@ -6,8 +6,6 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.personv3.PersonV3Consumer;
-import no.nav.regoppslag.consumer.personv3.support.PersonV3Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -16,7 +14,6 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -42,20 +39,15 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private static final String UGYLDIG_INPUT = "SaksportPlugin - Ugyldig input";
 	private static final String PLUGIN_NAME = "SakspartPlugin";
 
-	private final PersonV3Consumer personV3Consumer;
-	private final PersonV3Mapper personV3Mapper;
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final MicrometerMetrics metrics;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
-	public SakspartPlugin(PersonV3Consumer personV3Consumer,
-						  PersonV3Mapper personV3Mapper, OrganisasjonV4Consumer organisasjonV4Consumer,
+	public SakspartPlugin(OrganisasjonV4Consumer organisasjonV4Consumer,
 						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics,
 						  PdlGraphQLConsumer pdlGraphQLConsumer) {
 		super(Sakspart.class);
-		this.personV3Consumer = personV3Consumer;
-		this.personV3Mapper = personV3Mapper;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.metrics = metrics;
@@ -80,10 +72,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
-					log.info("hentPersonV3 fra sakspartPlugin"); //TODO: remove this log when is ready MMA-5754
-					Bruker person = personV3Consumer.hentPerson(sakspart.getId(), SERVICE_CODE_TREG001);
-					String navn = StringUtils.isBlank(tema) ? personV3Mapper.getSakspartNavn(person) :
-							pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
+					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
 					sakspart.setNavn(navn);
 
 				} else {
