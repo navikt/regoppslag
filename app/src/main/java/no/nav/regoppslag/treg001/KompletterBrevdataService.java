@@ -74,9 +74,7 @@ public class KompletterBrevdataService {
 
 		try {
 			if(isBlank(request.getTema())){
-				log.info("Treg001 hentBrevdataFraRegistre bruker TPS PersonV3. Tema er ikke satt.");
-			}else{
-				log.info("Treg001 hentBrevdataFraRegistre bruker PDL. Tema er satt.");
+				log.info("Tema er ikke satt.");
 			}
 
 			Document brevdata = stringToDocument(request.getBrevdata());
