@@ -43,7 +43,6 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @Slf4j
 public class RegisteroppslagRestController {
 
-
 	public static final String REST = "rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = "kompletterBrevdata";
 	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = "hentMottakerOgAdresse";

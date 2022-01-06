@@ -2,7 +2,6 @@ package no.nav.regoppslag.metrics;
 
 public final class MetricLabels {
 	public static final String DOK_REQUEST = "dok_request";
-	public static final String DOK_CONSUMER_REQUEST = "dok_consumer_request";
 	public static final String DOK_CONSUMER = "dok_consumer";
 	public static final String CONSUMER = "consumer";
 	public static final String CONSUMER_NAME = "consumer_name";
@@ -31,19 +30,13 @@ public final class MetricLabels {
 
 	//Counter event and type
 	public static final String ADRESSETYPE = "adresse_type";
-	public static final String POSTNUMMER = "postnummer";
 	public static final String UKJENT_POSTNUMMER = "ukjent_postnummer";
 	public static final String UKJENT_POSTSTED = "ukjent_poststed";
-	public static final String PERSON_DISKRESJONSKODE = "person_diskresjonskode";
 	public static final String LAND = "land";
-	public static final String UKJENT_LAND = "ukjent_land";
 	public static final String UNKNOWN_LANDKODE = "???";
 	public static final String KOSOVO = "Kosovo, Republic of";
 	public static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
 	public static final String POSTSTED = "poststed";
-	public static final String REST = "Rest";
-	public static final String PERSONV3 = "PersonV3";
-	public static final String PERSONV3_MAPPER = "PersonV3Mapper";
 	public static final String ORGANISASJONV4_MAPPER = "OrganisasjonV4Mapper";
 	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
 

@@ -73,10 +73,8 @@ public class KompletterBrevdataService {
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
-			if(StringUtils.isBlank(request.getTema())){
-				log.info("Treg001 hentBrevdataFraRegistre bruker TPS PersonV3. Tema er ikke satt.");
-			}else{
-				log.info("Treg001 hentBrevdataFraRegistre bruker PDL PersonV3. Tema er satt.");
+			if(isBlank(request.getTema())){
+				log.error("Tema er ikke satt.");
 			}
 
 			Document brevdata = stringToDocument(request.getBrevdata());
@@ -91,13 +89,13 @@ public class KompletterBrevdataService {
 			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
-			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, HttpStatus.BAD_REQUEST);
+			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
 		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException
 				| UkjentAdresseException | UkjentAdressePersonErDoed e) {
-			if (HttpStatus.GONE.equals(e.getHttpStatus())) {
+			if (GONE.equals(e.getHttpStatus())) {
 				log.warn("TREG001 funksjonell feil : {}", e.getMessage());
 				throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", e.getHttpStatus());
-			} else if (HttpStatus.NOT_FOUND.equals(e.getHttpStatus())) {
+			} else if (NOT_FOUND.equals(e.getHttpStatus())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 				throw new RegOppslagIkkeFunnetException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 						.getMessage()), e, e.getMetricMessage(), e.getHttpStatus());
