@@ -1,4 +1,4 @@
-package no.nav.regoppslag.nais;
+package no.nav.regoppslag.config.nais;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;

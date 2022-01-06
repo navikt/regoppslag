@@ -6,7 +6,7 @@ import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasj
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;

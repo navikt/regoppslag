@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
-import no.nav.regoppslag.api.KompletterBrevdataRequest;
-import no.nav.regoppslag.api.KompletterBrevdataResponse;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
+import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;

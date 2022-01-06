@@ -2,12 +2,13 @@ package no.nav.regoppslag.config.cache;
 
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -54,7 +55,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		//Remaining caches uses the default value
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
-		initialConfigs.put(NaisCheckSTSTokenRetriever.STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
+		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(RESTSTS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 
@@ -76,8 +77,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 		return RedisCacheConfiguration.defaultCacheConfig()
 				.disableCachingNullValues()
 				.entryTtl(duration != null ? duration : DEFAULT_CACHE_EXPIRATION_TIME)
-				.serializeKeysWith(SerializationPair.fromSerializer(new StringRedisSerializer()))
-				.serializeValuesWith(SerializationPair.fromSerializer(new CustomRedisSerializer<>()));
+				.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
+				.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
 	}
 
 	@Bean
