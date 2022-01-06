@@ -156,7 +156,6 @@ public class Treg001PDLIT extends AbstractIT {
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_ikke_skandinavisk.xml"))); //mottakerPlugin
-		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 

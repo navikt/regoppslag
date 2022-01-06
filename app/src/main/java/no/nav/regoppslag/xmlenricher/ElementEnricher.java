@@ -109,7 +109,6 @@ public class ElementEnricher {
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
