@@ -7,6 +7,9 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
+import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
+import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -14,17 +17,25 @@ import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.util.TestDataUtil;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.ORGANISASJONNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
@@ -33,7 +44,14 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.SWEDEN_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
+import static no.nav.regoppslag.util.TestDataUtil.GATENAVN;
+import static no.nav.regoppslag.util.TestDataUtil.HUSBOKSTAV;
+import static no.nav.regoppslag.util.TestDataUtil.HUSNR;
+import static no.nav.regoppslag.util.TestDataUtil.POSTNR;
+import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,16 +59,24 @@ import static org.mockito.Mockito.when;
 class MapPdlForTreg001Test {
 
 	private static final String TEMA = "PEN";
+	private static final String DOKUMENTTYPEID = "I000003";
+	private static final String SPRAAK_NB = "NB";
+	private static final String ORGNAVN = "Orgnavn 1";
+	private static final String ORGNAVN_2 = "Orgnavn_2";
+	private static final String ORGKORTNAVN = "OrgKortnavn 1";
+	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private LandkodeService landkodeService;
+	private DigitalKontaktinformasjon digitalKontaktinformasjon;
+	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	@InjectMocks
 	private MapPDLResponse mapPDLResponse;
 	private PostnummerService postnummerService;
 	@InjectMocks
 	private MapPdlForTreg001 pdlForTreg001;
-	private MicrometerMetrics micrometerMetrics;
 
 
 	@BeforeEach
@@ -60,15 +86,19 @@ class MapPdlForTreg001Test {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-		organisasjonV4Mapper = mock(OrganisasjonV4Mapper.class);
-		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper);
+		organisasjonV4Mapper = new OrganisasjonV4Mapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
+		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
+		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon);
 
 	}
 
 	@Test
 	public void shouldMapTreg001MottakerAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonWithBostedsadresse());
-		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createMottaker());
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(PERSON_IDENT, mottaker.getId());
@@ -77,12 +107,15 @@ class MapPdlForTreg001Test {
 		assertEquals(ADRESSENAVN_1, adresse.getAdresselinje1());
 		assertEquals(POSTSTED, adresse.getPoststed());
 		assertEquals(POSTNUMMER, adresse.getPostnummer());
+		assertEquals(Spraakkode.NB, mottaker.getSpraakkode());
 	}
 
 	@Test
-	public void shouldMapUtenlandiskAdresseFraPdl() {
+	public void shouldMapUtenlandskAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonUtenlandskAdresse());
-		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createMottaker());
+		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(PERSON_IDENT, mottaker.getId());
@@ -91,14 +124,56 @@ class MapPdlForTreg001Test {
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
 		assertEquals(POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
 		assertEquals(SWEDEN_UTENLANDSK, adresse.getLand());
+		assertEquals(Spraakkode.EN, mottaker.getSpraakkode());
 	}
 
-	private Mottaker createMottaker() {
+	@Test
+	void shouldMapNorskOrganisasjon() throws DatatypeConfigurationException {
+		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createOrganisasjonMottaker(), DOKUMENTTYPEID);
+		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
+
+		assertEquals(ORGANISASJONNUMMER, mottaker.getId());
+		assertEquals(ORGKORTNAVN + " " + ORGKORTNAVN_2, mottaker.getKortNavn());
+		assertEquals(ORGNAVN + " " + ORGNAVN_2, mottaker.getNavn());
+		assertEquals(GATENAVN + " " + HUSNR + HUSBOKSTAV, adresse.getAdresselinje1());
+		assertEquals("HUSNES", adresse.getPoststed());
+		assertEquals(POSTNR, adresse.getPostnummer());
+		assertEquals(Spraakkode.NB, mottaker.getSpraakkode());
+	}
+
+
+	private Mottaker createPersonMottaker() {
 		Mottaker mottaker = new Person();
 		mottaker.setId(PERSON_IDENT);
 		mottaker.setBerik(true);
-		mottaker.setSpraakkode(Spraakkode.NB);
 		mottaker.setTypeKode(AktoerType.PERSON);
 		return mottaker;
+	}
+
+	private Mottaker createOrganisasjonMottaker() {
+		Mottaker mottaker = new Person();
+		mottaker.setId(ORGANISASJONNUMMER);
+		mottaker.setBerik(true);
+		mottaker.setTypeKode(AktoerType.ORGANISASJON);
+		return mottaker;
+	}
+
+	private static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
+		List<SpraakInfoTo> list = new ArrayList<>();
+		langs.forEach(lang -> {
+			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
+			spraakInfoTo.setSpraaklag(lang);
+			list.add(spraakInfoTo);
+		});
+		return list;
+	}
+
+	private static Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
+		Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
+				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		settStrukturertAdresse(org, "POSTADRESSE");
+		return org;
 	}
 }

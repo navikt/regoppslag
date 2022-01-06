@@ -136,11 +136,8 @@ public class MottakerPluginTest {
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper);
-		mottakerPlugin = new MottakerPlugin(organisasjonV4Consumer,
-				organisasjonV4Mapper, mapPdlForTreg001, digitalKontaktinformasjon, tkat020DokumenttypeInfo, metrics);
-
-
+		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon);
+		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001, metrics);
 	}
 
 	@Test
