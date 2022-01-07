@@ -13,7 +13,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
-import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;

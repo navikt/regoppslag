@@ -1,15 +1,9 @@
-package no.nav.regoppslag.config;
+package no.nav.regoppslag.treg001;
 
-import no.nav.regoppslag.treg001.MottakerPlugin;
-import no.nav.regoppslag.treg001.NavOrgenhetBesoksadressePlugin;
-import no.nav.regoppslag.treg001.NavOrgenhetNavnPlugin;
-import no.nav.regoppslag.treg001.NavOrgenhetPostadressePlugin;
-import no.nav.regoppslag.treg001.SaksbehandlerPlugin;
-import no.nav.regoppslag.treg001.SakspartPlugin;
-import no.nav.regoppslag.xmlenricher.ElementEnricher;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPluginRegistry;
-import no.nav.regoppslag.xmlenricher.PluginBeanRegistry;
-import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPluginRegistry;
+import no.nav.regoppslag.treg001.xmlenricher.PluginBeanRegistry;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.DuplicatedElementSupportException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -39,5 +33,5 @@ public class ElementEnricherConfig {
 	public ElementEnricher orchestrator(ElementEnricherPluginRegistry registry) {
 		return new ElementEnricher(registry);
 	}
-	
+
 }

@@ -1,10 +1,8 @@
 package no.nav.regoppslag.treg001.support;
 
-import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
-
 import no.nav.regoppslag.treg001.MottakerPlugin;
 import no.nav.regoppslag.treg001.SakspartPlugin;
-import no.nav.regoppslag.xmlenricher.util.Payload;
+import no.nav.regoppslag.treg001.xmlenricher.util.Payload;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

@@ -1,8 +1,8 @@
-package no.nav.regoppslag.xmlenricher.util;
+package no.nav.regoppslag.treg001.xmlenricher.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import org.w3c.dom.Node;
 
 @Getter

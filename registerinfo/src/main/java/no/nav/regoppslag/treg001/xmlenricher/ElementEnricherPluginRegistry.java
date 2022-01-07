@@ -1,8 +1,8 @@
-package no.nav.regoppslag.xmlenricher;
+package no.nav.regoppslag.treg001.xmlenricher;
 
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.xmlenricher.exceptions.DuplicatedElementSupportException;
-import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.DuplicatedElementSupportException;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import org.w3c.dom.TypeInfo;
 
 import java.util.Set;

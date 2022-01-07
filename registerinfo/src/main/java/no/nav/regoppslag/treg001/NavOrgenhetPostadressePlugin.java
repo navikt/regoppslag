@@ -5,12 +5,11 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
+import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -21,9 +20,6 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
-
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j

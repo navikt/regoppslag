@@ -1,4 +1,4 @@
-package no.nav.regoppslag.xmlenricher;
+package no.nav.regoppslag.treg001.xmlenricher;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
@@ -9,11 +9,13 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.treg001.support.PluginUtil;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.xmlenricher.util.Aggregate;
-import no.nav.regoppslag.xmlenricher.util.AttributeValueNamespaceResolver;
-import no.nav.regoppslag.xmlenricher.util.Payload;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.treg001.xmlenricher.util.Aggregate;
+import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolver;
+import no.nav.regoppslag.treg001.xmlenricher.util.Payload;
+import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,14 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.format;
-import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
-import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -107,8 +104,8 @@ public class ElementEnricher {
 							MDC.put(CALL_ID, callId);
 
 							Map<String, Object> valueMap = new HashMap<>();
-							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
-							valueMap.put(MAALFORM.name(), new SpraakKodeMapper());
+							valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), dokumentTypeId);
+							valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
@@ -145,10 +142,10 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && HttpStatus.GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagFunctionalException) {
-			if (HttpStatus.NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
 			}
 			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());

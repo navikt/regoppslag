@@ -106,10 +106,10 @@ public class OrganisasjonV4Mapper {
     }
 
     private void incrementFunctionalMetrics(Postadresse postadresse, String serviceCode) {
-        if (StringUtils.isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || StringUtils.isBlank(postadresse.getLand()))) {
+        if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
             metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
         }
-        if (StringUtils.isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || StringUtils.isBlank(postadresse.getLand()))) {
+        if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
             metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
         }
         metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
@@ -119,11 +119,11 @@ public class OrganisasjonV4Mapper {
     private Postadresse mapAdresse(String orgNummer, OrganisasjonsDetaljer orgDet)  {
         if (orgDet.getOpphoersdato() != null && LocalDateTime.now().isAfter(orgDet.getOpphoersdato().toGregorianCalendar().toZonedDateTime().toLocalDateTime())) {
             String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato().toGregorianCalendar().getTime()), orgNummer);
-            throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", HttpStatus.NOT_FOUND);
+            throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
         }
 
         GeografiskAdresse activeAddress = selectActiveAddress(orgDet.getPostadresse(), orgDet.getForretningsadresse())
-                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige adresser funnet for orgnummer=" + orgDet.getOrgnummer(), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige adresser funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
 
         Postadresse postadresse = Postadresse.builder().build();
         if (activeAddress instanceof SemistrukturertAdresse) {
@@ -160,7 +160,7 @@ public class OrganisasjonV4Mapper {
 
     private String mapOrganisasjonNavn(OrganisasjonsDetaljer orgDet)  {
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
-                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
         return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
                 .trim();
     }
@@ -229,7 +229,7 @@ public class OrganisasjonV4Mapper {
         if (adresse instanceof SemistrukturertAdresse) {
             return ((SemistrukturertAdresse) adresse).getAdresseledd()
                     .stream()
-                    .anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && StringUtils.isNotEmpty(nva.getVerdi()));
+                    .anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && isNotEmpty(nva.getVerdi()));
         } else if (adresse instanceof Gateadresse) {
             return ((Gateadresse) adresse).getPoststed() != null;
         } else {

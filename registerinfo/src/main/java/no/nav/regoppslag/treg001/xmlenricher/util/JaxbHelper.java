@@ -1,8 +1,8 @@
-package no.nav.regoppslag.xmlenricher.util;
+package no.nav.regoppslag.treg001.xmlenricher.util;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.xmlenricher.exceptions.MarshallerTechnicalException;
+import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

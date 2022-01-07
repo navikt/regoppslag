@@ -1,17 +1,9 @@
 package no.nav.regoppslag.config.cache;
 
-import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATION_TIME;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
-import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
-
 import com.github.benmanes.caffeine.cache.Caffeine;
+import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
+import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
@@ -23,6 +15,14 @@ import org.springframework.context.annotation.Profile;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
+import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATION_TIME;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
+import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 
 /**
  * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
@@ -67,5 +67,5 @@ public class LocalCacheConfig {
 						.build())));
 		return cacheManager;
 	}
-	
+
 }

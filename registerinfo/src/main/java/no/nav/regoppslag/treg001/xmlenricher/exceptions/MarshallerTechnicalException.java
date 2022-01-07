@@ -1,4 +1,4 @@
-package no.nav.regoppslag.xmlenricher.exceptions;
+package no.nav.regoppslag.treg001.xmlenricher.exceptions;
 
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 

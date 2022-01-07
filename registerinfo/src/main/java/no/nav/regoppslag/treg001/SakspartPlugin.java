@@ -11,8 +11,8 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
+import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**

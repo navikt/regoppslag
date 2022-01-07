@@ -14,8 +14,8 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.xmlenricher.ElementEnricherPlugin;
-import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
+import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -29,8 +29,8 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
+import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.MAALFORM;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 

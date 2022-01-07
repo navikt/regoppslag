@@ -7,8 +7,8 @@ import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Con
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.xmlenricher.util.ValueMapKeys;
+import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;

@@ -3,7 +3,7 @@ package no.nav.regoppslag;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.AppVersion;
-import no.nav.regoppslag.config.ElementEnricherConfig;
+import no.nav.regoppslag.treg001.ElementEnricherConfig;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
