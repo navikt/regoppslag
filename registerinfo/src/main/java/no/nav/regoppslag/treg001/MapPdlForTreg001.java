@@ -7,6 +7,10 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
+import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
+import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -15,12 +19,16 @@ import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
+import java.util.List;
+
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
@@ -38,31 +46,40 @@ public class MapPdlForTreg001 {
 	private final LandkodeService landkodeService;
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
+	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
+	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
+	private final SpraakKodeMapper spraakKodeMapper;
 
 	private static final String LAND_NORGE = "Norge";
 
 	@Inject
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
 							LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
-							OrganisasjonV4Mapper organisasjonV4Mapper) {
+							OrganisasjonV4Mapper organisasjonV4Mapper,
+							Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
+							DigitalKontaktinformasjon digitalKontaktinformasjon) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.landkodeService = landkodeService;
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
+		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
+		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
+		this.spraakKodeMapper = new SpraakKodeMapper();
 	}
 
-	public Mottaker getMottakerFraPdl(String tema, Mottaker mottaker) {
+	public Mottaker getMottakerFraPdl(String tema, Mottaker mottaker, String dokumenttypeId) {
 		//Skal elementet berikes?
 		if (mottaker.isBerik()) {
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
-				final String id = mottaker.getId();
 				PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
 						pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), MetricLabels.SERVICE_CODE_TREG001, tema);
 				Mottaker mottakerFraPdl = mapAdresseFraPdl(hentPerson);
 				mottaker.setKortNavn(StringUtils.isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());
 				mottaker.setNavn(mottakerFraPdl.getNavn());
 				mottaker.setMottakeradresse(mottakerFraPdl.getMottakeradresse());
+				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
+				mottaker.setSpraakkode(spraakkode);
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
 				MottakerTo mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, MetricLabels.SERVICE_CODE_TREG001);
@@ -70,8 +87,11 @@ public class MapPdlForTreg001 {
 				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
 				mottaker.setNavn(mottakerTo.getMottaker().getNavn());
+				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, mottakerTo.getSpraakKode());
+				mottaker.setSpraakkode(spraakkode);
 			}
 		}
+
 		return mottaker;
 	}
 
@@ -104,6 +124,16 @@ public class MapPdlForTreg001 {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 		return mottaker;
+	}
+
+	private Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak) {
+		log.info(format("Henter språkinfo for mottaker. dokumentTypeId=%s", dokumenttypeId));
+		//Sjekker språket på malen opp mot mottakers preferanser
+		List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
+		if (sprakinfos == null || sprakinfos.isEmpty()) {
+			log.warn(format("Finner ikke språkinfo i DOKKAT for dokumenttypeid=%s.", dokumenttypeId));
+		}
+		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);
 	}
 
 }

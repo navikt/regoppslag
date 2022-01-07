@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.xmlenricher;
+package no.nav.regoppslag.xmlenricher;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
@@ -9,13 +9,11 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
-import no.nav.regoppslag.treg001.support.PluginUtil;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.treg001.xmlenricher.util.Aggregate;
-import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolver;
-import no.nav.regoppslag.treg001.xmlenricher.util.Payload;
-import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
+import no.nav.regoppslag.xmlenricher.exceptions.MissingPluginException;
+import no.nav.regoppslag.xmlenricher.util.Aggregate;
+import no.nav.regoppslag.xmlenricher.util.AttributeValueNamespaceResolver;
+import no.nav.regoppslag.xmlenricher.util.Payload;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,9 +33,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.String.format;
+import static net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils.isBlank;
+import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
+import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.xmlenricher.util.ValueMapKeys.MAALFORM;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -95,8 +99,8 @@ public class ElementEnricher {
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-							if (PluginUtil.securityContextIsUsedForAuthentication(payload)) {
-								SecurityContextHolder.setContext(PluginUtil.createNewSecurityContext(authentication, true));
+							if (securityContextIsUsedForAuthentication(payload)) {
+								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
 							}
 
 							MDC.put(CONSUMER_ID, consumerId);
@@ -104,8 +108,7 @@ public class ElementEnricher {
 							MDC.put(CALL_ID, callId);
 
 							Map<String, Object> valueMap = new HashMap<>();
-							valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), dokumentTypeId);
-							valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
+							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 
 							return new Aggregate(payload.getPlugin()
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
