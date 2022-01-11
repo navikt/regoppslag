@@ -1,0 +1,103 @@
+{
+  "dokumenttypeId" : "DOKPROD_SYSTEST_ANYP",
+  "dokumentTittel" : "Innkalling til informasjonsm?te",
+  "dokumentType" : "U",
+  "dokumentKategori" : "B",
+  "sensitivt" : true,
+  "tema" : null,
+  "behandlingstema" : null,
+  "artifaktId" : null,
+  "dokumentProduksjonsInfo" : {
+    "vedlegg" : false,
+    "eksternVedlegg" : false,
+    "ikkeRedigerbarMalId" : "MF_000001",
+    "redigerbarMalId" : null,
+    "malLogikkFil" : "Arena",
+    "malXsdReferanse" : "arenabrev/Allow_Any_All.xsd",
+    "spraakInfos" : [
+      {
+        "spraaklag": "NB",
+        "changeStamp": {
+          "opprettetAv": "srvdokkat",
+          "opprettetDato": [
+            2018,
+            7,
+            3,
+            12,
+            4,
+            42,
+            602000000
+          ],
+          "endretAv": null,
+          "endretDato": null
+        }
+      },{
+      "spraaklag": "EN",
+      "changeStamp": {
+        "opprettetAv": "srvdokkat",
+        "opprettetDato": [
+          2018,
+          7,
+          3,
+          12,
+          4,
+          42,
+          602000000
+        ],
+        "endretAv": null,
+        "endretDato": null
+      }
+    },
+      {
+        "spraaklag": "NN",
+        "changeStamp": {
+          "opprettetAv": "srvdokkat",
+          "opprettetDato": [
+            2018,
+            7,
+            3,
+            12,
+            4,
+            42,
+            602000000
+          ],
+          "endretAv": null,
+          "endretDato": null
+        }
+      }],
+    "distribusjonInfo" : {
+      "predefinertDistKanal" : "VED_DITT_NAV_OGSA_PRINT",
+      "portoklasse" : "A",
+      "sikkerhetsnivaa" : 4,
+      "distribusjonVarsels" : [ {
+        "varseltypeId" : "DittNAV_000002",
+        "varselForDistribusjonKanal" : "DITT_NAV",
+        "changeStamp" : {
+          "opprettetAv" : "SrvDokPros",
+          "opprettetDato" : [ 2018, 3, 22, 17, 20, 40, 515000000 ],
+          "endretAv" : null,
+          "endretDato" : null
+        }
+      } ],
+      "changeStamp" : {
+        "opprettetAv" : "SrvDokPros",
+        "opprettetDato" : [ 2018, 3, 22, 17, 20, 40, 511000000 ],
+        "endretAv" : null,
+        "endretDato" : null
+      }
+    },
+    "changeStamp" : {
+      "opprettetAv" : "SrvDokPros",
+      "opprettetDato" : [ 2018, 1, 18, 9, 14, 23, 428000000 ],
+      "endretAv" : "SrvDokPros",
+      "endretDato" : [ 2018, 3, 22, 17, 20, 40, 515000000 ]
+    }
+  },
+  "dokumentMottakInfo" : null,
+  "changeStamp" : {
+    "opprettetAv" : "SrvDokPros",
+    "opprettetDato" : [ 2018, 1, 18, 9, 14, 23, 418000000 ],
+    "endretAv" : null,
+    "endretDato" : null
+  }
+}

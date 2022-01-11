@@ -1,7 +1,5 @@
 package no.nav.regoppslag.itest.config;
 
-import static no.nav.regoppslag.util.TestUtil.classpathToString;
-
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +8,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

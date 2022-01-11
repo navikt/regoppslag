@@ -1,8 +1,8 @@
 package no.nav.regoppslag.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

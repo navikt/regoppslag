@@ -3,8 +3,8 @@ package no.nav.regoppslag.itest;
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.regoppslag.api.KompletterBrevdataRequest;
-import no.nav.regoppslag.api.KompletterBrevdataResponse;
+import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
+import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

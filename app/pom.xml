@@ -10,7 +10,7 @@
 
 	<artifactId>app</artifactId>
 	<packaging>jar</packaging>
-	<name>regoppslag :: App</name>
+	<name>app</name>
 
 	<properties>
 		<start-class>no.nav.regoppslag.Application</start-class>
@@ -18,89 +18,26 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>postadresse</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>registerinfo</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-ldap</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
 		</dependency>
-		<!--CXF dependencies-->
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wss4j</groupId>
-			<artifactId>wss4j-ws-security-dom</artifactId>
-		</dependency>
-		<!--CaffeineCache dependencies-->
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-		</dependency>
 
-		<!--Redis Cache dependencies-->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.xml.ws</groupId>
-			<artifactId>jaxws-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.jws</groupId>
-			<artifactId>javax.jws-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.activation</groupId>
-			<artifactId>jakarta.activation-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.messaging.saaj</groupId>
-			<artifactId>saaj-impl</artifactId>
-		</dependency>
 		<!--Swagger-->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -111,41 +48,7 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 		</dependency>
 
-		<!-- Spring boot actuator to expose metrics endpoint -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<!-- Micrometer dependency  -->
-		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-registry-prometheus</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-log-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-security-ws</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-security-loginmodule</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.neovisionaries</groupId>
-			<artifactId>nv-i18n</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
@@ -166,20 +69,14 @@
 			<artifactId>nav-organisasjonEnhetKontaktinformasjon-v1-tjenestespesifikasjon</artifactId>
 			<classifier>jaxws</classifier>
 		</dependency>
-		<dependency>
-			<groupId>no.nav.dokkat</groupId>
-			<artifactId>dokkat-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dok.metaforcemal</groupId>
-			<artifactId>pesysbrev01</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dok.metaforcemal</groupId>
-			<artifactId>brevdata-felles</artifactId>
-		</dependency>
 
 		<!-- test -->
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>core</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -208,6 +105,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<finalName>app</finalName>
+					<mainClass>no.nav.regoppslag.Application</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

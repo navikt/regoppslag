@@ -1,0 +1,89 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [
+        {
+          "gradering": "STRENGT_FORTROLIG"
+        }
+      ],
+      "doedsfall": [
+        {
+          "doedsdato": "2021-06-17"
+        }
+      ],
+      "foedsel": [
+        {
+          "foedselsaar": 1975,
+          "foedselsdato": "1975-12-31"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-07-01T00:00",
+          "gyldigTilOgMed": "2031-07-01T23:59:59",
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": {
+            "adresselinje1": "Finnesveien 45",
+            "adresselinje2": null,
+            "adresselinje3": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [
+        {
+          "skifteform": "OFFENTLIG",
+          "attestutstedelsesdato": "2014-07-10",
+          "personSomKontakt": null,
+          "advokatSomKontakt": null,
+          "organisasjonSomKontakt": {
+            "kontaktperson": {
+              "fornavn": "NORMAL",
+              "mellomnavn": "",
+              "etternavn": "POSTNUMMER"
+            },
+            "organisasjonsnavn": "Sykehjemm Org",
+            "organisasjonsnummer": "123456789"
+          },
+          "adresse": {
+            "adresselinje1": "Postboks 7320",
+            "adresselinje2": null,
+            "poststedsnavn": "OSLO",
+            "postnummer": "0658",
+            "landkode": "NOR"
+          }
+        }
+      ],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "28118122722",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "doed",
+          "forenkletStatus": "doedIFolkeregisteret"
+        }
+      ],
+      "tilrettelagtKommunikasjon": []
+    }
+  }
+}

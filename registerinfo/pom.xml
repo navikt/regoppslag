@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>regoppslag</artifactId>
+		<groupId>no.nav.regoppslag</groupId>
+		<version>1-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>registerinfo</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<!--CXF dependencies-->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+
+		<!-- grensesnitt/kontrakter -->
+		<dependency>
+			<groupId>no.nav.tjenester.fim</groupId>
+			<artifactId>nav-fim-organisasjon-v4-tjenestespesifikasjon</artifactId>
+			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.tjenester</groupId>
+			<artifactId>nav-organisasjonEnhetKontaktinformasjon-v1-tjenestespesifikasjon</artifactId>
+			<classifier>jaxws</classifier>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dokkat</groupId>
+			<artifactId>dokkat-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.dok.metaforcemal</groupId>
+			<artifactId>brevdata-felles</artifactId>
+		</dependency>
+
+		<!-- test -->
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>core</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock-standalone</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.modig</groupId>
+			<artifactId>modig-testcertificates</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

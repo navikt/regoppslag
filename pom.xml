@@ -11,6 +11,9 @@
 
 	<modules>
 		<module>app</module>
+		<module>core</module>
+		<module>registerinfo</module>
+		<module>postadresse</module>
 	</modules>
 
 	<parent>
@@ -52,6 +55,27 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>registerinfo</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>postadresse</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>

@@ -1,0 +1,56 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1987,
+          "foedselsdato": "1987-01-17"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "KRAFTIG",
+          "mellomnavn": null,
+          "etternavn": "KARAFFEL",
+          "forkortetNavn": "KARAFFEL KRAFTIG"
+        }
+      ],
+      "kontaktadresse": [],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "17018722194",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1987-01-17",
+          "gyldigFraOgMed": "1987-01-17T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": null,
+          "utenlandskAdresse": null,
+          "ukjentBosted": {
+            "bostedskommune": "OSLO"
+          },
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven"
+        }
+      ]
+    }
+  }
+}

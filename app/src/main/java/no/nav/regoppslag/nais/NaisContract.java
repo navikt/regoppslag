@@ -8,6 +8,7 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.AppVersion;
+import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
 import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.DependencyCheckResult;
 import no.nav.regoppslag.nais.selftest.Importance;
