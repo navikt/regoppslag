@@ -1,4 +1,4 @@
-package no.nav.regoppslag.itest.config;
+package no.nav.regoppslag.config;
 
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [
+        {
+          "gradering": "FORTROLIG"
+        }
+      ],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1984,
+          "foedselsdato": "1984-03-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "01038401226",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1984-03-01",
+          "gyldigFraOgMed": "2021-03-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "C/O Herr Andersen",
+          "vegadresse": {
+            "matrikkelId": 275433480,
+            "husnummer": "45",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven"
+        }
+      ],
+      "tilrettelagtKommunikasjon": []
+    }
+  }
+}

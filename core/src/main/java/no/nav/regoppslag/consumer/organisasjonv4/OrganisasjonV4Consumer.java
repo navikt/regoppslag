@@ -57,7 +57,7 @@ public class OrganisasjonV4Consumer {
 		} catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
 			throw new RegOppslagIkkeFunnetException(String.format("Nav enhet finnes ikke for enhetNr=%s, message=%s", organisasjonsnummer, e
 					.getMessage()), e, e.getClass()
-					.equals(HentOrganisasjonOrganisasjonIkkeFunnet.class) ? ORGV4_ORG_IKKE_FUNNET : ORGV4_UGYLDIG_INPUT, HttpStatus.NOT_FOUND);
+					.equals(HentOrganisasjonOrganisasjonIkkeFunnet.class) ? ORGV4_ORG_IKKE_FUNNET : ORGV4_UGYLDIG_INPUT, NOT_FOUND);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=%s, message=%s", organisasjonsnummer, e
 					.getMessage()), e, "OrganisasjonV4 - Teknisk feil");

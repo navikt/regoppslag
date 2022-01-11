@@ -12,7 +12,7 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.treg001.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
@@ -33,8 +33,8 @@ import static java.util.Objects.isNull;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -73,16 +73,16 @@ public class MapPdlForTreg001 {
 		if (mottaker.isBerik()) {
 			if (AktoerType.PERSON.equals(mottaker.getTypeKode())) {
 				PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(
-						pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), MetricLabels.SERVICE_CODE_TREG001, tema);
+						pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema), SERVICE_CODE_TREG001, tema);
 				Mottaker mottakerFraPdl = mapAdresseFraPdl(hentPerson);
-				mottaker.setKortNavn(StringUtils.isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());
+				mottaker.setKortNavn(isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());
 				mottaker.setNavn(mottakerFraPdl.getNavn());
 				mottaker.setMottakeradresse(mottakerFraPdl.getMottakeradresse());
 				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
 				mottaker.setSpraakkode(spraakkode);
 			} else {
 				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
-				MottakerTo mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, MetricLabels.SERVICE_CODE_TREG001);
+				MottakerTo mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
 				mottaker.setId(mottaker.getId());
 				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
@@ -98,26 +98,26 @@ public class MapPdlForTreg001 {
 	public Mottaker mapAdresseFraPdl(PdlMottakerInfo pdlMottakerInfo) {
 		Mottaker mottaker = new Person();
 
-		if (isNull(pdlMottakerInfo.getPostadresse()) || StringUtils.isBlank(pdlMottakerInfo.getPostadresse().getAdresseType())) {
-			throw new RegoppslagIllegalArgumentException("Mottaker adresse kan ikke bli null", HttpStatus.BAD_REQUEST);
+		if (isNull(pdlMottakerInfo.getPostadresse()) || isBlank(pdlMottakerInfo.getPostadresse().getAdresseType())) {
+			throw new RegoppslagIllegalArgumentException("Mottaker adresse kan ikke bli null", BAD_REQUEST);
 		}
 		mottaker.setKortNavn(pdlMottakerInfo.getKortNavn());
 		mottaker.setNavn(pdlMottakerInfo.getNavn());
 
 		PostadresseTo postadresse = pdlMottakerInfo.getPostadresse();
 
-		if (StringUtils.isNotBlank(postadresse.getAdresseType()) && PDLConstant.POSTADRESSE_INNLAND.equalsIgnoreCase(postadresse.getAdresseType())) {
+		if (isNotBlank(postadresse.getAdresseType()) && POSTADRESSE_INNLAND.equalsIgnoreCase(postadresse.getAdresseType())) {
 			NorskPostadresse norskPostadresse = new NorskPostadresse();
-			norskPostadresse.setLand(StringUtils.isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : LAND_NORGE);
+			norskPostadresse.setLand(isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : LAND_NORGE);
 			norskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
 			norskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
 			norskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
 			norskPostadresse.setPostnummer(postadresse.getPostnummer());
 			norskPostadresse.setPoststed(postadresse.getPoststed());
 			mottaker.setMottakeradresse(norskPostadresse);
-		} else if (StringUtils.isNotBlank(postadresse.getAdresseType()) && PDLConstant.POSTADRESSE_UTLAND.equalsIgnoreCase(postadresse.getAdresseType())) {
+		} else if (isNotBlank(postadresse.getAdresseType()) && POSTADRESSE_UTLAND.equalsIgnoreCase(postadresse.getAdresseType())) {
 			UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
-			utenlandskPostadresse.setLand(StringUtils.isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : null);
+			utenlandskPostadresse.setLand(isNotBlank(postadresse.getLandkode()) ? landkodeService.finnLandnavn(postadresse.getLandkode()) : null);
 			utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
 			utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
 			utenlandskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());

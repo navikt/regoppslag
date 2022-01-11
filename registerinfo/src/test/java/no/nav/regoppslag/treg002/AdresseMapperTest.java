@@ -3,13 +3,13 @@ package no.nav.regoppslag.treg002;
 import lombok.SneakyThrows;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -23,30 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1;
-import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2;
-import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_POSTNUMMER;
-import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
-import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
-import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.REGION_DISTRIKTOMRAADE;
-import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
-import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
-import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE2;
-import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE3;
-import static no.nav.regoppslag.util.TestDataUtil.LANDKODE;
-import static no.nav.regoppslag.util.TestDataUtil.POSTNUMMER;
-import static no.nav.regoppslag.util.TestDataUtil.SVENSK_LANDKODE;
-import static no.nav.regoppslag.util.TestDataUtil.UTENLANDSK_ADRESSELINJE1;
-import static no.nav.regoppslag.util.TestDataUtil.UTENLANDSK_ADRESSELINJE2;
-import static no.nav.regoppslag.util.TestDataUtil.UTENLANDSK_ADRESSELINJE3;
-import static no.nav.regoppslag.util.TestDataUtil.createMottaker;
-import static no.nav.regoppslag.util.TestDataUtil.createNorskPostadresse;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -107,12 +83,12 @@ public class AdresseMapperTest {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPerson(PDLResponseUtil.createPersonnavn()), SERVICE_CODE_TREG002, PDLResponseUtil.TEMA);
 
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
-		Assertions.assertEquals(PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1, adresse.getAdresselinje1());
-		Assertions.assertEquals(PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2, adresse.getAdresselinje2());
-		Assertions.assertNull(adresse.getAdresselinje3());
-		Assertions.assertEquals(PDLResponseUtil.LANDKODE_NORGE, adresse.getLandkode());
-		Assertions.assertEquals(PDLResponseUtil.FRITTFORMAT_POSTNUMMER, adresse.getPostnummer());
-		Assertions.assertEquals(PDLResponseUtil.POSTSTED, adresse.getPoststed());
+		assertEquals(PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1, adresse.getAdresselinje1());
+		assertEquals(PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2, adresse.getAdresselinje2());
+		assertNull(adresse.getAdresselinje3());
+		assertEquals(PDLResponseUtil.LANDKODE_NORGE, adresse.getLandkode());
+		assertEquals(PDLResponseUtil.FRITTFORMAT_POSTNUMMER, adresse.getPostnummer());
+		assertEquals(PDLResponseUtil.POSTSTED, adresse.getPoststed());
 	}
 
 	@SneakyThrows
@@ -121,12 +97,12 @@ public class AdresseMapperTest {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002, PDLResponseUtil.TEMA);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
-		Assertions.assertEquals(PDLResponseUtil.POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		Assertions.assertEquals(PDLResponseUtil.POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
-		Assertions.assertEquals(PDLResponseUtil.REGION_DISTRIKTOMRAADE, adresse.getAdresselinje3());
-		Assertions.assertNull(adresse.getPostnummer());
-		Assertions.assertNull(adresse.getPoststed());
-		Assertions.assertEquals(TestDataUtil.SVENSK_LANDKODE, adresse.getLandkode());
+		assertEquals(PDLResponseUtil.POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
+		assertEquals(PDLResponseUtil.POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
+		assertEquals(PDLResponseUtil.REGION_DISTRIKTOMRAADE, adresse.getAdresselinje3());
+		assertNull(adresse.getPostnummer());
+		assertNull(adresse.getPoststed());
+		assertEquals(TestDataUtil.SVENSK_LANDKODE, adresse.getLandkode());
 
 	}
 

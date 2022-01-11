@@ -53,7 +53,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 			HentKontaktinformasjonForEnhetBolkResponse response = organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(mapEnhetNr(enhetNr));
 			return mapHentKontaktinformasjonForEnhetBolkResponse(response, enhetNr);
 		} catch (HentKontaktinformasjonForEnhetBolkUgyldigInput e) {
-			throw new RegOppslagIkkeFunnetException(KUNNE_IKKE_FINNE_ENHET + e.getMessage(), e, "NORG2", HttpStatus.NOT_FOUND);
+			throw new RegOppslagIkkeFunnetException(KUNNE_IKKE_FINNE_ENHET + e.getMessage(), e, "NORG2", NOT_FOUND);
 		} catch (Exception e) {
 			throw new RegOppslagTechnicalException(String.format("Noe gikk galt i kall til Norg for enhetNr=%s, message=%s", enhetNr, e
 					.getMessage()), e, "NORG2 - Teknisk feil");

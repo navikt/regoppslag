@@ -45,7 +45,7 @@ public class AttributeValueNamespaceResolver {
 
 				if (NODE_NAME_TYPE.equals(attr.getLocalName())) {
 					String prefix = getAttributeValuePrefix(attr);
-					if (!StringUtils.isEmpty(prefix)) {
+					if (!isEmpty(prefix)) {
 						Attr existingAttr = ((Element) xpathResult).getAttributeNode("xmlns:" + prefix);
 						if (existingAttr == null || existingAttr.getValue().isEmpty()) {
 							String attrValNsElement = xpathResult.lookupNamespaceURI(prefix);

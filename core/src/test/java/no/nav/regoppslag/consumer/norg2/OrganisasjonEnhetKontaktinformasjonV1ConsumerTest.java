@@ -35,7 +35,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 
 		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		Assertions.assertEquals(ENHET_NAVN, enhet.getEnhetNavn());
+		assertEquals(ENHET_NAVN, enhet.getEnhetNavn());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 
 		Organisasjonsenhet enhet = organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR);
 
-		Assertions.assertNull(enhet.getEnhetNavn());
+		assertNull(enhet.getEnhetNavn());
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 		feiletEnhet.setFeilmelding("Fant ikke enheten");
 		response.getFeiletEnhetListe().add(0, feiletEnhet);
 		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenReturn(response);
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR), "Nav enhet finnes ikke for enhetNr=" + ENHET_NR);
 
 	}
@@ -67,7 +67,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 	public void shouldThrowFunctionalErrorWhenUgyldigInput() throws Exception {
 		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new HentKontaktinformasjonForEnhetBolkUgyldigInput("Ugyldig input", new UgyldigInput()));
 
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR), "Ugyldig input");
 	}
 
@@ -75,7 +75,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1ConsumerTest {
 	public void shouldThrowTechnicalErrorErrorWhenRuntimeException() throws Exception {
 		when(organisasjonEnhetKontaktinformasjonV1.hentKontaktinformasjonForEnhetBolk(any(HentKontaktinformasjonForEnhetBolkRequest.class))).thenThrow(new RuntimeException());
 
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> organisasjonEnhetKontaktinformasjonV1Consumer.hentKontaktinformasjonForEnhet(ENHET_NR), "Noe gikk galt i kall til Norg for enhetNr=" + ENHET_NR);
 
 	}

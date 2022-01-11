@@ -42,13 +42,13 @@ public class LdapAdeoUserLookupTest {
 	public void shouldHentFulltNavn() {
 		when(ldapTemplateMock.search(any(LdapQuery.class), any(AttributesMapper.class))).thenReturn(Collections.singletonList("Itest Itestesen"));
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
-		Assertions.assertEquals("Itest Itestesen", fulltNavn);
+		assertEquals("Itest Itestesen", fulltNavn);
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenAdeoIdentNotFound() {
 		when(ldapTemplateMock.search(any(LdapQuery.class), any(AttributesMapper.class))).thenReturn(Collections.emptyList());
-		Assertions.assertThrows(RegOppslagFunctionalException.class, () ->
+		assertThrows(RegOppslagFunctionalException.class, () ->
 				ldapAdeoUserLookup.hentFulltNavn("bxxxxxx"), "Ldap.hentFulltNavn finner ikke bruker med ident=bxxxxxx");
 	}
 

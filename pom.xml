@@ -62,6 +62,12 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
 				<artifactId>registerinfo</artifactId>
 				<version>${project.version}</version>
 			</dependency>

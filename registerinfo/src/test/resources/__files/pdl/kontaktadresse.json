@@ -1,0 +1,123 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1985,
+          "foedselsdato": "1985-12-02"
+        },
+        {
+          "foedselsaar": 1985,
+          "foedselsdato": "1985-12-02"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "TRIVIELL",
+          "mellomnavn": null,
+          "etternavn": "SKILPADDE",
+          "forkortetNavn": "SKILPADDE TRIVIELL"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-08-10T00:00",
+          "gyldigTilOgMed": "2031-08-10T23:59:59",
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": {
+            "adresselinje1": "POSTBOKS 15",
+            "adresselinje2": null,
+            "adresselinje3": null,
+            "postnummer": "9650"
+          },
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "0223c104-f15f-41ec-9303-7173c6fa2a08",
+            "master": "PDL"
+          }
+        },
+        {
+          "gyldigFraOgMed": "2021-08-10T00:00",
+          "gyldigTilOgMed": "2022-08-10T00:00",
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": {
+            "matrikkelId": 285826942,
+            "husnummer": "3",
+            "husbokstav": "A",
+            "bruksenhetsnummer": null,
+            "adressenavn": "Sømveien",
+            "kommunenummer": "0301",
+            "bydelsnummer": "030108",
+            "tilleggsnavn": null,
+            "postnummer": "0493"
+          },
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "27ee8a3a-164f-4f86-b71f-51cb49ef6d91",
+            "master": "FREG"
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "02128520476",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1985-12-02",
+          "gyldigFraOgMed": "1985-12-02T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "19",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "MARKVEIEN",
+            "kommunenummer": "1103",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "4020"
+          },
+          "matrikkeladresse": null,
+          "utenlandskAdresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "3b4d4940-70e7-46a4-a5eb-43b74f9fa5c1",
+            "master": "FREG"
+          }
+        }
+      ],
+      "statsborgerskap": [
+        {
+          "land": "ERI",
+          "bekreftelsesdato": null,
+          "gyldigFraOgMed": "1986-05-16",
+          "gyldigTilOgMed": null
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven"
+        }
+      ]
+    }
+  }
+}

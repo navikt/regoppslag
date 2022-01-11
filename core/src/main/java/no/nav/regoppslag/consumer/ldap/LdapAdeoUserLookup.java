@@ -72,7 +72,7 @@ public class LdapAdeoUserLookup {
 		}
 
 		if (search == null || search.isEmpty()) {
-			throw new RegOppslagIkkeFunnetException(String.format("Ldap.hentFulltNavn finner ikke bruker med ident=%s. %s", adeoIdent, BRUKER_IKKE_FUNNET), HttpStatus.NOT_FOUND);
+			throw new RegOppslagIkkeFunnetException(String.format("Ldap.hentFulltNavn finner ikke bruker med ident=%s. %s", adeoIdent, BRUKER_IKKE_FUNNET), NOT_FOUND);
 		} else {
 			return search.get(0);
 		}

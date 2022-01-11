@@ -17,20 +17,20 @@ public class MapHentNavnResponse {
 
 	public String mapNavn(PDLHentNavnResponse response) {
 		if (isNull(response) || isNull(response.getData()) || isNull(response.getData().getHentPerson())) {
-			throw new RegoppslagIllegalArgumentException("Personnavn kan ikke være null", HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Personnavn kan ikke være null", BAD_REQUEST);
 		}
 		PDLHentNavnResponse.HentPerson hentPerson = response.getData().getHentPerson();
 
 		if (isNull(hentPerson.getNavn()) || hentPerson.getNavn().isEmpty()) {
-			throw new RegoppslagIllegalArgumentException("Personnavn kan ikke være null", HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Personnavn kan ikke være null", BAD_REQUEST);
 		}
 
 		return hentPerson.getNavn().stream()
 				.filter(this::isBlankForogEtternavn)
-				.map(personNavn -> nonNull(personNavn.getFornavn()) ? StringUtils.trim(personNavn.getFornavn() + " " +
-						(StringUtils.isBlank(personNavn.getMellomnavn()) ? "" : personNavn.getMellomnavn() + " ") +
+				.map(personNavn -> nonNull(personNavn.getFornavn()) ? trim(personNavn.getFornavn() + " " +
+						(isBlank(personNavn.getMellomnavn()) ? "" : personNavn.getMellomnavn() + " ") +
 						personNavn.getEtternavn()) : null).filter(Objects::nonNull)
-				.findFirst().orElseThrow(() -> new RegoppslagIllegalArgumentException("Fornavn eller etternav kan ikke være null", HttpStatus.BAD_REQUEST));
+				.findFirst().orElseThrow(() -> new RegoppslagIllegalArgumentException("Fornavn eller etternav kan ikke være null", BAD_REQUEST));
 	}
 
 	public String mapNavnForDoedsbo(PDLHentNavnResponse response) {
@@ -45,14 +45,14 @@ public class MapHentNavnResponse {
 
 		return hentPerson.getNavn().stream()
 				.filter(this::isBlankForogEtternavn)
-				.map(personNavn -> nonNull(personNavn.getFornavn()) ? StringUtils.trim(personNavn.getFornavn() + " " +
-						(StringUtils.isBlank(personNavn.getMellomnavn()) ? "" : personNavn.getMellomnavn() + " ") +
+				.map(personNavn -> nonNull(personNavn.getFornavn()) ? trim(personNavn.getFornavn() + " " +
+						(isBlank(personNavn.getMellomnavn()) ? "" : personNavn.getMellomnavn() + " ") +
 						personNavn.getEtternavn()) : null).filter(Objects::nonNull)
 				.findFirst().orElse(null);
 	}
 
 	private boolean isBlankForogEtternavn(PersonNavn personNavn) {
-		return StringUtils.isNotBlank(personNavn.getFornavn()) && StringUtils.isNotBlank(personNavn.getEtternavn());
+		return isNotBlank(personNavn.getFornavn()) && isNotBlank(personNavn.getEtternavn());
 	}
 
 }

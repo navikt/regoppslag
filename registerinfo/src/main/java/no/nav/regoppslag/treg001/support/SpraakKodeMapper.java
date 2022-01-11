@@ -100,7 +100,7 @@ public class SpraakKodeMapper {
 			return false;
 		}
 
-		return BooleanUtils.isFalse(Stream.of(Spraakkode.NB.name(), Spraakkode.NN.name(), "NO", "SV", "DA").anyMatch(spraak -> spraak.equalsIgnoreCase(mottakerSpraak)));
+		return isFalse(Stream.of(Spraakkode.NB.name(), Spraakkode.NN.name(), "NO", "SV", "DA").anyMatch(spraak -> spraak.equalsIgnoreCase(mottakerSpraak)));
 	}
 
 	private Spraakkode mapToSpraakKode(String spraakKodeValue) throws IngenGyldigEnumVerdiForSpraakKodeException {

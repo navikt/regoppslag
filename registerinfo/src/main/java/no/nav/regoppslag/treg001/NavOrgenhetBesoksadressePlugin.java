@@ -10,6 +10,7 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
+import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ import org.w3c.dom.Node;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
+
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j
@@ -50,7 +54,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 		String dokumenttypeId = (String) valueMap.get(ValueMapKeys.DOKUMENTTYPEID.name());
 
-		metrics.pluginReceived(MetricLabels.SERVICE_CODE_TREG001, PLUGIN_NAME);
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 
@@ -81,14 +85,14 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 
 	private void validateAdresse(Besoksadresse adresse) {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetsId.", PLUGIN_NAME), HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetsId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
 	private void validateElementType(Node element) {
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), HttpStatus.BAD_REQUEST);
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 }

@@ -65,7 +65,7 @@ public class LandkodeServiceTest {
 	@Test
 	public void testFinnLandNavnNullLandkode() throws Exception {
 		String landNavn = landkodeService.finnLandnavn(null);
-		Assertions.assertNull(landNavn);
+		assertNull(landNavn);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class LandkodeServiceTest {
 		String landNavn = landkodeService.finnLandnavn(FINNES_IKKE);
 		LogbackCapturingAppender.Factory.cleanUp();
 
-		Assertions.assertNull(landNavn);
+		assertNull(landNavn);
 		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon"));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}

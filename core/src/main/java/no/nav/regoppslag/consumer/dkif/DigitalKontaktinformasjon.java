@@ -62,8 +62,8 @@ public class DigitalKontaktinformasjon {
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_SIKKER_DIGITAL_POSTADRESSE}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentSpraak(final String personidentifikator, final boolean inkluderSikkerDigitalPost) throws DigitalKontaktinformasjonFunctionalException {
 		HttpHeaders headers = createHeaders();
-		if (StringUtils.isBlank(personidentifikator)) {
-			throw new RegOppslagIkkeFunnetException("Personidentifikator kan ikke være null", HttpStatus.BAD_REQUEST);
+		if (isBlank(personidentifikator)) {
+			throw new RegOppslagIkkeFunnetException("Personidentifikator kan ikke være null", BAD_REQUEST);
 		}
 		final String fnrTrimmed = personidentifikator.trim();
 		headers.add(NAV_PERSONIDENTER, fnrTrimmed);
@@ -72,7 +72,7 @@ public class DigitalKontaktinformasjon {
 			DkifResponse response = restTemplate.exchange(dkiUrl + "/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost,
 					HttpMethod.GET, new HttpEntity<>(headers), DkifResponse.class).getBody();
 			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.getKontaktinfo().get(fnrTrimmed)) : null;
-			return StringUtils.isBlank(spraak) ? null : spraak.toUpperCase();
+			return isBlank(spraak) ? null : spraak.toUpperCase();
 
 		} catch (HttpClientErrorException e) {
 			throw new DigitalKontaktinformasjonFunctionalException(String.format("Funksjonell feil ved kall mot DigitalKontaktinformasjonV1.kontaktinformasjon. Feilmelding=%s", e

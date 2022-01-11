@@ -24,7 +24,7 @@ public class SaksbehandlerMapperTest {
 	public void mapNullSaksbehandler() {
 		NavAnsatt navAnsatt = new NavAnsatt();
 		navAnsatt = saksbehandlerMapper.map(null, navAnsatt);
-		Assertions.assertNull(navAnsatt.getNavn());
+		assertNull(navAnsatt.getNavn());
 	}
 
 }

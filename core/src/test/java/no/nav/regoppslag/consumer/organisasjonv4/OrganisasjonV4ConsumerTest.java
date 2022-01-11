@@ -44,7 +44,7 @@ public class OrganisasjonV4ConsumerTest {
 
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		Assertions.assertEquals(ORGNAVN, sammensattNavn(organisasjon.getNavn()));
+		assertEquals(ORGNAVN, sammensattNavn(organisasjon.getNavn()));
 	}
 
 	@Test
@@ -53,25 +53,25 @@ public class OrganisasjonV4ConsumerTest {
 
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		Assertions.assertEquals(ORGNAVN + " " + ORGNAVN_2, sammensattNavn(organisasjon.getNavn()));
+		assertEquals(ORGNAVN + " " + ORGNAVN_2, sammensattNavn(organisasjon.getNavn()));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenOrganisasjonNotFound() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new HentOrganisasjonOrganisasjonIkkeFunnet("organisasjon not found", new OrganisasjonIkkeFunnet()));
-		RegOppslagFunctionalException e = Assertions.assertThrows(RegOppslagFunctionalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Nav enhet finnes ikke for enhetNr=999999999");
-		assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatus());
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenRuntimeExceptionThrown() throws Exception {
 		when(organisasjonV4.hentOrganisasjon(any(HentOrganisasjonRequest.class)))
 				.thenThrow(new RuntimeException());
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> organisasjonV4Consumer.hentOrganisasjon(ORGNR), "Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999");
-		Assertions.assertEquals("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999, message=null", e.getMessage());
+		assertEquals("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=999999999, message=null", e.getMessage());
 	}
 
 
@@ -83,7 +83,7 @@ public class OrganisasjonV4ConsumerTest {
 
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		Assertions.assertNull(organisasjon);
+		assertNull(organisasjon);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class OrganisasjonV4ConsumerTest {
 
 		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(ORGNR);
 
-		Assertions.assertNull(sammensattNavn(organisasjon.getNavn()));
+		assertNull(sammensattNavn(organisasjon.getNavn()));
 	}
 
 	private HentOrganisasjonResponse defaultResponse() {

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -53,7 +54,7 @@ public class PostnummerServiceTest {
 	@Test
 	public void testFinnLandNavnNullPoststed() {
 		String landNavn = postnumnmerService.finnPoststed(null);
-		Assertions.assertNull(landNavn);
+		assertNull(landNavn);
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class PostnummerServiceTest {
 		String landNavn = postnumnmerService.finnPoststed("FINNES IKKE");
 		LogbackCapturingAppender.Factory.cleanUp();
 
-		Assertions.assertNull(landNavn);
+		assertNull(landNavn);
 		assertThat(capture.getCapturedLogMessage(), is("Finner ikke poststed for postnummer: FINNES IKKE, sjekk om ny postnummer.txt må lastes ned."));
 		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}

@@ -1,10 +1,10 @@
-package no.nav.regoppslag.service;
+package no.nav.regoppslag.treg001.service;
 
-import no.nav.regoppslag.api.KompletterBrevdataRequest;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
+import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
-import no.nav.regoppslag.xmlenricher.ElementEnricher;
+import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;

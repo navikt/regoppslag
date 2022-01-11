@@ -1,5 +1,6 @@
 package no.nav.regoppslag.util;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;

@@ -43,7 +43,7 @@ public class PostadresseMapper {
                 utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
             }
             else {
-                throw new FeilVedMappingAvPostadresseException(INGEN_TOM_ADRESSELINJE, HttpStatus.BAD_REQUEST);
+                throw new FeilVedMappingAvPostadresseException(INGEN_TOM_ADRESSELINJE, BAD_REQUEST);
             }
         }
         return utenlandskPostadresse;

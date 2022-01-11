@@ -1,4 +1,4 @@
-package no.nav.regoppslag.consumer.organisasjonv4.support;
+package no.nav.regoppslag.treg001.support;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -70,7 +70,7 @@ public class OrganisasjonV4Mapper {
     public String getSakspartNavn(Organisasjon wsOrganisasjon)  {
         OrganisasjonsDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
         Organisasjonsnavn organisasjonsnavn = findValidOrgNavn(orgDet)
-                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrgnummer(), NOT_FOUND));
 
         return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ")
                 .trim();

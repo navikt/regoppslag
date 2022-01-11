@@ -20,6 +20,9 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 @Slf4j
 @Component
 public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements ElementEnricherPlugin {
@@ -43,7 +46,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
-		metrics.pluginReceived(MetricLabels.SERVICE_CODE_TREG001, PLUGIN_NAME);
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 
@@ -72,7 +75,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 
 	private void validateSaksbehandler(NavAnsatt navAnsatt) {
 		if (StringUtils.isEmpty(navAnsatt.getAnsattId())) {
-			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Saksbehandlerdata mangler ansattId", PLUGIN_NAME), HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Saksbehandlerdata mangler ansattId", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
@@ -80,7 +83,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		if (!ELEMENT_NS.equals(element.getNamespaceURI())
 				|| !ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected {" + ELEMENT_NS + "}" + ELEMENT_LOCALNAME
-					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), HttpStatus.BAD_REQUEST);
+					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 

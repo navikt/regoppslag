@@ -130,9 +130,9 @@ public class PdlGraphQLConsumer {
 		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdlUrl).build();
 		final String serviceUserToken = "Bearer " + stsConsumer.getOidcToken();
 		return RequestEntity.post(uri.toUri())
-				.accept(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.header(HttpHeaders.AUTHORIZATION, serviceUserToken)
+				.accept(APPLICATION_JSON)
+				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.header(AUTHORIZATION, serviceUserToken)
 				.header(NAV_CONSUMER_TOKEN, serviceUserToken)
 				.header(HEADER_PDL_TEMA, tema)
 				.header(NAV_CALL_ID, MDC.get(CALL_ID))

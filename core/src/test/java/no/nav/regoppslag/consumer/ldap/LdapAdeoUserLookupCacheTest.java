@@ -2,8 +2,8 @@ package no.nav.regoppslag.consumer.ldap;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import no.nav.regoppslag.config.CacheTestConfig;
 import no.nav.regoppslag.config.ldap.LdapConfig;
-import no.nav.regoppslag.itest.config.CacheTestConfig;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ public class LdapAdeoUserLookupCacheTest {
 
 		String fulltNavn = ldapAdeoUserLookup.hentFulltNavn("Z999990");
 
-		Assert.assertEquals(fulltNavn, NAME1);
+		assertEquals(fulltNavn, NAME1);
 	}
 
 

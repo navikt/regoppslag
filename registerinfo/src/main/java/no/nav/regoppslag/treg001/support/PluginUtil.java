@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 
+import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -26,7 +28,7 @@ public class PluginUtil {
 	private static UsernamePasswordAuthenticationToken createNewAuthentication(Authentication oldAuthentication, boolean isAuthenticated){
 		UsernamePasswordAuthenticationToken newAuthentication;
 		if (isAuthenticated) {
-			newAuthentication = new UsernamePasswordAuthenticationToken(oldAuthentication.getName(), oldAuthentication.getCredentials(), AuthorityUtils.NO_AUTHORITIES);
+			newAuthentication = new UsernamePasswordAuthenticationToken(oldAuthentication.getName(), oldAuthentication.getCredentials(), NO_AUTHORITIES);
 		}else {
 			newAuthentication = new UsernamePasswordAuthenticationToken(oldAuthentication.getName(), oldAuthentication.getCredentials());
 		}

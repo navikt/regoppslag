@@ -22,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j
@@ -52,7 +54,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 
-		metrics.pluginReceived(MetricLabels.SERVICE_CODE_TREG001, PLUGIN_NAME);
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 		
@@ -84,14 +86,14 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	
 	private void validateEnhet(NavEnhet navEnhet)  {
 		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mangler enhetdId.", PLUGIN_NAME), HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mangler enhetdId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 	
 	private void validateElementType(Node element)  {
 		if (!(ELEMENT_LOCALNAME.equals(element.getLocalName()) || ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found " + element.getLocalName(), HttpStatus.BAD_REQUEST);
+					+ ". Found " + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 }

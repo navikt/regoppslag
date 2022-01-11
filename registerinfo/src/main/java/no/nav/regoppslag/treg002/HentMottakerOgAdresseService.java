@@ -2,10 +2,8 @@ package no.nav.regoppslag.treg002;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.api.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.api.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.treg001.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;

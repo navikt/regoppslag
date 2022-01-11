@@ -82,15 +82,15 @@ public class Tkat020DokumenttypeInfoTest {
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
 		MatcherAssert.assertThat(sprakinfos, hasSize(2));
-		Assertions.assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
-		Assertions.assertEquals(LANG2, sprakinfos.get(1).getSpraaklag());
+		assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
+		assertEquals(LANG2, sprakinfos.get(1).getSpraaklag());
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
 	}
@@ -100,7 +100,7 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
@@ -112,7 +112,7 @@ public class Tkat020DokumenttypeInfoTest {
 		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
-		RegOppslagTechnicalException e = Assertions.assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));

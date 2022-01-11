@@ -21,6 +21,9 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 @Component
 @Slf4j
 public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
@@ -50,7 +53,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
-		metrics.pluginReceived(MetricLabels.SERVICE_CODE_TREG001, PLUGIN_NAME);
+		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 
 		validateElementType(content);
 
@@ -79,7 +82,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 	private void validateAdresse(Postadresse adresse)  {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetId.", PLUGIN_NAME), HttpStatus.BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
@@ -87,7 +90,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		if (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
 					+ " or " + ELEMENT_LOCALNAME_RETUR + ". Found {" + element.getNamespaceURI() + "}" + element
-					.getLocalName(), HttpStatus.BAD_REQUEST);
+					.getLocalName(), BAD_REQUEST);
 		}
 	}
 }

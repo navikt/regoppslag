@@ -50,7 +50,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		}
 		
 		String decodedToken = extractAndDecodeHeader(header);
-		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(getConsumerId(decodedToken), decodedToken, AuthorityUtils.NO_AUTHORITIES);
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(getConsumerId(decodedToken), decodedToken, NO_AUTHORITIES);
 		SecurityContextHolder.getContext().setAuthentication(authRequest);
 		
 		MDC.put(CONSUMER_ID, authRequest.getName());
