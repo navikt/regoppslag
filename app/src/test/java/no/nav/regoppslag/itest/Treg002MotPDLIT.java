@@ -1,7 +1,6 @@
 package no.nav.regoppslag.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.regoppslag.rest.RegisteroppslagRestController;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE1_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE2_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE_POSTBOKS;
@@ -64,7 +65,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForPersonWhenLandIsNull() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -82,7 +83,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseFraBostedsadresseWhenPostnummerInKontaktadresseIsNull() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktadresse_with_null_postnummer.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -100,7 +101,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForPersonWhenAdressenErFraPostboks() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/postbokskontaktadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -117,7 +118,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetOffentligKontaktAdresseWhenPersonErDoed() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 		assertPersonAdresseWithV(response);
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -127,7 +128,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForPerson() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		assertNotNull(response);
 		assertPersonAdresse(response);
@@ -142,7 +143,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseOgPrioriterBySource() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
@@ -156,7 +157,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForUtenlandskFrittKontakadresee() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandskfritt_kontaktadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
@@ -171,7 +172,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerAndAdresseForUtenlandskKontakadresee() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandsk_kontaktadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
@@ -187,7 +188,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldGetMottakerWithCoAdresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattadressemedconavn.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
 
 		assertNotNull(response);
 		assertPersonCOAdresse(response);
@@ -202,7 +203,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals("ARBEIDS- OG VELFERDSETATEN", response.getNavn());
@@ -216,7 +217,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ingenpostadresse.xml")));
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
 		assertEquals("0102030405", response.getIdentifikator());
 		assertEquals("ARBEIDS- OG VELFERDSETATEN", response.getNavn());
@@ -234,7 +235,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ugyldigInput-response.xml")));
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
@@ -246,7 +247,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphqlWithErrorResponse(HttpStatus.BAD_REQUEST.value()); //mottakerPlugin
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Funksjonell feil: feilmelding=Kunne ikke hente person fra pdl.");
 
 		verify(1, postRequestedFor(urlEqualTo("/graphql")));
@@ -258,7 +259,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class));
 		assertEquals(HttpStatus.GONE, e.getStatusCode());
 	}
 
@@ -269,7 +270,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
@@ -281,7 +282,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 
@@ -293,7 +294,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/ukjentbosted.json");
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(NOT_FOUND, e.getStatusCode());
 	}
@@ -303,7 +304,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/unauthenticated-error-response.json");
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
@@ -314,7 +315,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphqlWithErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
@@ -324,7 +325,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldThrowWhenTypeIsIncorrect() {
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class),
 				"Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON.");
 
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
@@ -338,7 +339,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		HentMottakerOgAdresseRequest request = createRequest("PERSON");
 		request.setIdentifikator(null);
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
 				"Identifikator kan ikke være null");
 
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
@@ -349,7 +350,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		HentMottakerOgAdresseRequest request = createRequest("PERSON");
 		request.setType(null);
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + RegisteroppslagRestController.REST + RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
 				"Mottakertype kan ikke være null");
 
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
