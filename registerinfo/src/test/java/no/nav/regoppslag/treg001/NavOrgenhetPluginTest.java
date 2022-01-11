@@ -29,6 +29,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.nav.regoppslag.util.TestUtil.*;
+import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -76,113 +78,113 @@ public class NavOrgenhetPluginTest {
 	public void testOrgEnhetPostadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void testOrgEnhetPostadresseIkkeBerikPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='postadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is("Ikke berik"));
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket linje1"));
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke berik"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket linje1"));
 	}
 
 	@Test
 	public void testOrgEnhetReturadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void testOrgEnhetReturadresseIkkeBerikPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='returadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket returadresse"));
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket returadresse linje1"));
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket returadresse"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket returadresse linje1"));
 	}
 
 	@Test
 	public void testOrgEnhetBesoksadressePlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgBesoksadressePlugin.processElement(node, valueMap, null);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void testOrgEnhetBesoksadresseIkkeBerikPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='kontaktinformasjon']/*[local-name()='besoksadresse']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgBesoksadressePlugin.processElement(node, valueMap, null);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
+		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
 	}
 
 	private Organisasjonsenhet createEnhet(String navEnhetNavn) {

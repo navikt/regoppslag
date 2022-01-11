@@ -1,5 +1,7 @@
 package no.nav.regoppslag.treg001.util;
 
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
+import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -32,7 +34,7 @@ public class AttributeValueNamespaceResolverTest {
 
 	@Test
 	public void shouldResolveEnhet() throws Exception {
-		Document document = TestUtil.stringToDocument(TestUtil.classpathToString("__files/treg001/treg001_norg2_request.xml"));
+		Document document = stringToDocument(classpathToString("__files/treg001/treg001_norg2_request.xml"));
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile("/*[local-name()='brevdata']/*[local-name()='NAVFelles']/*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']");
@@ -48,7 +50,7 @@ public class AttributeValueNamespaceResolverTest {
 
 	@Test
 	public void shouldResolve() throws Exception{
-		Document document = TestUtil.stringToDocument(TestUtil.classpathToString("brevdata/brevdata_namespace_person.xml"));
+		Document document = stringToDocument(classpathToString("brevdata/brevdata_namespace_person.xml"));
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(MOTTAKER_XPATH_EXPRESSION);
@@ -65,7 +67,7 @@ public class AttributeValueNamespaceResolverTest {
 
 	@Test
 	public void shouldResolveTypeNamespaceSomethingElse() throws Exception{
-		Document document = TestUtil.stringToDocument(TestUtil.classpathToString("brevdata/brevdata_namespace_person_not_xsi.xml"));
+		Document document = stringToDocument(classpathToString("brevdata/brevdata_namespace_person_not_xsi.xml"));
 
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(MOTTAKER_XPATH_EXPRESSION);

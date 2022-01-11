@@ -23,6 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
@@ -52,7 +53,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
-		String dokumenttypeId = (String) valueMap.get(ValueMapKeys.DOKUMENTTYPEID.name());
+		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
 		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
 

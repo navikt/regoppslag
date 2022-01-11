@@ -1,14 +1,8 @@
 package no.nav.regoppslag.config.cache;
 
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
-import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
-
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -29,6 +23,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.HashMap;
+
+import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
+import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
 /**
  * Iniitaliserer Redis Cache.

@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001.support;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
@@ -26,18 +27,18 @@ public class SpraakKodeMapperTest {
 		mottaker.setSpraakkode(Spraakkode.NB);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NB.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 
 		spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "NO", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 
 		mottaker.setSpraakkode(Spraakkode.NN);
 		spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NN.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NN));
+		assertThat(spraakkode, is(Spraakkode.NN));
 
 		mottaker.setSpraakkode(Spraakkode.EN);
 		spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.EN.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -46,11 +47,11 @@ public class SpraakKodeMapperTest {
 		mottaker.setSpraakkode(Spraakkode.EN);
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NB.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 
 		mottaker.setSpraakkode(Spraakkode.EN);
 		Spraakkode spraakkode2 = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode2, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode2, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "DA", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -66,7 +67,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "SV", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -82,7 +83,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -91,7 +92,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NB.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -99,7 +100,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NN", "EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NB.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NN));
+		assertThat(spraakkode, is(Spraakkode.NN));
 	}
 
 	@Test
@@ -107,7 +108,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NN.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NN.name(), list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -123,7 +124,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -131,7 +132,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(Spraakkode.NN);
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, Spraakkode.NN.name(), null);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 
@@ -140,7 +141,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NB"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	@Test
@@ -148,7 +149,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.EN));
+		assertThat(spraakkode, is(Spraakkode.EN));
 	}
 
 	@Test
@@ -156,7 +157,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NN));
+		assertThat(spraakkode, is(Spraakkode.NN));
 	}
 
 	@Test
@@ -164,7 +165,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = createTkatResponse(singletonList("HOHO"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 
@@ -173,7 +174,7 @@ public class SpraakKodeMapperTest {
 		Mottaker mottaker = new Person();
 		List<SpraakInfoTo> list = null;
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
-		assertThat(spraakkode, Matchers.is(Spraakkode.NB));
+		assertThat(spraakkode, is(Spraakkode.NB));
 	}
 
 	private List<SpraakInfoTo> createTkatResponse(List<String> langs) {

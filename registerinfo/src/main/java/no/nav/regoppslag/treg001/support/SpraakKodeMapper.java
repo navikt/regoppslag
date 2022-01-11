@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class SpraakKodeMapper {
 
 	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
-		if (StringUtils.isBlank(mottakerSpraakKode)) {
+		if (isBlank(mottakerSpraakKode)) {
 			return getMaalFormNaarMottakerIkkeHarSattMaalform(mottaker, spraakInfoMal);
 		} else { //Bruker har ikke satt språk
 			return getMaalFormNaarMottakerHarSattMaalform(mottakerSpraakKode, spraakInfoMal);
@@ -111,7 +111,7 @@ public class SpraakKodeMapper {
 		if (Arrays.stream(Spraakkode.values()).anyMatch(spraakkode -> spraakkode.name().equals(spraakKodeValue))) {
 			return Spraakkode.valueOf(spraakKodeValue);
 		} else {
-			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue), HttpStatus.BAD_REQUEST);
+			throw new IngenGyldigEnumVerdiForSpraakKodeException(String.format("Det finnes ingen SpraakKode Enum for SpraakKode verdi=%s", spraakKodeValue), BAD_REQUEST);
 		}
 	}
 }

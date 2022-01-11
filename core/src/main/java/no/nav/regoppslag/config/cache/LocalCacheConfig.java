@@ -1,9 +1,6 @@
 package no.nav.regoppslag.config.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
-import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
@@ -19,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
+import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
@@ -44,10 +44,10 @@ public class LocalCacheConfig {
 
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(Arrays.asList(
-				new CaffeineCache(LdapAdeoUserLookup.HENT_FULLT_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
-				new CaffeineCache(OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
@@ -59,7 +59,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
-				new CaffeineCache(NaisCheckSTSTokenRetriever.STS_CACHE_NAME, Caffeine.newBuilder()
+				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()

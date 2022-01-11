@@ -31,6 +31,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.nav.regoppslag.util.TestUtil.findSingleNode;
+import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -82,77 +84,77 @@ public class NavOrgenhetNavnPluginTest {
 	@Test
 	public void testNavOrgenhetNavnPlugin() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void testNavOrgenhetNavnPluginWithBehandlendeEnhet() throws Exception {
 		File xmlFile = new File(BREVDATA1);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void testNavOrgenhetNavnPluginIkkeBerik() throws Exception {
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navEnhet']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
+		assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
 	}
 
 	@Test
 	public void testNavOrgenhetNavnPluginIkkeBerikBehandlendeEnhetIfBerikIsFalse() throws Exception {
 		File xmlFile = new File(BREVDATA_8020);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='behandlendeEnhet']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navEnhet.getEnhetsNavn(), nullValue());
+		assertThat(navEnhet.getEnhetsNavn(), nullValue());
 	}
 
 

@@ -35,6 +35,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.nav.regoppslag.util.TestUtil.findSingleNode;
+import static no.nav.regoppslag.util.TestUtil.loadDocument;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -73,20 +76,20 @@ public class SaksbehandlerPluginTest {
 		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA1);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navAnsatt.getNavn(), is("Test Testesen"));
+		assertThat(navAnsatt.getNavn(), is("Test Testesen"));
 	}
 
 	@Test
@@ -94,20 +97,20 @@ public class SaksbehandlerPluginTest {
 		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
-		Document document = TestUtil.loadDocument(xmlFile);
+		Document document = loadDocument(xmlFile);
 
 		String expression1 = "/brevdata/*[local-name()='NAVFelles']//*[local-name()='signerendeSaksbehandler']/*[local-name()='navAnsatt']";
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
-		Node node = TestUtil.findSingleNode(xPathExpression, document);
+		Node node = findSingleNode(xPathExpression, document);
 
 		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
-		MatcherAssert.assertThat(navAnsatt.getNavn(), is("Ikke Berik"));
+		assertThat(navAnsatt.getNavn(), is("Ikke Berik"));
 	}
 
 	@Configuration

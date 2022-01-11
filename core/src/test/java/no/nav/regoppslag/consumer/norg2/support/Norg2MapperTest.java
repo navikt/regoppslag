@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.norg2.support;
 
+import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -41,43 +42,43 @@ public class Norg2MapperTest {
 		NavEnhet enhet = new NavEnhet();
 		enhet.setEnhetsId(NAV_ENHET_ID);
 		norg2Mapper.mapEnhetNavn(createEnhetWithStedsadresse(NAV_ENHET_NAVN), enhet);
-		MatcherAssert.assertThat(enhet.getEnhetsId(), is(NAV_ENHET_ID));
-		MatcherAssert.assertThat(enhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(enhet.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(enhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void shouldMapStedadresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
 		norg2Mapper.mapPostadresse(createEnhetWithStedsadresse(NAV_ENHET_NAVN), postadresse);
-		MatcherAssert.assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
+		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
 
 	@Test
 	public void shouldMapPostboksadresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
 		norg2Mapper.mapPostadresse(createEnhetWithPostbokssadresse(NAV_ENHET_NAVN), postadresse);
-		MatcherAssert.assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
-		MatcherAssert.assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
+		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is("Postboks " + POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is("Postboks " + POSTBOKSNUMMER + " " + POSTBOKSANLEGG));
+		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
+		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
 
 	@Test
 	public void shouldMapBesokAdresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
 		norg2Mapper.mapBesokadresse(createWSEnhetWithBesoksadresse(NAV_ENHET_NAVN), postadresse);
-		MatcherAssert.assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 
-		MatcherAssert.assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
-		MatcherAssert.assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
+		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
 
 	private Postadresse createPostadresse (String enhetId) {

@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
+import static java.lang.String.*;
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -61,7 +62,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		try {
 			NavEnhet navEnhet = unmarshal(content);
 
-			log.info(String.format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info(format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
 
 			//Skal elementet berikes?
 			if (navEnhet.isBerik()) {
@@ -69,18 +70,18 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
 				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
 			} else {
-				log.info(String.format("TREG001 NavOrgEnhetPlugin: element-berik=%s. Hopper over beriking av element=%s med enhetsId=%s.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId()));
+				log.info(format("TREG001 NavOrgEnhetPlugin: element-berik=%s. Hopper over beriking av element=%s med enhetsId=%s.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId()));
 				return content;
 			}
 
 			Document newNode = convertObjectToDocument(navEnhet);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info(format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		}
 	}
 	

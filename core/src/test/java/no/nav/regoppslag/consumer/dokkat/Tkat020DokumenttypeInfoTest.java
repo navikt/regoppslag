@@ -10,7 +10,6 @@ import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,7 +80,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
-		MatcherAssert.assertThat(sprakinfos, hasSize(2));
+		assertThat(sprakinfos, hasSize(2));
 		assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
 		assertEquals(LANG2, sprakinfos.get(1).getSpraaklag());
 	}

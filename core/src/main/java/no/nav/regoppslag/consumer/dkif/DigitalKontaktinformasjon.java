@@ -75,10 +75,10 @@ public class DigitalKontaktinformasjon {
 			return isBlank(spraak) ? null : spraak.toUpperCase();
 
 		} catch (HttpClientErrorException e) {
-			throw new DigitalKontaktinformasjonFunctionalException(String.format("Funksjonell feil ved kall mot DigitalKontaktinformasjonV1.kontaktinformasjon. Feilmelding=%s", e
+			throw new DigitalKontaktinformasjonFunctionalException(format("Funksjonell feil ved kall mot DigitalKontaktinformasjonV1.kontaktinformasjon. Feilmelding=%s", e
 					.getMessage()), e.getCause(), "DKIF", e.getStatusCode());
 		} catch (HttpServerErrorException e) {
-			throw new DigitalKontaktinformasjonTechnicalException(String.format("Teknisk feil ved kall mot DigitalKontaktinformasjon.kontaktinformasjon. Feilmelding=%s", e.getMessage()), e);
+			throw new DigitalKontaktinformasjonTechnicalException(format("Teknisk feil ved kall mot DigitalKontaktinformasjon.kontaktinformasjon. Feilmelding=%s", e.getMessage()), e);
 		}
 	}
 

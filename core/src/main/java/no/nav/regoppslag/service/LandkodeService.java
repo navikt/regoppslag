@@ -1,7 +1,6 @@
 package no.nav.regoppslag.service;
 
 import com.neovisionaries.i18n.CountryCode;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -44,7 +43,7 @@ public class LandkodeService {
 
 	public String finnLandkode(String landnavn) {
 
-		if (StringUtils.isBlank(landnavn)) {
+		if (isBlank(landnavn)) {
 			return null;
 		}
 
@@ -61,7 +60,7 @@ public class LandkodeService {
 	}
 
 	public String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
-		 return StringUtils.isBlank(landkodeAlpha3) ? null : CountryCode.getByAlpha3Code(landkodeAlpha3).name();
+		 return isBlank(landkodeAlpha3) ? null : CountryCode.getByAlpha3Code(landkodeAlpha3).name();
 	}
 
 }

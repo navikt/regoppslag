@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,12 +58,12 @@ public class AdresseMapperTest {
 	public void shouldMapWithNorskPostAdresse() {
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker());
 		adresse.setLandkode(TestDataUtil.LANDKODE);
-		MatcherAssert.assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.ADRESSELINJE1));
-		MatcherAssert.assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.ADRESSELINJE2));
-		MatcherAssert.assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.ADRESSELINJE3));
-		MatcherAssert.assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.LANDKODE));
-		MatcherAssert.assertThat(adresse.getPostnummer(), Matchers.is(TestDataUtil.POSTNUMMER));
-		MatcherAssert.assertThat(adresse.getPoststed(), Matchers.is(TestDataUtil.POSTSTED));
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is(TestDataUtil.LANDKODE));
+		assertThat(adresse.getPostnummer(), is(TestDataUtil.POSTNUMMER));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 	@Test
@@ -70,12 +71,12 @@ public class AdresseMapperTest {
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker(false));
 		adresse.setLandkode(TestDataUtil.SVENSK_LANDKODE);
 
-		MatcherAssert.assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE1));
-		MatcherAssert.assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
-		MatcherAssert.assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
-		MatcherAssert.assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.SVENSK_LANDKODE));
-		MatcherAssert.assertThat(adresse.getPostnummer(), nullValue());
-		MatcherAssert.assertThat(adresse.getPoststed(), nullValue());
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is(TestDataUtil.SVENSK_LANDKODE));
+		assertThat(adresse.getPostnummer(), nullValue());
+		assertThat(adresse.getPoststed(), nullValue());
 	}
 
 	@Test
@@ -114,12 +115,12 @@ public class AdresseMapperTest {
 		mottaker.setMottakeradresse(norskPostadresse);
 		HentMottakerOgAdresseResponse.Adresse adresse = adresseMapper.map(mottaker);
 
-		MatcherAssert.assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.ADRESSELINJE1));
-		MatcherAssert.assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.ADRESSELINJE2));
-		MatcherAssert.assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.ADRESSELINJE3));
-		MatcherAssert.assertThat(adresse.getLandkode(), is("???"));
-		MatcherAssert.assertThat(adresse.getPostnummer(), Matchers.is(TestDataUtil.POSTNUMMER));
-		MatcherAssert.assertThat(adresse.getPoststed(), Matchers.is(TestDataUtil.POSTSTED));
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is("???"));
+		assertThat(adresse.getPostnummer(), is(TestDataUtil.POSTNUMMER));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 

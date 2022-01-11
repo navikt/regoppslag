@@ -1,7 +1,6 @@
 package no.nav.regoppslag.consumer.ldap.support;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +16,7 @@ public class SaksbehandlerMapperTest {
 	public void mapSaksbehandler() {
 		NavAnsatt navAnsatt = new NavAnsatt();
 		navAnsatt = saksbehandlerMapper.map(SAKSBEHANDLER_NAVN, navAnsatt);
-		MatcherAssert.assertThat(navAnsatt.getNavn(), is(SAKSBEHANDLER_NAVN));
+		assertThat(navAnsatt.getNavn(), is(SAKSBEHANDLER_NAVN));
 	}
 
 	@Test

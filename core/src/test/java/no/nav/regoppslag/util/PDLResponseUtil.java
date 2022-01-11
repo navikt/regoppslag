@@ -23,6 +23,7 @@ import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -670,27 +671,27 @@ public class PDLResponseUtil {
 	}
 
 	public static void postPdlGraphql(int status, String filePath) {
-		WireMock.stubFor(WireMock.post("/graphql")
-				.willReturn(WireMock.aResponse().withStatus(status)
+		stubFor(post("/graphql")
+				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
 						.withBodyFile(filePath)));
 	}
 
 	public static void getPdlDkif(int status, String filePath) {
-		WireMock.stubFor(WireMock.get("/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false")
-				.willReturn(WireMock.aResponse().withStatus(status)
+		stubFor(get("/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false")
+				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
 						.withBodyFile(filePath)));
 	}
 
 	public static void postPdlGraphqlWithErrorResponse(int status) {
-		WireMock.stubFor(WireMock.post("/graphql")
-				.willReturn(WireMock.aResponse().withStatus(status)
+		stubFor(post("/graphql")
+				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())));
 	}
 
 	public static void getStsToken(int status, String filePath) {
-		WireMock.stubFor(WireMock.get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(WireMock.aResponse()
+		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
 				.withStatus(status)
 				.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
 				.withBodyFile(filePath)));

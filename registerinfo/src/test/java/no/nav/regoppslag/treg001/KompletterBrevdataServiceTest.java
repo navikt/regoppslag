@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
+import static no.nav.regoppslag.util.TestUtil.stringToDocument;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +58,7 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
-		when(elementEnricher.process(any(), any(), anyString())).thenReturn(TestUtil.stringToDocument(brevdataUtfylt));
+		when(elementEnricher.process(any(), any(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
 		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 		assertNotNull(actualResponse.getBrevdata());
 		verify(elementEnricher, times(1)).process(any(), any(), any());
