@@ -23,7 +23,7 @@
 	</parent>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<bootstrap.version>5.0.1</bootstrap.version>
@@ -363,7 +363,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>17</version>
+							<version>11</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
