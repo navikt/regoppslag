@@ -1,20 +1,21 @@
 package no.nav.regoppslag.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
+import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
-import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Jarl Øystein Samseth, Visma Consulting
@@ -26,7 +27,8 @@ public class RegisteroppslagRestControllerTest {
 	HentMottakerOgAdresseRequest mottakerOgAdresseRequest = mock(HentMottakerOgAdresseRequest.class);
 	KompletterBrevdataService kompletterBrevdataService = mock(KompletterBrevdataService.class);
 	HentMottakerOgAdresseService hentMottakerOgAdresseService = mock(HentMottakerOgAdresseService.class);
-	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService,hentMottakerOgAdresseService);
+	PostadresseService postadresseService = mock(PostadresseService.class);
+	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService, hentMottakerOgAdresseService, postadresseService);
 
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException {
@@ -38,7 +40,7 @@ public class RegisteroppslagRestControllerTest {
 		when(kompletterBrevdataService.hentBrevdataFraRegistre(request)).thenReturn(response);
 		when(hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(mottakerOgAdresseRequest)).thenReturn(responseMogA);
 	}
-	
+
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagSecurityException {
 		KompletterBrevdataResponse actualResponse = registeroppslagRestController.kompletterBrevdata(request);

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
@@ -49,11 +50,15 @@ public class RegisteroppslagRestController {
 
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
+	private final PostadresseService postadresseService;
 
 	@Inject
-	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService, HentMottakerOgAdresseService hentMottakerOgAdresseService) {
+	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService,
+										 HentMottakerOgAdresseService hentMottakerOgAdresseService,
+										 PostadresseService postadresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
+		this.postadresseService = postadresseService;
 	}
 
 	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
