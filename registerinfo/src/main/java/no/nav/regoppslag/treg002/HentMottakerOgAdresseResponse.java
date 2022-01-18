@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import no.nav.regoppslag.rreg003.Adresse;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -24,22 +25,4 @@ public class HentMottakerOgAdresseResponse {
 	private String navn;
 	private Adresse adresse;
 
-	@Data
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Adresse {
-		@ApiModelProperty(example = "Postboks 5 St Olavs Plass")
-		private String adresselinje1;
-		@ApiModelProperty(example = "null")
-		private String adresselinje2;
-		@ApiModelProperty(example = "null")
-		private String adresselinje3;
-		@ApiModelProperty(example = "0130")
-		private String postnummer;
-		@ApiModelProperty(example = "OSLO")
-		private String poststed;
-		@ApiModelProperty(example = "NO")
-		private String landkode;
-	}
 }

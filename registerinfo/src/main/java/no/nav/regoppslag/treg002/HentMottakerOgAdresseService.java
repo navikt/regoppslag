@@ -3,7 +3,8 @@ package no.nav.regoppslag.treg002;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.treg001.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.rreg003.AdresseMapper;
+import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
@@ -13,7 +14,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
-import no.nav.regoppslag.treg001.to.MottakerTo;
+import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg002;
+package no.nav.regoppslag.rreg003;
 
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
@@ -42,13 +42,13 @@ public class AdresseMapper {
 		this.metrics = metrics;
 	}
 
-	public HentMottakerOgAdresseResponse.Adresse map(Mottaker mottaker){
+	public Adresse map(Mottaker mottaker){
 
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse){
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
-			return HentMottakerOgAdresseResponse.Adresse.builder()
+			return Adresse.builder()
 				.adresselinje1(norskPostadresse.getAdresselinje1())
 				.adresselinje2(norskPostadresse.getAdresselinje2())
 				.adresselinje3(norskPostadresse.getAdresselinje3())
@@ -58,7 +58,7 @@ public class AdresseMapper {
 		} else {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
-			return HentMottakerOgAdresseResponse.Adresse.builder()
+			return Adresse.builder()
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
@@ -66,11 +66,11 @@ public class AdresseMapper {
 		}
 	}
 
-	public HentMottakerOgAdresseResponse.Adresse mapFraPdl(PdlMottakerInfo mottaker) {
+	public Adresse mapFraPdl(PdlMottakerInfo mottaker) {
 		if (POSTADRESSE_INNLAND.equals(mottaker.getPostadresse().getAdresseType())) {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 			PostadresseTo norskPostadresse = mottaker.getPostadresse();
-			return HentMottakerOgAdresseResponse.Adresse.builder()
+			return Adresse.builder()
 					.adresselinje1(norskPostadresse.getAdresselinje1())
 					.adresselinje2(norskPostadresse.getAdresselinje2())
 					.adresselinje3(norskPostadresse.getAdresselinje3())
@@ -81,7 +81,7 @@ public class AdresseMapper {
 		} else if(POSTADRESSE_UTLAND.equals(mottaker.getPostadresse().getAdresseType())){
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			PostadresseTo utenlandskPostadresse = mottaker.getPostadresse();
-			return HentMottakerOgAdresseResponse.Adresse.builder()
+			return Adresse.builder()
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() :null)
 					.adresselinje2(isNotBlank(utenlandskPostadresse.getAdresselinje2()) ? utenlandskPostadresse.getAdresselinje2() : null)
 					.adresselinje3(isNotBlank(utenlandskPostadresse.getAdresselinje3())  ? utenlandskPostadresse.getAdresselinje3() : null)

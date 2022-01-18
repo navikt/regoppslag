@@ -11,8 +11,6 @@ import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

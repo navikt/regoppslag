@@ -24,25 +24,5 @@ public class PostadresseResponse {
 	private String navn;
 	private Adresse adresse;
 
-	@Data
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Adresse {
-		@ApiModelProperty(example = "NorskPostadresse", notes = "NorskPostadresse/UtenlandskPostadresse")
-		private PostadresseType type;
 
-		@ApiModelProperty(example = "Postboks 5 St Olavs Plass")
-		private String adresselinje1;
-		@ApiModelProperty(example = "null")
-		private String adresselinje2;
-		@ApiModelProperty(example = "null")
-		private String adresselinje3;
-		@ApiModelProperty(example = "0130")
-		private String postnummer;
-		@ApiModelProperty(example = "OSLO")
-		private String poststed;
-		@ApiModelProperty(example = "NO")
-		private String landkode;
-	}
 }

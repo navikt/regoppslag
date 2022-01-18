@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.rreg003.PostadresseRequest;
+import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
@@ -30,6 +32,7 @@ import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
+import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
@@ -47,6 +50,7 @@ public class RegisteroppslagRestController {
 	public static final String REST = "rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = "kompletterBrevdata";
 	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = "hentMottakerOgAdresse";
+	public static final String POSTADRESSE_URI_PATH = "postadresse";
 
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
@@ -108,6 +112,32 @@ public class RegisteroppslagRestController {
 			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
 			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody
+					.getType()));
+			return response;
+		} finally {
+			SecurityContextHolder.clearContext();
+			MDC.clear();
+		}
+	}
+
+	@ApiOperation(value = "RREG003", notes = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + samlTokenInfo)
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
+			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
+			@ApiResponse(code = 404, message = "Bruker har ukjent adresse"),
+			@ApiResponse(code = 410, message = "Person er død og har ukjent adresse"),
+			@ApiResponse(code = 500, message = "Teknisk feil")
+	})
+	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
+	public @ResponseBody PostadresseResponse postadresse(@RequestBody PostadresseRequest requestBody)
+			throws RegOppslagSecurityException {
+
+		try {
+			log.info(String.format("RREG003 Henter postaddresse. MottakerType=%s", requestBody.getType()));
+			PostadresseResponse response = postadresseService.postadresseInfo(requestBody);
+			log.info(String.format("RREG003 Har hentet postadresse. MottakerType=%s", requestBody
 					.getType()));
 			return response;
 		} finally {
