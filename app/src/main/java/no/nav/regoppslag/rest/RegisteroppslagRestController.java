@@ -135,10 +135,9 @@ public class RegisteroppslagRestController {
 			throws RegOppslagSecurityException {
 
 		try {
-			log.info(String.format("RREG003 Henter postaddresse. MottakerType=%s", requestBody.getType()));
+			log.info("RREG003 Henter postaddresse.");
 			PostadresseResponse response = postadresseService.postadresseInfo(requestBody);
-			log.info(String.format("RREG003 Har hentet postadresse. MottakerType=%s", requestBody
-					.getType()));
+			log.info("RREG003 Har hentet postadresse.");
 			return response;
 		} finally {
 			SecurityContextHolder.clearContext();
