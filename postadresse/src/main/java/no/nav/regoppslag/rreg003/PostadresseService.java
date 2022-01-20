@@ -112,7 +112,7 @@ public class PostadresseService {
 		}
 
 		//Identifikator må være 9, 11 eller 13 karakterer lang for å være en gyldig ident
-		if (Arrays.asList(9, 11, 13).contains(request.getIdentifikator().length())) {
+		if (!Arrays.asList(9, 11, 13).contains(request.getIdentifikator().length())) {
 			throw new RegoppslagIllegalArgumentException("Identifikator er feilformatert. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
