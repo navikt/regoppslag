@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -79,7 +80,7 @@ public class HentMottakerOgAdresseService {
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(pdlMottakerInfo.getNavn())
-				.adresse(adresseMapper.mapFraPdl(pdlMottakerInfo))
+				.adresse(mapAdresseTilTreg002Adresse(adresseMapper.mapFraPdl(pdlMottakerInfo)))
 				.build();
 	}
 
@@ -89,7 +90,7 @@ public class HentMottakerOgAdresseService {
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(mottakerTo.getMottaker().getNavn())
-				.adresse(adresseMapper.map(mottakerTo.getMottaker()))
+				.adresse(mapAdresseTilTreg002Adresse(adresseMapper.map(mottakerTo.getMottaker())))
 				.build();
 	}
 
