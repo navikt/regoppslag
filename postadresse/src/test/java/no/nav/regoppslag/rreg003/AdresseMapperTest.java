@@ -7,6 +7,7 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.mock;
 public class AdresseMapperTest {
 
 	private LandkodeService landkodeService;
+	private LandkodeServiceNorsk landkodeServiceNorsk;
 	private MapPDLResponse mapPDLResponse;
 	@Mock
 	private MicrometerMetrics metrics;
@@ -49,7 +51,7 @@ public class AdresseMapperTest {
 		landkodeService = new LandkodeService();
 		postnummerService.init();
 		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
-		adresseMapper = new AdresseMapper(landkodeService, metrics);
+		adresseMapper = new AdresseMapper(landkodeService, metrics, landkodeServiceNorsk);
 	}
 
 	@Test

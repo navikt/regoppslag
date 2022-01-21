@@ -1,5 +1,6 @@
 package no.nav.regoppslag.rreg003;
 
+import static com.neovisionaries.i18n.CountryCode.getByAlpha2Code;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
@@ -18,6 +19,7 @@ import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -31,15 +33,17 @@ public class AdresseMapper {
 
 	private final LandkodeService landkodeService;
 	private final MicrometerMetrics metrics;
+	private final LandkodeServiceNorsk landkodeServiceNorsk;
 
 	private static final String LANDKODE_NORGE = "NO";
 	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
 	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
 
 	@Inject
-	public AdresseMapper(LandkodeService landkodeService, MicrometerMetrics metrics) {
+	public AdresseMapper(LandkodeService landkodeService, MicrometerMetrics metrics, LandkodeServiceNorsk landkodeServiceNorsk) {
 		this.landkodeService = landkodeService;
 		this.metrics = metrics;
+		this.landkodeServiceNorsk = landkodeServiceNorsk;
 	}
 
 	public Adresse map(Mottaker mottaker){
@@ -52,6 +56,7 @@ public class AdresseMapper {
 				.adresselinje1(norskPostadresse.getAdresselinje1())
 				.adresselinje2(norskPostadresse.getAdresselinje2())
 				.adresselinje3(norskPostadresse.getAdresselinje3())
+					.land(norskPostadresse.getLand())
 					.landkode(getLandkode(norskPostadresse.getLand()))
 				.postnummer(norskPostadresse.getPostnummer())
 				.poststed(norskPostadresse.getPoststed()).build();
@@ -62,6 +67,7 @@ public class AdresseMapper {
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
+					.land(utenlandskPostadresse.getLand())
 					.landkode(getLandkode(utenlandskPostadresse.getLand())).build();
 		}
 	}
@@ -76,6 +82,7 @@ public class AdresseMapper {
 					.adresselinje3(norskPostadresse.getAdresselinje3())
 					.postnummer(norskPostadresse.getPostnummer())
 					.poststed(norskPostadresse.getPoststed())
+					.land(isNotBlank(norskPostadresse.getLandkode()) ? landkodeServiceNorsk.finnLand(norskPostadresse.getLandkode()) : "NORGE")
 					.landkode(isNotBlank(norskPostadresse.getLandkode()) ? norskPostadresse.getLandkode() : LANDKODE_NORGE)
 					.build();
 		} else if(POSTADRESSE_UTLAND.equals(mottaker.getPostadresse().getAdresseType())){
@@ -85,6 +92,7 @@ public class AdresseMapper {
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() :null)
 					.adresselinje2(isNotBlank(utenlandskPostadresse.getAdresselinje2()) ? utenlandskPostadresse.getAdresselinje2() : null)
 					.adresselinje3(isNotBlank(utenlandskPostadresse.getAdresselinje3())  ? utenlandskPostadresse.getAdresselinje3() : null)
+					.land(landkodeServiceNorsk.finnLand(utenlandskPostadresse.getLandkode()))
 					.landkode(utenlandskPostadresse.getLandkode())
 					.build();
 		}
