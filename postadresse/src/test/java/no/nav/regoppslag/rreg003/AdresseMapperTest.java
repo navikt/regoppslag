@@ -49,6 +49,7 @@ public class AdresseMapperTest {
 	public void setUp() throws IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
+		landkodeServiceNorsk = new LandkodeServiceNorsk();
 		postnummerService.init();
 		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
 		adresseMapper = new AdresseMapper(landkodeService, metrics, landkodeServiceNorsk);
@@ -58,10 +59,12 @@ public class AdresseMapperTest {
 	public void shouldMapWithNorskPostAdresse() {
 		Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker());
 		adresse.setLandkode(TestDataUtil.LANDKODE);
+
 		assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.ADRESSELINJE2));
 		assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.LANDKODE));
+		assertThat(adresse.getLand(), Matchers.is(TestDataUtil.LANDNAVN));
 		assertThat(adresse.getPostnummer(), Matchers.is(TestDataUtil.POSTNUMMER));
 		assertThat(adresse.getPoststed(), Matchers.is(TestDataUtil.POSTSTED));
 	}
@@ -75,6 +78,7 @@ public class AdresseMapperTest {
 		assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
 		assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.SVENSK_LANDKODE));
+		assertThat(adresse.getLand(), Matchers.is(TestDataUtil.SVENSK_LAND));
 		assertThat(adresse.getPostnummer(), nullValue());
 		assertThat(adresse.getPoststed(), nullValue());
 	}

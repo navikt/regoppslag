@@ -40,10 +40,12 @@ public class TestDataUtil {
     public static final String ADRESSELINJE_POSTSTED = "poststed";
 
     public static final String LANDKODE = "NO";
+    public static final String LANDNAVN = "NORGE";
     public static final String UTENLANDSK_ADRESSELINJE1 = "Dammgatan 14";
     public static final String UTENLANDSK_ADRESSELINJE2 = "SE 567 31 VAGGERYD";
     public static final String UTENLANDSK_ADRESSELINJE3 = "SWEDEN";
     public static final String SVENSK_LANDKODE = "SE";
+    public static final String SVENSK_LAND = "SVERIGE";
     public static final String POSTNUMMER = "3000";
     public static final String POSTSTED = "HER";
     public static final String GATENAVN = "Gatenavn";

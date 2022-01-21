@@ -59,7 +59,7 @@ public class AdresseMapper {
 				.adresselinje1(norskPostadresse.getAdresselinje1())
 				.adresselinje2(norskPostadresse.getAdresselinje2())
 				.adresselinje3(norskPostadresse.getAdresselinje3())
-					.land(norskPostadresse.getLand())
+					.land(landkodeServiceNorsk.finnLand(norskPostadresse.getLand()))
 					.landkode(getLandkode(norskPostadresse.getLand()))
 				.postnummer(norskPostadresse.getPostnummer())
 				.poststed(norskPostadresse.getPoststed()).build();
@@ -71,7 +71,7 @@ public class AdresseMapper {
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
-					.land(utenlandskPostadresse.getLand())
+					.land(landkodeServiceNorsk.finnLand(utenlandskPostadresse.getLand()))
 					.landkode(getLandkode(utenlandskPostadresse.getLand())).build();
 		}
 	}
