@@ -11,7 +11,6 @@ import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,13 +59,13 @@ public class AdresseMapperTest {
 		Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker());
 		adresse.setLandkode(TestDataUtil.LANDKODE);
 
-		assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.ADRESSELINJE1));
-		assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.ADRESSELINJE2));
-		assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.ADRESSELINJE3));
-		assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.LANDKODE));
-		assertThat(adresse.getLand(), Matchers.is(TestDataUtil.LANDNAVN));
-		assertThat(adresse.getPostnummer(), Matchers.is(TestDataUtil.POSTNUMMER));
-		assertThat(adresse.getPoststed(), Matchers.is(TestDataUtil.POSTSTED));
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is(TestDataUtil.LANDKODE));
+		assertThat(adresse.getLand(), is(TestDataUtil.LANDNAVN));
+		assertThat(adresse.getPostnummer(), is(TestDataUtil.POSTNUMMER));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 	@Test
@@ -74,11 +73,11 @@ public class AdresseMapperTest {
 		Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker(false));
 		adresse.setLandkode(TestDataUtil.SVENSK_LANDKODE);
 
-		assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE1));
-		assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
-		assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
-		assertThat(adresse.getLandkode(), Matchers.is(TestDataUtil.SVENSK_LANDKODE));
-		assertThat(adresse.getLand(), Matchers.is(TestDataUtil.SVENSK_LAND));
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
+		assertThat(adresse.getLandkode(), is(TestDataUtil.SVENSK_LANDKODE));
+		assertThat(adresse.getLand(), is(TestDataUtil.SVENSK_LAND));
 		assertThat(adresse.getPostnummer(), nullValue());
 		assertThat(adresse.getPoststed(), nullValue());
 	}
@@ -119,12 +118,12 @@ public class AdresseMapperTest {
 		mottaker.setMottakeradresse(norskPostadresse);
 		Adresse adresse = adresseMapper.map(mottaker);
 
-		assertThat(adresse.getAdresselinje1(), Matchers.is(TestDataUtil.ADRESSELINJE1));
-		assertThat(adresse.getAdresselinje2(), Matchers.is(TestDataUtil.ADRESSELINJE2));
-		assertThat(adresse.getAdresselinje3(), Matchers.is(TestDataUtil.ADRESSELINJE3));
+		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.ADRESSELINJE1));
+		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.ADRESSELINJE2));
+		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), is("???"));
-		assertThat(adresse.getPostnummer(), Matchers.is(TestDataUtil.POSTNUMMER));
-		assertThat(adresse.getPoststed(), Matchers.is(TestDataUtil.POSTSTED));
+		assertThat(adresse.getPostnummer(), is(TestDataUtil.POSTNUMMER));
+		assertThat(adresse.getPoststed(), is(TestDataUtil.POSTSTED));
 	}
 
 
