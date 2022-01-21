@@ -1,9 +1,8 @@
 package no.nav.regoppslag.rreg003;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +17,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostadresseResponse {
 
-	//@ApiModelProperty(example = "889640782", notes = "Fødselsnummer/Orgnummer. Samme som input")
-	//private String identifikator;
-	@ApiModelProperty(example = "ARBEIDS- OG VELFERDSETATEN", notes = "Navn på personen/organisasjonen")
+	@Schema(example = "ARBEIDS- OG VELFERDSETATEN", description = "Navn på personen/organisasjonen")
 	private String navn;
+
 	private Adresse adresse;
 
 
