@@ -7,6 +7,8 @@ import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
+import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -53,6 +55,7 @@ public class AdresseMapper {
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 			return Adresse.builder()
+				.type(NORSKPOSTADRESSE)
 				.adresselinje1(norskPostadresse.getAdresselinje1())
 				.adresselinje2(norskPostadresse.getAdresselinje2())
 				.adresselinje3(norskPostadresse.getAdresselinje3())
@@ -64,6 +67,7 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 			return Adresse.builder()
+					.type(UTENLANDSKPOSTADRESSE)
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
@@ -77,6 +81,7 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 			PostadresseTo norskPostadresse = mottaker.getPostadresse();
 			return Adresse.builder()
+					.type(NORSKPOSTADRESSE)
 					.adresselinje1(norskPostadresse.getAdresselinje1())
 					.adresselinje2(norskPostadresse.getAdresselinje2())
 					.adresselinje3(norskPostadresse.getAdresselinje3())
@@ -89,6 +94,7 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			PostadresseTo utenlandskPostadresse = mottaker.getPostadresse();
 			return Adresse.builder()
+					.type(UTENLANDSKPOSTADRESSE)
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() :null)
 					.adresselinje2(isNotBlank(utenlandskPostadresse.getAdresselinje2()) ? utenlandskPostadresse.getAdresselinje2() : null)
 					.adresselinje3(isNotBlank(utenlandskPostadresse.getAdresselinje3())  ? utenlandskPostadresse.getAdresselinje3() : null)
