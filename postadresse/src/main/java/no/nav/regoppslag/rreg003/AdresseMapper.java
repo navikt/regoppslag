@@ -25,6 +25,7 @@ import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -55,14 +56,14 @@ public class AdresseMapper {
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 			return Adresse.builder()
-				.type(NORSKPOSTADRESSE)
-				.adresselinje1(norskPostadresse.getAdresselinje1())
-				.adresselinje2(norskPostadresse.getAdresselinje2())
-				.adresselinje3(norskPostadresse.getAdresselinje3())
-					.land(landkodeServiceNorsk.finnLand(norskPostadresse.getLand()))
+					.type(NORSKPOSTADRESSE)
+					.adresselinje1(norskPostadresse.getAdresselinje1())
+					.adresselinje2(norskPostadresse.getAdresselinje2())
+					.adresselinje3(norskPostadresse.getAdresselinje3())
+					.land(norskPostadresse.getLand())
 					.landkode(getLandkode(norskPostadresse.getLand()))
-				.postnummer(norskPostadresse.getPostnummer())
-				.poststed(norskPostadresse.getPoststed()).build();
+					.postnummer(norskPostadresse.getPostnummer())
+					.poststed(norskPostadresse.getPoststed()).build();
 		} else {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
@@ -71,8 +72,8 @@ public class AdresseMapper {
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
-					.land(landkodeServiceNorsk.finnLand(utenlandskPostadresse.getLand()))
-					.landkode(getLandkode(utenlandskPostadresse.getLand())).build();
+					.land(utenlandskPostadresse.getLand())
+					.landkode(landkodeServiceNorsk.finnLandkodeNorsk(utenlandskPostadresse.getLand())).build();
 		}
 	}
 
