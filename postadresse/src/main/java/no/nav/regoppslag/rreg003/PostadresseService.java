@@ -100,7 +100,7 @@ public class PostadresseService {
 		}
 
 		if (request.getIdent() == null) {
-			throw new RegoppslagIllegalArgumentException("Identifikator kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Ident kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
 		if (request.getTema() == null) {
@@ -112,14 +112,6 @@ public class PostadresseService {
 			throw new RegoppslagIllegalArgumentException("Identifikator er feilformatert. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
-		//todo avklare om type faktisk skal fjernes
-		//if (request.getType() == null) {
-		//	throw new RegoppslagIllegalArgumentException("Mottakertype kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
-		//} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
-		//		.equals(request.getType()))) {
-		//	throw new RegoppslagIllegalArgumentException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
-		//			.getType()) + UGYLDIG_INPUT, BAD_REQUEST);
-		//}
 	}
 
 
