@@ -54,14 +54,12 @@ public class AdresseMapper {
 
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
-			log.info("TESTLOG: norskPostadresse.getLand() = " + norskPostadresse.getLand());
-
 			return Adresse.builder()
 					.type(NORSKPOSTADRESSE)
 					.adresselinje1(norskPostadresse.getAdresselinje1())
 					.adresselinje2(norskPostadresse.getAdresselinje2())
 					.adresselinje3(norskPostadresse.getAdresselinje3())
-					.land(landkodeServiceNorsk.finnLand(norskPostadresse.getLand()))
+					.land(norskPostadresse.getLand())
 					.landkode(getLandkode(norskPostadresse.getLand()))
 					.postnummer(norskPostadresse.getPostnummer())
 					.poststed(norskPostadresse.getPoststed()).build();
@@ -69,14 +67,12 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
-			log.info("TESTLOG: utenlandskPostadresse.getLand() = " + utenlandskPostadresse.getLand());
-
 			return Adresse.builder()
 					.type(UTENLANDSKPOSTADRESSE)
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
 					.adresselinje3(utenlandskPostadresse.getAdresselinje3())
-					.land(landkodeServiceNorsk.finnLand(utenlandskPostadresse.getLand()))
+					.land(landkodeServiceNorsk.finnLand(getLandkode(utenlandskPostadresse.getLand())))
 					.landkode(getLandkode(utenlandskPostadresse.getLand())).build();
 		}
 	}
@@ -108,7 +104,7 @@ public class AdresseMapper {
 					.build();
 		}
 
-		throw new UkjentAdresseException("TREG002: Kunne ikke mappe postadresse for postadresseType", NOT_FOUND);
+		throw new UkjentAdresseException("RREG003: Kunne ikke mappe postadresse for postadresseType", NOT_FOUND);
 	}
 
 	private String getLandkode(String land) {

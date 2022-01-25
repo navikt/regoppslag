@@ -75,7 +75,7 @@ public class OrganisasjonV4MapperTest {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LAND = "Norge";
-	private static final String SVERIGE_LAND = "Sverige";
+	private static final String SVERIGE_LAND = "Sweden";
 	private static final String SERVICECODE = "SERVICECODE";
 
 	@Test
@@ -226,7 +226,6 @@ public class OrganisasjonV4MapperTest {
 	@Test
 	public void shouldMapSemistrukturertAdresseWhenLandskodeNotNO() throws DatatypeConfigurationException, RegOppslagFunctionalException {
 		UtenlandskPostadresse expectedAdresse = createUtenlandsPostadresse();
-		expectedAdresse.setLand("Sweden");
 
 		Organisasjon org = createOrganisasjon(Collections.singletonList(ORGNAVN), Collections.singletonList(ORGKORTNAVN));
 		settUtlandskPostadresse(org);

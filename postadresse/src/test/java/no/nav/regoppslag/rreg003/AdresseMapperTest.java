@@ -57,7 +57,6 @@ public class AdresseMapperTest {
 	@Test
 	public void shouldMapWithNorskPostAdresse() {
 		Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker());
-		adresse.setLandkode(TestDataUtil.LANDKODE);
 
 		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.ADRESSELINJE2));
@@ -71,13 +70,12 @@ public class AdresseMapperTest {
 	@Test
 	public void shouldMapWithUtenlandskPostAdresse() {
 		Adresse adresse = adresseMapper.map(TestDataUtil.createMottaker(false));
-		adresse.setLandkode(TestDataUtil.SVENSK_LANDKODE);
 
 		assertThat(adresse.getAdresselinje1(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE1));
 		assertThat(adresse.getAdresselinje2(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE2));
 		assertThat(adresse.getAdresselinje3(), is(TestDataUtil.UTENLANDSK_ADRESSELINJE3));
 		assertThat(adresse.getLandkode(), is(TestDataUtil.SVENSK_LANDKODE));
-		assertThat(adresse.getLand(), is(TestDataUtil.SVENSK_LAND));
+		assertThat(adresse.getLand(), is(TestDataUtil.SVERIGE));
 		assertThat(adresse.getPostnummer(), nullValue());
 		assertThat(adresse.getPoststed(), nullValue());
 	}
