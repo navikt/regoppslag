@@ -1,4 +1,4 @@
-package no.nav.regoppslag.rreg003;
+package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;

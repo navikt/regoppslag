@@ -15,6 +15,7 @@ import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 
 import javax.inject.Inject;
 import java.util.Arrays;

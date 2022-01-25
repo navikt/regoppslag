@@ -1,4 +1,4 @@
-package no.nav.regoppslag.rreg003;
+package no.nav.regoppslag.pdl;
 
 import lombok.SneakyThrows;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -103,7 +103,6 @@ public class MapPDLResponseTest {
 
 	@InjectMocks
 	private PostnummerService postnummerService;
-
 
 	@BeforeEach
 	public void setUp() {

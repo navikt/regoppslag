@@ -13,7 +13,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.rreg003.AdresseMapper;
-import no.nav.regoppslag.rreg003.MapPDLResponse;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.springframework.stereotype.Component;
