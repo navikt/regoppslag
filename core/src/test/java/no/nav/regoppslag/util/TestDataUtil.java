@@ -78,7 +78,7 @@ public class TestDataUtil {
         norskPostadresse.setAdresselinje1(ADRESSELINJE1);
         norskPostadresse.setAdresselinje2(ADRESSELINJE2);
         norskPostadresse.setAdresselinje3(ADRESSELINJE3);
-        norskPostadresse.setLand(LANDNAVN);
+        norskPostadresse.setLand(LANDKODE);
         norskPostadresse.setPostnummer(POSTNUMMER);
         norskPostadresse.setPoststed(POSTSTED);
         return norskPostadresse;
@@ -89,7 +89,7 @@ public class TestDataUtil {
         utenlandskPostadresse.setAdresselinje1(UTENLANDSK_ADRESSELINJE1);
         utenlandskPostadresse.setAdresselinje2(UTENLANDSK_ADRESSELINJE2);
         utenlandskPostadresse.setAdresselinje3(UTENLANDSK_ADRESSELINJE3);
-        utenlandskPostadresse.setLand(SVENSK_LAND);
+        utenlandskPostadresse.setLand(SVENSK_LANDKODE);
         return utenlandskPostadresse;
     }
 

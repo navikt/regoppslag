@@ -50,19 +50,15 @@ public class RegisteroppslagRestController {
 	public static final String REST = "rest/";
 	public static final String KOMPLETTER_BREVDATA_URI_PATH = "kompletterBrevdata";
 	public static final String HENT_MOTTAKEROGADRESSE_URI_PATH = "hentMottakerOgAdresse";
-	public static final String POSTADRESSE_URI_PATH = "postadresse";
 
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
-	private final PostadresseService postadresseService;
 
 	@Inject
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService,
-										 HentMottakerOgAdresseService hentMottakerOgAdresseService,
-										 PostadresseService postadresseService) {
+										 HentMottakerOgAdresseService hentMottakerOgAdresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
-		this.postadresseService = postadresseService;
 	}
 
 	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
@@ -122,29 +118,5 @@ public class RegisteroppslagRestController {
 		}
 	}
 
-	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3"),
-			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse"),
-			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse"),
-			@ApiResponse(responseCode = "500", description = "Teknisk feil")
-	})
-	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
-	public @ResponseBody
-	PostadresseResponse postadresse(@RequestBody PostadresseRequest requestBody)
-			throws RegOppslagSecurityException {
 
-		try {
-			log.info("RREG003 Henter postaddresse.");
-			PostadresseResponse response = postadresseService.postadresseInfo(requestBody);
-			log.info("RREG003 Har hentet postadresse.");
-			return response;
-		} finally {
-			SecurityContextHolder.clearContext();
-			MDC.clear();
-		}
-	}
 }

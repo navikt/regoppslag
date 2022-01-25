@@ -13,6 +13,7 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -58,12 +59,9 @@ public class PostadresseService {
 		try {
 			validateInput(request);
 
-			//todo 9, 11 or 13 long logic
-			//return PERSON.name().equals(request.getType()) ? postadresseForPerson(request) : postadresseForOrg(request);
-
-			if(request.getIdentifikator().length() == 9){ //organisasjon har alltid ident lengde 9
+			if (request.getIdent().length() == 9) { //organisasjon har alltid ident lengde 9
 				return postadresseForOrg(request);
-			}else{
+			} else {
 				return postadresseForPerson(request);
 			}
 
@@ -76,22 +74,20 @@ public class PostadresseService {
 
 	private PostadresseResponse postadresseForPerson(PostadresseRequest request) {
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(
-				pdlGraphQLConsumer.hentPerson(request.getIdentifikator(),
+				pdlGraphQLConsumer.hentPerson(request.getIdent(),
 						request.getTema()),
 				SERVICE_CODE_RREG003,
 				request.getTema());
 		return PostadresseResponse.builder()
-				//.identifikator(request.getIdentifikator())
 				.navn(pdlMottakerInfo.getNavn())
 				.adresse(adresseMapper.mapFraPdl(pdlMottakerInfo))
 				.build();
 	}
 
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
-		MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_RREG003);
+		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdent());
+		MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
 		return PostadresseResponse.builder()
-				//.identifikator(request.getIdentifikator())
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo.getMottaker()))
 				.build();
@@ -103,7 +99,7 @@ public class PostadresseService {
 			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
-		if (request.getIdentifikator() == null) {
+		if (request.getIdent() == null) {
 			throw new RegoppslagIllegalArgumentException("Identifikator kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
@@ -112,7 +108,7 @@ public class PostadresseService {
 		}
 
 		//Identifikator må være 9, 11 eller 13 karakterer lang for å være en gyldig ident
-		if (!Arrays.asList(9, 11, 13).contains(request.getIdentifikator().length())) {
+		if (!Arrays.asList(9, 11, 13).contains(request.getIdent().length()) && !StringUtils.isNumeric(request.getIdent())) {
 			throw new RegoppslagIllegalArgumentException("Identifikator er feilformatert. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 

@@ -27,8 +27,7 @@ public class RegisteroppslagRestControllerTest {
 	HentMottakerOgAdresseRequest mottakerOgAdresseRequest = mock(HentMottakerOgAdresseRequest.class);
 	KompletterBrevdataService kompletterBrevdataService = mock(KompletterBrevdataService.class);
 	HentMottakerOgAdresseService hentMottakerOgAdresseService = mock(HentMottakerOgAdresseService.class);
-	PostadresseService postadresseService = mock(PostadresseService.class);
-	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService, hentMottakerOgAdresseService, postadresseService);
+	RegisteroppslagRestController registeroppslagRestController = new RegisteroppslagRestController(kompletterBrevdataService, hentMottakerOgAdresseService);
 
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException {

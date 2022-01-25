@@ -21,7 +21,7 @@ public class SpringDoc {
 	@Bean
 	public OpenAPI api(AppVersion appVersion) {
 		return new OpenAPI().info(new Info()
-						.title("Dokarkiv APIer")
+						.title("Regoppslag APIer")
 						.description("todo"))
 				.components(
 						new Components()

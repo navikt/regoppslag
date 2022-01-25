@@ -1,7 +1,6 @@
 package no.nav.regoppslag.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -16,9 +15,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class LandkodeServiceNorsk {
 
-	public static final Logger LOG = LoggerFactory.getLogger(LandkodeServiceNorsk.class);
 	private static final String FILENAME = "/kodeverk/landkoderISO2.txt";
 
 	private final Map<String, String> landkodeTable;
@@ -43,12 +42,12 @@ public class LandkodeServiceNorsk {
 
 			landkodeTable.put(kodeArray[0], kodeArray[1]);
 		}
-		LOG.info("Har importert kodeverk fra " + FILENAME);
+		log.info("Har importert kodeverk fra " + FILENAME);
 	}
 
 	public String finnLand(String landKode) {
 		if (landkodeTable.get(landKode) == null) {
-			LOG.warn("Finner ikke landsnavn for landskode: " + landKode + ", sjekk om ny landkoderISO2.txt må lastes ned.");
+			log.warn("Finner ikke landsnavn for landskode: " + landKode + ", sjekk om ny landkoderISO2.txt må lastes ned.");
 			return null;
 		} else {
 			return landkodeTable.get(landKode);
