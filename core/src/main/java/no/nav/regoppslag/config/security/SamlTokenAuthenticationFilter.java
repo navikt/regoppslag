@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.Set;
 import java.util.UUID;
 
 import static no.nav.regoppslag.config.security.SamlTokenUtils.elementToSamlAssertionWrapper;
@@ -34,6 +35,8 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 @Slf4j
 public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 
+	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest");
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		SecurityContextHolder.clearContext();
@@ -43,12 +46,17 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		MDC.put(CALL_ID, getOrCreateCallId(request));
 
 		if (header == null || !header.startsWith("SAML ")) {
-			MDC.put(CONSUMER_ID, UKJENT);
-			MDC.put(USER_ID, UKJENT);
-			log.error("Authorization SAML token mangler. Returnerer Unauthorized til konsument.");
-			// Gir 401 Unauthorized til alle som ikke kan vise et SAML token i Authorization headeren.
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
+			if (ALLOWED_PATHS.contains(request.getServletPath())) {
+				filterChain.doFilter(request, response);
+				return;
+			} else {
+				MDC.put(CONSUMER_ID, UKJENT);
+				MDC.put(USER_ID, UKJENT);
+				log.error("Authorization SAML token mangler. Returnerer Unauthorized til konsument.");
+				// Gir 401 Unauthorized til alle som ikke kan vise et SAML token i Authorization headeren.
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			}
 		}
 
 		String decodedToken = extractAndDecodeHeader(header);
