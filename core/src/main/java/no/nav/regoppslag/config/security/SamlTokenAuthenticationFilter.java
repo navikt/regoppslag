@@ -35,7 +35,7 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 @Slf4j
 public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest");
+	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest", "/actuator/prometheus");
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,7 +52,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 			} else {
 				MDC.put(CONSUMER_ID, UKJENT);
 				MDC.put(USER_ID, UKJENT);
-				log.error("Authorization SAML token mangler. Returnerer Unauthorized til konsument.");
+				log.error("Authorization SAML token mangler. Returnerer Unauthorized til konsument. path={}", request.getServletPath());
 				// Gir 401 Unauthorized til alle som ikke kan vise et SAML token i Authorization headeren.
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
