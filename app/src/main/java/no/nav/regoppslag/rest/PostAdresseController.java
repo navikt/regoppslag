@@ -10,6 +10,7 @@ import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +32,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @RequestMapping(REST)
 @Tag(name = "Postadresse", description = "Tjeneste for å hente postadresse")
 @Slf4j
+@Protected
 public class PostAdresseController {
 
 	public static final String POSTADRESSE_URI_PATH = "postadresse";

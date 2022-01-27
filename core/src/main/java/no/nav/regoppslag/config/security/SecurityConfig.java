@@ -1,5 +1,6 @@
 package no.nav.regoppslag.config.security;
 
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Jarl Øystein Samseth, Visma Consulting
  */
 @EnableWebSecurity
+@EnableJwtTokenValidation(ignore = {"org.springframework", "org.springdoc"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
