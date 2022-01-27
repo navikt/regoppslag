@@ -35,6 +35,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class Treg001PDLIT extends AbstractIT {
 
@@ -223,7 +224,7 @@ public class Treg001PDLIT extends AbstractIT {
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
 		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);

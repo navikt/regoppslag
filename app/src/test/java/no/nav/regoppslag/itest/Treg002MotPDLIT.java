@@ -307,7 +307,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
-		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
 	}
 
 	@Test
