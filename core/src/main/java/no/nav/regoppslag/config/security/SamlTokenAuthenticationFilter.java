@@ -47,8 +47,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		MDC.put(CALL_ID, getOrCreateCallId(request));
 
 		if (header == null || !header.startsWith("SAML ")) {
-			 //todo fix
-			if (ALLOWED_PATHS.contains(request.getServletPath()) || StringUtils.startsWithAny(request.getServletPath(), "/v3/api-docs", "/swagger-ui")) {
+			if (StringUtils.startsWithAny(request.getServletPath(), ALLOWED_PATHS.toArray(new String[0]))) {
 				filterChain.doFilter(request, response);
 				return;
 			} else {

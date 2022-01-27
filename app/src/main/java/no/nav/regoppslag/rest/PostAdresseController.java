@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
+import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
@@ -30,7 +31,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 @RestController
 @RequestMapping(REST)
-@Tag(name = "Postadresse", description = "Tjeneste for å hente postadresse")
+@Tag(name = "Postadresse", description = "Tjeneste for å hente postadresse. Krever JWT Authorization")
 @Slf4j
 @Protected
 public class PostAdresseController {
@@ -40,11 +41,11 @@ public class PostAdresseController {
 	private final PostadresseService postadresseService;
 
 	@Inject
-	public PostAdresseController(PostadresseService postadresseService){
+	public PostAdresseController(PostadresseService postadresseService) {
 		this.postadresseService = postadresseService;
 	}
 
-	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.")
+	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
