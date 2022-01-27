@@ -14,6 +14,7 @@ import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalExcep
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +42,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @RequestMapping(REST)
 @Tag(name = "Registeroppslag", description = "Tjeneste for å hente mottaker adresse og komplettere brevskjema")
 @Slf4j
+@Unprotected
 public class RegisteroppslagRestController {
 
 	public static final String REST = "rest/";
