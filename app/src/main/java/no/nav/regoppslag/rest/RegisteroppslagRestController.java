@@ -7,9 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
-import no.nav.regoppslag.rreg003.PostadresseRequest;
-import no.nav.regoppslag.rreg003.PostadresseResponse;
-import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
@@ -32,7 +29,6 @@ import static no.nav.regoppslag.config.springdoc.SpringDoc.samlTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
@@ -43,7 +39,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 @RestController
 @RequestMapping(REST)
-@Tag(name = "Registeroppslag", description = "Tjeneste for å hente postadresse og komplettere brevskjema")
+@Tag(name = "Registeroppslag", description = "Tjeneste for å hente mottaker adresse og komplettere brevskjema")
 @Slf4j
 public class RegisteroppslagRestController {
 
