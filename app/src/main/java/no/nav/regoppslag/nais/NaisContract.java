@@ -13,6 +13,7 @@ import no.nav.regoppslag.nais.selftest.DependencyCheckResult;
 import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.regoppslag.nais.selftest.Result;
 import no.nav.regoppslag.nais.selftest.SelftestResult;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 @Slf4j
 @RestController
 @Hidden
+@Unprotected
 public class NaisContract {
 
 	private static final String APPLICATION_ALIVE = "Application is alive!";

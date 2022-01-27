@@ -36,7 +36,7 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 @Slf4j
 public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest", "/actuator/prometheus", "/rest/postadresse");
+	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest", "/actuator/prometheus", "/rest/postadresse", "/v3/api-docs", "/swagger-ui");
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -47,6 +47,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		MDC.put(CALL_ID, getOrCreateCallId(request));
 
 		if (header == null || !header.startsWith("SAML ")) {
+			 //todo fix
 			if (ALLOWED_PATHS.contains(request.getServletPath()) || StringUtils.startsWithAny(request.getServletPath(), "/v3/api-docs", "/swagger-ui")) {
 				filterChain.doFilter(request, response);
 				return;
