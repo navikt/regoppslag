@@ -21,6 +21,6 @@ public class HentMottakerOgAdresseRequest {
 	private String identifikator;
 	@Schema(example = "ORGANISASJON", description = "Sier om identifikatoren er et fnr eller et orgnr. Gyldige verdier er PERSON og ORGANISASJON", required = true, allowableValues = "PERSON, ORGANISASJON")
 	private String type;
-	@Schema(example = "FOR", description = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", required = false, allowableValues = "DAG, FOR, PEN, FRI ....")
+	@Schema(example = "FOR", description = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", allowableValues = "DAG, FOR, PEN, FRI ....")
 	private String tema;
 }

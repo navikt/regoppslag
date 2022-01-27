@@ -98,7 +98,7 @@ public class MapPdlForTreg001 {
 		Mottaker mottaker = new Person();
 
 		if (isNull(pdlMottakerInfo.getPostadresse()) || isBlank(pdlMottakerInfo.getPostadresse().getAdresseType())) {
-			throw new RegoppslagIllegalArgumentException("Mottaker adresse kan ikke bli null", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Mottakeradresse kan ikke bli null", BAD_REQUEST);
 		}
 		mottaker.setKortNavn(pdlMottakerInfo.getKortNavn());
 		mottaker.setNavn(pdlMottakerInfo.getNavn());

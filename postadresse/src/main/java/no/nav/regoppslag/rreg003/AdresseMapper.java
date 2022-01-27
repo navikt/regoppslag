@@ -37,6 +37,7 @@ public class AdresseMapper {
 	private final LandkodeServiceNorsk landkodeServiceNorsk;
 
 	private static final String LANDKODE_NORGE = "NO";
+	private static final String NAVN_NORGE = "NORGE";
 	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
 	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
 
@@ -88,7 +89,7 @@ public class AdresseMapper {
 					.adresselinje3(norskPostadresse.getAdresselinje3())
 					.postnummer(norskPostadresse.getPostnummer())
 					.poststed(norskPostadresse.getPoststed())
-					.land(isNotBlank(norskPostadresse.getLandkode()) ? landkodeServiceNorsk.finnLand(norskPostadresse.getLandkode()) : "NORGE")
+					.land(isNotBlank(norskPostadresse.getLandkode()) ? landkodeServiceNorsk.finnLand(norskPostadresse.getLandkode()) : NAVN_NORGE)
 					.landkode(isNotBlank(norskPostadresse.getLandkode()) ? norskPostadresse.getLandkode() : LANDKODE_NORGE)
 					.build();
 		} else if (POSTADRESSE_UTLAND.equals(mottaker.getPostadresse().getAdresseType())) {

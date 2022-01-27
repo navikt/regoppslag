@@ -16,6 +16,6 @@ public class PostadresseRequest {
 	
 	@Schema(example = "889640782", description = "Fnr eller org nr som brukes som oppslagsnøkkel mot PDL eller Ereg.", required = true)
 	private String ident;
-	@Schema(example = "FOR", description = "Tema som hjemmel til å hente adresseinformasjon for identifikator. Eksempel: \"FOR\" (Foreldrepenger).", required = false, allowableValues = "DAG, FOR, PEN, FRI ....")
+	@Schema(example = "FOR", description = "Tema som hjemmel til å hente adresseinformasjon for identifikator. Eksempel: \"FOR\" (Foreldrepenger).", allowableValues = "DAG, FOR, PEN, FRI ....")
 	private String tema;
 }
