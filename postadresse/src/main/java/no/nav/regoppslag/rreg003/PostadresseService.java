@@ -107,6 +107,10 @@ public class PostadresseService {
 		if (request.getTema() == null) {
 			throw new RegoppslagIllegalArgumentException("Tema kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
+		
+		if (!StringUtils.isAllUpperCase(request.getTema()) && request.getTema().length() != 3) {
+			throw new RegoppslagIllegalArgumentException("Tema må være 3 store bokstaver. " + UGYLDIG_INPUT, BAD_REQUEST);
+		}
 
 		//Identifikator må være 9, 11 eller 13 karakterer lang for å være en gyldig ident
 		if (!Arrays.asList(9, 11, 13).contains(request.getIdent().length()) && !StringUtils.isNumeric(request.getIdent())) {
