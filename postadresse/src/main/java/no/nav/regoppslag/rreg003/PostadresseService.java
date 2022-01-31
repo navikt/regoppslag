@@ -11,11 +11,11 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import no.nav.regoppslag.pdl.MapPDLResponse;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -107,7 +107,7 @@ public class PostadresseService {
 		if (request.getTema() == null) {
 			throw new RegoppslagIllegalArgumentException("Tema kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
-		
+
 		if (!StringUtils.isAllUpperCase(request.getTema()) && request.getTema().length() != 3) {
 			throw new RegoppslagIllegalArgumentException("Tema må være 3 store bokstaver. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
