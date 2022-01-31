@@ -22,13 +22,13 @@ public class HentMottakerOgAdresseResponse {
 	private String identifikator;
 	@Schema(example = "ARBEIDS- OG VELFERDSETATEN", description = "Navn på personen/organisasjonen")
 	private String navn;
-	private Adresse adresse;
+	private Treg002Adresse adresse;
 
 	@Data
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Adresse {
+	public static class Treg002Adresse {
 		@Schema(example = "Postboks 5 St Olavs Plass")
 		private String adresselinje1;
 		@Schema(example = "adresselinje 2", nullable = true)
