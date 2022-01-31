@@ -52,7 +52,7 @@ public class PostAdresseController {
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten."),
 			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse."),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse."),
-			@ApiResponse(responseCode = "500", description = "Teknisk feil")
+			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.")
 	})
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
