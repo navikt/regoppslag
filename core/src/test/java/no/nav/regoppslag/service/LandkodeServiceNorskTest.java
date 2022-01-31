@@ -61,16 +61,4 @@ public class LandkodeServiceNorskTest {
 		String landNavn = landkodeServiceNorsk.finnLand("???");
 		assertThat(landNavn, is("UOPPGITT/UKJENT"));
 	}
-
-	@Test
-	@Ignore
-	public void testFinnLandFeilLandskode() {
-		//LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(LandkodeServiceNorsk.log);
-		//String landNavn = landkodeServiceNorsk.finnLand("FINNES IKKE");
-		//LogbackCapturingAppender.Factory.cleanUp();
-
-		//assertNull(landNavn);
-		//assertThat(capture.getCapturedLogMessage(), is("Finner ikke landsnavn for landskode: FINNES IKKE, sjekk om ny landkoderISO2.txt må lastes ned."));
-		//assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
-	}
 }
