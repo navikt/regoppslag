@@ -33,7 +33,6 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 
 @Slf4j
 @RestController
-@Hidden
 @Unprotected
 public class NaisContract {
 
