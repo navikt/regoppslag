@@ -31,9 +31,9 @@ public class HentMottakerOgAdresseResponse {
 	public static class Adresse {
 		@Schema(example = "Postboks 5 St Olavs Plass")
 		private String adresselinje1;
-		@Schema(example = "null")
+		@Schema(example = "adresselinje 2", nullable = true)
 		private String adresselinje2;
-		@Schema(example = "null")
+		@Schema(example = "adresselinje 3", nullable = true)
 		private String adresselinje3;
 		@Schema(example = "0130")
 		private String postnummer;
