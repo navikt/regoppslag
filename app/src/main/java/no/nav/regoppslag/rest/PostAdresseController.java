@@ -48,11 +48,11 @@ public class PostAdresseController {
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3"),
-			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse"),
-			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse"),
-			@ApiResponse(responseCode = "500", description = "Teknisk feil")
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene."),
+			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten."),
+			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse."),
+			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse."),
+			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.")
 	})
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
