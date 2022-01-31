@@ -48,7 +48,7 @@ public class PostAdresseController {
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene."),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3"),
 			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse"),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse"),
