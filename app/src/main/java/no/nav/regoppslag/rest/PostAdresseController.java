@@ -50,7 +50,7 @@ public class PostAdresseController {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene."),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten."),
-			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse"),
+			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse."),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse"),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil")
 	})
