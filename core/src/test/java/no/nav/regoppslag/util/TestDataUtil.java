@@ -40,10 +40,13 @@ public class TestDataUtil {
     public static final String ADRESSELINJE_POSTSTED = "poststed";
 
     public static final String LANDKODE = "NO";
+    public static final String LANDNAVN = "Norge";
     public static final String UTENLANDSK_ADRESSELINJE1 = "Dammgatan 14";
     public static final String UTENLANDSK_ADRESSELINJE2 = "SE 567 31 VAGGERYD";
     public static final String UTENLANDSK_ADRESSELINJE3 = "SWEDEN";
     public static final String SVENSK_LANDKODE = "SE";
+    public static final String SVENSK_LAND = "Sweden";
+    public static final String SVERIGE = "SVERIGE";
     public static final String POSTNUMMER = "3000";
     public static final String POSTSTED = "HER";
     public static final String GATENAVN = "Gatenavn";
@@ -76,7 +79,7 @@ public class TestDataUtil {
         norskPostadresse.setAdresselinje1(ADRESSELINJE1);
         norskPostadresse.setAdresselinje2(ADRESSELINJE2);
         norskPostadresse.setAdresselinje3(ADRESSELINJE3);
-        norskPostadresse.setLand(LANDKODE);
+        norskPostadresse.setLand(LANDNAVN);
         norskPostadresse.setPostnummer(POSTNUMMER);
         norskPostadresse.setPoststed(POSTSTED);
         return norskPostadresse;
@@ -87,7 +90,7 @@ public class TestDataUtil {
         utenlandskPostadresse.setAdresselinje1(UTENLANDSK_ADRESSELINJE1);
         utenlandskPostadresse.setAdresselinje2(UTENLANDSK_ADRESSELINJE2);
         utenlandskPostadresse.setAdresselinje3(UTENLANDSK_ADRESSELINJE3);
-        utenlandskPostadresse.setLand(SVENSK_LANDKODE);
+        utenlandskPostadresse.setLand(SVENSK_LAND);
         return utenlandskPostadresse;
     }
 
@@ -157,7 +160,7 @@ public class TestDataUtil {
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE1, utenlandskPostadresse.getAdresselinje1()));
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE2, utenlandskPostadresse.getAdresselinje2()));
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE3, utenlandskPostadresse.getAdresselinje3()));
-        semistrukturertAdresse.setLandkode(createLandkodeRef(utenlandskPostadresse.getLand()));
+        semistrukturertAdresse.setLandkode(createLandkodeRef(SVENSK_LANDKODE));
 
         OrganisasjonsDetaljer organisasjonsDetaljer = org.getOrganisasjonDetaljer();
         organisasjonsDetaljer.getPostadresse().add(semistrukturertAdresse);
@@ -173,7 +176,7 @@ public class TestDataUtil {
 
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE1, utenlandskPostadresse.getAdresselinje1()));
         semistrukturertAdresse.getAdresseledd().add(createSemistrukturertAdresselinje(ADRESSELINJE_POSTSTED, utenlandskPostadresse.getAdresselinje2()));
-        semistrukturertAdresse.setLandkode(createLandkodeRef(utenlandskPostadresse.getLand()));
+        semistrukturertAdresse.setLandkode(createLandkodeRef(SVENSK_LANDKODE));
 
         OrganisasjonsDetaljer organisasjonsDetaljer = org.getOrganisasjonDetaljer();
         organisasjonsDetaljer.getPostadresse().add(semistrukturertAdresse);

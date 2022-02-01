@@ -35,7 +35,7 @@ public class SamlTokenUtils {
 		
 		String credentials = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		
-		if (StringUtils.isEmpty(credentials)) {
+		if (!StringUtils.hasLength(credentials)) {
 			return null;
 		}
 		

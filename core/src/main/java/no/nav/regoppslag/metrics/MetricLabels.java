@@ -16,6 +16,7 @@ public final class MetricLabels {
 	//Service
 	public static final String SERVICE_CODE_TREG001 = "TREG001";
 	public static final String SERVICE_CODE_TREG002="TREG002";
+	public static final String SERVICE_CODE_RREG003 = "RREG003";
 
 	// Caches
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";

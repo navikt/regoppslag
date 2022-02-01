@@ -1,11 +1,10 @@
 package no.nav.regoppslag.nais;
 
-import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
-
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
@@ -14,6 +13,7 @@ import no.nav.regoppslag.nais.selftest.DependencyCheckResult;
 import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.regoppslag.nais.selftest.Result;
 import no.nav.regoppslag.nais.selftest.SelftestResult;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +29,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
+
 @Slf4j
 @RestController
+@Unprotected
 public class NaisContract {
 
 	private static final String APPLICATION_ALIVE = "Application is alive!";

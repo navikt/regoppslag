@@ -1,6 +1,7 @@
 package no.nav.regoppslag.config.security;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.rt.security.claims.Claim;
 import org.apache.cxf.rt.security.saml.utils.SAMLUtils;
 import org.slf4j.MDC;
@@ -35,7 +36,7 @@ import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTH
 @Slf4j
 public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest", "/actuator/prometheus");
+	private static final Set<String> ALLOWED_PATHS = Set.of("/isReady", "/isAlive", "/internal/selftest", "/actuator/prometheus", "/rest/postadresse", "/v3/api-docs", "/swagger-ui");
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,7 +47,7 @@ public class SamlTokenAuthenticationFilter extends OncePerRequestFilter {
 		MDC.put(CALL_ID, getOrCreateCallId(request));
 
 		if (header == null || !header.startsWith("SAML ")) {
-			if (ALLOWED_PATHS.contains(request.getServletPath())) {
+			if (StringUtils.startsWithAny(request.getServletPath(), ALLOWED_PATHS.toArray(new String[0]))) {
 				filterChain.doFilter(request, response);
 				return;
 			} else {

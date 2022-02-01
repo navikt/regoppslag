@@ -5,19 +5,18 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
+import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.treg001.to.MottakerTo;
-import no.nav.regoppslag.util.TestDataUtil;
+import no.nav.regoppslag.to.MottakerTo;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Gateadresse;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Landkoder;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Maalformer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Postnummer;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.StedsadresseNorge;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.util.TestDataUtil.*;
 import static no.nav.regoppslag.util.TestDataUtil.settSemistrukturertAdresse;
-import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -77,7 +75,7 @@ public class OrganisasjonV4MapperTest {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LAND = "Norge";
-	private static final String SVERIGE_LAND = "Sverige";
+	private static final String SVERIGE_LAND = "Sweden";
 	private static final String SERVICECODE = "SERVICECODE";
 
 	@Test
@@ -228,7 +226,6 @@ public class OrganisasjonV4MapperTest {
 	@Test
 	public void shouldMapSemistrukturertAdresseWhenLandskodeNotNO() throws DatatypeConfigurationException, RegOppslagFunctionalException {
 		UtenlandskPostadresse expectedAdresse = createUtenlandsPostadresse();
-		expectedAdresse.setLand("Sweden");
 
 		Organisasjon org = createOrganisasjon(Collections.singletonList(ORGNAVN), Collections.singletonList(ORGKORTNAVN));
 		settUtlandskPostadresse(org);

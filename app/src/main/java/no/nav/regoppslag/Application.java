@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(value = {ApplicationConfig.class})
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);

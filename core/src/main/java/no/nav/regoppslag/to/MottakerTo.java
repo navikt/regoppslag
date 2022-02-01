@@ -1,4 +1,4 @@
-package no.nav.regoppslag.treg001.to;
+package no.nav.regoppslag.to;
 
 import lombok.Builder;
 import lombok.Data;

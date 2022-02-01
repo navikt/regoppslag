@@ -1,7 +1,7 @@
-package no.nav.regoppslag.consumer.pdl;
+package no.nav.regoppslag.pdl;
 
 import lombok.SneakyThrows;
-import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
+import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
@@ -103,7 +103,6 @@ public class MapPDLResponseTest {
 
 	@InjectMocks
 	private PostnummerService postnummerService;
-
 
 	@BeforeEach
 	public void setUp() {
