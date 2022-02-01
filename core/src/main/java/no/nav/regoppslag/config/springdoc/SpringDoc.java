@@ -18,7 +18,7 @@ public class SpringDoc {
 	public static final String samlTokenInfo = "<p>Ved input som krever oppslag i personopplysninger så krever denne tjenesten SAML assertion token som authorization header. Tokenet blir da brukt ved kall mot PersonV3, og hvis brukeren ikke har tilgang vil kallet mot PersonV3 returnere sikkerhetsfeil. " +
 			"SAML assertion tokenet er del av SAML authentication headeret som starter og slutter med \"saml2:Assertion\". Dette tokenet må konverteres til BASE64 og legges som header i formatet: Key=Authorization, Value=SAML \"SAML assertion token konvertert til BASE64\"</p>";
 
-	public static final String jwtTokenInfo = "<p>Denne tjeneste krever STS token som authorization header.</p>";
+	public static final String jwtTokenInfo = "<p>Denne tjenesten krever STS token som authorization header.</p>";
 
 	@Bean
 	public OpenAPI api(AppVersion appVersion) {
