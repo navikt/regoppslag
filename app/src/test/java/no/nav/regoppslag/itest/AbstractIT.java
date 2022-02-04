@@ -82,6 +82,7 @@ public abstract class AbstractIT {
 				new DefaultOAuth2TokenCallback(
 						issuerId,
 						subject,
+						JOSEObjectType.JWT.getType(),
 						List.of(audience),
 						Collections.emptyMap(),
 						3600
