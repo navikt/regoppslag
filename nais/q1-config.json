@@ -14,7 +14,7 @@
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.dev.adeo.no/rest/v1/sts/.well-known/openid-configuration",
-	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling",
+	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvarena",
 	"APP_NAME": "regoppslag-q1",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
