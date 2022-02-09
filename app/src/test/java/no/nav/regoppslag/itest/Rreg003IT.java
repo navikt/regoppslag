@@ -37,19 +37,21 @@ public class Rreg003IT extends AbstractIT {
 	String INVALID_TEMA = "testetest";
 	String ORG_IDENT = "889640782";
 
+	private String token;
+
 	@BeforeEach
 	public void setUpStubs() {
 		WireMock.reset();
 		WireMock.resetAllRequests();
 		WireMock.removeAllMappings();
+
+		this.token = token("subject1");
 	}
 
 	@Test
 	public void shouldThrowUnauthorizedWithoutValidToken() {
-		String token = "invalid_token";
-
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestInvalidToken(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
@@ -57,27 +59,23 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenBadRequestWithInvalidInput() {
-		String token = token("subject1");
-
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, INVALID_TEMA), PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, INVALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
 
 		HttpClientErrorException e2 = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, INVALID_IDENT, VALID_TEMA), PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(INVALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.BAD_REQUEST, e2.getStatusCode());
 	}
 
 	@Test
 	public void shouldGetPersonMedNorskPostadresse() {
-		String token = token("subject1");
-
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/postbokskontaktadresse.json");
 
-		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
 		assertNotNull(actualResponse);
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 		assertNotNull(actualResponse.getBody().getNavn());
@@ -89,12 +87,10 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetPersonMedUtenlandskPostadresse() {
-		String token = token("subject1");
-
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandsk_kontaktadresse.json");
 
-		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
 		assertNotNull(actualResponse);
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 		assertNotNull(actualResponse.getBody().getNavn());
@@ -106,12 +102,10 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetDodPerson() {
-		String token = token("subject1");
-
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedperson.json");
 
-		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
 		assertNotNull(actualResponse);
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 		assertNotNull(actualResponse.getBody().getNavn());
@@ -123,13 +117,11 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenDodPersonUtenKontaktinformasjon() {
-		String token = token("subject1");
-
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/doedpersonutenadresse.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.GONE, e.getStatusCode());
 
@@ -139,13 +131,11 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonFinnesIkke() {
-		String token = token("subject1");
-
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 
@@ -155,12 +145,10 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetOrganisasjonWithNorskPostadresse() {
-		String token = token("subject1");
-
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(token, ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
 
 		assertEquals("ARBEIDS- OG VELFERDSETATEN", response.getBody().getNavn());
 
@@ -168,33 +156,39 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenOrganisasjonFinnesIkke() {
-		String token = token("subject1");
-
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
 		HttpClientErrorException.NotFound e = assertThrows(HttpClientErrorException.NotFound.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(token, ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
 
 		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
 	}
 
 	@Test
 	public void shouldThrowWhenOrganisasjonTekniskFeil() {
-		String token = token("subject1");
-
 		stubFor(post("/ORGANISASJON_V4")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(token, ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
 
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
-	private HttpEntity<PostadresseRequest> createRequest(String token, String ident, String tema) {
+	private HttpEntity<PostadresseRequest> createRequest(String ident, String tema) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + token);
+		headers.set("Authorization", "Bearer " + this.token);
+		PostadresseRequest postadresseRequest = PostadresseRequest.builder()
+				.ident(ident)
+				.tema(tema)
+				.build();
+		return new HttpEntity<>(postadresseRequest, headers);
+	}
+
+	private HttpEntity<PostadresseRequest> createRequestInvalidToken(String ident, String tema) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer combustible potato");
 		PostadresseRequest postadresseRequest = PostadresseRequest.builder()
 				.ident(ident)
 				.tema(tema)

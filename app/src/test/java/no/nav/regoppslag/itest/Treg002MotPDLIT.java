@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -300,6 +301,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
+	@Disabled //TODO: re-implement when JWT token support is added
 	public void shouldThrowWhenPDLFailsFunctionalInvalidSecurityToken() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/unauthenticated-error-response.json");
