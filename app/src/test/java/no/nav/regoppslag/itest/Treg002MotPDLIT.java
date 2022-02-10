@@ -6,6 +6,8 @@ import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -55,11 +57,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  */
 public class Treg002MotPDLIT extends AbstractIT {
 
+	private String token;
+
 	@BeforeEach
 	public void setUpStubs() {
 		WireMock.reset();
 		WireMock.resetAllRequests();
 		WireMock.removeAllMappings();
+
+		this.token = token("subject1");
 	}
 
 	@Test
@@ -325,7 +331,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenTypeIsIncorrect() {
-
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("FESDASd"), HentMottakerOgAdresseResponse.class),
 				"Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON.");
@@ -338,8 +343,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldThrowWhenIdentifikatorIsEmpty() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
-		HentMottakerOgAdresseRequest request = createRequest("PERSON");
-		request.setIdentifikator(null);
+		HttpEntity<HentMottakerOgAdresseRequest> request = createRequest("PERSON");
+		request.getBody().setIdentifikator(null);
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
 				"Identifikator kan ikke være null");
@@ -349,8 +354,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenTypeIsEmpty() {
-		HentMottakerOgAdresseRequest request = createRequest("PERSON");
-		request.setType(null);
+		HttpEntity<HentMottakerOgAdresseRequest> request = createRequest("PERSON");
+		request.getBody().setType(null);
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, request, HentMottakerOgAdresseResponse.class),
 				"Mottakertype kan ikke være null");
@@ -404,11 +409,16 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 
-	private HentMottakerOgAdresseRequest createRequest(String type) {
-		return HentMottakerOgAdresseRequest.builder()
+	private HttpEntity<HentMottakerOgAdresseRequest> createRequest(String type) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + this.token);
+
+		HentMottakerOgAdresseRequest hentMottakerOgAdresseRequest = HentMottakerOgAdresseRequest.builder()
 				.identifikator("0102030405")
 				.tema("PEN")
 				.type(type).build();
+
+		return new HttpEntity<>(hentMottakerOgAdresseRequest, headers);
 	}
 
 
