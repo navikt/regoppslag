@@ -20,5 +20,9 @@
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
 		"https://regoppslag.dev.intern.nav.no"
-	]
+	],
+	"AZURE_TENANT": "trygdeetaten.no",
+	"AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
+	"AZURE_APP_SCOPE": "api://dev-fss.pdl.pdl-api-q1/.default",
+	"AZURE_IAC_RULES": []
 }
