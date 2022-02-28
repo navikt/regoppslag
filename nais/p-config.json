@@ -27,7 +27,7 @@
 		{
 			"app": "safselvbetjening",
 			"namespace": "teamdokumenthandtering",
-			"cluster": "dev-fss"
+			"cluster": "prod-fss"
 		}
 	]
 }
