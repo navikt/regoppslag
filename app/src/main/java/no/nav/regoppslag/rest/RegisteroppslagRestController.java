@@ -14,7 +14,7 @@ import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalExcep
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,7 +42,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @RequestMapping(REST)
 @Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever JWT Authorization.")
 @Slf4j
-@Unprotected //TODO: Endre til @Protected når konsumenter har fått støtte for sts-token
+@Protected
 public class RegisteroppslagRestController {
 
 	public static final String REST = "rest/";
