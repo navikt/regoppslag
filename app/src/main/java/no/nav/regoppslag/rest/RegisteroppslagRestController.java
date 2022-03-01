@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-import static no.nav.regoppslag.config.springdoc.SpringDoc.samlTokenInfo;
+import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
@@ -40,9 +40,9 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 @RestController
 @RequestMapping(REST)
-@Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever SAML Authorization.")
+@Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever JWT Authorization.")
 @Slf4j
-@Unprotected
+@Unprotected //TODO: Endre til @Protected når konsumenter har fått støtte for sts-token
 public class RegisteroppslagRestController {
 
 	public static final String REST = "rest/";
@@ -59,7 +59,7 @@ public class RegisteroppslagRestController {
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 
-	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
+	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
@@ -89,7 +89,7 @@ public class RegisteroppslagRestController {
 		}
 	}
 
-	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + samlTokenInfo)
+	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),

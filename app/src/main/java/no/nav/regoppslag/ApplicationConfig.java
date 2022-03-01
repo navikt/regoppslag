@@ -15,6 +15,7 @@ import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Con
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.metrics.DokTimedAspect;
 import no.nav.regoppslag.treg001.ElementEnricherConfig;
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableAspectJAutoProxy
 @EnableAutoConfiguration
 @EnableWebMvc
+@EnableJwtTokenValidation(ignore = {"org.springframework", "org.springdoc"})
 public class ApplicationConfig {
 
 	@Bean

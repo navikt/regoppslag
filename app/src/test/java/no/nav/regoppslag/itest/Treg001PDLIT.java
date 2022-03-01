@@ -7,6 +7,8 @@ import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -41,6 +43,8 @@ public class Treg001PDLIT extends AbstractIT {
 
 	private static final String DOKUMENTTYPEID = "123";
 
+	private String token;
+
 	@BeforeEach
 	public void runBefore() {
 		WireMock.removeAllMappings();
@@ -61,6 +65,7 @@ public class Treg001PDLIT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
 
+		this.token = token("subject1");
 	}
 
 	/**
@@ -369,11 +374,16 @@ public class Treg001PDLIT extends AbstractIT {
 		assertThat(e.getStatusCode()).isEqualTo(GONE);
 	}
 
-	private KompletterBrevdataRequest createRequest(String path) {
-		return KompletterBrevdataRequest.builder()
+	private HttpEntity<KompletterBrevdataRequest> createRequest(String path) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + this.token);
+
+		KompletterBrevdataRequest kompletterBrevdataRequest = KompletterBrevdataRequest.builder()
 				.dokumentTypeId(DOKUMENTTYPEID)
 				.brevdata(classpathToString(path))
 				.tema("FRI")
 				.build();
+
+		return new HttpEntity<>(kompletterBrevdataRequest, headers);
 	}
 }
