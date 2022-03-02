@@ -26,15 +26,7 @@ public class RestTemplateTestConfig {
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
 				.setReadTimeout(TIMEOUT)
 				.setConnectTimeout(TIMEOUT)
-				.interceptors(new RestSamlTokenInterceptor(classpathToString("__files/felles/token/saml_token.xml"))).build();
-	}
-	
-	@Bean
-	public RestTemplate restTemplateNoHeader(RestTemplateBuilder restTemplateBuilder) {
-		return restTemplateBuilder
-				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setReadTimeout(TIMEOUT)
-				.setConnectTimeout(TIMEOUT).build();
+				.build();
 	}
 	
 }
