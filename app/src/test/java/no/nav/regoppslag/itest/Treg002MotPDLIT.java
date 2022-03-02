@@ -307,12 +307,11 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	@Disabled //TODO: re-implement when JWT token support is added
 	public void shouldThrowWhenPDLFailsFunctionalInvalidSecurityToken() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/unauthenticated-error-response.json");
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class),
+				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequestNoToken("PERSON"), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
@@ -412,6 +411,17 @@ public class Treg002MotPDLIT extends AbstractIT {
 	private HttpEntity<HentMottakerOgAdresseRequest> createRequest(String type) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + this.token);
+
+		HentMottakerOgAdresseRequest hentMottakerOgAdresseRequest = HentMottakerOgAdresseRequest.builder()
+				.identifikator("0102030405")
+				.tema("PEN")
+				.type(type).build();
+
+		return new HttpEntity<>(hentMottakerOgAdresseRequest, headers);
+	}
+
+	private HttpEntity<HentMottakerOgAdresseRequest> createRequestNoToken(String type) {
+		HttpHeaders headers = new HttpHeaders();
 
 		HentMottakerOgAdresseRequest hentMottakerOgAdresseRequest = HentMottakerOgAdresseRequest.builder()
 				.identifikator("0102030405")
