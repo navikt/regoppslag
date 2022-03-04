@@ -11,15 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	private final TokenValidationContextHolder tokenValidationContextHolder;
-	private final MultiIssuerConfiguration multiIssuerConfiguration;
-	private final MeterRegistry meterRegistry;
 
-	public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
-							MultiIssuerConfiguration multiIssuerConfiguration,
-							MeterRegistry meterRegistry) {
+	public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
-		this.multiIssuerConfiguration = multiIssuerConfiguration;
-		this.meterRegistry = meterRegistry;
 	}
 
 	@Override
