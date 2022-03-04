@@ -1,7 +1,5 @@
 package no.nav.regoppslag.config.security;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
