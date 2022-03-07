@@ -72,7 +72,7 @@ spec:
         mountPath: /var/run/secrets/nais.io/ldap
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
-    webproxy: true
+  webproxy: true
 {{#if AZURE_IAC_RULES}}
   azure:
     application:
