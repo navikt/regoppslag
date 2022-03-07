@@ -38,25 +38,29 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 			MDC.put(MDCConstants.NAV_CALL_ID, navCallId);
 			return;
 		}
-
 		// Fallback
 		MDC.put(MDCConstants.NAV_CALL_ID, UUID.randomUUID().toString());
 	}
 
 	private void populateConsumerId(HttpServletRequest request, TokenValidationContextHolder tokenValidationContextHolder) {
-		String consumerId = null;
+		final String consumerId = getConsumerId(tokenValidationContextHolder);
+		if (isNotBlank(consumerId)) {
+			MDC.put(MDCConstants.NAV_CONSUMER_ID, consumerId);
+		}
+		// Fallback
+		MDC.put(MDCConstants.NAV_CONSUMER_ID, "ukjent");
+	}
 
+	private String getConsumerId(TokenValidationContextHolder tokenValidationContextHolder) {
 		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
 			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
-			consumerId = tokenValidationContext.getJwtToken(ISSUER_AZUREV2).getSubject();
+			return tokenValidationContext.getJwtToken(ISSUER_AZUREV2).getSubject();
 		} else if (tokenValidationContext.getFirstValidToken().isPresent()) {
 			// REST-STS (header: Authorization). System til system
-			consumerId = tokenValidationContext.getFirstValidToken().get().getSubject();
-		}
-
-		if (isNotBlank(consumerId)) {
-			MDC.put(MDCConstants.NAV_CONSUMER_ID, consumerId);
+			return tokenValidationContext.getFirstValidToken().get().getSubject();
+		} else {
+			return null;
 		}
 	}
 }

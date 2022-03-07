@@ -21,7 +21,6 @@
 	"INGRESSES": [
 		"https://regoppslag.dev.intern.nav.no"
 	],
-	"AZURE_TENANT": "trygdeetaten.no",
 	"AZURE_IAC_RULES": [
 		{
 			"app": "safselvbetjening",
