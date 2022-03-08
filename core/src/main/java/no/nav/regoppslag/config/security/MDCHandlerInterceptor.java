@@ -35,21 +35,21 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	private void populateCallId(HttpServletRequest request) {
 		final String navCallId = request.getHeader(NavHeaders.NAV_CALLID);
 		if (isNotBlank(navCallId)) {
-			MDC.put(MDCConstants.NAV_CALL_ID, navCallId);
+			MDC.put(MDCConstants.CALL_ID, navCallId);
 			return;
 		}
 		// Fallback
-		MDC.put(MDCConstants.NAV_CALL_ID, UUID.randomUUID().toString());
+		MDC.put(MDCConstants.CALL_ID, UUID.randomUUID().toString());
 	}
 
 	private void populateConsumerId(HttpServletRequest request, TokenValidationContextHolder tokenValidationContextHolder) {
 		final String consumerId = getConsumerId(tokenValidationContextHolder);
 		if (isNotBlank(consumerId)) {
-			MDC.put(MDCConstants.NAV_CONSUMER_ID, consumerId);
+			MDC.put(MDCConstants.CONSUMER_ID, consumerId);
 			return;
 		}
 		// Fallback
-		MDC.put(MDCConstants.NAV_CONSUMER_ID, "ukjent");
+		MDC.put(MDCConstants.CONSUMER_ID, "ukjent");
 	}
 
 	private String getConsumerId(TokenValidationContextHolder tokenValidationContextHolder) {
