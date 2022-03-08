@@ -2,20 +2,16 @@ package no.nav.regoppslag.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.security.token.support.core.context.TokenValidationContext;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,18 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 
-import static java.util.UUID.randomUUID;
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
-import static no.nav.regoppslag.util.MDCConstants.getConsumerIdFromToken;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -52,13 +43,10 @@ public class PostAdresseController {
 	public static final String POSTADRESSE_URI_PATH = "postadresse";
 
 	private final PostadresseService postadresseService;
-	private final TokenValidationContextHolder tokenValidationContextHolder;
 
 	@Inject
-	public PostAdresseController(PostadresseService postadresseService,
-								 TokenValidationContextHolder tokenValidationContextHolder) {
+	public PostAdresseController(PostadresseService postadresseService) {
 		this.postadresseService = postadresseService;
-		this.tokenValidationContextHolder = tokenValidationContextHolder;
 	}
 
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
@@ -77,9 +65,6 @@ public class PostAdresseController {
 			@RequestBody PostadresseRequest requestBody,
 			@RequestHeader(value = NAV_CALLID, required = false) String navCallid)
 			throws RegOppslagSecurityException {
-		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
-		MDC.put(CALL_ID, isNotBlank(navCallid) ? navCallid : randomUUID().toString());
-		MDC.put(CONSUMER_ID, getConsumerIdFromToken(tokenValidationContext));
 		try {
 			log.info("RREG003 Henter postaddresse.");
 			PostadresseResponse response = postadresseService.postadresseInfo(requestBody);

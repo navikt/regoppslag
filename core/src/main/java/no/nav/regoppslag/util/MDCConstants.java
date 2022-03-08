@@ -1,14 +1,5 @@
 package no.nav.regoppslag.util;
 
-import no.nav.security.token.support.core.context.TokenValidationContext;
-import no.nav.security.token.support.core.jwt.JwtToken;
-import org.slf4j.MDC;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -24,29 +15,6 @@ public final class MDCConstants {
 	public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	public static final String NAV_CALL_ID = "Nav-Call-Id";
 	public static final String APP_ID = "regoppslag";
-
-	public static String getCallId() {
-		final String callId = MDC.get(CALL_ID);
-		return isBlank(callId) ? UUID.randomUUID().toString() : callId;
-	}
-
-	public static String getConsumerIdFromToken(TokenValidationContext tokenValidationContext) {
-		Optional<JwtToken> firstValidToken = tokenValidationContext.getFirstValidToken();
-		if (firstValidToken.isPresent()) {
-			JwtToken jwtToken = firstValidToken.get();
-			return getClientId(jwtToken);
-		}
-		return UKJENT;
-	}
-
-	private static String getClientId(final JwtToken jwtToken) {
-		String claim = jwtToken.getJwtTokenClaims().getStringClaim("client_id");
-		if (claim == null) {
-			return UKJENT;
-		} else {
-			return claim;
-		}
-	}
 
 	private MDCConstants() {
 		// ingen instansiering
