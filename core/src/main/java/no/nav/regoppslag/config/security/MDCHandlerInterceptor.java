@@ -46,6 +46,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 		final String consumerId = getConsumerId(tokenValidationContextHolder);
 		if (isNotBlank(consumerId)) {
 			MDC.put(MDCConstants.NAV_CONSUMER_ID, consumerId);
+			return;
 		}
 		// Fallback
 		MDC.put(MDCConstants.NAV_CONSUMER_ID, "ukjent");
