@@ -23,7 +23,7 @@
 	],
 	"AZURE_IAC_RULES": [
 		{
-			"app": "safselvbetjening-q1",
+			"app": "safselvbetjening",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "dev-fss"
 		}
