@@ -1,0 +1,51 @@
+package no.nav.regoppslag.consumer.ereg;
+
+import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import javax.inject.Inject;
+import java.time.Duration;
+
+import static no.nav.regoppslag.util.MDCConstants.*;
+
+@Slf4j
+@Service
+public class EregConsumer {
+
+	private final RestTemplate restTemplate;
+	private final String eregUrl;
+	private final HttpHeaders headers;
+
+	@Inject
+	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
+						   RestTemplateBuilder restTemplateBuilder) {
+		this.eregUrl = eregUrl;
+		this.restTemplate = restTemplateBuilder
+				.setReadTimeout(Duration.ofSeconds(20))
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.build();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(NAV_CALL_ID, MDC.get(CALL_ID));
+		headers.set(NAV_CONSUMER_ID, MDC.get(CONSUMER_ID));
+		this.headers = headers;
+	}
+
+	public Organisasjon getOrganisasjon(String organisasjonsNummer) {
+
+		HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
+		ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
+
+		return organisasjonResponseEntity.getBody();
+	}
+
+}

@@ -6,12 +6,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,16 +41,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(REST)
 @Tag(name = "Postadresse", description = "Tjeneste for å hente postadresse. Krever JWT Authorization")
 @Slf4j
-@Protected
+@Unprotected //todo change back
 public class PostAdresseController {
 
 	public static final String POSTADRESSE_URI_PATH = "postadresse";
 
 	private final PostadresseService postadresseService;
+	private final EregConsumer eregConsumer;
 
 	@Inject
-	public PostAdresseController(PostadresseService postadresseService) {
+	public PostAdresseController(PostadresseService postadresseService,
+								 EregConsumer eregConsumer
+	) {
 		this.postadresseService = postadresseService;
+		this.eregConsumer = eregConsumer;
 	}
 
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
@@ -74,6 +82,11 @@ public class PostAdresseController {
 			SecurityContextHolder.clearContext();
 			MDC.clear();
 		}
+	}
+//todo remove
+	@PostMapping(value = "test", produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<Organisasjon> organisasjon(@RequestParam String number) {
+		return ResponseEntity.ok(eregConsumer.getOrganisasjon(number));
 	}
 
 }
