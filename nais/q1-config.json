@@ -14,7 +14,7 @@
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
-	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person,srvveilarbvedtakss",
+	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person,srvveilarbvedtakss,srvdokdistsentralprint",
 	"APP_NAME": "regoppslag-q1",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
@@ -28,5 +28,4 @@
 			"cluster": "dev-fss"
 		}
 	]
-}
 }
