@@ -40,7 +40,7 @@ public class EregConsumer {
 		this.headers = headers;
 	}
 
-	public Organisasjon getOrganisasjon(String organisasjonsNummer) {
+	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
 
 		HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
 		ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);

@@ -86,7 +86,7 @@ public class PostAdresseController {
 //todo remove
 	@PostMapping(value = "test", produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<Organisasjon> organisasjon(@RequestParam String number) {
-		return ResponseEntity.ok(eregConsumer.getOrganisasjon(number));
+		return ResponseEntity.ok(eregConsumer.hentOrganisasjon(number));
 	}
 
 }
