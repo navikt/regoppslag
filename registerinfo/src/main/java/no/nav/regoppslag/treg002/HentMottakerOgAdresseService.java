@@ -2,6 +2,9 @@ package no.nav.regoppslag.treg002;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -15,7 +18,7 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.rreg003.AdresseMapper;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.to.MottakerTo;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -40,6 +43,11 @@ public class HentMottakerOgAdresseService {
 	private final AdresseMapper adresseMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
+
+	@Autowired
+	EregConsumer eregConsumer;
+	@Autowired
+	OrganisasjonEregMapper organisasjonEregMapper;
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
@@ -85,8 +93,12 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForOrg(HentMottakerOgAdresseRequest request) {
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
-		MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
+		//Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdentifikator());
+		//MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
+
+		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdentifikator());
+		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
+
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(mottakerTo.getMottaker().getNavn())

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
@@ -16,6 +17,7 @@ import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +50,9 @@ public class PostAdresseController {
 
 	private final PostadresseService postadresseService;
 	private final EregConsumer eregConsumer;
+
+	@Autowired
+	private OrganisasjonV4Consumer organisasjonV4Consumer;
 
 	@Inject
 	public PostAdresseController(PostadresseService postadresseService,
@@ -87,6 +92,11 @@ public class PostAdresseController {
 	@PostMapping(value = "test", produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<Organisasjon> organisasjon(@RequestParam String number) {
 		return ResponseEntity.ok(eregConsumer.hentOrganisasjon(number));
+	}
+
+	@PostMapping(value = "test2", produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon> organisasjon2(@RequestParam String number) {
+		return ResponseEntity.ok(organisasjonV4Consumer.hentOrganisasjon(number));
 	}
 
 }
