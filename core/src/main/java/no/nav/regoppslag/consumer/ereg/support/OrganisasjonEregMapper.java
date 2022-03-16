@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.ereg.support;
 
+import com.esotericsoftware.minlog.Log;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
@@ -136,9 +137,10 @@ public class OrganisasjonEregMapper {
 		//	postadresse.setPostnummer(gateadresse.getPoststed().getKodeRef());
 		//	postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
 		//}
-
-		postadresse.setPoststed(activeAddress.getPoststed());
+		//todo fix
+		Log.info(activeAddress.getPoststed());
 		postadresse.setPostnummer(activeAddress.getPostnummer());
+		postadresse.setPoststed(postnummerService.finnPoststed(activeAddress.getPostnummer()));
 		postadresse.setAdresselinje1(activeAddress.getAdresselinje1());
 		postadresse.setAdresselinje2(activeAddress.getAdresselinje2());
 		postadresse.setAdresselinje3(activeAddress.getAdresselinje3());
