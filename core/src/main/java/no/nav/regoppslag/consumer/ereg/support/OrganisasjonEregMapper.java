@@ -138,16 +138,18 @@ public class OrganisasjonEregMapper {
 		//	postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
 		//}
 		//todo fix
-		Log.info(activeAddress.getPoststed());
+		/*
+		Log.info(activeAddress.getAdresselinje2());
 		postadresse.setPostnummer(activeAddress.getPostnummer());
-		postadresse.setPoststed(postnummerService.finnPoststed(activeAddress.getPostnummer()));
+		if(activeAddress.getPostnummer() != null) {
+			postadresse.setPoststed(postnummerService.finnPoststed(activeAddress.getPostnummer()));
+		}
 		postadresse.setAdresselinje1(activeAddress.getAdresselinje1());
 		postadresse.setAdresselinje2(activeAddress.getAdresselinje2());
 		postadresse.setAdresselinje3(activeAddress.getAdresselinje3());
+		*/
+		postadresse = settAdresseledd(activeAddress);
 
-		if (activeAddress.getLandkode() != null) {
-			postadresse.setLand(landkodeService.finnLandnavn(activeAddress.getLandkode()));
-		}
 
 		return postadresse;
 	}
@@ -248,9 +250,31 @@ public class OrganisasjonEregMapper {
 	}
 
 	//todo se på dette
-	/*
-	private no.nav.regoppslag.consumer.map.Postadresse settAdresseledd(no.nav.regoppslag.consumer.ereg.support.Postadresse postAdresse) {
+
+	private no.nav.regoppslag.consumer.map.Postadresse settAdresseledd(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = Postadresse.builder().build();
+
+		if (eregAdresse.getLandkode().equals(LANDKODE_NORGE)) {
+			postadresse.setPostnummer(eregAdresse.getPostnummer());
+			postadresse.setPoststed(eregAdresse.getPoststed());
+			if(eregAdresse.getPostnummer() != null && eregAdresse.getPoststed() == null) {
+				postadresse.setPoststed(postnummerService.finnPoststed(eregAdresse.getPostnummer()));
+			}
+			postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
+			postadresse.setAdresselinje2(eregAdresse.getAdresselinje2());
+			postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
+		} else {
+			postadresse.setPostnummer(eregAdresse.getPostnummer());
+			postadresse.setPoststed(eregAdresse.getPoststed());
+			postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
+			postadresse.setAdresselinje2(eregAdresse.getAdresselinje2());
+			postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
+		}
+
+		if (eregAdresse.getLandkode() != null) {
+			postadresse.setLand(landkodeService.finnLandnavn(eregAdresse.getLandkode()));
+		}
+		/*
 		semistrukturertAdresse.getAdresseledd().forEach(nokkel -> {
 			if (ADRESSELINJE_1.equals(nokkel.getNoekkel().getKodeRef())) {
 				postadresse.setAdresselinje1(nokkel.getVerdi());
@@ -266,6 +290,7 @@ public class OrganisasjonEregMapper {
 				postadresse.setPoststed(nokkel.getVerdi());
 			}
 		});
+		 */
 		return postadresse;
-	}*/
+	}
 }
