@@ -48,7 +48,7 @@
         }
       }
     ],
-    "forretningsadresser": [
+    "postadresser": [
       {
         "type": "Postadresse",
         "adresselinje1": "Vestre Vollen",

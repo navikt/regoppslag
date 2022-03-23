@@ -2,6 +2,9 @@ package no.nav.regoppslag.consumer.ereg;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -10,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
@@ -41,11 +46,17 @@ public class EregConsumer {
 	}
 
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
-
-		HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
-		ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
-
-		return organisasjonResponseEntity.getBody();
+		try {
+			HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
+			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
+			return organisasjonResponseEntity.getBody();
+		} catch (HttpClientErrorException.NotFound e) {
+			throw new RegOppslagIkkeFunnetException("Fant ikke Organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());
+		} catch (HttpClientErrorException e) {
+			throw new RegOppslagFunctionalException("Funksjonell feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());
+		} catch (HttpServerErrorException e) {
+			throw new RegOppslagTechnicalException("Teknisk feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e);
+		}
 	}
 
 }
