@@ -2,6 +2,7 @@ package no.nav.regoppslag.rreg003;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -34,12 +35,11 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class PostadresseService {
 
-	private final OrganisasjonV4Consumer organisasjonV4Consumer;
-	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final EregConsumer eregConsumer;
 	private final AdresseMapper adresseMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
+	private final OrganisasjonEregMapper organisasjonEregMapper;
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
@@ -50,13 +50,13 @@ public class PostadresseService {
 							  AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,
-							  EregConsumer eregConsumer) {
-		this.organisasjonV4Consumer = organisasjonV4Consumer;
-		this.organisasjonV4Mapper = organisasjonV4Mapper;
+							  EregConsumer eregConsumer,
+							  OrganisasjonEregMapper organisasjonEregMapper) {
 		this.adresseMapper = adresseMapper;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.eregConsumer = eregConsumer;
+		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public PostadresseResponse postadresseInfo(PostadresseRequest request) throws RegOppslagSecurityException {
@@ -90,11 +90,10 @@ public class PostadresseService {
 	}
 
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
-		Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(request.getIdent());
 		//todo clean
 		no.nav.regoppslag.consumer.ereg.support.Organisasjon organisasjon2 = eregConsumer.hentOrganisasjon(request.getIdent());
 
-		MottakerTo mottakerTo = organisasjonV4Mapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
+		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon2, SERVICE_CODE_RREG003);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo.getMottaker()))
