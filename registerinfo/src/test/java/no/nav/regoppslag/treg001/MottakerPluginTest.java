@@ -10,6 +10,7 @@ import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -25,7 +26,6 @@ import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.regoppslag.util.TestDataUtil;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +63,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
-import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
+import static no.nav.regoppslag.util.TestDataUtil.settPostAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -290,7 +290,8 @@ public class MottakerPluginTest {
 
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+		//when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList("NN")));
 
@@ -360,7 +361,7 @@ public class MottakerPluginTest {
 	private static Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
 		Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
+		settPostAdresse(org, "POSTADRESSE", 10000L);
 		return org;
 	}
 

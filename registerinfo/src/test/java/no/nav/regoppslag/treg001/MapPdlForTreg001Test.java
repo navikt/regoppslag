@@ -15,12 +15,11 @@ import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.TestDataUtil;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +49,7 @@ import static no.nav.regoppslag.util.TestDataUtil.GATENAVN;
 import static no.nav.regoppslag.util.TestDataUtil.HUSBOKSTAV;
 import static no.nav.regoppslag.util.TestDataUtil.HUSNR;
 import static no.nav.regoppslag.util.TestDataUtil.POSTNR;
-import static no.nav.regoppslag.util.TestDataUtil.settStrukturertAdresse;
+import static no.nav.regoppslag.util.TestDataUtil.settPostAdresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -135,7 +134,7 @@ class MapPdlForTreg001Test {
 
 	@Test
 	void shouldMapNorskOrganisasjon() throws DatatypeConfigurationException {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createOrganisasjonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
@@ -176,10 +175,10 @@ class MapPdlForTreg001Test {
 		return list;
 	}
 
-	private static Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
-		Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
+	private static no.nav.regoppslag.consumer.ereg.support.Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
+		no.nav.regoppslag.consumer.ereg.support.Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settStrukturertAdresse(org, "POSTADRESSE");
+		settPostAdresse(org, "POSTADRESSE", 10000L);
 		return org;
 	}
 }

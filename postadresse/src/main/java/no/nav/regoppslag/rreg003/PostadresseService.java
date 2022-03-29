@@ -90,10 +90,9 @@ public class PostadresseService {
 	}
 
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
-		//todo clean
-		no.nav.regoppslag.consumer.ereg.support.Organisasjon organisasjon2 = eregConsumer.hentOrganisasjon(request.getIdent());
+		no.nav.regoppslag.consumer.ereg.support.Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
 
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon2, SERVICE_CODE_RREG003);
+		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo.getMottaker()))

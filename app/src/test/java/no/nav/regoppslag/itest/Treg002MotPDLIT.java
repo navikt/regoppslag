@@ -242,7 +242,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 						.withBodyFile("treg002/ereg/ereg-ingenpostadresse.json")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
-		assertEquals("0102030405", response.getIdentifikator());
+		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals("LYS KOSTBAR STRUTS GMBH", response.getNavn());
 		assertUtenlandskOrgAdresse(response);
 	}

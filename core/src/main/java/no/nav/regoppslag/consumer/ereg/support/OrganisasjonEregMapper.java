@@ -1,6 +1,5 @@
 package no.nav.regoppslag.consumer.ereg.support;
 
-import com.esotericsoftware.minlog.Log;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
@@ -12,17 +11,13 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.to.MottakerTo;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.SemistrukturertAdresse;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,11 +26,9 @@ import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToN
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
-import static no.nav.regoppslag.metrics.MetricLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -65,10 +58,21 @@ public class OrganisasjonEregMapper {
 
 	public String getSakspartNavn(Organisasjon wsOrganisasjon) {
 		OrganisasjonDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		Navn organisasjonsnavn = findValidOrgNavn(orgDet)
+		Navn orgNavn = findValidOrgNavn(orgDet)
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + wsOrganisasjon.getOrganisasjonsnummer(), NOT_FOUND));
 
-		return organisasjonsnavn.getNavnelinje1().trim();
+		String tempNavn = "";
+
+		if(orgNavn.getNavnelinje1() != null){
+			tempNavn += orgNavn.getNavnelinje1();
+		} else if(orgNavn.getNavnelinje2() != null){
+			tempNavn += " "+orgNavn.getNavnelinje2();
+		} else if(orgNavn.getNavnelinje3() != null){
+			tempNavn += " "+orgNavn.getNavnelinje3();
+		} else if(orgNavn.getNavnelinje4() != null){
+			tempNavn += " "+ orgNavn.getNavnelinje4();
+		}
+		return tempNavn.trim();
 	}
 
 
@@ -113,7 +117,7 @@ public class OrganisasjonEregMapper {
 
 	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
 		if (orgDet.getOpphoersdato() != null && LocalDate.now().isAfter(orgDet.getOpphoersdato())) {
-			String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", new SimpleDateFormat("dd/MM/yyyy").format(orgDet.getOpphoersdato()), orgNummer);
+			String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", DateTimeFormatter.ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
 			throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
 		}
 
@@ -123,7 +127,6 @@ public class OrganisasjonEregMapper {
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = no.nav.regoppslag.consumer.map.Postadresse.builder().build();
 
 		postadresse = settAdresseledd(activeAddress);
-
 
 		return postadresse;
 	}
@@ -151,7 +154,7 @@ public class OrganisasjonEregMapper {
 
 	private Optional<Navn> findValidOrgNavn(OrganisasjonDetaljer orgDet) {
 		return orgDet.getNavn().stream()
-				.filter((org)-> isValidGyldighetsAndBruksPeriode(org.getGyldighetsperiode(), org.getBruksperiode()))
+				.filter((org) -> isValidGyldighetsAndBruksPeriode(org.getGyldighetsperiode(), org.getBruksperiode()))
 				.findFirst();
 	}
 
@@ -179,7 +182,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectGyldigPostAdresse(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> adresser) {
-		if(adresser == null){
+		if (adresser == null) {
 			return Optional.empty();
 		}
 		return adresser.stream().filter(this::isValidPostAdresse).findAny();
@@ -202,12 +205,11 @@ public class OrganisasjonEregMapper {
 	}
 
 	private boolean containsPostnummer(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
-
-		if(adresse.getPostnummer() != null) {
+		if (adresse.getPostnummer() != null) {
 			return true;
-		}else if(adresse.getPoststed() != null){
+		} else if (adresse.getPoststed() != null) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -217,8 +219,7 @@ public class OrganisasjonEregMapper {
 
 		if (eregAdresse.getLandkode().equals(LANDKODE_NORGE)) {
 			postadresse.setPostnummer(eregAdresse.getPostnummer());
-			postadresse.setPoststed(eregAdresse.getPoststed());
-			if(eregAdresse.getPostnummer() != null && eregAdresse.getPoststed() == null) {
+			if (eregAdresse.getPostnummer() != null) {
 				postadresse.setPoststed(postnummerService.finnPoststed(eregAdresse.getPostnummer()));
 			}
 			postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
