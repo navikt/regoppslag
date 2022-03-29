@@ -10,6 +10,8 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -69,6 +71,8 @@ class MapPdlForTreg001Test {
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
+	private EregConsumer eregConsumer;
+	private OrganisasjonEregMapper organisasjonEregMapper;
 	private LandkodeService landkodeService;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
@@ -89,7 +93,9 @@ class MapPdlForTreg001Test {
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon);
+		eregConsumer = mock(EregConsumer.class);
+		organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
+		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 
 	}
 

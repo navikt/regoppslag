@@ -9,6 +9,8 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.pdl.MapPDLResponse;
@@ -98,6 +100,8 @@ public class MottakerPluginTest {
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private OrganisasjonV4Mapper organisasjonV4Mapper;
+	private EregConsumer eregConsumer;
+	private OrganisasjonEregMapper organisasjonEregMapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
@@ -134,7 +138,9 @@ public class MottakerPluginTest {
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 
 		organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon);
+		eregConsumer = mock(EregConsumer.class);
+		organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
+		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001, metrics);
 	}
 

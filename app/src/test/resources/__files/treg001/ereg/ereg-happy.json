@@ -1,0 +1,141 @@
+{
+  "organisasjonsnummer": "889640782",
+  "type": "Organisasjonsledd",
+  "navn": {
+    "redigertnavn": "ARBEIDS- OG VELFERDSETATEN",
+    "navnelinje1": "ARBEIDS- OG VELFERDSETATEN",
+    "bruksperiode": {
+      "fom": "2015-02-23T08:04:53.2"
+    },
+    "gyldighetsperiode": {
+      "fom": "2006-03-23"
+    }
+  },
+  "organisasjonDetaljer": {
+    "registreringsdato": "2006-03-23T00:00:00",
+    "stiftelsesdato": "2005-12-31",
+    "enhetstyper": [
+      {
+        "enhetstype": "ORGL",
+        "bruksperiode": {
+          "fom": "2014-05-21T18:52:38"
+        },
+        "gyldighetsperiode": {
+          "fom": "2006-03-23"
+        }
+      }
+    ],
+    "naeringer": [
+      {
+        "naeringskode": "84.120",
+        "hjelpeenhet": false,
+        "bruksperiode": {
+          "fom": "2014-05-22T00:42:43.812"
+        },
+        "gyldighetsperiode": {
+          "fom": "2005-12-31"
+        }
+      }
+    ],
+    "navn": [
+      {
+        "redigertnavn": "ARBEIDS- OG VELFERDSETATEN",
+        "navnelinje1": "ARBEIDS- OG VELFERDSETATEN",
+        "bruksperiode": {
+          "fom": "2015-02-23T08:04:53.2"
+        },
+        "gyldighetsperiode": {
+          "fom": "2006-03-23"
+        }
+      }
+    ],
+    "forretningsadresser": [
+      {
+        "type": "Forretningsadresse",
+        "adresselinje1": "Økernveien 94",
+        "postnummer": "0579",
+        "landkode": "NO",
+        "kommunenummer": "0301",
+        "bruksperiode": {
+          "fom": "2014-07-13T04:02:31.517"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-07-12"
+        }
+      }
+    ],
+    "postadresser": [
+      {
+        "type": "Postadresse",
+        "adresselinje1": "Postboks 5 St Olavs Plass",
+        "postnummer": "0130",
+        "landkode": "NO",
+        "kommunenummer": "0301",
+        "bruksperiode": {
+          "fom": "2015-02-23T10:38:34.403"
+        },
+        "gyldighetsperiode": {
+          "fom": "2010-11-03"
+        }
+      }
+    ],
+    "internettadresser": [
+      {
+        "adresse": "www.nav.no",
+        "bruksperiode": {
+          "fom": "2014-05-21T18:52:37.997"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-03-18"
+        }
+      }
+    ],
+    "telefonnummer": [
+      {
+        "nummer": "21 07 00 00",
+        "telefontype": "TFON",
+        "bruksperiode": {
+          "fom": "2014-05-21T18:52:38"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-03-18"
+        }
+      }
+    ],
+    "telefaksnummer": [
+      {
+        "nummer": "21 07 00 01",
+        "bruksperiode": {},
+        "gyldighetsperiode": {}
+      }
+    ],
+    "formaal": [
+      {
+        "formaal": "Arbeids- og velferdsetaten har ansvaret for gjennomføringen av\narbeidsmarkeds- trygde- og pensjonspolitikken",
+        "bruksperiode": {
+          "fom": "2014-05-21T23:46:16.225"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-03-18"
+        }
+      }
+    ],
+    "maalform": "NB",
+    "sistEndret": "2015-10-07",
+    "registrertMVA": [
+      {
+        "registrertIMVA": true,
+        "bruksperiode": {
+          "fom": "2014-05-21T18:52:38"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-03-18"
+        }
+      }
+    ]
+  },
+  "organisasjonsleddDetaljer": {
+    "enhetstype": "ORGL",
+    "sektorkode": "6100"
+  }
+}

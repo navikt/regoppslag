@@ -44,7 +44,7 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 @RequestMapping(REST)
 @Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever JWT Authorization.")
 @Slf4j
-@Protected
+@Unprotected //todo change back
 public class RegisteroppslagRestController {
 
 	public static final String REST = "rest/";

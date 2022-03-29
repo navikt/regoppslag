@@ -5,13 +5,19 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.metrics.MetricLabels;
+import no.nav.regoppslag.metrics.Metrics;
+import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -20,6 +26,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.inject.Inject;
 import java.time.Duration;
 
+import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
+import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.*;
 
 @Slf4j
@@ -29,10 +37,12 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 	private final HttpHeaders headers;
+	private MicrometerMetrics metrics;
 
 	@Inject
 	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
-						   RestTemplateBuilder restTemplateBuilder) {
+						   RestTemplateBuilder restTemplateBuilder,
+						MicrometerMetrics metrics) {
 		this.eregUrl = eregUrl;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
@@ -43,9 +53,16 @@ public class EregConsumer {
 		headers.set(NAV_CALL_ID, MDC.get(CALL_ID));
 		headers.set(NAV_CONSUMER_ID, MDC.get(CONSUMER_ID));
 		this.headers = headers;
+		this.metrics = metrics;
 	}
 
+	@Cacheable(value = MetricLabels.HENT_ORGANISASJON, key = "#organisasjonsNummer")
+	@Retryable(include = HttpServerErrorException.class, exclude = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
+
+		metrics.cacheMiss(MetricLabels.HENT_ORGANISASJON);
+
 		try {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
 			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
