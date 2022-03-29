@@ -3,6 +3,8 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -41,17 +43,23 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 	private final OrganisasjonV4Consumer organisasjonV4Consumer;
 	private final OrganisasjonV4Mapper organisasjonV4Mapper;
+	private final EregConsumer eregConsumer;
+	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private final MicrometerMetrics metrics;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	public SakspartPlugin(OrganisasjonV4Consumer organisasjonV4Consumer,
 						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics,
-						  PdlGraphQLConsumer pdlGraphQLConsumer) {
+						  PdlGraphQLConsumer pdlGraphQLConsumer,
+						  EregConsumer eregConsumer,
+						  OrganisasjonEregMapper organisasjonEregMapper) {
 		super(Sakspart.class);
 		this.organisasjonV4Consumer = organisasjonV4Consumer;
 		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.metrics = metrics;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
+		this.eregConsumer = eregConsumer;
+		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	@Override
@@ -76,8 +84,10 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 					sakspart.setNavn(navn);
 
 				} else {
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());
-					sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
+					//Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());
+					//sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
+					no.nav.regoppslag.consumer.ereg.support.Organisasjon organisasjon = eregConsumer.hentOrganisasjon(sakspart.getId());
+					sakspart.setNavn(organisasjonEregMapper.getSakspartNavn(organisasjon));
 				}
 			}
 

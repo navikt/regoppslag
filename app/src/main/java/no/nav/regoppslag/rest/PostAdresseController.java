@@ -43,7 +43,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(REST)
 @Tag(name = "Postadresse", description = "Tjeneste for å hente postadresse. Krever JWT Authorization")
 @Slf4j
-@Unprotected //todo change back
+@Protected
 public class PostAdresseController {
 
 	public static final String POSTADRESSE_URI_PATH = "postadresse";
@@ -88,15 +88,4 @@ public class PostAdresseController {
 			MDC.clear();
 		}
 	}
-//todo remove
-	@PostMapping(value = "test", produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<Organisasjon> organisasjon(@RequestParam String number) {
-		return ResponseEntity.ok(eregConsumer.hentOrganisasjon(number));
-	}
-
-	@PostMapping(value = "test2", produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon> organisasjon2(@RequestParam String number) {
-		return ResponseEntity.ok(organisasjonV4Consumer.hentOrganisasjon(number));
-	}
-
 }

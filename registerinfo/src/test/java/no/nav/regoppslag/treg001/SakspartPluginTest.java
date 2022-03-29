@@ -3,6 +3,8 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -73,6 +75,7 @@ public class SakspartPluginTest {
 	private PostnummerService postnummerService;
 	private LandkodeService landkodeService;
 	private OrganisasjonV4Consumer organisasjonV4Consumer;
+	private EregConsumer eregConsumer;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
 	private SakspartPlugin sakspartPlugin;
@@ -83,6 +86,7 @@ public class SakspartPluginTest {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
 		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+		eregConsumer = mock(EregConsumer.class);
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
@@ -94,7 +98,8 @@ public class SakspartPluginTest {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
+		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
 		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}

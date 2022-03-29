@@ -1,8 +1,10 @@
 package no.nav.regoppslag.consumer.ereg.support;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Postadresse {
 	protected Bruksperiode bruksperiode;
 	protected Gyldighetsperiode gyldighetsperiode;

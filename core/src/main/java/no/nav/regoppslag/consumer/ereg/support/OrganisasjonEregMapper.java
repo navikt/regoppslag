@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
+import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.ORGANISASJONV4_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
@@ -68,7 +69,6 @@ public class OrganisasjonEregMapper {
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + wsOrganisasjon.getOrganisasjonsnummer(), NOT_FOUND));
 
 		return organisasjonsnavn.getNavnelinje1().trim();
-		//return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavn()).getNavnelinje(), " ").trim();
 	}
 
 
@@ -87,8 +87,7 @@ public class OrganisasjonEregMapper {
 			throw e;
 		}
 
-		//todo look at new metrics
-		//incrementFunctionalMetrics(postadresse, serviceCode);
+		incrementFunctionalMetrics(postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
 			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
@@ -101,18 +100,15 @@ public class OrganisasjonEregMapper {
 		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakKodeAsString(orgDet)).build();
 	}
 
-	//todo look at new metrics
-	/*
 	private void incrementFunctionalMetrics(no.nav.regoppslag.consumer.map.Postadresse postadresse, String serviceCode) {
 		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
+			metrics.meter(serviceCode, EREG_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
 		}
 		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
+			metrics.meter(serviceCode, EREG_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
 		}
-		metrics.meter(serviceCode, ORGANISASJONV4_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
+		metrics.meter(serviceCode, EREG_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
 	}
-	 */
 
 
 	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
@@ -125,29 +121,7 @@ public class OrganisasjonEregMapper {
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige adresser funnet for orgnummer=" + orgNummer, NOT_FOUND));
 
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = no.nav.regoppslag.consumer.map.Postadresse.builder().build();
-		//if (activeAddress instanceof SemistrukturertAdresse) {
-		//	SemistrukturertAdresse semistrukturertAdresse = (SemistrukturertAdresse) activeAddress;
-		//	postadresse = settAdresseledd(semistrukturertAdresse);
-		//	if (postadresse.getPostnummer() != null) {
-		//		postadresse.setPoststed(postnummerService.finnPoststed(postadresse.getPostnummer()));
-		//	}
-		//} else {
-		//	Gateadresse gateadresse = (Gateadresse) activeAddress;
-		//	postadresse.setAdresselinje1(String.format("%s %s%s", gateadresse.getGatenavn(), gateadresse.getHusnummer(), gateadresse.getHusbokstav()));
-		//	postadresse.setPostnummer(gateadresse.getPoststed().getKodeRef());
-		//	postadresse.setPoststed(postnummerService.finnPoststed(gateadresse.getPoststed().getKodeRef()));
-		//}
-		//todo fix
-		/*
-		Log.info(activeAddress.getAdresselinje2());
-		postadresse.setPostnummer(activeAddress.getPostnummer());
-		if(activeAddress.getPostnummer() != null) {
-			postadresse.setPoststed(postnummerService.finnPoststed(activeAddress.getPostnummer()));
-		}
-		postadresse.setAdresselinje1(activeAddress.getAdresselinje1());
-		postadresse.setAdresselinje2(activeAddress.getAdresselinje2());
-		postadresse.setAdresselinje3(activeAddress.getAdresselinje3());
-		*/
+
 		postadresse = settAdresseledd(activeAddress);
 
 
@@ -171,7 +145,7 @@ public class OrganisasjonEregMapper {
 		Navn organisasjonsnavn = findValidOrgNavn(orgDet.getOrganisasjonDetaljer())
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrganisasjonsnummer(), NOT_FOUND));
 
-		return organisasjonsnavn.getNavnelinje1().trim();
+		return organisasjonsnavn.getNavnelinje1().trim(); //Er det noe case der det brukes flere navnelinjer? hvordan skal det 'handles' ifht sendingsnavn
 		//return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavnelinje1()).getNavnelinje(), " ").trim();
 	}
 
@@ -224,7 +198,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	private boolean landkodeIsNotNull(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
-		return adresse.getLandkode() != null && adresse.getLandkode() != null;
+		return adresse.getLandkode() != null;
 	}
 
 	private boolean containsPostnummer(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
@@ -236,20 +210,7 @@ public class OrganisasjonEregMapper {
 		}else{
 			return false;
 		}
-		/*
-		if (adresse instanceof SemistrukturertAdresse) {
-			return ((SemistrukturertAdresse) adresse).getAdresseledd()
-					.stream()
-					.anyMatch(nva -> POSTNR.equals(nva.getNoekkel().getKodeRef()) && isNotEmpty(nva.getVerdi()));
-		} else if (adresse instanceof Gateadresse) {
-			return ((Gateadresse) adresse).getPoststed() != null;
-		} else {
-			return false;
-		}
-		*/
 	}
-
-	//todo se på dette
 
 	private no.nav.regoppslag.consumer.map.Postadresse settAdresseledd(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = Postadresse.builder().build();
@@ -274,23 +235,7 @@ public class OrganisasjonEregMapper {
 		if (eregAdresse.getLandkode() != null) {
 			postadresse.setLand(landkodeService.finnLandnavn(eregAdresse.getLandkode()));
 		}
-		/*
-		semistrukturertAdresse.getAdresseledd().forEach(nokkel -> {
-			if (ADRESSELINJE_1.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setAdresselinje1(nokkel.getVerdi());
-			} else if (ADRESSELINJE_2.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setAdresselinje2(nokkel.getVerdi());
-			} else if (ADRESSELINJE_3.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setAdresselinje3(nokkel.getVerdi());
-			} else if (ADRESSE_3_SPLIT_1.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setAdresselinje3(nokkel.getVerdi());
-			} else if (POSTNR.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setPostnummer(nokkel.getVerdi());
-			} else if (POSTSTED.equals(nokkel.getNoekkel().getKodeRef())) {
-				postadresse.setPoststed(nokkel.getVerdi());
-			}
-		});
-		 */
+
 		return postadresse;
 	}
 }

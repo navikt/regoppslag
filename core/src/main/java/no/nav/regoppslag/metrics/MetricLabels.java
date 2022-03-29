@@ -39,6 +39,7 @@ public final class MetricLabels {
 	public static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
 	public static final String POSTSTED = "poststed";
 	public static final String ORGANISASJONV4_MAPPER = "OrganisasjonV4Mapper";
+	public static final String EREG_MAPPER = "OrganisasjonEregMapper";
 	public static final String TREG002_ADRESSE_MAPPER = "Treg002AdresseMapper";
 
 
