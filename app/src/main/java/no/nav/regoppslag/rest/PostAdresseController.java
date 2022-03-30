@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.consumer.ereg.EregConsumer;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
@@ -15,7 +13,6 @@ import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,17 +43,11 @@ public class PostAdresseController {
 	public static final String POSTADRESSE_URI_PATH = "postadresse";
 
 	private final PostadresseService postadresseService;
-	private final EregConsumer eregConsumer;
-
-	@Autowired
-	private OrganisasjonV4Consumer organisasjonV4Consumer;
 
 	@Inject
-	public PostAdresseController(PostadresseService postadresseService,
-								 EregConsumer eregConsumer
+	public PostAdresseController(PostadresseService postadresseService
 	) {
 		this.postadresseService = postadresseService;
-		this.eregConsumer = eregConsumer;
 	}
 
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)

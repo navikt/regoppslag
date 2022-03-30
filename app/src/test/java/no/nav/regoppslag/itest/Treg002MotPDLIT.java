@@ -248,7 +248,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenOrganisasjonV4FailsFunctionalInvalidInput() {
+	public void shouldThrowWhenEregOrganisasjonFailsFunctionalInvalidInput() {
 		stubFor(get("/v1/organisasjon/" + PERSON_IDENT)
 				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -283,7 +283,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenOrganisasjonV4FailsFunctionalNotFound() {
+	public void shouldThrowWhenEregOrganisasjonFailsFunctionalNotFound() {
 		stubFor(get("/v1/organisasjon/" + PERSON_IDENT)
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -296,7 +296,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenOrganisasjonV4FailsTechnical() {
+	public void shouldThrowWhenEregOrganisasjonFailsTechnical() {
 		stubFor(get("/v1/organisasjon/" + PERSON_IDENT)
 				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)

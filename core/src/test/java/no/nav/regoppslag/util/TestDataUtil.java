@@ -90,7 +90,8 @@ public class TestDataUtil {
             tempNavn.append(" ").append(navn);
         }
 
-        organisasjonKortnavn.setNavnelinje1(tempNavn.toString());
+        organisasjonKortnavn.setNavnelinje1(tempNavn.toString().trim());
+        organisasjonKortnavn.setRedigertnavn(tempNavn.toString().trim());
         organisasjon.setNavn(organisasjonKortnavn);
 
         Navn organisasjonsnavn = new Navn();
@@ -99,7 +100,8 @@ public class TestDataUtil {
             tempNavn2.append(" ").append(navn);
         }
 
-        organisasjonsnavn.setNavnelinje1(tempNavn2.toString());
+        organisasjonsnavn.setNavnelinje1(tempNavn2.toString().trim());
+        organisasjonsnavn.setRedigertnavn(tempNavn2.toString().trim());
         Bruksperiode bruksperiode = new Bruksperiode();
         bruksperiode.setFom(LocalDateTime.now().minusDays(1));
         organisasjonsnavn.setBruksperiode(bruksperiode);

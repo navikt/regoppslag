@@ -12,8 +12,6 @@ import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.pdl.MapPDLResponse;
@@ -68,8 +66,6 @@ class MapPdlForTreg001Test {
 	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
-	private OrganisasjonV4Consumer organisasjonV4Consumer;
-	private OrganisasjonV4Mapper organisasjonV4Mapper;
 	private EregConsumer eregConsumer;
 	private OrganisasjonEregMapper organisasjonEregMapper;
 	private LandkodeService landkodeService;
@@ -88,13 +84,11 @@ class MapPdlForTreg001Test {
 		postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
-		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
-		organisasjonV4Mapper = new OrganisasjonV4Mapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		eregConsumer = mock(EregConsumer.class);
 		organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
-		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, organisasjonV4Consumer, organisasjonV4Mapper, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 
 	}
 

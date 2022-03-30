@@ -14,8 +14,6 @@ import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
@@ -47,8 +45,6 @@ public class MapPdlForTreg001 {
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
 	private final LandkodeService landkodeService;
-	private final OrganisasjonV4Consumer organisasjonV4Consumer;
-	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private final SpraakKodeMapper spraakKodeMapper;
@@ -59,8 +55,7 @@ public class MapPdlForTreg001 {
 
 	@Inject
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
-							LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
-							OrganisasjonV4Mapper organisasjonV4Mapper,
+							LandkodeService landkodeService,
 							Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
 							DigitalKontaktinformasjon digitalKontaktinformasjon,
 							EregConsumer eregConsumer,
@@ -68,8 +63,6 @@ public class MapPdlForTreg001 {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.landkodeService = landkodeService;
-		this.organisasjonV4Consumer = organisasjonV4Consumer;
-		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
 		this.spraakKodeMapper = new SpraakKodeMapper();

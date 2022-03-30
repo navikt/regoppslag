@@ -14,7 +14,6 @@ import no.nav.regoppslag.to.MottakerTo;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +28,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -61,18 +61,7 @@ public class OrganisasjonEregMapper {
 		Navn orgNavn = findValidOrgNavn(orgDet)
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + wsOrganisasjon.getOrganisasjonsnummer(), NOT_FOUND));
 
-		String tempNavn = "";
-
-		if(orgNavn.getNavnelinje1() != null){
-			tempNavn += orgNavn.getNavnelinje1();
-		} else if(orgNavn.getNavnelinje2() != null){
-			tempNavn += " "+orgNavn.getNavnelinje2();
-		} else if(orgNavn.getNavnelinje3() != null){
-			tempNavn += " "+orgNavn.getNavnelinje3();
-		} else if(orgNavn.getNavnelinje4() != null){
-			tempNavn += " "+ orgNavn.getNavnelinje4();
-		}
-		return tempNavn.trim();
+		return aggregerNavn(orgNavn);
 	}
 
 
@@ -140,16 +129,14 @@ public class OrganisasjonEregMapper {
 	}
 
 	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
-		return wsOrganisasjon.getNavn().getNavnelinje1().trim();
-		//return StringUtils.collectionToDelimitedString(((UstrukturertNavn) wsOrganisasjon.getNavn()).getNavnelinje(), " ").trim();
+		return wsOrganisasjon.getNavn().getRedigertnavn();
 	}
 
 	private String mapOrganisasjonNavn(Organisasjon orgDet) {
 		Navn organisasjonsnavn = findValidOrgNavn(orgDet.getOrganisasjonDetaljer())
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrganisasjonsnummer(), NOT_FOUND));
 
-		return organisasjonsnavn.getNavnelinje1().trim(); //Er det noe case der det brukes flere navnelinjer? hvordan skal det 'handles' ifht sendingsnavn
-		//return StringUtils.collectionToDelimitedString(((UstrukturertNavn) organisasjonsnavn.getNavnelinje1()).getNavnelinje(), " ").trim();
+		return aggregerNavn(organisasjonsnavn);
 	}
 
 	private Optional<Navn> findValidOrgNavn(OrganisasjonDetaljer orgDet) {
@@ -238,5 +225,19 @@ public class OrganisasjonEregMapper {
 		}
 
 		return postadresse;
+	}
+
+	private String aggregerNavn(Navn navn) {
+		String tempNavn = "";
+		if(isNotBlank(navn.getNavnelinje1())){
+			tempNavn += navn.getNavnelinje1();
+		} else if(isNotBlank(navn.getNavnelinje2())){
+			tempNavn += " "+navn.getNavnelinje2();
+		} else if(isNotBlank(navn.getNavnelinje3())){
+			tempNavn += " "+navn.getNavnelinje3();
+		} else if(isNotBlank(navn.getNavnelinje4())){
+			tempNavn += " "+ navn.getNavnelinje4();
+		}
+		return tempNavn.trim();
 	}
 }

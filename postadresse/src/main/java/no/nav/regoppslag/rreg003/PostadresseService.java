@@ -3,8 +3,6 @@ package no.nav.regoppslag.rreg003;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -15,7 +13,6 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.to.MottakerTo;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -45,9 +42,7 @@ public class PostadresseService {
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
 
 	@Inject
-	public PostadresseService(OrganisasjonV4Consumer organisasjonV4Consumer,
-							  OrganisasjonV4Mapper organisasjonV4Mapper,
-							  AdresseMapper adresseMapper,
+	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,
 							  EregConsumer eregConsumer,

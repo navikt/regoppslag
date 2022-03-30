@@ -36,7 +36,6 @@ public class EregConsumer {
 
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
-	private final HttpHeaders headers;
 	private MicrometerMetrics metrics;
 
 	@Inject
@@ -48,11 +47,6 @@ public class EregConsumer {
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.build();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set(NAV_CALL_ID, MDC.get(CALL_ID));
-		headers.set(NAV_CONSUMER_ID, MDC.get(CONSUMER_ID));
-		this.headers = headers;
 		this.metrics = metrics;
 	}
 
@@ -61,10 +55,14 @@ public class EregConsumer {
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
 
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(NAV_CALL_ID, MDC.get(CALL_ID));
+		headers.set(NAV_CONSUMER_ID, MDC.get(CONSUMER_ID));
+
 		metrics.cacheMiss(MetricLabels.HENT_ORGANISASJON);
 
 		try {
-			HttpEntity<Object> httpEntity = new HttpEntity<>(this.headers);
+			HttpEntity<Object> httpEntity = new HttpEntity<>(headers);
 			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
 			return organisasjonResponseEntity.getBody();
 		} catch (HttpClientErrorException.NotFound e) {

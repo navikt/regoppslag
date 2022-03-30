@@ -10,14 +10,12 @@ import no.nav.regoppslag.consumer.ereg.support.Navn;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
@@ -46,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
-import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -77,7 +74,6 @@ public class SakspartPluginTest {
 
 	private PostnummerService postnummerService;
 	private LandkodeService landkodeService;
-	private OrganisasjonV4Consumer organisasjonV4Consumer;
 	private EregConsumer eregConsumer;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
@@ -88,7 +84,6 @@ public class SakspartPluginTest {
 	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
-		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
 		eregConsumer = mock(EregConsumer.class);
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
@@ -100,9 +95,8 @@ public class SakspartPluginTest {
 
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
 		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
+		sakspartPlugin = new SakspartPlugin(metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}
@@ -188,7 +182,7 @@ public class SakspartPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
 
@@ -203,7 +197,7 @@ public class SakspartPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
 
@@ -222,7 +216,7 @@ public class SakspartPluginTest {
 		OrganisasjonDetaljer organisasjonsDetaljer = new OrganisasjonDetaljer();
 		Navn organisasjonKortnavn = new Navn();
 		StringBuilder tempNavn = new StringBuilder();
-		for (String navn:orgKortnavn) {
+		for (String navn : orgKortnavn) {
 			tempNavn.append(" ").append(navn);
 		}
 
@@ -231,7 +225,7 @@ public class SakspartPluginTest {
 
 		Navn organisasjonsnavn = new Navn();
 		StringBuilder tempNavn2 = new StringBuilder();
-		for (String navn:orgNavn) {
+		for (String navn : orgNavn) {
 			tempNavn2.append(" ").append(navn);
 		}
 
