@@ -121,11 +121,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	private String getSpraakKodeAsString(OrganisasjonDetaljer orgDet) {
-
-		if (orgDet.getMaalform() != null) {
-			return orgDet.getMaalform();
-		}
-		return null;
+		return orgDet.getMaalform();
 	}
 
 	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
@@ -149,13 +145,9 @@ public class OrganisasjonEregMapper {
 		final LocalDateTime nowTime = LocalDateTime.now();
 		final LocalDate nowDate = LocalDate.now();
 
-		LocalDate fomGyldig = gyldighetsperiode.getFom();
-		LocalDate tomGyldig = gyldighetsperiode.getTom() == null ? null : gyldighetsperiode.getTom();
-		LocalDateTime tomBruk = bruksperiode.getTom() == null ? null : bruksperiode.getTom();
-
-		return fomGyldig.isBefore(nowDate)
-				&& (tomGyldig == null || tomGyldig.isAfter(nowDate))
-				&& (tomBruk == null || tomBruk.isAfter(nowTime));
+		return gyldighetsperiode.getFom().isBefore(nowDate)
+				&& (gyldighetsperiode.getTom() == null || gyldighetsperiode.getTom().isAfter(nowDate))
+				&& (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
 	}
 
 	// Postadresse skal overstyre forretningsadresse dersom den finnes
@@ -192,13 +184,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	private boolean containsPostnummer(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
-		if (adresse.getPostnummer() != null) {
-			return true;
-		} else if (adresse.getPoststed() != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return (adresse.getPostnummer() != null || adresse.getPoststed() != null);
 	}
 
 	private no.nav.regoppslag.consumer.map.Postadresse settAdresseledd(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
@@ -209,34 +195,32 @@ public class OrganisasjonEregMapper {
 			if (eregAdresse.getPostnummer() != null) {
 				postadresse.setPoststed(postnummerService.finnPoststed(eregAdresse.getPostnummer()));
 			}
-			postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
-			postadresse.setAdresselinje2(eregAdresse.getAdresselinje2());
-			postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
 		} else {
 			postadresse.setPostnummer(eregAdresse.getPostnummer());
 			postadresse.setPoststed(eregAdresse.getPoststed());
-			postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
-			postadresse.setAdresselinje2(eregAdresse.getAdresselinje2());
-			postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
 		}
 
 		if (eregAdresse.getLandkode() != null) {
 			postadresse.setLand(landkodeService.finnLandnavn(eregAdresse.getLandkode()));
 		}
 
+		postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());
+		postadresse.setAdresselinje2(eregAdresse.getAdresselinje2());
+		postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
+
 		return postadresse;
 	}
 
 	private String aggregerNavn(Navn navn) {
 		String tempNavn = "";
-		if(isNotBlank(navn.getNavnelinje1())){
+		if (isNotBlank(navn.getNavnelinje1())) {
 			tempNavn += navn.getNavnelinje1();
-		} else if(isNotBlank(navn.getNavnelinje2())){
-			tempNavn += " "+navn.getNavnelinje2();
-		} else if(isNotBlank(navn.getNavnelinje3())){
-			tempNavn += " "+navn.getNavnelinje3();
-		} else if(isNotBlank(navn.getNavnelinje4())){
-			tempNavn += " "+ navn.getNavnelinje4();
+		} else if (isNotBlank(navn.getNavnelinje2())) {
+			tempNavn += " " + navn.getNavnelinje2();
+		} else if (isNotBlank(navn.getNavnelinje3())) {
+			tempNavn += " " + navn.getNavnelinje3();
+		} else if (isNotBlank(navn.getNavnelinje4())) {
+			tempNavn += " " + navn.getNavnelinje4();
 		}
 		return tempNavn.trim();
 	}

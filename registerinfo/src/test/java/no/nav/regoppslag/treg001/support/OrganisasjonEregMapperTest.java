@@ -270,22 +270,4 @@ public class OrganisasjonEregMapperTest {
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPostnummer()), nullValue());
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getPoststed()), nullValue());
 	}
-
-	@Test
-	@Ignore //Think this is deprecated because the postnummer and poststed logic is different with the REST APi
-	public void testFunctionalMetrics() throws Exception {
-		/*Organisasjon org = createOrganisasjon(Arrays.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
-		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
-		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPoststed(null);
-		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer("1111");
-
-		mapper.map(ORGID, org, "T");
-		assertThat(metrics.countEvents("T", EREG_MAPPER, UKJENT_POSTNUMMER), is(1.0));
-
-		(org.getOrganisasjonDetaljer().getPostadresser().get(0)).setLandkode("SE");
-		mapper.map(ORGID, org, "T");
-		assertThat(metrics.countEvents("T", EREG_MAPPER, UKJENT_POSTNUMMER), is(1.0));
-		 */
-	}
-
 }
