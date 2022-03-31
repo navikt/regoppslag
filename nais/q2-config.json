@@ -14,7 +14,7 @@
 	"LDAP": "/serviceuser/data/dev/srvssolinux",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
-	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person",
+	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person,srvdokdistsentralp",
 	"APP_NAME": "regoppslag",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
@@ -26,6 +26,11 @@
 			"app": "safselvbetjening",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "salesforce",
+			"namespace": "teamcrm",
+			"cluster": "dev-external"
 		}
 	]
 }

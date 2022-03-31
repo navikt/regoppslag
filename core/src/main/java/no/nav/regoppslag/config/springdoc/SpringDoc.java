@@ -22,10 +22,11 @@ public class SpringDoc {
 	public OpenAPI api(AppVersion appVersion) {
 		return new OpenAPI().info(new Info()
 						.title("Regoppslag APIer")
+						.version("1.0.0")
 						.description("Dokumentasjon over api'er eksponert av Registeroppslag applikasjonen. Spørsmål? Vi svarer deg på Slack #team_dokumentløsninger"))
 				.components(
 						new Components()
-								.addSecuritySchemes("JWT Authorization",
+								.addSecuritySchemes("JWT-Authorization",
 										new SecurityScheme()
 												.type(SecurityScheme.Type.HTTP)
 												.scheme("bearer")
@@ -38,7 +39,7 @@ public class SpringDoc {
 				)
 				.addSecurityItem(
 						new SecurityRequirement()
-								.addList("JWT Authorization")
+								.addList("JWT-Authorization")
 				);
 	}
 
