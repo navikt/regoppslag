@@ -11,16 +11,19 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.to.MottakerTo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.util.stream.Collectors.joining;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
 import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
@@ -28,18 +31,12 @@ import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
 public class OrganisasjonEregMapper {
 
-	public static final String ADRESSELINJE_1 = "adresselinje1";
-	public static final String ADRESSELINJE_2 = "adresselinje2";
-	public static final String ADRESSELINJE_3 = "adresselinje3";
-	public static final String ADRESSE_3_SPLIT_1 = "Adresse 3 split 1";
-	public static final String POSTNR = "postnr";
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE_NORGE = "NO";
 
@@ -106,18 +103,14 @@ public class OrganisasjonEregMapper {
 
 	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
 		if (orgDet.getOpphoersdato() != null && LocalDate.now().isAfter(orgDet.getOpphoersdato())) {
-			String message = String.format("Organisasjon har opphørt, opphørsdato=%s orgnr=%s", DateTimeFormatter.ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
+			String message = String.format("Organisasjon har opphørt, opphørsdato=%s, orgnr=%s", ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
 			throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
 		}
 
 		no.nav.regoppslag.consumer.ereg.support.Postadresse activeAddress = selectActiveAddress(orgDet.getPostadresser(), orgDet.getForretningsadresser())
 				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige adresser funnet for orgnummer=" + orgNummer, NOT_FOUND));
 
-		no.nav.regoppslag.consumer.map.Postadresse postadresse = no.nav.regoppslag.consumer.map.Postadresse.builder().build();
-
-		postadresse = settAdresseledd(activeAddress);
-
-		return postadresse;
+		return mapPostadresse(activeAddress);
 	}
 
 	private String getSpraakKodeAsString(OrganisasjonDetaljer orgDet) {
@@ -187,7 +180,7 @@ public class OrganisasjonEregMapper {
 		return (adresse.getPostnummer() != null || adresse.getPoststed() != null);
 	}
 
-	private no.nav.regoppslag.consumer.map.Postadresse settAdresseledd(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
+	private no.nav.regoppslag.consumer.map.Postadresse mapPostadresse(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = Postadresse.builder().build();
 
 		if (eregAdresse.getLandkode().equals(LANDKODE_NORGE)) {
@@ -212,16 +205,15 @@ public class OrganisasjonEregMapper {
 	}
 
 	private String aggregerNavn(Navn navn) {
-		String tempNavn = "";
-		if (isNotBlank(navn.getNavnelinje1())) {
-			tempNavn += navn.getNavnelinje1();
-		} else if (isNotBlank(navn.getNavnelinje2())) {
-			tempNavn += " " + navn.getNavnelinje2();
-		} else if (isNotBlank(navn.getNavnelinje3())) {
-			tempNavn += " " + navn.getNavnelinje3();
-		} else if (isNotBlank(navn.getNavnelinje4())) {
-			tempNavn += " " + navn.getNavnelinje4();
-		}
-		return tempNavn.trim();
+
+		List<String> navnelinjer = Arrays.asList(
+				navn.getNavnelinje1(),
+				navn.getNavnelinje2(),
+				navn.getNavnelinje3(),
+				navn.getNavnelinje4(),
+				navn.getNavnelinje5());
+		return navnelinjer.stream().filter(StringUtils::isNotBlank)
+				.map(String::trim)
+				.collect(joining(" "));
 	}
 }

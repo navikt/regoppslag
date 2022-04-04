@@ -3,6 +3,7 @@
 	"ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL": "https://app-t4.adeo.no/norg2/ws/OrganisasjonEnhetKontaktinformasjon/v1",
 	"DOKUMENTTYPEINFO_V3_URL": "https://app-t4.adeo.no/dokkat/rest/dokumenttypeinfo/v3",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.dev.adeo.no/rest/v1/sts/token",
+	"EREG_ORGANISASJON_SERVICE_URL": "https://modapp-t4.adeo.no/ereg/api/v1/organisasjon/",
 	"DKI_API_URL": "https://dkif.nais.preprod.local",
 	"PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"LDAP_USER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=test,dc=local",

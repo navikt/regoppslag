@@ -25,10 +25,15 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.time.Duration;
+import java.util.UUID;
 
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.*;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @Service
@@ -36,11 +41,11 @@ public class EregConsumer {
 
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
-	private MicrometerMetrics metrics;
+	private final MicrometerMetrics metrics;
 
 	@Inject
 	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
-						   RestTemplateBuilder restTemplateBuilder,
+						RestTemplateBuilder restTemplateBuilder,
 						MicrometerMetrics metrics) {
 		this.eregUrl = eregUrl;
 		this.restTemplate = restTemplateBuilder
@@ -56,8 +61,8 @@ public class EregConsumer {
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.set(NAV_CALL_ID, MDC.get(CALL_ID));
-		headers.set(NAV_CONSUMER_ID, MDC.get(CONSUMER_ID));
+		headers.set(NAV_CALL_ID, getCallId());
+		headers.set(NAV_CONSUMER_ID, getConsumerId());
 
 		metrics.cacheMiss(MetricLabels.HENT_ORGANISASJON);
 
@@ -74,4 +79,21 @@ public class EregConsumer {
 		}
 	}
 
+	private String getConsumerId() {
+		String consumerId = MDC.get(CONSUMER_ID);
+		if (isBlank(consumerId)) {
+			return "regoppslag";
+		} else {
+			return consumerId;
+		}
+	}
+
+	private String getCallId() {
+		String callId = MDC.get(CALL_ID);
+		if (isBlank(callId)) {
+			return UUID.randomUUID().toString();
+		} else {
+			return callId;
+		}
+	}
 }
