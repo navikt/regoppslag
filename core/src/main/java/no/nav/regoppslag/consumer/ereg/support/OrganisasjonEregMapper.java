@@ -205,7 +205,6 @@ public class OrganisasjonEregMapper {
 	}
 
 	private String aggregerNavn(Navn navn) {
-
 		List<String> navnelinjer = Arrays.asList(
 				navn.getNavnelinje1(),
 				navn.getNavnelinje2(),

@@ -30,7 +30,6 @@
 		<resilience4j.version>0.13.1</resilience4j.version>
 		<cxf.version>3.4.0</cxf.version>
 		<wss4j-ws-security-dom.version>2.2.4</wss4j-ws-security-dom.version>
-		<nav-fim-organisasjon-v4-tjenestespesifikasjon.version>1.0.4</nav-fim-organisasjon-v4-tjenestespesifikasjon.version>
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0
 		</organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>
 		<pesysbrev01.version>1.0.44</pesysbrev01.version>
@@ -186,13 +185,6 @@
 				<groupId>no.nav.security</groupId>
 				<artifactId>token-validation-spring</artifactId>
 				<version>${token-support.version}</version>
-			</dependency>
-			<!-- grensesnitt/kontrakter -->
-			<dependency>
-				<groupId>no.nav.tjenester.fim</groupId>
-				<artifactId>nav-fim-organisasjon-v4-tjenestespesifikasjon</artifactId>
-				<version>${nav-fim-organisasjon-v4-tjenestespesifikasjon.version}</version>
-				<classifier>jaxws</classifier>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester</groupId>
