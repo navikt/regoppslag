@@ -1,6 +1,7 @@
 package no.nav.regoppslag.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,9 +63,9 @@ public class RegisteroppslagRestController {
 	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3"),
-			@ApiResponse(responseCode = "500", description = "Teknisk feil")
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
@@ -92,11 +93,11 @@ public class RegisteroppslagRestController {
 	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3"),
-			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse"),
-			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse"),
-			@ApiResponse(responseCode = "500", description = "Teknisk feil")
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse", content = @Content),
+			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),
+			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)

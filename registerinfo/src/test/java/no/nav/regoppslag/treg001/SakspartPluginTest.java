@@ -3,21 +3,22 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Bruksperiode;
+import no.nav.regoppslag.consumer.ereg.support.Gyldighetsperiode;
+import no.nav.regoppslag.consumer.ereg.support.Navn;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.OrganisasjonsDetaljer;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjonsnavn;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.UstrukturertNavn;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,13 +36,14 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
-import static no.nav.regoppslag.util.TestDataUtil.dateToGregorian;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,7 +74,7 @@ public class SakspartPluginTest {
 
 	private PostnummerService postnummerService;
 	private LandkodeService landkodeService;
-	private OrganisasjonV4Consumer organisasjonV4Consumer;
+	private EregConsumer eregConsumer;
 	private Map<String, Object> valueMap;
 	private SecurityContext securityContext;
 	private SakspartPlugin sakspartPlugin;
@@ -82,7 +84,7 @@ public class SakspartPluginTest {
 	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
-		organisasjonV4Consumer = mock(OrganisasjonV4Consumer.class);
+		eregConsumer = mock(EregConsumer.class);
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
@@ -93,9 +95,9 @@ public class SakspartPluginTest {
 
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		OrganisasjonV4Mapper organisasjonV4Mapper = new OrganisasjonV4Mapper(postnummerService, landkodeService, metrics);
-		sakspartPlugin = new SakspartPlugin(organisasjonV4Consumer, organisasjonV4Mapper, metrics, pdlGraphQLConsumer);
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
+		sakspartPlugin = new SakspartPlugin(metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
 				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
 	}
 
@@ -180,7 +182,7 @@ public class SakspartPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
 
@@ -195,7 +197,7 @@ public class SakspartPluginTest {
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
-		when(organisasjonV4Consumer.hentOrganisasjon(anyString())).thenReturn(null);
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
 
@@ -209,21 +211,35 @@ public class SakspartPluginTest {
 
 	}
 
-	private Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) throws DatatypeConfigurationException {
+	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
 		Organisasjon organisasjon = new Organisasjon();
-		OrganisasjonsDetaljer organisasjonsDetaljer = new OrganisasjonsDetaljer();
-		UstrukturertNavn organisasjonKortnavn = new UstrukturertNavn();
-		organisasjonKortnavn.getNavnelinje().addAll(orgKortnavn);
+		OrganisasjonDetaljer organisasjonsDetaljer = new OrganisasjonDetaljer();
+		Navn organisasjonKortnavn = new Navn();
+		StringBuilder tempNavn = new StringBuilder();
+		for (String navn : orgKortnavn) {
+			tempNavn.append(" ").append(navn);
+		}
+
+		organisasjonKortnavn.setNavnelinje1(tempNavn.toString());
 		organisasjon.setNavn(organisasjonKortnavn);
 
-		UstrukturertNavn orgDetNavn = new UstrukturertNavn();
-		orgDetNavn.getNavnelinje().addAll(orgNavn);
-		Organisasjonsnavn organisasjonsnavn = new Organisasjonsnavn();
-		organisasjonsnavn.setNavn(orgDetNavn);
-		organisasjonsnavn.setFomGyldighetsperiode(dateToGregorian(LocalDate.now().minusDays(1)));
-		organisasjonsnavn.setFomBruksperiode(dateToGregorian(LocalDate.now().minusDays(1)));
-		organisasjonsDetaljer.getNavn().add(organisasjonsnavn);
+		Navn organisasjonsnavn = new Navn();
+		StringBuilder tempNavn2 = new StringBuilder();
+		for (String navn : orgNavn) {
+			tempNavn2.append(" ").append(navn);
+		}
 
+		organisasjonsnavn.setNavnelinje1(tempNavn2.toString());
+		Bruksperiode bruksperiode = new Bruksperiode();
+		bruksperiode.setFom(LocalDateTime.now().minusDays(1));
+		organisasjonsnavn.setBruksperiode(bruksperiode);
+		Gyldighetsperiode gyldighetsperiode = new Gyldighetsperiode();
+		gyldighetsperiode.setFom(LocalDate.now().minusDays(1));
+		organisasjonsnavn.setGyldighetsperiode(gyldighetsperiode);
+		organisasjonsDetaljer.setNavn(Collections.singletonList(organisasjonsnavn));
+
+		organisasjonsDetaljer.setMaalform("NB");
+		organisasjonsDetaljer.setOpphoersdato(LocalDate.now().plusDays(10));
 		organisasjon.setOrganisasjonDetaljer(organisasjonsDetaljer);
 
 		return organisasjon;

@@ -3,8 +3,9 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.consumer.organisasjonv4.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
@@ -13,7 +14,6 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -39,19 +39,20 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private static final String UGYLDIG_INPUT = "SaksportPlugin - Ugyldig input";
 	private static final String PLUGIN_NAME = "SakspartPlugin";
 
-	private final OrganisasjonV4Consumer organisasjonV4Consumer;
-	private final OrganisasjonV4Mapper organisasjonV4Mapper;
+	private final EregConsumer eregConsumer;
+	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private final MicrometerMetrics metrics;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
-	public SakspartPlugin(OrganisasjonV4Consumer organisasjonV4Consumer,
-						  OrganisasjonV4Mapper organisasjonV4Mapper, MicrometerMetrics metrics,
-						  PdlGraphQLConsumer pdlGraphQLConsumer) {
+	public SakspartPlugin(MicrometerMetrics metrics,
+						  PdlGraphQLConsumer pdlGraphQLConsumer,
+						  EregConsumer eregConsumer,
+						  OrganisasjonEregMapper organisasjonEregMapper) {
 		super(Sakspart.class);
-		this.organisasjonV4Consumer = organisasjonV4Consumer;
-		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.metrics = metrics;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
+		this.eregConsumer = eregConsumer;
+		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	@Override
@@ -76,8 +77,8 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 					sakspart.setNavn(navn);
 
 				} else {
-					Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(sakspart.getId());
-					sakspart.setNavn(organisasjonV4Mapper.getSakspartNavn(organisasjon));
+					Organisasjon organisasjon = eregConsumer.hentOrganisasjon(sakspart.getId());
+					sakspart.setNavn(organisasjonEregMapper.getSakspartNavn(organisasjon));
 				}
 			}
 

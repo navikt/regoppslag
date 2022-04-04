@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -22,12 +23,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class Rreg003IT extends AbstractIT {
 
@@ -145,20 +151,22 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetOrganisasjonWithNorskPostadresse() {
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg002/organisasjonv4/organisasjonv4-happy.xml")));
+		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg002/ereg/ereg-happy.json")));
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
 
-		assertEquals("ARBEIDS- OG VELFERDSETATEN", response.getBody().getNavn());
+		assertEquals("NAV IKT", response.getBody().getNavn());
 
 	}
 
 	@Test
 	public void shouldThrowWhenOrganisasjonFinnesIkke() {
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg002/organisasjonv4/organisasjonv4-ikkefunnet-response.xml")));
+		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
+				.willReturn(aResponse().withStatus(NOT_FOUND.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg002/ereg/ereg-ikkefunnet.json")));
 		HttpClientErrorException.NotFound e = assertThrows(HttpClientErrorException.NotFound.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
 
@@ -167,9 +175,10 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenOrganisasjonTekniskFeil() {
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg002/organisasjonv4/organisasjonv4-tekniskfeil-response.xml")));
+		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
+				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg002/ereg/ereg-tekniskfeil.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
 
