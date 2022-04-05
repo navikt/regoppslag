@@ -26,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.getPdlDkif;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
@@ -37,6 +38,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class Treg001PDLIT extends AbstractIT {
 
@@ -148,9 +151,10 @@ public class Treg001PDLIT extends AbstractIT {
 		stubFor(post("/ORGANISASJONENHETKONTAKTINFORMASJON_V1")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("treg001/norg/happy-response.xml")));
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy.xml"))); //mottakerPlugin
+		stubFor(get("/v1/organisasjon/" + "111111111")
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg001/ereg/ereg-happy.json")));
 		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001_full_response_orgv4.xml"));
@@ -158,9 +162,10 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataOrgIkkeSkandinavisk() {
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4-happy_ikke_skandinavisk.xml"))); //mottakerPlugin
+		stubFor(get("/v1/organisasjon/" + "111111111")
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg001/ereg/ereg-happy_ikke_skandinavisk.json")));
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request_orgv4.xml"), KompletterBrevdataResponse.class);
 
@@ -194,18 +199,17 @@ public class Treg001PDLIT extends AbstractIT {
 	@Test
 	public void shouldThrowFunctionalExceptionFromOrgPlugin() {
 		//Stub web services:
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withBodyFile("treg001/organisasjonv4/organisasjonv4_orgIkkeFunnet.xml"))); //mottakerPlugin
-
+		stubFor(get("/v1/organisasjon/" + "111111111")
+				.willReturn(aResponse().withStatus(NOT_FOUND.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg001/ereg/ereg-ikkefunnet.json")));
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
-		verify(postRequestedFor(urlEqualTo("/ORGANISASJON_V4")));
+		verify(getRequestedFor(urlEqualTo("/v1/organisasjon/111111111")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertThat(e.getResponseBodyAsString()).contains("Ingen organisasjon ble funnet med orgnr: 111111111");
-
+		assertThat(e.getResponseBodyAsString()).contains("Fant ikke Organisasjon med organisasjonsnummer=111111111");
 	}
 
 	@Test
@@ -306,15 +310,15 @@ public class Treg001PDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/bosattutenpostdresse.json");
 		getPdlDkif(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		stubFor(post("/ORGANISASJON_V4")
-				.willReturn(aResponse().withStatus(NOT_FOUND.value())));
+		stubFor(get("/v1/organisasjon/111111111")
+				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), postRequestedFor(urlEqualTo("/ORGANISASJON_V4")));
+		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/v1/organisasjon/111111111")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-		assertThat(e.getResponseBodyAsString()).contains("Noe gikk galt i kall til OrganisasjonV4.hentOrganisasjon for enhetNr=111111111");
+		assertThat(e.getResponseBodyAsString()).contains("Teknisk feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=111111111");
 	}
 
 	@Test

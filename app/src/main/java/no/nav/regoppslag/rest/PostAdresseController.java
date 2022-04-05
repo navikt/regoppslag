@@ -45,7 +45,8 @@ public class PostAdresseController {
 	private final PostadresseService postadresseService;
 
 	@Inject
-	public PostAdresseController(PostadresseService postadresseService) {
+	public PostAdresseController(PostadresseService postadresseService
+	) {
 		this.postadresseService = postadresseService;
 	}
 
@@ -75,5 +76,4 @@ public class PostAdresseController {
 			MDC.clear();
 		}
 	}
-
 }

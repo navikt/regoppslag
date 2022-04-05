@@ -1,0 +1,122 @@
+{
+  "organisasjonsnummer": "213028782",
+  "type": "JuridiskEnhet",
+  "navn": {
+    "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+    "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
+    "bruksperiode": {
+      "fom": "2021-09-17T16:17:11.609"
+    },
+    "gyldighetsperiode": {
+      "fom": "2021-03-14"
+    }
+  },
+  "organisasjonDetaljer": {
+    "registreringsdato": "2021-03-14T00:00:00",
+    "enhetstyper": [
+      {
+        "enhetstype": "NUF",
+        "bruksperiode": {
+          "fom": "2021-09-17T16:17:11.607"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-03-14"
+        }
+      }
+    ],
+    "naeringer": [
+      {
+        "naeringskode": "71.129",
+        "hjelpeenhet": false,
+        "bruksperiode": {
+          "fom": "2021-09-17T16:17:11.609"
+        },
+        "gyldighetsperiode": {
+          "fom": "2007-11-15"
+        }
+      }
+    ],
+    "navn": [
+      {
+        "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+        "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
+        "bruksperiode": {
+          "fom": "2021-09-17T16:17:11.609"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-03-14"
+        }
+      }
+    ],
+    "forretningsadresser": [
+      {
+        "type": "Postadresse",
+        "adresselinje1": "Vestre Vollen",
+        "poststed": "78246 MAXDORF",
+        "landkode": "DE",
+        "bruksperiode": {
+          "fom": "2021-09-17T16:17:11.603"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-03-14"
+        }
+      }
+    ],
+    "formaal": [
+      {
+        "formaal": "Annen teknisk konsulentvirksomhet",
+        "bruksperiode": {
+          "fom": "2021-09-17T16:17:11.608"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-03-14"
+        }
+      }
+    ],
+    "maalform": "NB",
+    "sistEndret": "2021-03-14"
+  },
+  "juridiskEnhetDetaljer": {
+    "enhetstype": "NUF"
+  },
+  "knytninger": [
+    {
+      "knytning": "HFOR",
+      "juridiskEnhet": {
+        "organisasjonsnummer": "314351614",
+        "type": "JuridiskEnhet",
+        "navn": {
+          "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+          "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
+          "bruksperiode": {
+            "fom": "2021-09-21T10:14:31.634"
+          },
+          "gyldighetsperiode": {
+            "fom": "2021-03-14"
+          }
+        },
+        "organisasjonDetaljer": {
+          "navn": [
+            {
+              "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+              "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
+              "bruksperiode": {
+                "fom": "2021-09-21T10:14:31.634"
+              },
+              "gyldighetsperiode": {
+                "fom": "2021-03-14"
+              }
+            }
+          ]
+        },
+        "juridiskEnhetDetaljer": {}
+      },
+      "bruksperiode": {
+        "fom": "2021-09-21T19:11:35.829"
+      },
+      "gyldighetsperiode": {
+        "fom": "2021-03-14"
+      }
+    }
+  ]
+}

@@ -30,7 +30,6 @@
 		<resilience4j.version>0.13.1</resilience4j.version>
 		<cxf.version>3.4.0</cxf.version>
 		<wss4j-ws-security-dom.version>2.2.4</wss4j-ws-security-dom.version>
-		<nav-fim-organisasjon-v4-tjenestespesifikasjon.version>1.0.4</nav-fim-organisasjon-v4-tjenestespesifikasjon.version>
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0
 		</organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>
 		<pesysbrev01.version>1.0.44</pesysbrev01.version>
@@ -47,6 +46,8 @@
 		<nv-i18n.version>1.26</nv-i18n.version>
 		<logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
 		<token-support.version>1.3.10</token-support.version>
+		<jakarta.activation-api.version>1.2.2</jakarta.activation-api.version>
+		<logback-classic.version>1.2.5</logback-classic.version>
 		<!-- test -->
 		<modig-testcertificates.version>1.2.5</modig-testcertificates.version>
 		<wiremock-standalone.version>2.25.1</wiremock-standalone.version>
@@ -147,7 +148,7 @@
 			<dependency>
 				<groupId>jakarta.activation</groupId>
 				<artifactId>jakarta.activation-api</artifactId>
-				<version>1.2.2</version>
+				<version>${jakarta.activation-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
@@ -185,13 +186,6 @@
 				<artifactId>token-validation-spring</artifactId>
 				<version>${token-support.version}</version>
 			</dependency>
-			<!-- grensesnitt/kontrakter -->
-			<dependency>
-				<groupId>no.nav.tjenester.fim</groupId>
-				<artifactId>nav-fim-organisasjon-v4-tjenestespesifikasjon</artifactId>
-				<version>${nav-fim-organisasjon-v4-tjenestespesifikasjon.version}</version>
-				<classifier>jaxws</classifier>
-			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester</groupId>
 				<artifactId>nav-organisasjonEnhetKontaktinformasjon-v1-tjenestespesifikasjon</artifactId>
@@ -212,7 +206,7 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.2.5</version>
+				<version>${logback-classic.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
