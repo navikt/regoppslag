@@ -1,6 +1,5 @@
 package no.nav.regoppslag.util;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;
@@ -23,7 +22,6 @@ import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -674,6 +672,7 @@ public class PDLResponseUtil {
 		stubFor(post("/graphql")
 				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withHeader("Connection", "close")
 						.withBodyFile(filePath)));
 	}
 
@@ -681,12 +680,14 @@ public class PDLResponseUtil {
 		stubFor(get("/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false")
 				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withHeader("Connection", "close")
 						.withBodyFile(filePath)));
 	}
 
 	public static void postPdlGraphqlWithErrorResponse(int status) {
 		stubFor(post("/graphql")
 				.willReturn(aResponse().withStatus(status)
+						.withHeader("Connection", "close")
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())));
 	}
 
@@ -694,6 +695,7 @@ public class PDLResponseUtil {
 		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
 				.withStatus(status)
 				.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}
 }
