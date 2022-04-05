@@ -386,7 +386,7 @@ public class MapPDLResponse {
 				.adresselinje1(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer())
-
+				.adresselinje2(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapUtenlandskAdresselinje2(utenlandskAdresse) : mapRegionDistriktOmraade(utenlandskAdresse))
 				.adresselinje3(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapRegionDistriktOmraade(utenlandskAdresse) : null)
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
