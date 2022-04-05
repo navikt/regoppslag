@@ -120,7 +120,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje1());
-		assertEquals(POLAND, response.getAdresse().getAdresselinje3());
+		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
 	}
@@ -222,7 +222,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
-		assertEquals(GREECE, response.getAdresse().getAdresselinje3());
+		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(GREECE_LANDKODE, response.getAdresse().getLandkode());
 
 

@@ -386,8 +386,8 @@ public class MapPDLResponse {
 				.adresselinje1(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer())
-				.adresselinje2(mapUtenlandskAdresselinje2(utenlandskAdresse))
-				.adresselinje3(mapRegionDistriktOmraadeOrLand(utenlandskAdresse))
+
+				.adresselinje3(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapRegionDistriktOmraade(utenlandskAdresse) : null)
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 
@@ -398,8 +398,8 @@ public class MapPDLResponse {
 		return isNotBlank(utenlandskAdresse.getPostkode()) ? utenlandskAdresse.getPostkode() : utenlandskAdresse.getBySted();
 	}
 
-	private String mapRegionDistriktOmraadeOrLand(UtenlandskAdresse utenlandskAdresse) {
-		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : getLand(utenlandskAdresse.getLandkode());
+	private String mapRegionDistriktOmraade(UtenlandskAdresse utenlandskAdresse) {
+		return  utenlandskAdresse.getRegionDistriktOmraade();
 	}
 
 	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
