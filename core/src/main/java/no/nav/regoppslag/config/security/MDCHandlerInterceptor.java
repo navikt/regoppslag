@@ -1,9 +1,12 @@
 package no.nav.regoppslag.config.security;
 
+import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.util.MDCConstants;
 import no.nav.regoppslag.util.NavHeaders;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -11,12 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
+import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_CONSUMER_ID;
+import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_ID;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 public class MDCHandlerInterceptor implements HandlerInterceptor {
-
-	public static final String ISSUER_AZUREV2 = "azurev2";
+	private static final String AUTH_ERRORMESSAGE = "Tilgang er avvist. " +
+			"Ingen gyldig token på Authorization header. Token må være utsted av NAV onprem security-token-service eller azure.";
 	private final TokenValidationContextHolder tokenValidationContextHolder;
+	private final TokenClaimExtractor tokenClaimExtractor = new TokenClaimExtractor();
 
 	public MDCHandlerInterceptor(TokenValidationContextHolder tokenValidationContextHolder) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
@@ -24,9 +31,13 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
+		JwtToken jwtToken = tokenValidationContext.getFirstValidToken()
+				.orElseThrow(() -> new RegOppslagSecurityException(AUTH_ERRORMESSAGE));
 
 		populateCallId(request);
-		populateConsumerId(request, tokenValidationContextHolder);
+		populateConsumerId(tokenValidationContext, jwtToken);
+		populateUserId(tokenValidationContext, jwtToken);
 
 		// token-support will handle no-token cases and unauthenticated cases
 		return true;
@@ -42,26 +53,25 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 		MDC.put(MDCConstants.CALL_ID, UUID.randomUUID().toString());
 	}
 
-	private void populateConsumerId(HttpServletRequest request, TokenValidationContextHolder tokenValidationContextHolder) {
-		final String consumerId = getConsumerId(tokenValidationContextHolder);
+	private void populateConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+		final String consumerId = tokenClaimExtractor.getConsumerId(tokenValidationContext, jwtToken);
 		if (isNotBlank(consumerId)) {
 			MDC.put(MDCConstants.CONSUMER_ID, consumerId);
 			return;
 		}
 		// Fallback
-		MDC.put(MDCConstants.CONSUMER_ID, "ukjent");
+		MDC.put(MDCConstants.CONSUMER_ID, UKJENT_CONSUMER_ID);
 	}
 
-	private String getConsumerId(TokenValidationContextHolder tokenValidationContextHolder) {
-		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
-		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
-			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
-			return tokenValidationContext.getJwtToken(ISSUER_AZUREV2).getSubject();
-		} else if (tokenValidationContext.getFirstValidToken().isPresent()) {
-			// REST-STS (header: Authorization). System til system
-			return tokenValidationContext.getFirstValidToken().get().getSubject();
-		} else {
-			return null;
+	private void populateUserId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+		final String consumerId = tokenClaimExtractor.getUserId(tokenValidationContext, jwtToken);
+		if (isNotBlank(consumerId)) {
+			MDC.put(MDCConstants.USER_ID, consumerId);
+			return;
 		}
+		// Fallback
+		MDC.put(MDCConstants.USER_ID, UKJENT_USER_ID);
 	}
+
+
 }
