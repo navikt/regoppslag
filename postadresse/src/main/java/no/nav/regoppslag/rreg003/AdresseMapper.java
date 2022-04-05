@@ -22,6 +22,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -100,6 +101,8 @@ public class AdresseMapper {
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() : null)
 					.adresselinje2(isNotBlank(utenlandskPostadresse.getAdresselinje2()) ? utenlandskPostadresse.getAdresselinje2() : null)
 					.adresselinje3(isNotBlank(utenlandskPostadresse.getAdresselinje3()) ? utenlandskPostadresse.getAdresselinje3() : null)
+					.postnummer(isBlank(utenlandskPostadresse.getPostnummer()) ? "" : utenlandskPostadresse.getPostnummer())
+					.poststed(isBlank(utenlandskPostadresse.getPoststed()) ? "" : utenlandskPostadresse.getPoststed())
 					.land(landkodeServiceNorsk.finnLand(utenlandskPostadresse.getLandkode()))
 					.landkode(utenlandskPostadresse.getLandkode())
 					.build();

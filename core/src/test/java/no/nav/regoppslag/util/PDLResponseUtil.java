@@ -1,6 +1,5 @@
 package no.nav.regoppslag.util;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;
@@ -23,7 +22,6 @@ import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -39,13 +37,16 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 
 public class PDLResponseUtil {
 
-	public static final String UTENLANDSK_NAVN = "Herr H. C. Andersen";
 	public static final String UTENLANDSK_POSTKODE = "K1A 0B1";
 	public static final String UTENLANDSK_BYSTED = "Ottawa";
 	public static final String UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
 	public static final String CANADA_ALPHA3_LANDKODE = "CAN";
 	public static final String CANADA_ALPHA2_LANDKODE = "CA";
 	public static final String CANADA = "Canada";
+
+	public static final String UTENLANDSK_ADRESSELINJE1 = "1KOLEJOWA 6/5";
+	public static final String UTENLANDSK_ADRESSELINJE2 = "18-500 KOLNO";
+	public static final String UTENLANDSK_ADRESSELINJE3 = "CAPITAL WEST 3000";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
@@ -54,9 +55,7 @@ public class PDLResponseUtil {
 	public static final String PERSON_FORNAVN = "Herr";
 	public static final String PERSON_MELLOMNAVN = "Andersen";
 
-	public static final String HUSNUMMER_1 = "45";
 	public static final String ADRESSENAVN_1 = "Finnesveien 45";
-	public static final String KOMMUNENUMMER_1 = "5432";
 
 	public static final int FOEDSELSAAR = 1984;
 	public static final LocalDate FOEDSELDATO = LocalDate.of(1984, Month.APRIL, 24);
@@ -97,10 +96,11 @@ public class PDLResponseUtil {
 	public static final String GREECE_LANDKODE = "GR";
 	public static final String GREECE = "Greece";
 	public static final String LANDKODE_NORGE = "NO";
+	public static final String LANDKODE_POLAND = "PL";
 	public static final String PERSON_IDENT = "0102030405";
+	public static final String D_NUMMER = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";
-	public static final String IDENTTYPE_DNR = "DNR";
 	public static final String STATUS = "I_BRUK";
 	public static final String ORGANISASJONNUMMER = "1234567";
 	public static final String ORGANISASJONNAVN = "Fred Advokat AS";
