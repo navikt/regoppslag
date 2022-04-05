@@ -675,6 +675,7 @@ public class PDLResponseUtil {
 		stubFor(post("/graphql")
 				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withHeader("Connection", "close")
 						.withBodyFile(filePath)));
 	}
 
@@ -682,12 +683,14 @@ public class PDLResponseUtil {
 		stubFor(get("/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false")
 				.willReturn(aResponse().withStatus(status)
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+						.withHeader("Connection", "close")
 						.withBodyFile(filePath)));
 	}
 
 	public static void postPdlGraphqlWithErrorResponse(int status) {
 		stubFor(post("/graphql")
 				.willReturn(aResponse().withStatus(status)
+						.withHeader("Connection", "close")
 						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())));
 	}
 
@@ -695,6 +698,7 @@ public class PDLResponseUtil {
 		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
 				.withStatus(status)
 				.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}
 }

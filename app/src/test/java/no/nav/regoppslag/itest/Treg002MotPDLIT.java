@@ -249,6 +249,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-happy.json")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, "ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
@@ -264,6 +265,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-happy-utenlandsk.json")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, "ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
@@ -279,6 +281,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-ingenpostadresse.json")));
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, "ORGANISASJON"), HentMottakerOgAdresseResponse.class);
 
@@ -292,6 +295,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-ugyldiginput.json")));
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
@@ -327,6 +331,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-ikkefunnet.json")));
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
@@ -340,6 +345,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		stubFor(get("/v1/organisasjon/" + ORGANISASJONNUMMER)
 				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("treg002/ereg/ereg-tekniskfeil.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, "ORGANISASJON"), HentMottakerOgAdresseResponse.class));

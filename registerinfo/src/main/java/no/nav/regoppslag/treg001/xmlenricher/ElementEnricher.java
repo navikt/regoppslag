@@ -9,8 +9,6 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
-import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPluginRegistry;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.treg001.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolver;
@@ -34,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.format;
-import static net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils.isBlank;
 import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
 import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
