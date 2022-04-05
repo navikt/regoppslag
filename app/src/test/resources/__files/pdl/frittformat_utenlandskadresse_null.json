@@ -1,0 +1,91 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1966,
+          "foedselsdato": "1966-05-05"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2021-03-03T00:00",
+          "gyldigTilOgMed": "2032-03-03T23:59:59",
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "246e5181-db49-4b0e-9a8b-1eee1bb03e2b",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-03-03T11:57:46",
+                "registrertAv": "srvdolly",
+                "systemkilde": "srvdolly",
+                "kilde": "Dolly"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [
+        {
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "1KOLEJOWA 6/5",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": null,
+            "bySted": null,
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "oppholdAnnetSted": null,
+          "metadata": {
+            "opplysningsId": "8f2c745f-1276-45a2-8527-19e206de7573",
+            "master": "PDL"
+          }
+        }
+      ],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "45056649992",
+          "type": "DNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "ikkeBosatt",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "Dolly"
+          }
+        }
+      ]
+    }
+  }
+}

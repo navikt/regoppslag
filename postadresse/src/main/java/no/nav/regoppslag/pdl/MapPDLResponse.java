@@ -116,20 +116,14 @@ public class MapPDLResponse {
 
 	private PdlMottakerInfo getMottakerKontaktadresse(HentPerson hentPerson, String serviceCode) {
 		PdlMottakerInfo pdlMottakerInfo = mapKontaktadresse(hentPerson);
-		if (isNull(pdlMottakerInfo.getPostadresse()) || POSTADRESSE_UTLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType())) {
+		if (isNull(pdlMottakerInfo.getPostadresse()) || isInnlandAdresseTypeAndPostnummerNull(pdlMottakerInfo)) {
 			log.info("Fant ikke kontaktadresse og søker etter oppholdsadresse for personen i PDL data");
-			if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
-					FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
-				PdlMottakerInfo oppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode);
-				return nonNull(oppholdsadresse.getPostadresse()) ? oppholdsadresse : mapBostedsadresse(hentPerson, serviceCode);
-			}
-		} else if (isNull(pdlMottakerInfo.getPostadresse()) || isBlank(pdlMottakerInfo.getPostadresse().getPostnummer())) {
-			return getInnlandAdresseFromOppholdOrBostedadresse(hentPerson, serviceCode);
+			return getAdresseFromOppholdOrBostedadresse(hentPerson, serviceCode);
 		}
 		return pdlMottakerInfo;
 	}
 
-	private PdlMottakerInfo getInnlandAdresseFromOppholdOrBostedadresse(HentPerson hentPerson, String serviceCode) {
+	private PdlMottakerInfo getAdresseFromOppholdOrBostedadresse(HentPerson hentPerson, String serviceCode) {
 		if (nonNull(getOppholdsadresse(hentPerson)) && (isSourcePdl(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())) ||
 				FREG.name().equals(getMasterKilde(getOppholdsadresse(hentPerson).getMetadata())))) {
 			PdlMottakerInfo oppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode);
@@ -272,7 +266,6 @@ public class MapPDLResponse {
 					.adresselinje1(utenlandskAdresse.getAdresselinje1())
 					.adresselinje2(utenlandskAdresse.getAdresselinje2())
 					.adresselinje3(utenlandskAdresse.getAdresselinje3())
-					.poststed(utenlandskAdresse.getByEllerStedsnavn())
 					.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")))
 					.build();
 		}
@@ -281,12 +274,12 @@ public class MapPDLResponse {
 
 	private PostadresseTo mapKontaktinformasjonForDoedsbo(KontaktinformasjonForDoedsbo kontaktinformasjon, String tema) {
 		if (isNull(kontaktinformasjon)) {
-			log.warn("Mottaker er registrert som død og har ugyldig postadresse");
+			log.warn(MOTTAKER_DOED);
 			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
 		}
 
 		if (!isDoedPersonValidKontaktAdresse(kontaktinformasjon)) {
-			log.warn("Mottaker er registrert som død og har ugyldig postadresse");
+			log.warn(MOTTAKER_DOED);
 			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
 		}
 
@@ -393,9 +386,20 @@ public class MapPDLResponse {
 				.adresselinje1(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer())
-				.adresselinje2(format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted()))
-				.adresselinje3(isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : getLand(utenlandskAdresse.getLandkode()))
+				.adresselinje2(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapUtenlandskAdresselinje2(utenlandskAdresse) : mapRegionDistriktOmraade(utenlandskAdresse))
+				.adresselinje3(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapRegionDistriktOmraade(utenlandskAdresse) : null)
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
+	}
+
+	private String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse) {
+		if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted())) {
+			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+		}
+		return isNotBlank(utenlandskAdresse.getPostkode()) ? utenlandskAdresse.getPostkode() : utenlandskAdresse.getBySted();
+	}
+
+	private String mapRegionDistriktOmraade(UtenlandskAdresse utenlandskAdresse) {
+		return  utenlandskAdresse.getRegionDistriktOmraade();
 	}
 
 	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
@@ -524,6 +528,10 @@ public class MapPDLResponse {
 			return UNKNOWN_LANDKODE;
 		}
 		return alpha2Landkode;
+	}
+
+	private boolean isInnlandAdresseTypeAndPostnummerNull(PdlMottakerInfo pdlMottakerInfo) {
+		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
 	private String getFolkeregistermetadata(HentPerson hentPerson) {

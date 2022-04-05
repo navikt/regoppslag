@@ -6,6 +6,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import no.nav.regoppslag.service.PostnummerService;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import no.nav.regoppslag.pdl.MapPDLResponse;
 
 import java.io.IOException;
 
