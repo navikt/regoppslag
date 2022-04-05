@@ -38,6 +38,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_POLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.ORGANISASJONNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
+import static no.nav.regoppslag.util.PDLResponseUtil.POLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE1;
@@ -92,7 +93,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldMapFrittFormatUtenlandskadresse() {
+	public void shouldMapKontaktadresseFrittFormatUtenlandskadresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/frittformat_utenlandskadresse.json");
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, "PERSON"), HentMottakerOgAdresseResponse.class);
@@ -105,8 +106,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
 		assertEquals(UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje2());
 		assertEquals(UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
-		assertEquals("", response.getAdresse().getPostnummer());
-		assertEquals("", response.getAdresse().getPoststed());
+		assertNull(response.getAdresse().getPostnummer());
+		assertNull(response.getAdresse().getPoststed());
 	}
 
 	@Test
@@ -118,7 +119,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
-
+		assertEquals(UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje1());
+		assertEquals(POLAND, response.getAdresse().getAdresselinje2());
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
 	}

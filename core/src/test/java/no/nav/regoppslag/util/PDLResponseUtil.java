@@ -97,6 +97,7 @@ public class PDLResponseUtil {
 	public static final String GREECE = "Greece";
 	public static final String LANDKODE_NORGE = "NO";
 	public static final String LANDKODE_POLAND = "PL";
+	public static final String POLAND = "Poland";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String D_NUMMER = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";

@@ -386,9 +386,20 @@ public class MapPDLResponse {
 				.adresselinje1(isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ?
 						utenlandskAdresse.getPostboksNummerNavn() :
 						utenlandskAdresse.getAdressenavnNummer())
-				.adresselinje2(format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted()))
-				.adresselinje3(isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : getLand(utenlandskAdresse.getLandkode()))
+				.adresselinje2(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapUtenlandskAdresselinje2(utenlandskAdresse) : mapRegionDistriktOmraadeOrLand(utenlandskAdresse))
+				.adresselinje3(isNotBlank(mapUtenlandskAdresselinje2(utenlandskAdresse)) ? mapRegionDistriktOmraadeOrLand(utenlandskAdresse) : null)
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
+	}
+
+	private String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse) {
+		if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted())) {
+			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+		}
+		return isNotBlank(utenlandskAdresse.getPostkode()) ? utenlandskAdresse.getPostkode() : utenlandskAdresse.getBySted();
+	}
+
+	private String mapRegionDistriktOmraadeOrLand(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : getLand(utenlandskAdresse.getLandkode());
 	}
 
 	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
@@ -539,6 +550,7 @@ public class MapPDLResponse {
 		}
 		return KOSOVO_LANDKODE_NAV_REGISTRENE.equals(alpha3Landkode) ? KOSOVO : getByAlpha3Code(alpha3Landkode).getName();
 	}
+
 	public String getFulltnavn(KontaktinformasjonForDoedsbo.Personnavn personnavn) {
 		return nonNull(personnavn) ? trim(getNavn(personnavn.getFornavn()) + getNavn(personnavn.getMellomnavn()) +
 				getNavn(personnavn.getEtternavn())) : null;

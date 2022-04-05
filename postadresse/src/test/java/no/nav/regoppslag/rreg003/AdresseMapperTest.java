@@ -103,8 +103,8 @@ public class AdresseMapperTest {
 		assertEquals(PDLResponseUtil.POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
 		assertEquals(PDLResponseUtil.POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
 		assertEquals(PDLResponseUtil.REGION_DISTRIKTOMRAADE, adresse.getAdresselinje3());
-		assertEquals("", adresse.getPostnummer());
-		assertEquals("", adresse.getPoststed());
+		assertNull(adresse.getPostnummer());
+		assertNull(adresse.getPoststed());
 		assertEquals(TestDataUtil.SVENSK_LANDKODE, adresse.getLandkode());
 
 	}
