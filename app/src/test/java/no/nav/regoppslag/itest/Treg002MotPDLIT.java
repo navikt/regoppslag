@@ -95,7 +95,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldMapFrittFormatUtenlandskadresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/frittformat_utenlandskadresse.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, "PERSON"), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -113,7 +113,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	public void shouldMapFromOppholdOrBostedadresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/frittformat_utenlandskadresse_null.json");
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("PERSON"), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, "PERSON"), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
