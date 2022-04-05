@@ -60,7 +60,12 @@ public class LandkodeService {
 	}
 
 	public String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
-		 return isBlank(landkodeAlpha3) ? null : CountryCode.getByAlpha3Code(landkodeAlpha3).name();
+		if (isBlank(landkodeAlpha3)) return null;
+		CountryCode countryCode = CountryCode.getByAlpha3Code(landkodeAlpha3);
+		if(countryCode == null) {
+			return null;
+		}
+		return countryCode.name();
 	}
 
 }
