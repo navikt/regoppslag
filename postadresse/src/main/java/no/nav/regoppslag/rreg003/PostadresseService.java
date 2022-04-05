@@ -122,7 +122,7 @@ public class PostadresseService {
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-			log.error(format("RREG003 Funksjonell feil: %s", e.getMessage()), e);
+			log.warn(format("RREG003 Funksjonell feil: %s", e.getMessage()), e);
 			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatus());
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
