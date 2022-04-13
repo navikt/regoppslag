@@ -19,9 +19,9 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,7 +73,7 @@ public class MapPDLResponse {
 	private static final String ETTERNAVN = "Etternavn";
 	private static final String UKJENT_KILDE = " Kilde Ukjent";
 
-	@Inject
+	@Autowired
 	public MapPDLResponse(
 			PostnummerService postnummerService,
 			LandkodeService landkodeService,

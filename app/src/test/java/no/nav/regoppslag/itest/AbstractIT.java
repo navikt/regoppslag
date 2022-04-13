@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,13 +44,13 @@ public abstract class AbstractIT {
 	@Value("${local.url}")
 	protected String LOCAL_ENDPOINT_URL;
 
-	@Inject
+	@Autowired
 	private CacheManager cacheManager;
 
-	@Inject
+	@Autowired
 	protected RestTemplate restTemplate;
 
-	@Inject
+	@Autowired
 	protected RestTemplate restTemplateNoHeader;
 
 	@Rule

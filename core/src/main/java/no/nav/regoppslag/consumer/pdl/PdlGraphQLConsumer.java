@@ -12,6 +12,7 @@ import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.RequestEntity;
@@ -24,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Optional;
@@ -57,7 +57,7 @@ public class PdlGraphQLConsumer {
 	private final String pdlUrl;
 	private final MapHentNavnResponse mapHentNavnResponse;
 
-	@Inject
+	@Autowired
 	public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder,
 							  StsRestConsumer stsConsumer, @Value("${pdl.url}") String pdlUrl) {
 		this.restTemplate = restTemplateBuilder

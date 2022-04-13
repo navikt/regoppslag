@@ -2,10 +2,9 @@ package no.nav.regoppslag.config.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.CacheErrorHandler;
-
-import javax.inject.Inject;
 
 /**
  * CustomCacheErrorHandler
@@ -16,7 +15,7 @@ import javax.inject.Inject;
 @Slf4j
 public class CustomCacheErrorHandler implements CacheErrorHandler {
 
-	@Inject
+	@Autowired
 	MicrometerMetrics metrics;
 
 	@Override

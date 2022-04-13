@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ public class PostnummerService {
 
 	private final Map<String, PostData> postalCodeTable;
 
-	@Inject
+	@Autowired
 	public PostnummerService() throws IOException {
 		postalCodeTable = new HashMap<>();
 		init();

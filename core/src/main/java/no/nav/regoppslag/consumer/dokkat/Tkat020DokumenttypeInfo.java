@@ -9,6 +9,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -19,7 +20,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class Tkat020DokumenttypeInfo {
 	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 	private MicrometerMetrics metrics;
 
-	@Inject
+	@Autowired
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
 								   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,

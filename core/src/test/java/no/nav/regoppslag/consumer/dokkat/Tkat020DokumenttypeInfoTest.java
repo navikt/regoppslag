@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,10 +58,10 @@ public class Tkat020DokumenttypeInfoTest {
 	private static final String LANG2 = "no";
 
 
-	@Inject
+	@Autowired
 	private RestTemplate restTemplate;
 
-	@Inject
+	@Autowired
 	private Tkat020DokumenttypeInfo tkatConsumer;
 
 	@Mock

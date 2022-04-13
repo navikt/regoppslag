@@ -22,11 +22,9 @@ import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.to.MottakerTo;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -53,7 +51,7 @@ public class MapPdlForTreg001 {
 
 	private static final String LAND_NORGE = "Norge";
 
-	@Inject
+	@Autowired
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
 							LandkodeService landkodeService,
 							Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,

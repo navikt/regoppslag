@@ -2,6 +2,7 @@ package no.nav.regoppslag.config.ldap;
 
 import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,15 +10,13 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
-import javax.inject.Inject;
-
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
 @Configuration
 public class LdapConfig {
 
-	@Inject
+	@Autowired
 	MicrometerMetrics metrics;
 	
 	@Bean

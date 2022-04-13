@@ -11,12 +11,11 @@ import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.meldinger.HentKontaktinformasjonForEnhetBolkRequest;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.meldinger.HentKontaktinformasjonForEnhetBolkResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
@@ -35,7 +34,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Consumer {
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
 	public static final String KUNNE_IKKE_FINNE_ENHET = "NORG2 - Kunne ikke finne enhet";
 	
-	@Inject
+	@Autowired
 	public OrganisasjonEnhetKontaktinformasjonV1Consumer(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1,
 														 MicrometerMetrics metrics) {
 		this.organisasjonEnhetKontaktinformasjonV1 = organisasjonEnhetKontaktinformasjonV1;

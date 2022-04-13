@@ -7,12 +7,12 @@ import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
 import no.nav.regoppslag.nais.selftest.Importance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.time.Duration;
 
 /**
@@ -23,7 +23,7 @@ public class DokkatCheck extends AbstractDependencyCheck {
 	public static final String DOKKATV3_LABEL = "Dokkat_V3";
 	private final RestTemplate restTemplate;
 	
-	@Inject
+	@Autowired
 	public DokkatCheck(RestTemplateBuilder restTemplateBuilder,
 					   HttpComponentsClientHttpRequestFactory requestFactory,
 					   DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias,
