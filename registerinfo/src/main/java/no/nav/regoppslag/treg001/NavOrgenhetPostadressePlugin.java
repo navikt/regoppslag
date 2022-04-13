@@ -12,12 +12,12 @@ import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		super(Postadresse.class);
 	}
 
-	@Inject
+	@Autowired
 	public NavOrgenhetPostadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
 										MicrometerMetrics metrics) {
 		super(Postadresse.class);

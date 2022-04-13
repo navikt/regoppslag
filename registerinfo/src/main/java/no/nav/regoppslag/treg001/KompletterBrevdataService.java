@@ -11,6 +11,7 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,7 +47,7 @@ public class KompletterBrevdataService {
 
 	private final ElementEnricher elementEnricher;
 
-	@Inject
+	@Autowired
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {
 		this.elementEnricher = elementEnricher;
 	}

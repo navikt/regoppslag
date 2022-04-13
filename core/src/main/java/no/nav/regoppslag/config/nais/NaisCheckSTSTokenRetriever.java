@@ -5,12 +5,12 @@ import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 
-import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -28,10 +28,10 @@ public class NaisCheckSTSTokenRetriever {
 
 	private final STSClient stsClient;
 
-	@Inject
+	@Autowired
 	private MicrometerMetrics metrics;
 
-	@Inject
+	@Autowired
 	public NaisCheckSTSTokenRetriever(@Value("${securityTokenService.url}") String stsUrl, ServiceuserAlias serviceuserAlias, Bus cxf) {
 		this.stsClient = NaisCheckSTSConfigUtil.configureStsRequestSamlToken(stsUrl, serviceuserAlias.getUsername(), serviceuserAlias.getPassword(), cxf);
 	}

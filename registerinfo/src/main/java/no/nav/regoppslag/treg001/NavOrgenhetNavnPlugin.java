@@ -12,16 +12,15 @@ import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
-import static java.lang.String.*;
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -43,7 +42,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		super(NavEnhet.class);
 	}
 	
-	@Inject
+	@Autowired
 	public NavOrgenhetNavnPlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
 								 MicrometerMetrics metrics) {
 		super(NavEnhet.class);

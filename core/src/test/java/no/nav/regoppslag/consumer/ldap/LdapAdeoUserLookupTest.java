@@ -7,6 +7,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.ldap.core.AttributesMapper;
@@ -16,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +35,7 @@ public class LdapAdeoUserLookupTest {
 
 	private static final LdapTemplate ldapTemplateMock = mock(LdapTemplate.class);
 
-	@Inject
+	@Autowired
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
 	@Test

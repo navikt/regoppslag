@@ -13,6 +13,7 @@ import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.inject.Inject;
 
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
@@ -44,7 +43,7 @@ public class PostAdresseController {
 
 	private final PostadresseService postadresseService;
 
-	@Inject
+	@Autowired
 	public PostAdresseController(PostadresseService postadresseService
 	) {
 		this.postadresseService = postadresseService;

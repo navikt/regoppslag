@@ -8,6 +8,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -21,7 +22,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
-	@Inject
+	@Autowired
 	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
 						RestTemplateBuilder restTemplateBuilder) {
 		this.eregUrl = eregUrl;

@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
-import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
@@ -14,6 +13,7 @@ import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.regoppslag.nais.selftest.Result;
 import no.nav.regoppslag.nais.selftest.SelftestResult;
 import no.nav.security.token.support.core.api.Unprotected;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,10 +44,10 @@ public class NaisContract {
 	private final String version;
 	private final List<AbstractDependencyCheck> dependencyCheckList;
 
-	@Inject
+	@Autowired
 	private NaisCheckSTSTokenRetriever naisCheckSTSTokenRetriever;
 
-	@Inject
+	@Autowired
 	public NaisContract(MeterRegistry meterRegistry,
 						List<AbstractDependencyCheck> dependencyCheckList,
 						AppVersion version) {

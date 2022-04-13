@@ -98,7 +98,6 @@ public class MapPDLResponseTest {
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
 	private LandkodeService landkodeService;
-
 	@InjectMocks
 	private PostnummerService postnummerService;
 

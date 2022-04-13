@@ -10,20 +10,19 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.*;
+import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
@@ -42,7 +41,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		super(Besoksadresse.class);
 	}
 
-	@Inject
+	@Autowired
 	public NavOrgenhetBesoksadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
 										  MicrometerMetrics metrics) {
 		super(Besoksadresse.class);

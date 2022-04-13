@@ -12,9 +12,9 @@ import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.to.MottakerTo;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class OrganisasjonEregMapper {
 
 	private static final String LAND_NORGE = "Norge";
 
-	@Inject
+	@Autowired
 	public OrganisasjonEregMapper(PostnummerService postnummerService, LandkodeService landkodeService, MicrometerMetrics metrics) {
 		this.landkodeService = landkodeService;
 		this.postnummerService = postnummerService;

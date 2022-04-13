@@ -9,11 +9,10 @@ import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
-import no.nav.regoppslag.util.TestUtil;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -27,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -54,10 +52,10 @@ public class SaksbehandlerPluginTest {
 	private Map<String, Object> valueMap;
 	private UsernamePasswordAuthenticationToken token;
 
-	@Inject
+	@Autowired
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
-	@Inject
+	@Autowired
 	private SaksbehandlerPlugin saksbehandlerPlugin;
 
 	@BeforeEach

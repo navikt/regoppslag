@@ -14,9 +14,9 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.to.MottakerTo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 
 import static java.lang.String.format;
@@ -41,7 +41,7 @@ public class PostadresseService {
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
 
-	@Inject
+	@Autowired
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,

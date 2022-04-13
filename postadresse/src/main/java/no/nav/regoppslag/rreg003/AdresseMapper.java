@@ -10,9 +10,8 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
@@ -41,7 +40,7 @@ public class AdresseMapper {
 	private static final String NORSK_ADRESSE = "NORSK_ADRESSE";
 	private static final String UTENLANDSK_ADRESSE = "UTENLANDSK_ADRESSE";
 
-	@Inject
+	@Autowired
 	public AdresseMapper(LandkodeService landkodeService, MicrometerMetrics metrics, LandkodeServiceNorsk landkodeServiceNorsk) {
 		this.landkodeService = landkodeService;
 		this.metrics = metrics;

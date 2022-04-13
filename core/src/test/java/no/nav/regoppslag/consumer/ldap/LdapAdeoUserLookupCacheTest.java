@@ -8,6 +8,7 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 
 import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("itest")
 public class LdapAdeoUserLookupCacheTest {
 
-	@Inject
+	@Autowired
 	private CacheManager cacheManager;
 
-	@Inject
+	@Autowired
 	private LdapTemplate ldapTemplate;
 
-	@Inject
+	@Autowired
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
 	private static final String NAME1 = "Test Testesen";

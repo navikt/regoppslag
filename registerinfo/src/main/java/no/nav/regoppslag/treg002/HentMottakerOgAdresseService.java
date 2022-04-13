@@ -19,8 +19,6 @@ import no.nav.regoppslag.to.MottakerTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
@@ -48,7 +46,7 @@ public class HentMottakerOgAdresseService {
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
-	@Inject
+	@Autowired
 	public HentMottakerOgAdresseService(AdresseMapper adresseMapper,
 										PdlGraphQLConsumer pdlGraphQLConsumer,
 										MapPDLResponse mapPDLResponse) {

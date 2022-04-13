@@ -17,6 +17,7 @@ import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.inject.Inject;
 
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
@@ -53,7 +52,7 @@ public class RegisteroppslagRestController {
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
 
-	@Inject
+	@Autowired
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService,
 										 HentMottakerOgAdresseService hentMottakerOgAdresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;

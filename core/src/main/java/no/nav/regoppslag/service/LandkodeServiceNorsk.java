@@ -1,10 +1,10 @@
 package no.nav.regoppslag.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class LandkodeServiceNorsk {
 
 	private final Map<String, String> landkodeTable;
 
-	@Inject
+	@Autowired
 	public LandkodeServiceNorsk() throws IOException {
 		landkodeTable = new HashMap<>();
 		init();
