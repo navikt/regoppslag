@@ -35,6 +35,14 @@ spec:
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
+    {{#if AZURE_APP_CLIENT_ID}}
+    - name: AZURE_APP_CLIENT_ID
+      value: {{ AZURE_APP_CLIENT_ID }}
+    {{/if}}
+    {{#if AZURE_APP_WELL_KNOWN_URL}}
+    - name: AZURE_APP_WELL_KNOWN_URL
+      value: {{ AZURE_APP_WELL_KNOWN_URL }}
+    {{/if}}
   image: {{ image }}
   ingresses:
         {{#each INGRESSES}}
