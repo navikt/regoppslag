@@ -31,14 +31,12 @@ import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.D_NUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN2;
-import static no.nav.regoppslag.util.PDLResponseUtil.GREECE;
 import static no.nav.regoppslag.util.PDLResponseUtil.GREECE_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_POLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.ORGANISASJONNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
-import static no.nav.regoppslag.util.PDLResponseUtil.POLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE1;
@@ -200,7 +198,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetMottakerAndAdresseForUtenlandskFrittKontakadresee() {
+	public void shouldGetMottakerAndAdresseForUtenlandskFrittKontaktadresse() {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/utenlandskfritt_kontaktadresse.json");
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, "PERSON"), HentMottakerOgAdresseResponse.class);
@@ -353,7 +351,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
 
 	}
-
 
 	@Test
 	public void shouldThrowWhenMottakerErUkjentbostedFailsFunctionalNotFound() {

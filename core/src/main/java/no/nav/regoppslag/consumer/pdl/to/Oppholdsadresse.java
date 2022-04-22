@@ -16,4 +16,18 @@ public class Oppholdsadresse {
 	private Matrikkeladresse matrikkeladresse;
 	private UtenlandskAdresse utenlandskAdresse;
 	private Metadata metadata;
+
+	public boolean isGyldigPdlKilde() {
+		if(metadata == null) {
+			return false;
+		}
+		return metadata.isKildePdl();
+	}
+
+	public boolean isGyldigFregKilde() {
+		if(metadata == null) {
+			return false;
+		}
+		return metadata.isKildeFreg();
+	}
 }

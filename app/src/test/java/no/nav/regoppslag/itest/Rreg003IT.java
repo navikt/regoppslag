@@ -1,6 +1,7 @@
 package no.nav.regoppslag.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,18 +15,12 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
 import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,14 +76,43 @@ public class Rreg003IT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/postbokskontaktadresse.json");
 
-		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
-		assertNotNull(actualResponse);
-		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-		assertNotNull(actualResponse.getBody().getNavn());
-		assertNotNull(actualResponse.getBody().getAdresse());
+		PostadresseResponse postadresseResponse = hentPostadresse();
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+		assertThat(postadresseResponse.getNavn()).isEqualTo("GYNGEHEST A. ÅPENHJERTIG");
+		Adresse actualAdresse = postadresseResponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Finnesveien 27");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 7320");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
+	void shouldGetSisteGyldigeKontaktAdresseWhenFlereGyldigeKontaktadresser() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/kontaktadresse_flere_gyldige.json");
+
+		PostadresseResponse postadresseResponse = hentPostadresse();
+
+		assertThat(postadresseResponse.getNavn()).isEqualTo("FLERE GYLDIGE KONTAKTADRESSER");
+		Adresse actualAdresse = postadresseResponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Postboks 9000 Grønland");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("0134");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("OSLO");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	private PostadresseResponse hentPostadresse() {
+		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		PostadresseResponse postadresseResponse = actualResponse.getBody();
+		assertNotNull(postadresseResponse);
+		return postadresseResponse;
 	}
 
 	@Test
@@ -101,9 +125,6 @@ public class Rreg003IT extends AbstractIT {
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 		assertNotNull(actualResponse.getBody().getNavn());
 		assertNotNull(actualResponse.getBody().getAdresse());
-
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -116,9 +137,6 @@ public class Rreg003IT extends AbstractIT {
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 		assertNotNull(actualResponse.getBody().getNavn());
 		assertNotNull(actualResponse.getBody().getAdresse());
-
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -130,9 +148,6 @@ public class Rreg003IT extends AbstractIT {
 				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.GONE, e.getStatusCode());
-
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -144,9 +159,6 @@ public class Rreg003IT extends AbstractIT {
 				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
 				"Test did not throw exception");
 		assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
-
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -158,7 +170,6 @@ public class Rreg003IT extends AbstractIT {
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
 
 		assertEquals("NAV IKT", response.getBody().getNavn());
-
 	}
 
 	@Test
