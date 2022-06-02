@@ -32,6 +32,11 @@
 			"app": "salesforce",
 			"namespace": "teamcrm",
 			"cluster": "prod-external"
+		},
+		{
+			"app": "veilarbperson",
+			"namespace": "pto",
+			"cluster": "prod-fss"
 		}
 	]
 }
