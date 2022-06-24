@@ -2,8 +2,8 @@ package no.nav.regoppslag.nais;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever;
