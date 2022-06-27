@@ -54,24 +54,8 @@ public abstract class AbstractCxfEndpointConfig {
 		factoryBean.setServiceName(serviceName);
 	}
 
-	protected void addProperties(Map<String, Object> properties) {
-		factoryBean.getProperties().putAll(properties);
-	}
-
 	protected void addFeature(Feature feature) {
 		factoryBean.getFeatures().add(feature);
-	}
-
-	protected void addOutInterceptor(Interceptor<? extends Message> interceptor) {
-		factoryBean.getOutInterceptors().add(interceptor);
-	}
-
-	protected void addInInterceptor(Interceptor<? extends Message> interceptor) {
-		factoryBean.getInInterceptors().add(interceptor);
-	}
-
-	protected void addHandler(javax.xml.ws.handler.Handler handler) {
-		factoryBean.getHandlers().add(handler);
 	}
 
 	protected <T> T createPort(Class<T> portType) {
@@ -85,10 +69,6 @@ public abstract class AbstractCxfEndpointConfig {
 			return url.toString();
 		}
 		throw new IllegalStateException("Failed to find resource: " + classpathResource);
-	}
-
-	protected void enableMtom() {
-		factoryBean.getProperties().put("mtom-enabled", true);
 	}
 
 	protected void setReceiveTimeout(int receiveTimeout) {

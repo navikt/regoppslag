@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>no.nav.regoppslag</groupId>
 	<artifactId>regoppslag</artifactId>
-	<packaging>pom</packaging>
 	<version>1-SNAPSHOT</version>
-	<name>regoppslag</name>
 
+	<packaging>pom</packaging>
 
 	<modules>
 		<module>app</module>
@@ -19,31 +19,34 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.6</version>
+		<version>2.7.0</version>
 	</parent>
 
 	<properties>
 		<java.version>11</java.version>
+
 		<resilience4j.version>1.7.1</resilience4j.version>
 		<cxf.version>3.5.2</cxf.version>
+		<rxjava.version>3.1.5</rxjava.version>
+
+		<!-- Kan oppgraderes til kryo versjon 5 -->
+		<kryo.version>4.0.2</kryo.version>
+		<springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
+		<nv-i18n.version>1.29</nv-i18n.version>
+		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
+
+		<!-- Neste versjon trenger Java 17 -->
+		<token-support.version>1.3.19</token-support.version>
+
 		<organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>1.1.0
 		</organisasjonenhetkontaktinformasjon-v1-tjenestespesifikasjon.version>
 		<pesysbrev01.version>1.0.44</pesysbrev01.version>
 		<dokkat-api.version>9.4.1</dokkat-api.version>
-		<rxjava.version>2.2.21</rxjava.version>
-		<kryo.version>4.0.2</kryo.version>
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
-		<javax.jws-api.version>1.1</javax.jws-api.version>
-		<springdoc-openapi-ui.version>1.6.4</springdoc-openapi-ui.version>
-		<jaxb-core.version>2.3.0.1</jaxb-core.version>
-		<nv-i18n.version>1.26</nv-i18n.version>
-		<logstash-logback-encoder.version>7.0.1</logstash-logback-encoder.version>
-		<token-support.version>1.3.10</token-support.version>
-		<jakarta.activation-api.version>1.2.2</jakarta.activation-api.version>
+
 		<!-- test -->
-		<wiremock-standalone.version>2.25.1</wiremock-standalone.version>
-		<spring-cloud-contract-wiremock.version>2.1.4.RELEASE</spring-cloud-contract-wiremock.version>
-		<okhttp3.version>4.9.1</okhttp3.version>
+		<spring-cloud-contract-wiremock.version>3.1.3</spring-cloud-contract-wiremock.version>
+		<okhttp3.version>4.10.0</okhttp3.version>
 	</properties>
 
 	<dependencyManagement>
@@ -69,24 +72,15 @@
 				<artifactId>postadresse</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
 				<version>${logstash-logback-encoder.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.jws</groupId>
-				<artifactId>javax.jws-api</artifactId>
-				<version>${javax.jws-api.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-circuitbreaker</artifactId>
-				<version>${resilience4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-timelimiter</artifactId>
+				<artifactId>resilience4j-spring-boot2</artifactId>
 				<version>${resilience4j.version}</version>
 			</dependency>
 			<dependency>
@@ -100,10 +94,11 @@
 				<version>${springdoc-openapi-ui.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.reactivex.rxjava2</groupId>
+				<groupId>io.reactivex.rxjava3</groupId>
 				<artifactId>rxjava</artifactId>
 				<version>${rxjava.version}</version>
 			</dependency>
+
 			<!--CXF dependencies-->
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -112,21 +107,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-core</artifactId>
-				<version>${jaxb-core.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>jakarta.activation</groupId>
-				<artifactId>jakarta.activation-api</artifactId>
-				<version>${jakarta.activation-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-impl</artifactId>
-				<version>${javax-jaxb.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>com.neovisionaries</groupId>
 				<artifactId>nv-i18n</artifactId>
@@ -152,12 +133,6 @@
 				<groupId>no.nav.dokkat</groupId>
 				<artifactId>dokkat-api</artifactId>
 				<version>${dokkat-api.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>ch.qos.logback</groupId>
-						<artifactId>logback-classic</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
@@ -169,20 +144,8 @@
 				<artifactId>brevdata-felles</artifactId>
 				<version>${brevdata-felles.version}</version>
 			</dependency>
-			<!-- Provided dependencies -->
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${lombok.version}</version>
-				<scope>provided</scope>
-			</dependency>
+
 			<!-- Test dependencies -->
-			<dependency>
-				<groupId>com.github.tomakehurst</groupId>
-				<artifactId>wiremock-standalone</artifactId>
-				<version>${wiremock-standalone.version}</version>
-				<scope>test</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-wiremock</artifactId>
@@ -205,25 +168,15 @@
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- Logging dependecies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-logging</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -232,17 +185,7 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
