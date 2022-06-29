@@ -146,8 +146,7 @@ public class OrganisasjonEregMapper {
 	// Postadresse skal overstyre forretningsadresse dersom den finnes
 	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectActiveAddress(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> postadresse, List<no.nav.regoppslag.consumer.ereg.support.Postadresse> forretningsadresse) {
 		// Stream.of er basert på array så rekkefølgen er ordered, gyldige postadresse vil bli funnet før forretningsadresse
-		return Stream.of(
-						selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))
+		return Stream.of(selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.findFirst();
