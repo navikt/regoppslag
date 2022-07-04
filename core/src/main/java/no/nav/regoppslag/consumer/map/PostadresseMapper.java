@@ -25,22 +25,25 @@ public class PostadresseMapper {
 
 	public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) {
 		UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
-		utenlandskPostadresse.setLand(postadresse.getLand());
 		utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
-		utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
-		utenlandskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
+		utenlandskPostadresse.setLand(postadresse.getLand());
 
 		if (postadresse.getPoststed() != null) {
-			if (utenlandskPostadresse.getAdresselinje2() == null) {
+			if (postadresse.getAdresselinje2() == null) {
 				utenlandskPostadresse.setAdresselinje2(postadresse.getPoststed());
-			} else if (utenlandskPostadresse.getAdresselinje3() == null) {
+			} else if (postadresse.getAdresselinje3() == null) {
+				utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
 				utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
 			} else {
 				String kombinertAdresse = postadresse.getAdresselinje2() + ", " + postadresse.getAdresselinje3();
 				utenlandskPostadresse.setAdresselinje2(kombinertAdresse);
 				utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
 			}
+		} else {
+			utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
+			utenlandskPostadresse.setAdresselinje3(postadresse.getAdresselinje3());
 		}
+
 		return utenlandskPostadresse;
 	}
 }
