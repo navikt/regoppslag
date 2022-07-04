@@ -11,7 +11,7 @@ public class PostadresseMapper {
 	private PostadresseMapper() {
 	}
 
-	public static NorskPostadresse mapPostadresseToNorskpostadresse(Postadresse postadresse) {
+	public static NorskPostadresse mapPostadresseToNorskPostadresse(Postadresse postadresse) {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		norskPostadresse.setLand(postadresse.getLand());
 		norskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
@@ -23,7 +23,7 @@ public class PostadresseMapper {
 		return norskPostadresse;
 	}
 
-	public static UtenlandskPostadresse mapPostadresseToUtenlandskadresse(Postadresse postadresse) {
+	public static UtenlandskPostadresse mapPostadresseToUtenlandskPostadresse(Postadresse postadresse) {
 		UtenlandskPostadresse utenlandskPostadresse = new UtenlandskPostadresse();
 		utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
 		utenlandskPostadresse.setLand(postadresse.getLand());

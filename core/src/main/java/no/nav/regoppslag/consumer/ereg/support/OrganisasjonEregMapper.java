@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.joining;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
+import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskPostadresse;
+import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskPostadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
@@ -80,10 +80,10 @@ public class OrganisasjonEregMapper {
 		incrementFunctionalMetrics(postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
-			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
+			NorskPostadresse norskPostadresse = mapPostadresseToNorskPostadresse(postadresse);
 			mottaker.setMottakeradresse(norskPostadresse);
 		} else {
-			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskadresse(postadresse);
+			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskPostadresse(postadresse);
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
