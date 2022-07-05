@@ -68,3 +68,6 @@ spec:
         mountPath: /var/run/secrets/nais.io/ldap
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
+  azure:
+    application:
+      enabled: true
