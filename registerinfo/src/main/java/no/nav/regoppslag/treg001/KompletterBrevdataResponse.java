@@ -1,6 +1,6 @@
 package no.nav.regoppslag.treg001;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KompletterBrevdataResponse {
-	
-	@ApiModelProperty(notes = "Brevdata påført data fra berikerplugins")
+
+	@Schema(description = "Brevdata påført data fra berikerplugins")
 	private String brevdata;
 }

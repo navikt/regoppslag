@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Kontaktadresse {
+public class Kontaktadresse implements Comparable<Kontaktadresse> {
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;
 	private String type;
@@ -18,6 +18,32 @@ public class Kontaktadresse {
 	private Postboksadresse postboksadresse;
 	private UtenlandskAdresse UtenlandskAdresse;
 	private Metadata metadata;
+
+	public boolean isGyldigPdlKilde() {
+		if(metadata == null) {
+			return false;
+		}
+		return metadata.isKildePdl();
+	}
+
+	public boolean isGyldigFregKilde() {
+		if(gyldigFraOgMed == null && metadata == null) {
+			return false;
+		}
+		if(gyldigFraOgMed == null) {
+			return metadata.isKildeFreg();
+		}
+		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg();
+	}
+
+	@Override
+	public int compareTo(Kontaktadresse o) {
+		if(gyldigFraOgMed == null || o.getGyldigFraOgMed() == null) {
+			return 0;
+		}
+
+		return gyldigFraOgMed.compareTo(o.getGyldigFraOgMed());
+	}
 
 	@Data
 	@Builder

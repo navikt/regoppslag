@@ -6,9 +6,9 @@ import org.apache.cxf.feature.Feature;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.message.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import javax.inject.Inject;
 import javax.xml.namespace.QName;
 import java.net.URL;
 import java.util.HashMap;
@@ -23,10 +23,10 @@ import java.util.Map;
 public abstract class AbstractCxfEndpointConfig {
 	public static final int DEFAULT_TIMEOUT = 30_000;
 
-	@Inject
+	@Autowired
 	private Bus bus;
 	
-	@Inject
+	@Autowired
 	private STSConfig stsConfig;
 
 	private int receiveTimeout = DEFAULT_TIMEOUT;
@@ -54,24 +54,8 @@ public abstract class AbstractCxfEndpointConfig {
 		factoryBean.setServiceName(serviceName);
 	}
 
-	protected void addProperties(Map<String, Object> properties) {
-		factoryBean.getProperties().putAll(properties);
-	}
-
 	protected void addFeature(Feature feature) {
 		factoryBean.getFeatures().add(feature);
-	}
-
-	protected void addOutInterceptor(Interceptor<? extends Message> interceptor) {
-		factoryBean.getOutInterceptors().add(interceptor);
-	}
-
-	protected void addInInterceptor(Interceptor<? extends Message> interceptor) {
-		factoryBean.getInInterceptors().add(interceptor);
-	}
-
-	protected void addHandler(javax.xml.ws.handler.Handler handler) {
-		factoryBean.getHandlers().add(handler);
 	}
 
 	protected <T> T createPort(Class<T> portType) {
@@ -85,10 +69,6 @@ public abstract class AbstractCxfEndpointConfig {
 			return url.toString();
 		}
 		throw new IllegalStateException("Failed to find resource: " + classpathResource);
-	}
-
-	protected void enableMtom() {
-		factoryBean.getProperties().put("mtom-enabled", true);
 	}
 
 	protected void setReceiveTimeout(int receiveTimeout) {

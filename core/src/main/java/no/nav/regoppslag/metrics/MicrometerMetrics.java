@@ -1,5 +1,18 @@
 package no.nav.regoppslag.metrics;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Iterator;
+import java.util.Optional;
+
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.CONSUMER_NAME;
@@ -12,24 +25,11 @@ import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.UKJENT;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.Iterator;
-import java.util.Optional;
-
 @Slf4j
 @Component
 public class MicrometerMetrics {
 
-	@Inject
+	@Autowired
 	private MeterRegistry registry;
 
 	public void cacheMiss(String cacheName) {

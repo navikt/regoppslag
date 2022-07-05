@@ -1,0 +1,113 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1986,
+          "foedselsdato": "1986-08-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "FLERE",
+          "mellomnavn": "GYLDIGE",
+          "etternavn": "KONTAKTADRESSER",
+          "forkortetNavn": null
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-11-26T13:38:45",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": "Tysklandsadressen",
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "Krankenweg 6",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "12109",
+            "bySted": "Berlin",
+            "regionDistriktOmraade": "",
+            "landkode": "DEU"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "63a9eadc-0558-4c87-b179-cf4c0803537a",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-11-26T13:38:50",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "broennoeysundregistrene"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2020-12-21T18:59:50",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "broennoeysundregistrene"
+              }
+            ],
+            "historisk": false
+          }
+        },
+        {
+          "gyldigFraOgMed": "2021-12-10T10:08:30",
+          "gyldigTilOgMed": null,
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": {
+            "postbokseier": null,
+            "postboks": "9000 Grønland",
+            "postnummer": "0134"
+          },
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "88a82001-8176-40f5-9162-c64b7060efce",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2021-12-10T10:08:40",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "60000000000",
+          "type": "DNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "midlertidig",
+          "forenkletStatus": "dNummer",
+          "folkeregistermetadata": {
+            "kilde": "broennoeysundregistrene"
+          }
+        }
+      ]
+    }
+  }
+}

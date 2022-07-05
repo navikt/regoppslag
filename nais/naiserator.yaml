@@ -13,8 +13,8 @@ spec:
       value: {{ SECURITY_TOKEN_SERVICE_TOKEN_URL }}
     - name: ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL
       value: {{ ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL }}
-    - name: ORGANISASJON_V4_ENDPOINTURL
-      value: {{ ORGANISASJON_V4_ENDPOINTURL }}
+    - name: EREG_ORGANISASJON_SERVICE_URL
+      value: {{ EREG_ORGANISASJON_SERVICE_URL }}
     - name: DOKUMENTTYPEINFO_V3_URL
       value: {{ DOKUMENTTYPEINFO_V3_URL }}
     - name: LDAP_SERVICEUSER_BASEDN
@@ -31,6 +31,18 @@ spec:
       value: {{ LDAP_URL }}
     - name: LDAP_USER_BASEDN
       value: {{ LDAP_USER_BASEDN }}
+    {{#if AZURE_APP_CLIENT_ID}}
+    {{#if AZURE_APP_WELL_KNOWN_URL}}
+    - name: AZURE_APP_CLIENT_ID
+      value: {{ AZURE_APP_CLIENT_ID }}
+    - name: AZURE_APP_WELL_KNOWN_URL
+      value: {{ AZURE_APP_WELL_KNOWN_URL }}
+    {{/if}}
+    {{/if}}
+    - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL
+      value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
+    - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
+      value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
   image: {{ image }}
   ingresses:
         {{#each INGRESSES}}
@@ -68,6 +80,21 @@ spec:
         mountPath: /var/run/secrets/nais.io/ldap
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
+  webproxy: true
+{{#if AZURE_IAC_RULES}}
   azure:
     application:
       enabled: true
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
+  accessPolicy:
+    inbound:
+      rules:
+      {{#each AZURE_IAC_RULES}}
+        - application: {{app}}
+          namespace: {{namespace}}
+          cluster: {{cluster}}
+      {{/each}}
+{{/if}}

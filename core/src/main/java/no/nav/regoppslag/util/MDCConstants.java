@@ -3,7 +3,7 @@ package no.nav.regoppslag.util;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-public class MDCConstants {
+public final class MDCConstants {
 
 	public static final String CONSUMER_ID = "consumerId";
 	public static final String CALL_ID = "callId";
@@ -15,5 +15,8 @@ public class MDCConstants {
 	public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	public static final String NAV_CALL_ID = "Nav-Call-Id";
 	public static final String APP_ID = "regoppslag";
-	
+
+	private MDCConstants() {
+		// ingen instansiering
+	}
 }

@@ -5,11 +5,10 @@ import no.nav.regoppslag.nais.selftest.AbstractDependencyCheck;
 import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
 import no.nav.regoppslag.nais.selftest.Importance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -18,7 +17,7 @@ import javax.inject.Inject;
 public class LDAPCheck extends AbstractDependencyCheck {
 	private final LdapTemplate ldapTemplate;
 	
-	@Inject
+	@Autowired
 	public LDAPCheck(LdapTemplate ldapTemplate,
 					 @Value("${ldap_url}") String ldapUrl,
 					 MicrometerMetrics metrics) {

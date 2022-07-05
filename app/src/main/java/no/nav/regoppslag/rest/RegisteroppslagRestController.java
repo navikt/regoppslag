@@ -1,20 +1,23 @@
 package no.nav.regoppslag.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
-import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
-import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
-import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.Metrics;
+import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
+import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
-import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
+import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
-import static no.nav.regoppslag.config.swagger.SwaggerConfig.samlTokenInfo;
+import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
@@ -39,8 +40,9 @@ import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
 @RestController
 @RequestMapping(REST)
-@Api(value = "Registeroppslag")
+@Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever JWT Authorization.")
 @Slf4j
+@Protected
 public class RegisteroppslagRestController {
 
 	public static final String REST = "rest/";
@@ -50,22 +52,24 @@ public class RegisteroppslagRestController {
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
 
-	@Inject
-	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService, HentMottakerOgAdresseService hentMottakerOgAdresseService) {
+	@Autowired
+	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService,
+										 HentMottakerOgAdresseService hentMottakerOgAdresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 
-	@ApiOperation(value = "TREG001", notes = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + samlTokenInfo)
+	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON"),
-			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
-			@ApiResponse(code = 500, message = "Teknisk feil")
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
-	public @ResponseBody KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
+	public @ResponseBody
+	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
 			throws RegOppslagSecurityException {
 
 		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
@@ -85,18 +89,19 @@ public class RegisteroppslagRestController {
 		}
 	}
 
-	@ApiOperation(value = "TREG002", notes = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + samlTokenInfo)
+	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 400, message = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON"),
-			@ApiResponse(code = 401, message = "Ingen tilgang til PersonV3"),
-			@ApiResponse(code = 404, message = "Bruker har ukjent adresse"),
-			@ApiResponse(code = 410, message = "Person er død og har ukjent adresse"),
-			@ApiResponse(code = 500, message = "Teknisk feil")
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse", content = @Content),
+			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),
+			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
-	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
+	public @ResponseBody
+	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
 			throws RegOppslagSecurityException {
 
 		try {
@@ -110,4 +115,6 @@ public class RegisteroppslagRestController {
 			MDC.clear();
 		}
 	}
+
+
 }

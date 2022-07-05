@@ -1,10 +1,10 @@
 package no.nav.regoppslag.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class AppVersion {
 	private final String version;
 
-	@Inject
+	@Autowired
 	AppVersion(ApplicationContext applicationContext) {
 		version = applicationContext.getBeansWithAnnotation(SpringBootApplication.class)
 				.entrySet().stream().findFirst().flatMap(stringObjectEntry -> {

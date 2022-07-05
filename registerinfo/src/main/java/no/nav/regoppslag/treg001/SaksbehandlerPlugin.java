@@ -11,12 +11,12 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -35,13 +35,13 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		super(NavAnsatt.class);
 	}
 
-	@Inject
+	@Autowired
 	private LdapAdeoUserLookup ldapAdeoUserLookup;
 
-	@Inject
+	@Autowired
 	private SaksbehandlerMapper saksbehandlerMapper;
 
-	@Inject
+	@Autowired
 	private MicrometerMetrics metrics;
 
 	@Override

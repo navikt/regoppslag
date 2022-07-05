@@ -7,9 +7,8 @@ import no.nav.regoppslag.nais.selftest.ApplicationNotReadyException;
 import no.nav.regoppslag.nais.selftest.DependencyType;
 import no.nav.regoppslag.nais.selftest.Importance;
 import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.binding.OrganisasjonEnhetKontaktinformasjonV1;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -19,7 +18,7 @@ public class OrganisasjonEnhetKontaktinformasjonV1Check extends AbstractDependen
 	public static final String OrganisasjonEnhetKontaktinformasjonV1_label = "NORG2";
 	private final OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1;
 
-	@Inject
+	@Autowired
 	public OrganisasjonEnhetKontaktinformasjonV1Check(OrganisasjonEnhetKontaktinformasjonV1 organisasjonEnhetKontaktinformasjonV1,
 													  OrganisasjonEnhetKontaktinformasjonV1Alias alias,
 													  MicrometerMetrics metrics) {

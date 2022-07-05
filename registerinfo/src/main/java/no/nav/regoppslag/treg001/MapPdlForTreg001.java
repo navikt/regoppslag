@@ -11,20 +11,19 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
-import no.nav.regoppslag.consumer.organisasjonv4.OrganisasjonV4Consumer;
-import no.nav.regoppslag.treg001.support.OrganisasjonV4Mapper;
+import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
+import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.consumer.pdl.map.MapPDLResponse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
+import no.nav.regoppslag.to.MottakerTo;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.treg001.to.MottakerTo;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.Organisasjon;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 import java.util.List;
 
@@ -44,28 +43,29 @@ public class MapPdlForTreg001 {
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
 	private final LandkodeService landkodeService;
-	private final OrganisasjonV4Consumer organisasjonV4Consumer;
-	private final OrganisasjonV4Mapper organisasjonV4Mapper;
 	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private final SpraakKodeMapper spraakKodeMapper;
+	private final EregConsumer eregConsumer;
+	private final OrganisasjonEregMapper organisasjonEregMapper;
 
 	private static final String LAND_NORGE = "Norge";
 
-	@Inject
+	@Autowired
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
-							LandkodeService landkodeService, OrganisasjonV4Consumer organisasjonV4Consumer,
-							OrganisasjonV4Mapper organisasjonV4Mapper,
+							LandkodeService landkodeService,
 							Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
-							DigitalKontaktinformasjon digitalKontaktinformasjon) {
+							DigitalKontaktinformasjon digitalKontaktinformasjon,
+							EregConsumer eregConsumer,
+							OrganisasjonEregMapper organisasjonEregMapper) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.landkodeService = landkodeService;
-		this.organisasjonV4Consumer = organisasjonV4Consumer;
-		this.organisasjonV4Mapper = organisasjonV4Mapper;
 		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
 		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
 		this.spraakKodeMapper = new SpraakKodeMapper();
+		this.eregConsumer = eregConsumer;
+		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public Mottaker getMottakerFraPdl(String tema, Mottaker mottaker, String dokumenttypeId) {
@@ -81,8 +81,8 @@ public class MapPdlForTreg001 {
 				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
 				mottaker.setSpraakkode(spraakkode);
 			} else {
-				Organisasjon organisasjon = organisasjonV4Consumer.hentOrganisasjon(mottaker.getId());
-				MottakerTo mottakerTo = organisasjonV4Mapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+				Organisasjon organisasjon = eregConsumer.hentOrganisasjon(mottaker.getId());
+				MottakerTo mottakerTo = organisasjonEregMapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
 				mottaker.setId(mottaker.getId());
 				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
@@ -99,7 +99,7 @@ public class MapPdlForTreg001 {
 		Mottaker mottaker = new Person();
 
 		if (isNull(pdlMottakerInfo.getPostadresse()) || isBlank(pdlMottakerInfo.getPostadresse().getAdresseType())) {
-			throw new RegoppslagIllegalArgumentException("Mottaker adresse kan ikke bli null", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Mottakeradresse kan ikke bli null", BAD_REQUEST);
 		}
 		mottaker.setKortNavn(pdlMottakerInfo.getKortNavn());
 		mottaker.setNavn(pdlMottakerInfo.getNavn());

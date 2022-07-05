@@ -8,6 +8,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -21,8 +22,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.time.Duration;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
@@ -46,7 +47,7 @@ public class DigitalKontaktinformasjon {
 	public static final String HENT_SIKKER_DIGITAL_POSTADRESSE = "hentSikkerDigitalPostadresse";
 	public static final String INGEN_KONTAKTINFORMASJON_FEILMELDING = "Ingen kontaktinformasjon er registrert på personen";
 
-	@Inject
+	@Autowired
 	public DigitalKontaktinformasjon(RestTemplateBuilder restTemplateBuilder,
 									 @Value("${dki_api_url}") String dkiUrl,
 									 StsRestConsumer stsRestConsumer) {
@@ -98,7 +99,11 @@ public class DigitalKontaktinformasjon {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
 		headers.add(NAV_CONSUMER_ID, APP_ID);
-		headers.add(NAV_CALL_ID, MDC.get(CALL_ID));
+		headers.add(NAV_CALL_ID, getCallId());
 		return headers;
+	}
+
+	private String getCallId() {
+		return isBlank(MDC.get(CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(CALL_ID);
 	}
 }

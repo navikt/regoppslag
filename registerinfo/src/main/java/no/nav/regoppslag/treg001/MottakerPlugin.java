@@ -9,13 +9,13 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	private final MapPdlForTreg001 mapPdlForTreg001;
 	private final MicrometerMetrics metrics;
 
-	@Inject
+	@Autowired
 	public MottakerPlugin(MapPdlForTreg001 mapPdlForTreg001,
 						  MicrometerMetrics metrics) {
 		super(Mottaker.class);

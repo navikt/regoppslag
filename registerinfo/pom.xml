@@ -16,6 +16,10 @@
 			<groupId>no.nav.regoppslag</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.regoppslag</groupId>
+			<artifactId>postadresse</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.retry</groupId>
@@ -26,18 +30,7 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-core</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-
 		<!-- grensesnitt/kontrakter -->
-		<dependency>
-			<groupId>no.nav.tjenester.fim</groupId>
-			<artifactId>nav-fim-organisasjon-v4-tjenestespesifikasjon</artifactId>
-			<classifier>jaxws</classifier>
-		</dependency>
 		<dependency>
 			<groupId>no.nav.tjenester</groupId>
 			<artifactId>nav-organisasjonEnhetKontaktinformasjon-v1-tjenestespesifikasjon</artifactId>
@@ -62,16 +55,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock-standalone</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.modig</groupId>
-			<artifactId>modig-testcertificates</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
