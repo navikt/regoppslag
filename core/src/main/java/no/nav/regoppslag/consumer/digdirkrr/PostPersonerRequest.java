@@ -1,4 +1,4 @@
-package no.nav.regoppslag.consumer.dkif;
+package no.nav.regoppslag.consumer.digdirkrr;
 
 import lombok.Builder;
 

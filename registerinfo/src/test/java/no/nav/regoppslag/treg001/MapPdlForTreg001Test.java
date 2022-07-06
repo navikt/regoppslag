@@ -8,7 +8,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.regoppslag.consumer.dkif.DigitalKontaktinformasjon;
+import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
