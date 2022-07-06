@@ -9,8 +9,8 @@ spec:
   env:
     - name: AZURE_APP_TOKEN_URL
       value: {{AZURE_APP_TOKEN_URL}}
-    - name: AZURE_APP_SCOPE_DIGDIR_KRR
-      value: {{AZURE_APP_SCOPE_DIGDIR_KRR}}
+    - name: AZURE_APP_SCOPEDIGDIRKRR
+      value: {{AZURE_APP_SCOPEDIGDIRKRR}}
     - name: REGOPPSLAG_PROXY_HOST
       value: {{REGOPPSLAG_PROXY_HOST}}
     - name: REGOPPSLAG_PROXY_PORT

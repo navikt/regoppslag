@@ -102,7 +102,7 @@ public class DigitalKontaktinformasjon {
 	private HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + tokenConsumer.getClientCredentialToken(azureProperties.getScopeDigdirKrr()));
+		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + tokenConsumer.getClientCredentialToken(azureProperties.getScopedigdirkrr()));
 		headers.add(NAV_CONSUMER_ID, APP_ID);
 		headers.add(NAV_CALL_ID, getCallId());
 		return headers;

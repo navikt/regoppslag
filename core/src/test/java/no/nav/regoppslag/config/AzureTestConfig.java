@@ -19,7 +19,7 @@ public class AzureTestConfig {
 	@Bean
 	public AzureProperties azureProperties() {
 		AzureProperties azureproperties = new AzureProperties();
-		azureproperties.setScopeDigdirKrr("scope");
+		azureproperties.setScopedigdirkrr("scope");
 		azureproperties.setClientId("clientId");
 		azureproperties.setClientSecret("secret");
 		azureproperties.setTenantId("tenantId");

@@ -24,5 +24,5 @@ public class AzureProperties {
 	@NotEmpty
 	private String wellKnownUrl;
 	@NotEmpty
-	private String scopeDigdirKrr;
+	private String scopedigdirkrr;
 }
