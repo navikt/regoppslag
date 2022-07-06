@@ -24,6 +24,7 @@ public final class MetricLabels {
 	public static final String HENT_NAVN = "hentNavn";
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
+	public static final String AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE = "AZURE_DIGDIR_CACHE_NAME";
 
 	private MetricLabels() {
 		//no-op
