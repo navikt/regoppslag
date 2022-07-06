@@ -33,8 +33,8 @@ spec:
       value: {{ LDAP_BASEDN }}
     - name: PDL_URL
       value: {{ PDL_URL }}
-   - name: DIGDIR_KRR_PROXY_URL
-     value: {{ DIGDIR_KRR_PROXY_URL }}
+    - name: DIGDIR_KRR_PROXY_URL
+      value: {{ DIGDIR_KRR_PROXY_URL }}
     - name: LDAP_URL
       value: {{ LDAP_URL }}
     - name: LDAP_USER_BASEDN
