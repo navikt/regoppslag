@@ -15,10 +15,6 @@ import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Con
 import no.nav.regoppslag.metrics.DokTimedAspect;
 import no.nav.regoppslag.treg001.ElementEnricherConfig;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -58,22 +54,5 @@ public class ApplicationConfig {
 	JvmThreadMetrics threadMetrics() {
 		return new JvmThreadMetrics();
 	}
-
-	@Bean
-	HttpClient httpClient(HttpClientConnectionManager connectionManager) {
-		return HttpClients.custom()
-				.setConnectionManager(connectionManager)
-				.build();
-	}
-
-	@Bean
-	HttpClientConnectionManager httpClientConnectionManager() {
-		PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-		connectionManager.setMaxTotal(400);
-		connectionManager.setDefaultMaxPerRoute(100);
-		return connectionManager;
-	}
-
-
 
 }
