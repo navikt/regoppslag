@@ -23,7 +23,9 @@ import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -165,7 +167,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldGetOrganisasjonWithNorskPostadresse() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("treg002/ereg/ereg-happy.json")));
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
 
@@ -173,10 +175,29 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetOrganisasjonWithUtenlandskPostadresse() {
+		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("treg002/ereg/ereg-happy-utenlandsk-gb.json")));
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
+
+		var postadresse = response.getBody();
+		assertEquals("SUBSEA 7 (UK SERVICE COMPANY) LIMITED", postadresse.getNavn());
+		assertEquals("Prospect Road", postadresse.getAdresse().getAdresselinje1());
+		assertEquals("Arnhall Business Park, Westhill", postadresse.getAdresse().getAdresselinje2());
+		assertEquals("ABERDEEN AB32 6FE", postadresse.getAdresse().getAdresselinje3());
+		assertNull(postadresse.getAdresse().getPoststed());
+		assertNull(postadresse.getAdresse().getPostnummer());
+		assertEquals("GB", postadresse.getAdresse().getLandkode());
+		assertEquals("STORBRITANNIA", postadresse.getAdresse().getLand());
+	}
+
+	@Test
 	public void shouldThrowWhenOrganisasjonFinnesIkke() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("treg002/ereg/ereg-ikkefunnet.json")));
 		HttpClientErrorException.NotFound e = assertThrows(HttpClientErrorException.NotFound.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
@@ -188,7 +209,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldThrowWhenOrganisasjonTekniskFeil() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("treg002/ereg/ereg-tekniskfeil.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));

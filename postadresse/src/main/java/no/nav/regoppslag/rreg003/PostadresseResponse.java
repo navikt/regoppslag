@@ -22,5 +22,4 @@ public class PostadresseResponse {
 
 	private Adresse adresse;
 
-
 }

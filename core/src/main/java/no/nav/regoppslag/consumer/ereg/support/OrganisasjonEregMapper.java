@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.joining;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskpostadresse;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskadresse;
+import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToNorskPostadresse;
+import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToUtenlandskPostadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
@@ -80,10 +80,10 @@ public class OrganisasjonEregMapper {
 		incrementFunctionalMetrics(postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
-			NorskPostadresse norskPostadresse = mapPostadresseToNorskpostadresse(postadresse);
+			NorskPostadresse norskPostadresse = mapPostadresseToNorskPostadresse(postadresse);
 			mottaker.setMottakeradresse(norskPostadresse);
 		} else {
-			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskadresse(postadresse);
+			UtenlandskPostadresse utenlandskPostadresse = mapPostadresseToUtenlandskPostadresse(postadresse);
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
@@ -146,8 +146,7 @@ public class OrganisasjonEregMapper {
 	// Postadresse skal overstyre forretningsadresse dersom den finnes
 	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectActiveAddress(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> postadresse, List<no.nav.regoppslag.consumer.ereg.support.Postadresse> forretningsadresse) {
 		// Stream.of er basert på array så rekkefølgen er ordered, gyldige postadresse vil bli funnet før forretningsadresse
-		return Stream.of(
-						selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))
+		return Stream.of(selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.findFirst();

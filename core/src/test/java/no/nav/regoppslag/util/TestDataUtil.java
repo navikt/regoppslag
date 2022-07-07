@@ -17,10 +17,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -108,7 +109,7 @@ public class TestDataUtil {
 		Gyldighetsperiode gyldighetsperiode = new Gyldighetsperiode();
 		gyldighetsperiode.setFom(LocalDate.now().minusDays(1));
 		organisasjonsnavn.setGyldighetsperiode(gyldighetsperiode);
-		organisasjonsDetaljer.setNavn(Collections.singletonList(organisasjonsnavn));
+		organisasjonsDetaljer.setNavn(singletonList(organisasjonsnavn));
 
 		organisasjonsDetaljer.setMaalform(MAALFORM);
 		organisasjonsDetaljer.setOpphoersdato(LocalDate.now().plusDays(10));
@@ -130,9 +131,9 @@ public class TestDataUtil {
 
 		OrganisasjonDetaljer orgdet = org.getOrganisasjonDetaljer();
 		if ("POSTADRESSE".equals(adressetype)) {
-			orgdet.setPostadresser(Collections.singletonList(postadresse));
+			orgdet.setPostadresser(singletonList(postadresse));
 		} else {
-			orgdet.setForretningsadresser(Collections.singletonList(postadresse));
+			orgdet.setForretningsadresser(singletonList(postadresse));
 		}
 		org.setOrganisasjonDetaljer(orgdet);
 	}
@@ -148,7 +149,7 @@ public class TestDataUtil {
 
 
 		OrganisasjonDetaljer organisasjonDetaljer = org.getOrganisasjonDetaljer();
-		organisasjonDetaljer.setPostadresser(Collections.singletonList(postadresse));
+		organisasjonDetaljer.setPostadresser(singletonList(postadresse));
 
 		org.setOrganisasjonDetaljer(organisasjonDetaljer);
 	}
@@ -164,7 +165,23 @@ public class TestDataUtil {
 
 
 		OrganisasjonDetaljer organisasjonDetaljer = org.getOrganisasjonDetaljer();
-		organisasjonDetaljer.setPostadresser(Collections.singletonList(postadresse));
+		organisasjonDetaljer.setPostadresser(singletonList(postadresse));
+
+		org.setOrganisasjonDetaljer(organisasjonDetaljer);
+	}
+
+	public static void settUtlandskPostadresseMedAlleAdresselinjerOgPoststed(Organisasjon org) {
+		Postadresse postadresse = new Postadresse();
+		setFomTomPerioder(postadresse, 10000L);
+
+		postadresse.setAdresselinje1(UTENLANDSK_ADRESSELINJE1);
+		postadresse.setAdresselinje2(UTENLANDSK_ADRESSELINJE2);
+		postadresse.setAdresselinje3(UTENLANDSK_ADRESSELINJE3);
+		postadresse.setPoststed(POSTSTED);
+		postadresse.setLandkode(SVENSK_LANDKODE);
+
+		OrganisasjonDetaljer organisasjonDetaljer = org.getOrganisasjonDetaljer();
+		organisasjonDetaljer.setPostadresser(singletonList(postadresse));
 
 		org.setOrganisasjonDetaljer(organisasjonDetaljer);
 	}
@@ -194,7 +211,7 @@ public class TestDataUtil {
 
 		OrganisasjonDetaljer orgdet = org.getOrganisasjonDetaljer();
 
-		orgdet.setForretningsadresser(Collections.singletonList(postadresse));
+		orgdet.setForretningsadresser(singletonList(postadresse));
 		org.setOrganisasjonDetaljer(orgdet);
 	}
 

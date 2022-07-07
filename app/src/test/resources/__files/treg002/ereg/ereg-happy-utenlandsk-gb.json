@@ -1,0 +1,152 @@
+{
+  "organisasjonsnummer": "985164312",
+  "type": "JuridiskEnhet",
+  "navn": {
+    "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+    "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
+    "navnelinje2": "LIMITED",
+    "bruksperiode": {
+      "fom": "2015-02-23T08:04:53.2"
+    },
+    "gyldighetsperiode": {
+      "fom": "2002-12-04"
+    }
+  },
+  "organisasjonDetaljer": {
+    "registreringsdato": "2002-12-04T00:00:00",
+    "enhetstyper": [
+      {
+        "enhetstype": "NUF",
+        "bruksperiode": {
+          "fom": "2014-05-21T21:16:20.723"
+        },
+        "gyldighetsperiode": {
+          "fom": "2002-12-04"
+        }
+      }
+    ],
+    "naeringer": [
+      {
+        "naeringskode": "09.109",
+        "hjelpeenhet": false,
+        "bruksperiode": {
+          "fom": "2014-06-11T04:04:31.755"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-06-10"
+        }
+      }
+    ],
+    "navn": [
+      {
+        "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+        "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
+        "navnelinje2": "LIMITED",
+        "bruksperiode": {
+          "fom": "2015-02-23T08:04:53.2"
+        },
+        "gyldighetsperiode": {
+          "fom": "2002-12-04"
+        }
+      }
+    ],
+    "forretningsadresser": [
+      {
+        "type": "Forretningsadresse",
+        "poststed": "ABERDEENSHIRE AB32 6JL SCOTLAND",
+        "landkode": "GB",
+        "bruksperiode": {
+          "fom": "2015-02-23T10:38:34.403"
+        },
+        "gyldighetsperiode": {
+          "fom": "2002-12-04"
+        }
+      }
+    ],
+    "postadresser": [
+      {
+        "type": "Postadresse",
+        "adresselinje1": "Prospect Road",
+        "adresselinje2": "Arnhall Business Park",
+        "adresselinje3": "Westhill",
+        "poststed": "ABERDEEN AB32 6FE",
+        "landkode": "GB",
+        "bruksperiode": {
+          "fom": "2015-02-23T10:38:34.403"
+        },
+        "gyldighetsperiode": {
+          "fom": "2008-12-14"
+        }
+      }
+    ],
+    "formaal": [
+      {
+        "formaal": "Mannskap/personell som arbeider offshore.",
+        "bruksperiode": {
+          "fom": "2014-06-08T04:03:47.715"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-06-07"
+        }
+      }
+    ],
+    "maalform": "NB",
+    "sistEndret": "2021-12-14",
+    "ansatte": [
+      {
+        "antall": 30,
+        "bruksperiode": {
+          "fom": "2021-12-16T01:01:50.545"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-12-14"
+        }
+      }
+    ]
+  },
+  "juridiskEnhetDetaljer": {
+    "enhetstype": "NUF"
+  },
+  "knytninger": [
+    {
+      "knytning": "HFOR",
+      "juridiskEnhet": {
+        "organisasjonsnummer": "985167192",
+        "type": "JuridiskEnhet",
+        "navn": {
+          "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+          "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
+          "navnelinje2": "LIMITED",
+          "bruksperiode": {
+            "fom": "2015-02-23T08:04:53.2"
+          },
+          "gyldighetsperiode": {
+            "fom": "2002-12-04"
+          }
+        },
+        "organisasjonDetaljer": {
+          "navn": [
+            {
+              "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+              "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
+              "navnelinje2": "LIMITED",
+              "bruksperiode": {
+                "fom": "2015-02-23T08:04:53.2"
+              },
+              "gyldighetsperiode": {
+                "fom": "2002-12-04"
+              }
+            }
+          ]
+        },
+        "juridiskEnhetDetaljer": {}
+      },
+      "bruksperiode": {
+        "fom": "2014-05-23T19:17:48.816"
+      },
+      "gyldighetsperiode": {
+        "fom": "2002-12-04"
+      }
+    }
+  ]
+}
