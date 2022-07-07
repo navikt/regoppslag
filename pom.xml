@@ -23,7 +23,7 @@
 	</parent>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 
 		<resilience4j.version>1.7.1</resilience4j.version>
 		<cxf.version>3.5.2</cxf.version>
@@ -204,7 +204,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>11</version>
+							<version>17</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
