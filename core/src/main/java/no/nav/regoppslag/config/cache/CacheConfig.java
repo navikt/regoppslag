@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.HashMap;
 
 import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.metrics.MetricLabels.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
@@ -43,6 +44,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
+	static final Duration AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
 	@Value("${redis.hostname:regoppslag-redis}")
 	private String redisHost;
@@ -57,6 +59,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(RESTSTS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
+		initialConfigs.put(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, generateCacheConfig(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_EXPIRATION_TIME));
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME))

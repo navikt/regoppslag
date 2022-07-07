@@ -7,6 +7,14 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
+    - name: AZURE_APP_TOKEN_URL
+      value: {{AZURE_APP_TOKEN_URL}}
+    - name: AZURE_APP_SCOPEDIGDIRKRR
+      value: {{AZURE_APP_SCOPEDIGDIRKRR}}
+    - name: REGOPPSLAG_PROXY_HOST
+      value: {{REGOPPSLAG_PROXY_HOST}}
+    - name: REGOPPSLAG_PROXY_PORT
+      value: "{{REGOPPSLAG_PROXY_PORT}}"
     - name: SECURITYTOKENSERVICE_URL
       value: {{ SECURITYTOKENSERVICE_URL }}
     - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
@@ -25,8 +33,8 @@ spec:
       value: {{ LDAP_BASEDN }}
     - name: PDL_URL
       value: {{ PDL_URL }}
-    - name: DKI_API_URL
-      value: {{ DKI_API_URL }}
+    - name: DIGDIR_KRR_PROXY_URL
+      value: {{ DIGDIR_KRR_PROXY_URL }}
     - name: LDAP_URL
       value: {{ LDAP_URL }}
     - name: LDAP_USER_BASEDN
@@ -81,10 +89,10 @@ spec:
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
   webproxy: true
-{{#if AZURE_IAC_RULES}}
   azure:
     application:
       enabled: true
+{{#if AZURE_IAC_RULES}}
       claims:
         extra:
           - "NAVident"
