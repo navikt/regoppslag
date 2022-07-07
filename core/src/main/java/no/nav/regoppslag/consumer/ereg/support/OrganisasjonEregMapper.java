@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.joining;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToNorskPostadresse;
-import static no.nav.regoppslag.consumer.map.PostadresseMapper.mapPostadresseToUtenlandskPostadresse;
+import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToNorskPostadresse;
+import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToUtenlandskPostadresse;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;

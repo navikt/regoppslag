@@ -3,12 +3,12 @@ package no.nav.regoppslag.consumer.map;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
-public class PostadresseMapper {
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-	private PostadresseMapper() {
+public class OrganisasjonPostadresseMapper {
+
+	private OrganisasjonPostadresseMapper() {
 	}
 
 	public static NorskPostadresse mapPostadresseToNorskPostadresse(Postadresse postadresse) {
@@ -28,10 +28,13 @@ public class PostadresseMapper {
 		utenlandskPostadresse.setAdresselinje1(postadresse.getAdresselinje1());
 		utenlandskPostadresse.setLand(postadresse.getLand());
 
-		if (postadresse.getPoststed() != null) {
-			if (postadresse.getAdresselinje2() == null) {
+		if (isNotBlank(postadresse.getPoststed())) {
+			if (isBlank(postadresse.getAdresselinje2()) && isBlank(postadresse.getAdresselinje3())) {
 				utenlandskPostadresse.setAdresselinje2(postadresse.getPoststed());
-			} else if (postadresse.getAdresselinje3() == null) {
+			} else if (isBlank(postadresse.getAdresselinje2())) {
+				utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje3());
+				utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
+			} else if (isBlank(postadresse.getAdresselinje3())) {
 				utenlandskPostadresse.setAdresselinje2(postadresse.getAdresselinje2());
 				utenlandskPostadresse.setAdresselinje3(postadresse.getPoststed());
 			} else {
