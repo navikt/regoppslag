@@ -16,7 +16,7 @@ public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 	private static final Integer MIN_BUFFER_SIZE=1024;
 
 	public CustomRedisSerializer() {
-		this.kryoPool = new Pool<>(true, false, 16) {
+		this.kryoPool = new Pool<>(true, false) {
 			protected Kryo create() {
 				Kryo kryo = new Kryo();
 				// Configure the Kryo instance.
