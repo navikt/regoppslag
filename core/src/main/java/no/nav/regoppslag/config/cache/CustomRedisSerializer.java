@@ -19,6 +19,8 @@ public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 		this.kryoPool = new Pool<>(true, false) {
 			protected Kryo create() {
 				Kryo kryo = new Kryo();
+				kryo.setRegistrationRequired(false);
+				kryo.setWarnUnregisteredClasses(true);
 				// Configure the Kryo instance.
 				return kryo;
 			}
