@@ -137,17 +137,16 @@
 				<groupId>no.nav.dok.metaforcemal</groupId>
 				<artifactId>pesysbrev01</artifactId>
 				<version>${pesysbrev01.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xerces</groupId>
-						<artifactId>xercesImpl</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
 				<artifactId>brevdata-felles</artifactId>
 				<version>${brevdata-felles.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.12.2</version>
 			</dependency>
 
 			<!-- Test dependencies -->
