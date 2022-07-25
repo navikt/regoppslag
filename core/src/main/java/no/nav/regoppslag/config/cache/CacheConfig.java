@@ -56,7 +56,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		//Remaining caches uses the default value
-		DatagramDnsResponseDecoder decoder = new DatagramDnsResponseDecoder();
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
