@@ -22,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.List;
 
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

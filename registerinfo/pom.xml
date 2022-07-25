@@ -25,6 +25,7 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
+
 		<!--CXF dependencies-->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>

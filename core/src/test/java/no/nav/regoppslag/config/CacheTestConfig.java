@@ -1,7 +1,7 @@
 package no.nav.regoppslag.config;
 
+import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;

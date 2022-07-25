@@ -17,8 +17,9 @@ import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATIO
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
-import static no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
 import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.metrics.MetricLabels.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
@@ -63,6 +64,9 @@ public class LocalCacheConfig {
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.build()),
+				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build())));
 		return cacheManager;
