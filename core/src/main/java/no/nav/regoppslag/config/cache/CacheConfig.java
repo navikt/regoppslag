@@ -2,6 +2,7 @@ package no.nav.regoppslag.config.cache;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
+import io.netty.handler.codec.dns.DatagramDnsResponseDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +56,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		//Remaining caches uses the default value
+		DatagramDnsResponseDecoder decoder = new DatagramDnsResponseDecoder();
 		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
 		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
 		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
