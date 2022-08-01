@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import okhttp3.Request;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
@@ -19,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @Component
 @Slf4j
 public class AzureAdGraphService {
@@ -26,16 +29,13 @@ public class AzureAdGraphService {
 
 	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
 	private final TokenConsumer tokenConsumer;
-	private final AzureProperties azureProperties;
-	private final ServiceuserAlias serviceuserAlias;
+	public static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
 
 	public static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
 	public static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
 
-	public AzureAdGraphService(TokenConsumer tokenConsumer, AzureProperties azureProperties, ServiceuserAlias serviceuserAlias) {
+	public AzureAdGraphService(TokenConsumer tokenConsumer) {
 		this.tokenConsumer = tokenConsumer;
-		this.azureProperties = azureProperties;
-		this.serviceuserAlias = serviceuserAlias;
 	}
 
 	@Cacheable(value = HENT_FULLT_NAVN, key = "#navIdent")
@@ -51,8 +51,7 @@ public class AzureAdGraphService {
 				.select("givenname, surname")
 				.get().getCurrentPage();
 		if (res.size() != 1) {
-			log.info("Did not find single user for navIdent {} ({})", navIdent, res.size());
-			return null;
+			throw new RegOppslagIkkeFunnetException(String.format("Azure AD finner ikke bruker med ident=%s. %s", navIdent, BRUKER_IKKE_FUNNET), NOT_FOUND);
 		}
 		return res.get(0).givenName + " " + res.get(0).surname;
 	}

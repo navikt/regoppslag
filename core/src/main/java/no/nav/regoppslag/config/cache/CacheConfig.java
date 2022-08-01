@@ -2,7 +2,6 @@ package no.nav.regoppslag.config.cache;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
-import io.netty.handler.codec.dns.DatagramDnsResponseDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
