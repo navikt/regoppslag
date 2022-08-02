@@ -3,8 +3,7 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import no.nav.regoppslag.config.ldap.LdapConfig;
-import no.nav.regoppslag.consumer.ldap.LdapAdeoUserLookup;
+import no.nav.regoppslag.consumer.azure.AzureAdGraphService;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
@@ -42,8 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LdapConfig.class, SaksbehandlerPluginTest.Config.class})
-@TestPropertySource("classpath:ldap.properties")
+@ContextConfiguration(classes = {SaksbehandlerPluginTest.Config.class})
 public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
@@ -53,7 +51,7 @@ public class SaksbehandlerPluginTest {
 	private UsernamePasswordAuthenticationToken token;
 
 	@Autowired
-	private LdapAdeoUserLookup ldapAdeoUserLookup;
+	private AzureAdGraphService azureAdGraphService;
 
 	@Autowired
 	private SaksbehandlerPlugin saksbehandlerPlugin;
@@ -71,7 +69,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPlugin() throws Exception {
-		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
+		when(azureAdGraphService.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -92,7 +90,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPluginIkkeBerik() throws Exception {
-		when(ldapAdeoUserLookup.hentFulltNavn(anyString())).thenReturn("Test Testesen");
+		when(azureAdGraphService.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 		Document document = loadDocument(xmlFile);
@@ -119,8 +117,8 @@ public class SaksbehandlerPluginTest {
 		}
 
 		@Bean
-		LdapAdeoUserLookup ldapAdeoUserLookup() {
-			return mock(LdapAdeoUserLookup.class);
+		AzureAdGraphService azureAdGraphService() {
+			return mock(AzureAdGraphService.class);
 		}
 
 		@Bean

@@ -25,20 +25,10 @@ spec:
       value: {{ EREG_ORGANISASJON_SERVICE_URL }}
     - name: DOKUMENTTYPEINFO_V3_URL
       value: {{ DOKUMENTTYPEINFO_V3_URL }}
-    - name: LDAP_SERVICEUSER_BASEDN
-      value: {{ LDAP_SERVICEUSER_BASEDN }}
-    - name: LDAP_DOMAIN
-      value: {{ LDAP_DOMAIN }}
-    - name: LDAP_BASEDN
-      value: {{ LDAP_BASEDN }}
     - name: PDL_URL
       value: {{ PDL_URL }}
     - name: DIGDIR_KRR_PROXY_URL
       value: {{ DIGDIR_KRR_PROXY_URL }}
-    - name: LDAP_URL
-      value: {{ LDAP_URL }}
-    - name: LDAP_USER_BASEDN
-      value: {{ LDAP_USER_BASEDN }}
     {{#if AZURE_APP_CLIENT_ID}}
     {{#if AZURE_APP_WELL_KNOWN_URL}}
     - name: AZURE_APP_CLIENT_ID
@@ -84,8 +74,6 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: {{ LDAP }}
-        mountPath: /var/run/secrets/nais.io/ldap
       - kvPath: {{ SRVREGOPPSLAG }}
         mountPath: /var/run/secrets/nais.io/srvregoppslag
   webproxy: true

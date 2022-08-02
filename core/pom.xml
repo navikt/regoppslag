@@ -22,15 +22,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-ldap</artifactId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec-dns</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ldap</groupId>
-			<artifactId>spring-ldap-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.security</groupId>
@@ -128,6 +128,10 @@
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
 			<artifactId>brevdata-felles</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.graph</groupId>
+			<artifactId>microsoft-graph</artifactId>
 		</dependency>
 
 		<!-- test -->
