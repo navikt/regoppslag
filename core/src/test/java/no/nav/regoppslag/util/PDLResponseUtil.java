@@ -48,6 +48,10 @@ public class PDLResponseUtil {
 	public static final String UTENLANDSK_ADRESSELINJE2 = "18-500 KOLNO";
 	public static final String UTENLANDSK_ADRESSELINJE3 = "CAPITAL WEST 3000";
 
+	public static final String CONAVN_UTENLANDSK_ADRESSELINJE1 = "GREENDALE COMMUNITY COLLEGE";
+	public static final String CONAVN_UTENLANDSK_ADRESSELINJE2 = "GREENDALE COUNTY";
+	public static final String CONAVN_UTENLANDSK_ADRESSELINJE3 = "Milwaukee, Wisconsin";
+
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
 	public static final String ADVOKAT_ETTERNAVN = "Andersen";
@@ -97,6 +101,8 @@ public class PDLResponseUtil {
 	public static final String GREECE = "Greece";
 	public static final String LANDKODE_NORGE = "NO";
 	public static final String LANDKODE_POLAND = "PL";
+	public static final String LANDKODE_USA = "USA";
+	public static final String LANDKODE_US = "US";
 	public static final String POLAND = "Poland";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String D_NUMMER = "0102030405";
