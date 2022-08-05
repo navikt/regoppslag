@@ -399,8 +399,8 @@ public class MapPDLResponse {
 		return PostadresseTo.builder()
 				.adresseType(POSTADRESSE_UTLAND)
 				.adresselinje1(mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavn))
-				.adresselinje2(getUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavn))
-				.adresselinje3(getUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavn))
+				.adresselinje2(mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavn))
+				.adresselinje3(mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavn))
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 
@@ -419,7 +419,7 @@ public class MapPDLResponse {
 				utenlandskAdresse.getAdressenavnNummer();
 	}
 
-	private String getUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
+	private String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		String sted = isNotBlank(mapUtenlandskPostkodeAndBySted(utenlandskAdresse)) ? mapUtenlandskPostkodeAndBySted(utenlandskAdresse) : mapRegionDistriktOmraade(utenlandskAdresse);
 		if (isNotBlank(coAdressenavn) && isNotBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
 			return sted;
@@ -430,7 +430,7 @@ public class MapPDLResponse {
 		}
 	}
 
-	private String getUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
+	private String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		if (isNotBlank(coAdressenavn) && isNotBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
 			return mapRegionDistriktOmraade(utenlandskAdresse);
 		} else if (isNotBlank(coAdressenavn) && isBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
