@@ -405,9 +405,9 @@ public class MapPDLResponse {
 	}
 
 	private String mapUtenlandskAdresselinje1(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
+		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
 			return coAdressenavn + ", " + getPostOrAdressenavnNummer(utenlandskAdresse);
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
+		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
 			return coAdressenavn;
 		} else {
 			return getPostOrAdressenavnNummer(utenlandskAdresse);
@@ -420,10 +420,10 @@ public class MapPDLResponse {
 	}
 
 	private String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		String sted = isNotBlank(mapUtenlandskPostkodeAndBySted(utenlandskAdresse)) ? mapUtenlandskPostkodeAndBySted(utenlandskAdresse) : mapRegionDistriktOmraade(utenlandskAdresse);
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
+		String sted = isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse)) ? mapBygningEtasjeLeilighet(utenlandskAdresse) : mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
 			return sted;
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
+		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
 			return getPostOrAdressenavnNummer(utenlandskAdresse);
 		} else {
 			return sted;
@@ -431,24 +431,26 @@ public class MapPDLResponse {
 	}
 
 	private String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
-			return mapRegionDistriktOmraade(utenlandskAdresse);
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapRegionDistriktOmraade(utenlandskAdresse))) {
-			return mapUtenlandskPostkodeAndBySted(utenlandskAdresse);
+		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+			return mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+			return mapBygningEtasjeLeilighet(utenlandskAdresse);
 		} else {
-			return mapRegionDistriktOmraade(utenlandskAdresse);
+			return mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		}
 	}
 
-	private String mapUtenlandskPostkodeAndBySted(UtenlandskAdresse utenlandskAdresse) {
-		if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted())) {
-			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+	private String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+		if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+			return format("%s %s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
+		} else if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted()) && isBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
 		}
 		return isNotBlank(utenlandskAdresse.getPostkode()) ? utenlandskAdresse.getPostkode() : utenlandskAdresse.getBySted();
 	}
 
-	private String mapRegionDistriktOmraade(UtenlandskAdresse utenlandskAdresse) {
-		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getRegionDistriktOmraade() : null;
+	private String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
 	}
 
 	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
