@@ -51,7 +51,7 @@ public class PDLResponseUtil {
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE1 = "GREENDALE COMMUNITY COLLEGE";
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE2 = "GREENDALE COUNTY";
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE3 = "Milwaukee, Wisconsin";
-	public static final String BYGNINGETASJELEILIGHET = "Roca house. Oismae See 175";
+	public static final String BYGNINGETASJELEILIGHET = "Test 175";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
