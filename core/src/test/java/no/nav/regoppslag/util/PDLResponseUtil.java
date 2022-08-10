@@ -51,6 +51,7 @@ public class PDLResponseUtil {
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE1 = "GREENDALE COMMUNITY COLLEGE";
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE2 = "GREENDALE COUNTY";
 	public static final String CONAVN_UTENLANDSK_ADRESSELINJE3 = "Milwaukee, Wisconsin";
+	public static final String BYGNINGETASJELEILIGHET = "Roca house. Oismae See 175";
 
 	public static final String ADVOKAT_FORNAVN = "Herr";
 	public static final String ADVOKAT_MELLOMNAVN = "";
@@ -86,7 +87,7 @@ public class PDLResponseUtil {
 	public static final String FRITTFORMAT_POSTNUMMER = "7320";
 	public static final String POSTSTED = "FANNREM";
 	public static final String POSTBOKSEIER = "Byggfirma A/S";
-	public static final String POSTBOKS = "Postboks 7320";
+	public static final String STATE = "Yorkshire";
 	public static final String ADRESSENAVN_NUMMER = "";
 	public static final String POSTBOKSNUMMERNAVN = "P.O.Box 7320 Place";
 	public static final String POSTKODE = "SE-12345";
@@ -119,6 +120,7 @@ public class PDLResponseUtil {
 	public static final String TEMA = "DAG";
 	public static final String POSTSTED_OSLO = "OSLO";
 	public static final String ADRESSELINJE_POSTBOKS = "Postboks 15";
+	public static final String ADRESSELINJE_BYSTED = "K1A 0B1 Ottawa";
 
 	public static final LocalDateTime GYLDIG_TIL_MED_DATO = LocalDateTime.now().plusMonths(10L);
 	public static final LocalDateTime GYLDIG_FRA_MED_DATO = LocalDateTime.now().minusDays(2L);

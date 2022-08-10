@@ -405,9 +405,12 @@ public class MapPDLResponse {
 	}
 
 	private String mapUtenlandskAdresselinje1(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+		if (isBlank(coAdressenavn) && isNotBlank(getPostOrAdressenavnNummer(utenlandskAdresse))) {
+			return getPostOrAdressenavnNummer(utenlandskAdresse);
+		} else if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse)) && isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
 			return coAdressenavn + ", " + getPostOrAdressenavnNummer(utenlandskAdresse);
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+		} else if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))
+				&& isNotBlank(getPostOrAdressenavnNummer(utenlandskAdresse))) {
 			return coAdressenavn;
 		} else {
 			return getPostOrAdressenavnNummer(utenlandskAdresse);
@@ -420,21 +423,24 @@ public class MapPDLResponse {
 	}
 
 	private String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		String sted = isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse)) ? mapBygningEtasjeLeilighet(utenlandskAdresse) : mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
-			return sted;
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse)) && isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
+			return mapBygningEtasjeLeilighet(utenlandskAdresse);
+		} else if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse)) && isBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
 			return getPostOrAdressenavnNummer(utenlandskAdresse);
+		} else if (isBlank(coAdressenavn) && isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
+			return mapBygningEtasjeLeilighet(utenlandskAdresse);
 		} else {
-			return sted;
+			return mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		}
 	}
 
 	private String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+		if (isNotBlank(coAdressenavn) && isNotBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse)) && isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
 			return mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
-		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse))) {
+		} else if (isNotBlank(coAdressenavn) && isBlank(mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse)) && isNotBlank(getPostOrAdressenavnNummer(utenlandskAdresse))) {
 			return mapBygningEtasjeLeilighet(utenlandskAdresse);
+		} else if (isBlank(coAdressenavn) && (isBlank(mapBygningEtasjeLeilighet(utenlandskAdresse)) || isBlank(getPostOrAdressenavnNummer(utenlandskAdresse)))) {
+			return null;
 		} else {
 			return mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		}
@@ -444,9 +450,15 @@ public class MapPDLResponse {
 		if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
 			return format("%s %s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
 		} else if (isNotBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted()) && isBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
-			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
+			return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+		} else if (isBlank(utenlandskAdresse.getPostkode()) && isNotBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+			return format("%s, %s", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
+		} else if (isNotBlank(utenlandskAdresse.getPostkode()) && isBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+			return format("%s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getRegionDistriktOmraade());
 		}
-		return isNotBlank(utenlandskAdresse.getPostkode()) ? utenlandskAdresse.getPostkode() : utenlandskAdresse.getBySted();
+		return isNotBlank(utenlandskAdresse.getPostkode()) && isBlank(utenlandskAdresse.getRegionDistriktOmraade()) ? utenlandskAdresse.getPostkode() :
+				isNotBlank(utenlandskAdresse.getBySted()) && isBlank(utenlandskAdresse.getRegionDistriktOmraade()) ?
+						utenlandskAdresse.getBySted() : utenlandskAdresse.getRegionDistriktOmraade();
 	}
 
 	private String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {

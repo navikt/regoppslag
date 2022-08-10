@@ -101,8 +101,7 @@ public class AdresseMapperTest {
 		Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
 		assertEquals(PDLResponseUtil.POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		assertEquals(PDLResponseUtil.POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
-		assertEquals(PDLResponseUtil.REGION_DISTRIKTOMRAADE, adresse.getAdresselinje3());
+		assertEquals(PDLResponseUtil.POSTKODE_AND_BYSTED + ", Yorkshire", adresse.getAdresselinje2());
 		assertNull(adresse.getPostnummer());
 		assertNull(adresse.getPoststed());
 		assertEquals(TestDataUtil.SVENSK_LANDKODE, adresse.getLandkode());

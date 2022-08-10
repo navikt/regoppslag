@@ -1,0 +1,110 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1969,
+          "foedselsdato": "1969-09-20"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2022-05-25T00:00",
+          "gyldigTilOgMed": "2023-05-25T23:59:59",
+          "type": "Utland",
+          "coAdressenavn": "C/O Herr Andersen",
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "GREENDALE COMMUNITY COLLEGE",
+            "bygningEtasjeLeilighet": "Roca house. Oismae See 175",
+            "postboksNummerNavn": null,
+            "postkode": "",
+            "bySted": "GREENDALE COUNTY",
+            "regionDistriktOmraade": "",
+            "landkode": "USA"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "18caec17-3e30-44fe-b80f-985826f44de8",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-05-25T15:58:27",
+                "registrertAv": "O114633",
+                "systemkilde": "pdl-web",
+                "kilde": "Bruker selv"
+              }
+            ],
+            "historisk": false
+          }
+        },
+        {
+          "gyldigFraOgMed": "2022-02-03T15:25:51",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": null,
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": "C/O MR. CRAIG PELTON",
+            "postkode": null,
+            "bySted": "GREENDALE COMMUNITY COLLEGE, GREENDALE",
+            "regionDistriktOmraade": "",
+            "landkode": "USA"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "835209a0-f7d2-4b4d-8645-24e31a2a9ca6",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-02-03T15:26:03",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "0102030405",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

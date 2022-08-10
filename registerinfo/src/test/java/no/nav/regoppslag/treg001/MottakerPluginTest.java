@@ -58,6 +58,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.STATE;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
@@ -279,7 +280,7 @@ public class MottakerPluginTest {
 		assertEquals(KORT_NAVN, mottaker.getKortNavn());
 		assertEquals(FULLT_NAVN, mottaker.getNavn());
 		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		assertEquals(POSTKODE_AND_BYSTED, adresse.getAdresselinje2());
+		assertEquals(POSTKODE_AND_BYSTED + ", " + STATE, adresse.getAdresselinje2());
 	}
 
 	@Test
