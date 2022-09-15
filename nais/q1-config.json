@@ -34,6 +34,11 @@
 			"app": "veilarbperson",
 			"namespace": "pto",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "veilarbvedtaksstotte",
+			"namespace": "pto",
+			"cluster": "dev-fss"
 		}
 	]
 }
