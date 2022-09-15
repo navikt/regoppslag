@@ -39,6 +39,11 @@
 			"app": "veilarbvedtaksstotte",
 			"namespace": "pto",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "etterlatte-brev-api",
+			"namespace": "etterlatte",
+			"cluster": "dev-fss"
 		}
 	]
 }
