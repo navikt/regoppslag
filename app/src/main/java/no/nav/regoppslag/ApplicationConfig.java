@@ -12,6 +12,8 @@ import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.health.DokumenttypeInfoHealth;
+import no.nav.regoppslag.health.OrganisasjonEnhetKontaktinformasjonHealth;
 import no.nav.regoppslag.metrics.DokTimedAspect;
 import no.nav.regoppslag.treg001.ElementEnricherConfig;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
@@ -36,7 +38,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 		OrganisasjonEnhetKontaktinformasjonV1EndpointConfig.class,
 		ElementEnricherConfig.class,
 		RestConsumerConfig.class,
-		AppVersion.class})
+		AppVersion.class,
+		DokumenttypeInfoHealth.class,
+		OrganisasjonEnhetKontaktinformasjonHealth.class})
 @EnableRetry
 @Configuration
 @EnableAspectJAutoProxy
