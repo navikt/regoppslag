@@ -1,7 +1,5 @@
 package no.nav.regoppslag.service;
 
-import ch.qos.logback.classic.Level;
-import no.nav.regoppslag.util.LogbackCapturingAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,24 +21,22 @@ public class PostnummerServiceTest {
 	@Test
 	public void shouldFinnPoststed() {
 		String poststed = postnummerService.finnPoststed("1400");
+
 		assertThat(poststed, is("SKI"));
 	}
 
 	@Test
-	public void shouldFinnLandNavnNullPoststed() {
+	public void shouldReturnNullWhenNullPostnummer() {
 		String landNavn = postnummerService.finnPoststed(null);
+
 		assertNull(landNavn);
 	}
 
 	@Test
-	public void shouldFinnUkjentPoststed() {
-		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(PostnummerService.LOG);
-		String poststed = postnummerService.finnPoststed("FINNES IKKE");
-		LogbackCapturingAppender.Factory.cleanUp();
+	public void shouldReturnNullWhenUkjentPostnummer() {
+		String poststed = postnummerService.finnPoststed("111111");
 
 		assertNull(poststed);
-		assertThat(capture.getCapturedLogMessage(), is("Finner ikke poststed for postnummer: FINNES IKKE, sjekk om ny postnummer.txt må lastes ned."));
-		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
 	}
 }
 
