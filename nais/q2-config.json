@@ -41,7 +41,7 @@
 			"cluster": "dev-fss"
 		},
 		{
-			"app": "etterlatte-brev-api",
+			"app": "etterlatte-proxy",
 			"namespace": "etterlatte",
 			"cluster": "dev-fss"
 		}
