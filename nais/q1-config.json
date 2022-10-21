@@ -44,6 +44,11 @@
 			"app": "etterlatte-proxy",
 			"namespace": "etterlatte",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "yrkesskade-saksbehandling-backend",
+			"namespace": "yrkesskade",
+			"cluster": "dev-gcp"
 		}
 	]
 }
