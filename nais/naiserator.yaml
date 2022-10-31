@@ -11,6 +11,8 @@ spec:
       value: {{AZURE_APP_TOKEN_URL}}
     - name: AZURE_APP_SCOPEDIGDIRKRR
       value: {{AZURE_APP_SCOPEDIGDIRKRR}}
+    - name: AZURE_APP_SCOPE_DOKMET
+      value: {{AZURE_APP_SCOPE_DOKMET}}
     - name: REGOPPSLAG_PROXY_HOST
       value: {{REGOPPSLAG_PROXY_HOST}}
     - name: REGOPPSLAG_PROXY_PORT
@@ -23,8 +25,8 @@ spec:
       value: {{ ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL }}
     - name: EREG_ORGANISASJON_SERVICE_URL
       value: {{ EREG_ORGANISASJON_SERVICE_URL }}
-    - name: DOKUMENTTYPEINFO_V3_URL
-      value: {{ DOKUMENTTYPEINFO_V3_URL }}
+    - name: DOKUMENTTYPEINFO_URL
+      value: {{ DOKUMENTTYPEINFO_URL }}
     - name: PDL_URL
       value: {{ PDL_URL }}
     - name: DIGDIR_KRR_PROXY_URL
