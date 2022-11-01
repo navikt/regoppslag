@@ -2,12 +2,17 @@ package no.nav.regoppslag.consumer.dokkat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import no.nav.dokkat.api.tkat020.v3.DokumentProduksjonsInfoToV3;
 import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
-import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.dokkat.api.tkat020.v4.DokumentProduksjonsInfoToV4;
+import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
+import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.regoppslag.consumer.azure.AzureProperties;
+import no.nav.regoppslag.consumer.azure.AzureTestConfig;
 import no.nav.regoppslag.config.RestConsumerConfig;
-import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
+import no.nav.regoppslag.config.fasit.DokumenttypeInfoAlias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.consumer.azure.TokenResponse;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +24,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.EnableRetry;
@@ -48,9 +55,13 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpMethod.GET;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {Tkat020DokumenttypeInfo.class, RestConsumerConfig.class, Tkat020DokumenttypeInfoTest.Config.class})
+@ContextConfiguration(classes = {Tkat020DokumenttypeInfo.class,
+		RestConsumerConfig.class,
+		Tkat020DokumenttypeInfoTest.Config.class,
+		AzureTestConfig.class})
 public class Tkat020DokumenttypeInfoTest {
 
 	private static final String DOKDUMENTYPE_ID = "I000003";
@@ -75,10 +86,10 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldHentSpraakinfo() {
-		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
-				.thenReturn(defaultResponse(Arrays.asList(LANG1, LANG2)));
+		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
+				.thenReturn(new ResponseEntity<>(defaultResponse(Arrays.asList(LANG1, LANG2)), HttpStatus.OK));
 
-		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
+		List<SpraakInfoToV4> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
 		assertThat(sprakinfos, hasSize(2));
 		assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
@@ -87,7 +98,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
-		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
@@ -96,40 +107,40 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerErrorAndRetry() {
-		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class));
+		verify(restTemplate, times(5)).exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class));
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerException() {
-		when(restTemplate.getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class)))
+		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).getForObject(anyString(), eq(DokumentTypeInfoToV3.class), any(Map.class));
+		verify(restTemplate, times(5)).exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class));
 	}
 
-	private DokumentTypeInfoToV3 defaultResponse(List<String> langs) {
-		DokumentTypeInfoToV3 dokumentTypeInfoToV3 = new DokumentTypeInfoToV3();
-		DokumentProduksjonsInfoToV3 dokumentProduksjonsInfo = new DokumentProduksjonsInfoToV3();
-		List<SpraakInfoTo> list = new ArrayList<>();
+	private DokumentTypeInfoToV4 defaultResponse(List<String> langs) {
+		DokumentTypeInfoToV4 dokumentTypeInfoToV4 = new DokumentTypeInfoToV4();
+		DokumentProduksjonsInfoToV4 dokumentProduksjonsInfo = new DokumentProduksjonsInfoToV4();
+		List<SpraakInfoToV4> list = new ArrayList<>();
 		langs.forEach(lang -> {
-			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
+			SpraakInfoToV4 spraakInfoTo = new SpraakInfoToV4();
 			spraakInfoTo.setSpraaklag(lang);
 			list.add(spraakInfoTo);
 		});
 		dokumentProduksjonsInfo.getSpraakInfos().addAll(list);
-		dokumentTypeInfoToV3.setDokumentProduksjonsInfo(dokumentProduksjonsInfo);
-		return dokumentTypeInfoToV3;
+		dokumentTypeInfoToV4.setDokumentProduksjonsInfo(dokumentProduksjonsInfo);
+		return dokumentTypeInfoToV4;
 	}
 
 	@EnableRetry
@@ -169,12 +180,12 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias() {
-			DokumenttypeInfoV3Alias dokumenttypeInfoV3Alias = new DokumenttypeInfoV3Alias();
-			dokumenttypeInfoV3Alias.setConnecttimeoutms(1000);
-			dokumenttypeInfoV3Alias.setReadtimeoutms(1000);
-			dokumenttypeInfoV3Alias.setUrl("asdsad");
-			return dokumenttypeInfoV3Alias;
+		public DokumenttypeInfoAlias dokumenttypeInfoAlias() {
+			DokumenttypeInfoAlias dokumenttypeInfoAlias = new DokumenttypeInfoAlias();
+			dokumenttypeInfoAlias.setConnecttimeoutms(1000);
+			dokumenttypeInfoAlias.setReadtimeoutms(1000);
+			dokumenttypeInfoAlias.setUrl("asdsad");
+			return dokumenttypeInfoAlias;
 		}
 
 		@Bean
@@ -187,6 +198,21 @@ public class Tkat020DokumenttypeInfoTest {
 			return new MicrometerMetrics();
 		}
 
+		@Bean
+		public TokenConsumer tokenConsumer() {
+			return (String s) -> new TokenResponse();
+		}
+
+		@Bean
+		public AzureProperties azureProperties() {
+			AzureProperties azureproperties = new AzureProperties();
+			azureproperties.setAppScopedigdirkrr("scope");
+			azureproperties.setAppScopeDokmet("scope");
+			azureproperties.setAppClientId("clientId");
+			azureproperties.setAppClientSecret("secret");
+			azureproperties.setOpenidConfigTokenEndpoint("url");
+			return azureproperties;
+		}
 	}
 
 }

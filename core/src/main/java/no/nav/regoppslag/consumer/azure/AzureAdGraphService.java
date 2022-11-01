@@ -6,8 +6,6 @@ import com.microsoft.graph.options.Option;
 import com.microsoft.graph.options.QueryOption;
 import com.microsoft.graph.requests.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
-import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import okhttp3.Request;

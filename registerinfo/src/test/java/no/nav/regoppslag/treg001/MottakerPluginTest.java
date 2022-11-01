@@ -6,7 +6,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
@@ -21,6 +20,7 @@ import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
+import no.nav.regoppslag.treg001.util.CreateStubs;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.regoppslag.util.TestDataUtil;
@@ -42,11 +42,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
@@ -168,7 +166,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -192,7 +190,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
 		Document document = loadDocument(xmlFile);
@@ -286,8 +284,8 @@ public class MottakerPluginTest {
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList("NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList("NN")));
 
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);
@@ -342,15 +340,6 @@ public class MottakerPluginTest {
 
 	}
 
-	private static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
-		List<SpraakInfoTo> list = new ArrayList<>();
-		langs.forEach(lang -> {
-			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
-			spraakInfoTo.setSpraaklag(lang);
-			list.add(spraakInfoTo);
-		});
-		return list;
-	}
 
 	private static Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
 		Organisasjon org = TestDataUtil.createOrganisasjon(Arrays

@@ -13,6 +13,7 @@
 	"REGOPPSLAG_PROXY_PORT": "8088",
 	"AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
 	"AZURE_APP_SCOPEDIGDIRKRR": "api://dev-gcp.team-rocket.digdir-krr-proxy/.default",
+	"AZURE_APP_SCOPE_DOKMET": "api://dev-fss.teamdokumenthandtering.dokmet/.default",
 	"APP_NAME": "regoppslag-q4",
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,

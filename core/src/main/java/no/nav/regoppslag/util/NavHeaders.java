@@ -4,6 +4,7 @@ public class NavHeaders {
 	public static final String NAV_CALLID = "Nav-Callid";
 	public static final String NAV_REASON_CODE = "Nav-Reason-Code";
 	public static final String BEARER_TOKEN_PREFIX = "Bearer ";
+	public static final String APP_NAME = "dokdistdpi";
 
 	private NavHeaders() {
 		// noop
