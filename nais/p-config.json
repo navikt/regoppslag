@@ -41,6 +41,11 @@
 			"app": "veilarbvedtaksstotte",
 			"namespace": "pto",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "yrkesskade-saksbehandling-backend",
+			"namespace": "yrkesskade",
+			"cluster": "prod-gcp"
 		}
 	]
 }
