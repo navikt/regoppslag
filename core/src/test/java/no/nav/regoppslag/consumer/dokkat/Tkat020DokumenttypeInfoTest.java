@@ -2,14 +2,13 @@ package no.nav.regoppslag.consumer.dokkat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import no.nav.dokkat.api.tkat020.v3.DokumentTypeInfoToV3;
 import no.nav.dokkat.api.tkat020.v4.DokumentProduksjonsInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
 import no.nav.regoppslag.config.RestConsumerConfig;
-import no.nav.regoppslag.config.fasit.DokumenttypeInfoAlias;
+import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.consumer.azure.TokenResponse;
@@ -40,7 +39,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -180,12 +178,12 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public DokumenttypeInfoAlias dokumenttypeInfoAlias() {
-			DokumenttypeInfoAlias dokumenttypeInfoAlias = new DokumenttypeInfoAlias();
-			dokumenttypeInfoAlias.setConnecttimeoutms(1000);
-			dokumenttypeInfoAlias.setReadtimeoutms(1000);
-			dokumenttypeInfoAlias.setUrl("asdsad");
-			return dokumenttypeInfoAlias;
+		public DokumenttypeInfoProperties dokumenttypeInfoProperties() {
+			DokumenttypeInfoProperties dokumenttypeInfoProperties = new DokumenttypeInfoProperties();
+			dokumenttypeInfoProperties.setConnecttimeoutms(1000);
+			dokumenttypeInfoProperties.setReadtimeoutms(1000);
+			dokumenttypeInfoProperties.setUrl("asdsad");
+			return dokumenttypeInfoProperties;
 		}
 
 		@Bean

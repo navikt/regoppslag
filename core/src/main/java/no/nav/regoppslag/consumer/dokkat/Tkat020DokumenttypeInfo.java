@@ -3,8 +3,7 @@ package no.nav.regoppslag.consumer.dokkat;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
-import no.nav.regoppslag.config.fasit.DokumenttypeInfoAlias;
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.consumer.azure.TokenResponse;
@@ -34,9 +33,9 @@ import java.util.List;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.regoppslag.util.NavHeaders.APP_NAME;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -47,9 +46,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @Slf4j
 public class Tkat020DokumenttypeInfo {
 	private final RestTemplate restTemplate;
-	private static final String DOKKAT = "DOKKAT";
 	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
-	public static final String TKAT020_UGYLDIG_INPUT = "TKAT020 - Ugyldig input";
 	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 	private final String dokumenttypeInfoUrl;
 	private MicrometerMetrics metrics;
@@ -59,29 +56,21 @@ public class Tkat020DokumenttypeInfo {
 	@Autowired
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
-								   DokumenttypeInfoAlias dokumenttypeInfoAlias,
-								   ServiceuserAlias serviceuserAlias,
+								   DokumenttypeInfoProperties dokumenttypeInfoProperties,
 								   MicrometerMetrics metrics,
 								   TokenConsumer tokenConsumer,
 								   AzureProperties azureProperties) {
 		this.tokenConsumer = tokenConsumer;
-		this.dokumenttypeInfoUrl = dokumenttypeInfoAlias.getUrl();
+		this.dokumenttypeInfoUrl = dokumenttypeInfoProperties.getUrl();
 		this.azureProperties = azureProperties;
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory.getClass())
-				.rootUri(dokumenttypeInfoAlias.getUrl())
-				.basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
-				.setConnectTimeout(Duration.ofMillis(dokumenttypeInfoAlias.getConnecttimeoutms()))
-				.setReadTimeout(Duration.ofMillis(dokumenttypeInfoAlias.getReadtimeoutms()))
+				.rootUri(dokumenttypeInfoProperties.getUrl())
+				.setConnectTimeout(Duration.ofMillis(dokumenttypeInfoProperties.getConnecttimeoutms()))
+				.setReadTimeout(Duration.ofMillis(dokumenttypeInfoProperties.getReadtimeoutms()))
 				.build();
 		this.metrics = metrics;
 	}
-//
-//	public Tkat020DokumenttypeInfo(RestTemplate restTemplate, String dokumenttypeInfoUrl, AzureProperties azureProperties) {
-//		this.restTemplate = restTemplate;
-//		this.dokumenttypeInfoUrl = dokumenttypeInfoUrl;
-//		this.azureProperties = azureProperties;
-//	}
 
 	@Cacheable(value = MetricLabels.HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))

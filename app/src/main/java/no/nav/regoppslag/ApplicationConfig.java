@@ -7,7 +7,7 @@ import no.nav.regoppslag.config.RegoppslagProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
-import no.nav.regoppslag.config.fasit.DokumenttypeInfoAlias;
+import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableConfigurationProperties({
 		OrganisasjonEnhetKontaktinformasjonV1Alias.class,
-		DokumenttypeInfoAlias.class,
+		DokumenttypeInfoProperties.class,
 		ServiceuserAlias.class,
 		RegoppslagProperties.class,
 		AzureProperties.class
