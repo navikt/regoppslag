@@ -1,4 +1,4 @@
-FROM navikt/java:17
+FROM ghcr.io/navikt/baseimages/temurin:17
 
 COPY app/target/app.jar /app/app.jar
 COPY export-vault-secrets.sh /init-scripts/10-export-vault-secrets.sh
