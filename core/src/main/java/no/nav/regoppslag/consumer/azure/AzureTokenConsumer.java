@@ -1,12 +1,9 @@
-package no.nav.regoppslag.consumer.azure.digdir;
+package no.nav.regoppslag.consumer.azure;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 
 import no.nav.regoppslag.config.RegoppslagProperties;
-import no.nav.regoppslag.consumer.azure.AzureTokenException;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.regoppslag.consumer.azure.TokenResponse;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -75,10 +72,10 @@ public class AzureTokenConsumer implements TokenConsumer {
 		try {
 			HttpHeaders headers = createHeaders();
 			String form = "grant_type=client_credentials&scope=" + scope + "&client_id=" +
-					azureProperties.getClientId() + "&client_secret=" + azureProperties.getClientSecret();
+					azureProperties.getAppClientId() + "&client_secret=" + azureProperties.getAppClientSecret();
 			HttpEntity<String> requestEntity = new HttpEntity<>(form, headers);
 
-			return restTemplate.exchange(azureProperties.getTokenUrl(), POST, requestEntity, TokenResponse.class)
+			return restTemplate.exchange(azureProperties.getOpenidConfigTokenEndpoint(), POST, requestEntity, TokenResponse.class)
 					.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw new AzureTokenException(String.format("Klarte ikke hente token fra Azure. Feilet med httpstatus=%s. Feilmelding=%s", e.getStatusCode(), e.getMessage()), e);

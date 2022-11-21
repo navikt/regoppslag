@@ -7,12 +7,11 @@ import no.nav.regoppslag.config.RegoppslagProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.cxf.OrganisasjonEnhetKontaktinformasjonV1EndpointConfig;
-import no.nav.regoppslag.config.fasit.DokumenttypeInfoV3Alias;
+import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.fasit.OrganisasjonEnhetKontaktinformasjonV1Alias;
 import no.nav.regoppslag.config.fasit.ServiceuserAlias;
-import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
+import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
-import no.nav.regoppslag.health.DokumenttypeInfoHealth;
 import no.nav.regoppslag.health.OrganisasjonEnhetKontaktinformasjonHealth;
 import no.nav.regoppslag.metrics.DokTimedAspect;
 import no.nav.regoppslag.treg001.ElementEnricherConfig;
@@ -28,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableConfigurationProperties({
 		OrganisasjonEnhetKontaktinformasjonV1Alias.class,
-		DokumenttypeInfoV3Alias.class,
+		DokumenttypeInfoProperties.class,
 		ServiceuserAlias.class,
 		RegoppslagProperties.class,
 		AzureProperties.class
@@ -39,7 +38,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 		ElementEnricherConfig.class,
 		RestConsumerConfig.class,
 		AppVersion.class,
-		DokumenttypeInfoHealth.class,
 		OrganisasjonEnhetKontaktinformasjonHealth.class})
 @EnableRetry
 @Configuration

@@ -8,6 +8,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
+import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
@@ -17,6 +18,7 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
+import no.nav.regoppslag.treg001.util.CreateStubs;
 import no.nav.regoppslag.util.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,7 +99,7 @@ class MapPdlForTreg001Test {
 	public void shouldMapTreg001MottakerAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonWithBostedsadresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
@@ -114,7 +116,7 @@ class MapPdlForTreg001Test {
 	public void shouldMapUtenlandskAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
@@ -130,7 +132,7 @@ class MapPdlForTreg001Test {
 	@Test
 	void shouldMapNorskOrganisasjon() throws DatatypeConfigurationException {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Collections.singletonList(SPRAAK_NB)));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createOrganisasjonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
@@ -158,16 +160,6 @@ class MapPdlForTreg001Test {
 		mottaker.setBerik(true);
 		mottaker.setTypeKode(AktoerType.ORGANISASJON);
 		return mottaker;
-	}
-
-	private static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
-		List<SpraakInfoTo> list = new ArrayList<>();
-		langs.forEach(lang -> {
-			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
-			spraakInfoTo.setSpraaklag(lang);
-			list.add(spraakInfoTo);
-		});
-		return list;
 	}
 
 	private static no.nav.regoppslag.consumer.ereg.support.Organisasjon createOrganisasjon() throws DatatypeConfigurationException {

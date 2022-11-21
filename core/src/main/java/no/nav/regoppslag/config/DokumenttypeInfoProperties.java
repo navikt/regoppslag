@@ -1,4 +1,4 @@
-package no.nav.regoppslag.config.fasit;
+package no.nav.regoppslag.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,9 @@ import javax.validation.constraints.Min;
  */
 @Getter
 @Setter
-@ConfigurationProperties("dokumenttypeinfo-v3")
+@ConfigurationProperties("dokumenttypeinfo")
 @Validated
-public class DokumenttypeInfoV3Alias {
+public class DokumenttypeInfoProperties {
 	@NotEmpty
 	private String url;
 	@Min(1)

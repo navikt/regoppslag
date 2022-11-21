@@ -52,7 +52,7 @@ public class Treg001PDLIT extends AbstractIT {
 		WireMock.resetAllRequests();
 		WireMock.reset();
 
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)"))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); //Brukes til hentDokumenttypeinfo for Spraak
@@ -66,6 +66,7 @@ public class Treg001PDLIT extends AbstractIT {
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
 
+		stubAzureToken();
 		this.token = token("subject1");
 	}
 
@@ -338,14 +339,14 @@ public class Treg001PDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)"))
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
-		verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
+		verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
@@ -355,14 +356,14 @@ public class Treg001PDLIT extends AbstractIT {
 		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(HttpStatus.OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V3(.*)"))
+		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)"))
 				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())
 						.withHeader("Content-Type", "application/json")
 						.withBodyFile("treg001/dokkat/dokkat_happy-response.json")));
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
-		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V3/123")));
+		verify(new CountMatchingStrategy(CountMatchingStrategy.GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 

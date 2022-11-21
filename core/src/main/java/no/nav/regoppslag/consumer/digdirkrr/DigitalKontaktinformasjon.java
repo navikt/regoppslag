@@ -3,7 +3,7 @@ package no.nav.regoppslag.consumer.digdirkrr;
 
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.consumer.azure.TokenResponse;
-import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
+import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -101,7 +101,7 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private HttpHeaders createHeaders() {
-		TokenResponse clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getScopedigdirkrr());
+		TokenResponse clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopedigdirkrr());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + clientCredentialToken.getAccess_token());

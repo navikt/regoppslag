@@ -1,8 +1,8 @@
-package no.nav.regoppslag.config;
+package no.nav.regoppslag.consumer.azure;
 
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.consumer.azure.TokenResponse;
-import no.nav.regoppslag.consumer.azure.digdir.AzureProperties;
+import no.nav.regoppslag.consumer.azure.AzureProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,12 +19,11 @@ public class AzureTestConfig {
 	@Bean
 	public AzureProperties azureProperties() {
 		AzureProperties azureproperties = new AzureProperties();
-		azureproperties.setScopedigdirkrr("scope");
-		azureproperties.setClientId("clientId");
-		azureproperties.setClientSecret("secret");
-		azureproperties.setTenantId("tenantId");
-		azureproperties.setTokenUrl("url");
-		azureproperties.setWellKnownUrl("wellKnown");
+		azureproperties.setAppScopedigdirkrr("scope");
+		azureproperties.setAppScopeDokmet("scope");
+		azureproperties.setAppClientId("clientId");
+		azureproperties.setAppClientSecret("secret");
+		azureproperties.setOpenidConfigTokenEndpoint("url");
 		return azureproperties;
 	}
 
