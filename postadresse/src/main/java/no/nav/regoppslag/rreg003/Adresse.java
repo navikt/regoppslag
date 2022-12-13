@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Adresse {
+	@Schema(example = "Bostedsadresse", description = "Oppholdsadresse/Kontaktadresse/KontaktinformasjonForDødsbo/")
+	private AdresseKildeCode adresseKilde;
 	@Schema(example = "NorskPostadresse", description = "NorskPostadresse/UtenlandskPostadresse")
 	private PostadresseType type;
 

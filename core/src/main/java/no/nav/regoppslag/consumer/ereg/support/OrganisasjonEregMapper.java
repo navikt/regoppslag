@@ -5,6 +5,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.map.Postadresse;
+import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -26,6 +27,8 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.joining;
 import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToNorskPostadresse;
 import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToUtenlandskPostadresse;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETFORRETNINGSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETPOSTADRESSE;
 import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
@@ -87,7 +90,11 @@ public class OrganisasjonEregMapper {
 			mottaker.setMottakeradresse(utenlandskPostadresse);
 		}
 
-		return MottakerTo.builder().mottaker(mottaker).spraakKode(getSpraakKodeAsString(orgDet)).build();
+		return MottakerTo.builder()
+				.adresseKilde(mapAdresseKilde(orgDet))
+				.mottaker(mottaker)
+				.spraakKode(getSpraakKodeAsString(orgDet))
+				.build();
 	}
 
 	private void incrementFunctionalMetrics(no.nav.regoppslag.consumer.map.Postadresse postadresse, String serviceCode) {
@@ -132,6 +139,10 @@ public class OrganisasjonEregMapper {
 		return orgDet.getNavn().stream()
 				.filter((org) -> isValidGyldighetsAndBruksPeriode(org.getGyldighetsperiode(), org.getBruksperiode()))
 				.findFirst();
+	}
+
+	private AdresseKildeCode mapAdresseKilde(OrganisasjonDetaljer orgDet) {
+		return orgDet.getPostadresser() == null || orgDet.getPostadresser().stream().noneMatch(this::isValidPostAdresse) ? ENHETFORRETNINGSADRESSE : ENHETPOSTADRESSE;
 	}
 
 	private boolean isValidGyldighetsAndBruksPeriode(Gyldighetsperiode gyldighetsperiode, Bruksperiode bruksperiode) {

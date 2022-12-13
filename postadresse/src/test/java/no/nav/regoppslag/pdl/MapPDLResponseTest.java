@@ -30,6 +30,10 @@ import java.util.Optional;
 import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
@@ -123,6 +127,7 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, mottakerInfo.getPostadresse().getAdressekilde());
 	}
 
 	@Test
@@ -139,6 +144,7 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
+		assertEquals(KONTAKTADRESSE, mottakerInfo.getPostadresse().getAdressekilde());
 	}
 
 	@SneakyThrows
@@ -156,6 +162,7 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
+		assertEquals(OPPHOLDSADRESSE, mottakerInfo.getPostadresse().getAdressekilde());
 	}
 
 	@SneakyThrows
@@ -173,6 +180,7 @@ public class MapPDLResponseTest {
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
+		assertEquals(BOSTEDSADRESSE, mottakerInfo.getPostadresse().getAdressekilde());
 	}
 
 	@Test
@@ -200,6 +208,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 
@@ -230,6 +239,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -258,6 +268,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -286,6 +297,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -316,6 +328,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(adresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -344,6 +357,7 @@ public class MapPDLResponseTest {
 		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -422,6 +436,7 @@ public class MapPDLResponseTest {
 		assertEquals(CANADA_ALPHA2_LANDKODE, response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
 	}
 
 	@Test
@@ -447,6 +462,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 
 	@Test
@@ -470,6 +486,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 
 	@Test
@@ -496,6 +513,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 
 	@Test
@@ -518,6 +536,7 @@ public class MapPDLResponseTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 
 	@Test

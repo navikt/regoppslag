@@ -10,6 +10,8 @@ import no.nav.regoppslag.consumer.ereg.support.Navn;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
 import no.nav.regoppslag.consumer.ereg.support.Postadresse;
+import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
+import no.nav.regoppslag.to.MottakerTo;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -47,8 +49,11 @@ public class TestDataUtil {
 	public static final String POSTNR = "5460";
 	public static final String MAALFORM = "NO";
 
-	public static Mottaker createMottaker() {
-		return createMottaker(true);
+	public static MottakerTo createMottaker(AdresseKildeCode adresseKilde) {
+
+		return MottakerTo.builder()
+				.adresseKilde(adresseKilde)
+				.mottaker(createMottaker(true)).build();
 	}
 
 	public static Mottaker createMottaker(boolean withNorskPostedAdresse) {
@@ -199,7 +204,7 @@ public class TestDataUtil {
 		objekt.setGyldighetsperiode(gyldighetsperiode);
 	}
 
-	public static void settKunForretningsadresse(Organisasjon org) throws DatatypeConfigurationException {
+	public static void settKunForretningsadresse(Organisasjon org) {
 		Postadresse postadresse = new Postadresse();
 		postadresse.setAdresselinje1(GATENAVN + " " + HUSNR + HUSBOKSTAV);
 		setFomTomPerioder(postadresse, 10000L);
