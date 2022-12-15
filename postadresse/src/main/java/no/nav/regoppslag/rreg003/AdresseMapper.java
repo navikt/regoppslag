@@ -10,6 +10,7 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
+import no.nav.regoppslag.to.MottakerTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,8 @@ public class AdresseMapper {
 		this.landkodeServiceNorsk = landkodeServiceNorsk;
 	}
 
-	public Adresse map(Mottaker mottaker) {
+	public Adresse map(MottakerTo mottakerTo) {
+		Mottaker mottaker = mottakerTo.getMottaker();
 
 		if (mottaker.getMottakeradresse() instanceof NorskPostadresse) {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
@@ -55,6 +57,7 @@ public class AdresseMapper {
 			NorskPostadresse norskPostadresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 			return Adresse.builder()
+					.adresseKilde(mottakerTo.getAdresseKilde())
 					.type(NORSKPOSTADRESSE)
 					.adresselinje1(norskPostadresse.getAdresselinje1())
 					.adresselinje2(norskPostadresse.getAdresselinje2())
@@ -68,6 +71,7 @@ public class AdresseMapper {
 			UtenlandskPostadresse utenlandskPostadresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
 			return Adresse.builder()
+					.adresseKilde(mottakerTo.getAdresseKilde())
 					.type(UTENLANDSKPOSTADRESSE)
 					.adresselinje1(utenlandskPostadresse.getAdresselinje1())
 					.adresselinje2(utenlandskPostadresse.getAdresselinje2())
@@ -82,6 +86,7 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, NORSK_ADRESSE);
 			PostadresseTo norskPostadresse = mottaker.getPostadresse();
 			return Adresse.builder()
+					.adresseKilde(norskPostadresse.getAdressekilde())
 					.type(NORSKPOSTADRESSE)
 					.adresselinje1(norskPostadresse.getAdresselinje1())
 					.adresselinje2(norskPostadresse.getAdresselinje2())
@@ -95,6 +100,7 @@ public class AdresseMapper {
 			metrics.meter(SERVICE_CODE_TREG002, TREG002_ADRESSE_MAPPER, ADRESSETYPE, UTENLANDSK_ADRESSE);
 			PostadresseTo utenlandskPostadresse = mottaker.getPostadresse();
 			return Adresse.builder()
+					.adresseKilde(utenlandskPostadresse.getAdressekilde())
 					.type(UTENLANDSKPOSTADRESSE)
 					.adresselinje1(isNotBlank(utenlandskPostadresse.getAdresselinje1()) ? utenlandskPostadresse.getAdresselinje1() : null)
 					.adresselinje2(isNotBlank(utenlandskPostadresse.getAdresselinje2()) ? utenlandskPostadresse.getAdresselinje2() : null)

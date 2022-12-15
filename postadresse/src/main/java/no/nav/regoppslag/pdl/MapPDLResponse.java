@@ -2,6 +2,7 @@ package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
@@ -31,6 +32,10 @@ import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
@@ -201,13 +206,13 @@ public class MapPDLResponse {
 		}
 		return getValidAdresse(bostedsadresse.getVegadresse(), bostedsadresse.getUtenlandskAdresse(),
 				bostedsadresse.getMatrikkeladresse(),
-				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode);
+				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode, BOSTEDSADRESSE);
 	}
 
 	private PostadresseTo mapPostadresseFraOppholdsadresse(Oppholdsadresse oppholdsadresse, String serviceCode) {
 		return nonNull(oppholdsadresse) && harOppholdsadresse(oppholdsadresse) ? getValidAdresse(oppholdsadresse.getVegadresse(), oppholdsadresse.getUtenlandskAdresse(),
 				oppholdsadresse.getMatrikkeladresse(),
-				null, oppholdsadresse.getCoAdressenavn(), serviceCode) : null;
+				null, oppholdsadresse.getCoAdressenavn(), serviceCode, OPPHOLDSADRESSE) : null;
 
 	}
 
@@ -235,11 +240,12 @@ public class MapPDLResponse {
 
 	private PostadresseTo mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		if (nonNull(kontaktadresse.getVegadresse())) {
-			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).build();
+			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).adressekilde(KONTAKTADRESSE).build();
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
 			Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
 			if (isBlank(kontaktadresse.getCoAdressenavn())) {
 				return PostadresseTo.builder()
+						.adressekilde(KONTAKTADRESSE)
 						.adresseType(POSTADRESSE_INNLAND)
 						.adresselinje1(isBlank(postadresse.getAdresselinje1()) ? null : postadresse.getAdresselinje1())
 						.adresselinje2(postadresse.getAdresselinje2()).adresselinje3(postadresse.getAdresselinje3())
@@ -249,6 +255,7 @@ public class MapPDLResponse {
 						.build();
 			}
 			return PostadresseTo.builder()
+					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_INNLAND)
 					.adresselinje1(kontaktadresse.getCoAdressenavn())
 					.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
@@ -260,6 +267,7 @@ public class MapPDLResponse {
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
 			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
 			return PostadresseTo.builder()
+					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_INNLAND)
 					.adresselinje1(isNotBlank(postboksadresse.getPostbokseier()) ? CARE_OF + postboksadresse.getPostbokseier() : POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
 					.adresselinje2(isNotBlank(postboksadresse.getPostbokseier()) ? POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")) : null)
@@ -274,10 +282,13 @@ public class MapPDLResponse {
 	private PostadresseTo mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		if (nonNull(kontaktadresse.getUtenlandskAdresse())) {
 			UtenlandskAdresse utenlandskAdresse = kontaktadresse.getUtenlandskAdresse();
-			return mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn).build();
+			return mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn)
+					.adressekilde(KONTAKTADRESSE)
+					.build();
 		} else if (nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
 			Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktadresse.getUtenlandskAdresseIFrittFormat();
 			return PostadresseTo.builder()
+					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_UTLAND)
 					.adresselinje1(isBlank(coAdressenavn) ? utenlandskAdresse.getAdresselinje1() : coAdressenavn + ", " + utenlandskAdresse.getAdresselinje1())
 					.adresselinje2(utenlandskAdresse.getAdresselinje2())
@@ -322,6 +333,7 @@ public class MapPDLResponse {
 			KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
 			String fulltnavn = getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn());
 			return PostadresseTo.builder()
+					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 					.adresseType(POSTADRESSE_INNLAND)
 					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
 					.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
@@ -348,6 +360,7 @@ public class MapPDLResponse {
 		KontaktinformasjonForDoedsbo.KontaktAdresse adresse = kontaktinformasjonForDoedsbo.getAdresse();
 		return nonNull(adresse) ?
 				PostadresseTo.builder()
+						.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 						.adresseType(POSTADRESSE_INNLAND)
 						.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
 						.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
@@ -361,13 +374,13 @@ public class MapPDLResponse {
 
 	private PostadresseTo getValidAdresse(Vegadresse vegadresse, UtenlandskAdresse utenlandskAdresse,
 										  Matrikkeladresse matrikkeladresse, UkjentBosted ukjentBosted,
-										  String coAdressenavn, String serviceCode) {
+										  String coAdressenavn, String serviceCode, AdresseKildeCode adresseKilde) {
 		if (nonNull(vegadresse)) {
-			return mapVegadresse(vegadresse, coAdressenavn).build();
+			return mapVegadresse(vegadresse, coAdressenavn).adressekilde(adresseKilde).build();
 		} else if (nonNull(utenlandskAdresse)) {
-			return mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn).build();
+			return mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn).adressekilde(adresseKilde).build();
 		} else if (nonNull(matrikkeladresse)) {
-			return mapMatrikkeladresse(matrikkeladresse);
+			return mapMatrikkeladresse(matrikkeladresse, adresseKilde);
 		} else if (nonNull(ukjentBosted)) {
 			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", NOT_FOUND);
 		}
@@ -485,8 +498,9 @@ public class MapPDLResponse {
 		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
 	}
 
-	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
+	private PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse, AdresseKildeCode adresseKildeCode) {
 		return PostadresseTo.builder()
+				.adressekilde(adresseKildeCode)
 				.adresseType(POSTADRESSE_INNLAND)
 				.adresselinje1(matrikkeladresse.getTilleggsnavn())
 				.postnummer(matrikkeladresse.getPostnummer())

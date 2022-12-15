@@ -90,7 +90,7 @@ public class PostadresseService {
 		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
-				.adresse(adresseMapper.map(mottakerTo.getMottaker()))
+				.adresse(adresseMapper.map(mottakerTo))
 				.build();
 	}
 

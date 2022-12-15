@@ -89,7 +89,7 @@ public class HentMottakerOgAdresseService {
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(mottakerTo.getMottaker().getNavn())
-				.adresse(mapAdresseTilTreg002Adresse(adresseMapper.map(mottakerTo.getMottaker())))
+				.adresse(mapAdresseTilTreg002Adresse(adresseMapper.map(mottakerTo)))
 				.build();
 	}
 

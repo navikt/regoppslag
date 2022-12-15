@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class PostadresseTo {
+	private AdresseKildeCode adressekilde;
 	private String adresseType;
 	private String adresselinje1;
 	private String adresselinje2;
