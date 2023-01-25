@@ -1,25 +1,6 @@
-#Maven
-target
+# Maven
+target/
 
-#IntelliJ
+# IntelliJ
+.idea/
 *.iml
-*.iws
-*.idea
-*.idea/
-atlassian-ide-plugin.xml
-
-#Eclipse
-.classpath
-.project
-.settings
-
-*.tm*.epoch
-*.lck
-*.log
-testDb.properties
-APP_LOG_HOME_IS_UNDEFINED
-
-**/application-t*.properties
-**/application-q*.properties
-
-**/*NoCommit*.java
