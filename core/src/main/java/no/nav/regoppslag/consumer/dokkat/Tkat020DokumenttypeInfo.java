@@ -39,9 +39,6 @@ import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-/**
- * @author Ketill Fenne, Visma Consulting AS
- */
 @Service
 @Slf4j
 public class Tkat020DokumenttypeInfo {

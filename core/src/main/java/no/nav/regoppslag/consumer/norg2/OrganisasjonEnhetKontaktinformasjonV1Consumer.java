@@ -21,9 +21,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-/**
- * @author Ketill Fenne, Visma Consulting
- */
 @Slf4j
 @Service
 public class OrganisasjonEnhetKontaktinformasjonV1Consumer {

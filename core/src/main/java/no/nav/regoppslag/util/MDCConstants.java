@@ -1,8 +1,5 @@
 package no.nav.regoppslag.util;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public final class MDCConstants {
 
 	public static final String CONSUMER_ID = "consumerId";

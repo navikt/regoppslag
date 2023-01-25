@@ -3,9 +3,6 @@ package no.nav.regoppslag;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Import;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Import({
 		Application.class,
 })

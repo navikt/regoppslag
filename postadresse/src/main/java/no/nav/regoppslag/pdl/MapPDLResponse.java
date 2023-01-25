@@ -63,8 +63,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  * 3. Oppholdsadresse med master PDL
  * 4. Oppholdsadresse med master Freg
  * 5. Bostedsadresse
- *
- * @author Tsigab Angosom, NAV.
  */
 @Slf4j
 @Component

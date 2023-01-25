@@ -5,7 +5,6 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
-import no.nav.regoppslag.util.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,9 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
 public class KompletterBrevdataServiceTest {
 	private String brevdata = "<ole>brumm</ole>";
 	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";

@@ -9,8 +9,6 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 /**
  * CustomCacheErrorHandler
  * Cache feil bør ikke påvirke tjenestene. Denne klassen vil derfor ignorere og logge alle cachefeil.
- *
- * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
 public class CustomCacheErrorHandler implements CacheErrorHandler {

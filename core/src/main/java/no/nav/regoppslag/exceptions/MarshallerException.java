@@ -1,8 +1,5 @@
 package no.nav.regoppslag.exceptions;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class MarshallerException extends RegOppslagTechnicalException {
 
 

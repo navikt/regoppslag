@@ -7,11 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * TO object used in POST
- *
- * @author Ketill Fenne, Visma Consulting
- */
 @Getter
 @Setter
 @Builder

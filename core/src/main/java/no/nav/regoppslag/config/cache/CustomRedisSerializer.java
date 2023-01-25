@@ -6,9 +6,6 @@ import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.util.Pool;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 
 	private final Pool<Kryo> kryoPool;

@@ -7,9 +7,6 @@ import no.nav.regoppslag.treg001.xmlenricher.exceptions.DuplicatedElementSupport
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
 public class ElementEnricherConfig {
 
 	@Bean

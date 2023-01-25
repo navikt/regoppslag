@@ -7,9 +7,6 @@ import org.apache.cxf.ws.security.trust.STSClient;
 
 import java.util.HashMap;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Slf4j
 public class NaisCheckSTSConfigUtil {
 

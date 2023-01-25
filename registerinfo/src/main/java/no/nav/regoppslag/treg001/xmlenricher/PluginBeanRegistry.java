@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author Hans Petter Simonsen - Miles
- */
 public class PluginBeanRegistry implements ElementEnricherPluginRegistry {
 
 	private final Map<String, Class<? extends ElementEnricherPlugin>> pluginMap = new HashMap<>();

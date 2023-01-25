@@ -8,10 +8,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Henter ut claims fra rest-sts / azure token for sporing.
- *
  * Ingen tilstand / trådsikker.
- *
- * @author Joakim Bjørnstad, Jbit AS
  */
 public class TokenClaimExtractor {
 	private static final String ISSUER_REST_STS = "reststs";

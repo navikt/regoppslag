@@ -3,9 +3,6 @@ package no.nav.regoppslag.consumer.map;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Data
 @Builder(toBuilder = true)
 public class Postadresse {

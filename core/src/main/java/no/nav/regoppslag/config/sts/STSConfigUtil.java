@@ -16,9 +16,6 @@ import org.apache.neethi.Policy;
 
 import java.util.HashMap;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class STSConfigUtil {
 	
 	private static final String STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicy.xml";

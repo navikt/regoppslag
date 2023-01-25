@@ -1,13 +1,5 @@
 package no.nav.regoppslag.config;
 
-import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
-
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -23,9 +15,13 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
+import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
+import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 
 @Profile("itest")
 @Configuration

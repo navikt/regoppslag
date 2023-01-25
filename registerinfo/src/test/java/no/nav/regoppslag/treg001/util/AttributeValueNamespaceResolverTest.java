@@ -1,16 +1,7 @@
 package no.nav.regoppslag.treg001.util;
 
-import static no.nav.regoppslag.util.TestUtil.classpathToString;
-import static no.nav.regoppslag.util.TestUtil.stringToDocument;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolver;
-import no.nav.regoppslag.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -23,9 +14,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
+import static no.nav.regoppslag.util.TestUtil.stringToDocument;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class AttributeValueNamespaceResolverTest {
 
 	AttributeValueNamespaceResolver resolver = new AttributeValueNamespaceResolver();

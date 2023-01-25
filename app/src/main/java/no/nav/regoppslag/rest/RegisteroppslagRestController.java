@@ -34,10 +34,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
-
 @RestController
 @RequestMapping(REST)
 @Tag(name = "Registeroppslag", description = "<b><h3>TIL INTERN BRUK: (skal ikke benyttes av eksterne konsumenter)</h3></b> Tjeneste for å hente mottakeradresse og komplettere brevskjema. Krever JWT Authorization.")

@@ -4,9 +4,6 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Getter
 @ResponseStatus(value = HttpStatus.GONE)
 public class UkjentAdressePersonErDoed extends RegOppslagFunctionalException {

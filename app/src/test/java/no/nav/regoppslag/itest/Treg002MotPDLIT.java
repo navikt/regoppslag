@@ -61,9 +61,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * @author Tsigab Angosom, NAV.
- */
 public class Treg002MotPDLIT extends AbstractIT {
 
 	private String token;

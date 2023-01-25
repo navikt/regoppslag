@@ -16,9 +16,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Configuration
 public class TomcatConfig {
 	// Kopiert fra https://github.com/spring-projects/spring-boot/issues/4657#issuecomment-422561557

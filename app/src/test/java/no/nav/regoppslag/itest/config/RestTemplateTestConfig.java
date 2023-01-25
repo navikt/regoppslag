@@ -9,11 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-import static no.nav.regoppslag.util.TestUtil.classpathToString;
-
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Configuration
 @Profile("itest")
 public class RestTemplateTestConfig {
