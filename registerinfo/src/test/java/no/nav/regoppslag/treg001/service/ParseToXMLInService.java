@@ -14,10 +14,6 @@ import java.util.Collection;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
-
 public class ParseToXMLInService {
 
 	ExpectedException exception = ExpectedException.none();

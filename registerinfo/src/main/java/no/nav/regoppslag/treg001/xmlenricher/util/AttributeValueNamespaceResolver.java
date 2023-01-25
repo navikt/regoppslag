@@ -1,12 +1,12 @@
 package no.nav.regoppslag.treg001.xmlenricher.util;
 
-import static org.apache.cxf.common.util.StringUtils.isEmpty;
-
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import static org.apache.cxf.common.util.StringUtils.isEmpty;
 
 /**
  *  I tilfeller der attributtverdier i xml-elementer er kvalifiserte, f.eks {@code xsi:type="nav:Person"}, er det ikke alltid
@@ -20,8 +20,6 @@ import org.w3c.dom.Node;
  *  * den behandler _ikke_ andre kvalifiserte attributtverdier enn for attributtet xsi:type
  *  Dersom namespacet ikke allerede er deklarert på elementet søker vi gjennom elementet, dernest gjennom xml dokumentet for å
  *  finne tilhørende namespace for prefixet og legger dette til på elementet.
- *
- * @author Ugur Alpay Cenar, Visma Consulting.
  */
 @Slf4j
 public class AttributeValueNamespaceResolver {

@@ -3,9 +3,6 @@ package no.nav.regoppslag.exceptions;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
 @Getter
 public class RegOppslagFunctionalException extends RuntimeException {
 

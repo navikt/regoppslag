@@ -25,9 +25,6 @@ import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTY
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-/**
- * @author Hans Petter Simonsen - Miles
- */
 @Component
 @Slf4j
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {

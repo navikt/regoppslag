@@ -25,9 +25,6 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class TestDataUtil {
 
 	public static final String LANDKODE = "NO";

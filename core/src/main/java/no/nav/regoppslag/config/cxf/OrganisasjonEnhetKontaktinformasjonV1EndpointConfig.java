@@ -7,11 +7,6 @@ import org.springframework.context.annotation.Bean;
 
 import javax.xml.namespace.QName;
 
-/**
- * Spring config for OrganisasjonEnhetKontaktinformasjonV1 CXF Endpoint
- *
- * @author Ketill Fenne, Visma Consulting
- */
 public class OrganisasjonEnhetKontaktinformasjonV1EndpointConfig extends AbstractCxfEndpointConfig {
 	private static final String NAMESPACE = "http://nav.no/tjeneste/virksomhet/organisasjonEnhetKontaktinformasjon/v1/Binding";
 

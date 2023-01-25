@@ -7,11 +7,6 @@ import org.apache.cxf.transport.Conduit;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
-/**
- * Timeoutfeature for å konfigurer timeout på cxf-klient
- *
- * @author Paul Magne Lunde, Visma Consulting
- */
 public class TimeoutFeature extends AbstractFeature {
 
 	public static final int DEFAULT_RECEIVE_TIMEOUT = 10000;

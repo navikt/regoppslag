@@ -41,9 +41,6 @@ import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-/**
- * @author Hans Petter Simonsen - Miles
- */
 @Slf4j
 @Component
 public class ElementEnricher {

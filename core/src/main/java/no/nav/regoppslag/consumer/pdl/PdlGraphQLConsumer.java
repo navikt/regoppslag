@@ -42,9 +42,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * @author Tsigab Angosom, NAV.
- */
 @Slf4j
 @Component
 public class PdlGraphQLConsumer {

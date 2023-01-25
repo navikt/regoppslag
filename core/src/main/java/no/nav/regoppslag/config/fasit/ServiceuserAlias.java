@@ -8,9 +8,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Getter
 @Setter
 @ToString

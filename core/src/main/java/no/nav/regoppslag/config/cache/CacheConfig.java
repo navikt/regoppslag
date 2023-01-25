@@ -30,11 +30,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
-/**
- * Iniitaliserer Redis Cache.
- *
- * @author Martin Burheim Tingstad, Miles AS
- */
 @Profile("nais")
 @Configuration
 @EnableCaching

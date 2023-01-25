@@ -8,7 +8,6 @@ import org.w3c.dom.TypeInfo;
 import java.util.Set;
 
 /**
- * @author Hans Petter Simonsen - Miles
  * Registry to hold supported {@link ElementEnricherPlugin} classes.
  * Registry also functions as a Factory class to instantiate {@link ElementEnricherPlugin} objects with the {@link #getOrCreateElementEnricherPlugin(String)} method.
  *

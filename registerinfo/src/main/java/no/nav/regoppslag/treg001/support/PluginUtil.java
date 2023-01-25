@@ -10,9 +10,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class PluginUtil {
 	
 	public static SecurityContext createNewSecurityContext(Authentication oldAuthentication, boolean isAuthenticated) {

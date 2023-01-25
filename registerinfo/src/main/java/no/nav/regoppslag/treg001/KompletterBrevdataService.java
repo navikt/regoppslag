@@ -38,9 +38,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
 @Slf4j
 @Service
 public class KompletterBrevdataService {

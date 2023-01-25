@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class AppVersion {
 	private final String version;

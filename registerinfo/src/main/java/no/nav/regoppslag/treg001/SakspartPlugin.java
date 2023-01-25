@@ -28,9 +28,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-/**
- * @author Hans Petter Simonsen - Miles
- */
 @Component
 @Slf4j
 public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnricherPlugin {

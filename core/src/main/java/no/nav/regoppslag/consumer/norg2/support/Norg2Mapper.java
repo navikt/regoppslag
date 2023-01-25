@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * @author Ketill Fenne, Visma Consulting AS
- */
 @Component
 public class Norg2Mapper {
 

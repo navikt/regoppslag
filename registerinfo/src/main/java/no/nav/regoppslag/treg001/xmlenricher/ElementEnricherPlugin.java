@@ -10,7 +10,6 @@ import org.w3c.dom.Node;
 import java.util.Map;
 
 /**
- * @author Hans Petter Simonsen - Miles
  * Enriches a specific {@link Element} with additional content.
  * Intended use is to use a specific key element within the Element content input to lookup additional registry content.
  * The {@link #processElement(Node, Map)} method will populate additional content within the content element node and return

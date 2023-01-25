@@ -1,7 +1,6 @@
 package no.nav.regoppslag.rest;
 
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
@@ -17,9 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Jarl Øystein Samseth, Visma Consulting
- */
 public class RegisteroppslagRestControllerTest {
 	private KompletterBrevdataRequest request;
 	private HentMottakerOgAdresseResponse responseMogA;
