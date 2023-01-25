@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>regoppslag</artifactId>
 		<groupId>no.nav.regoppslag</groupId>
-		<version>1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>postadresse</artifactId>
@@ -22,9 +22,11 @@
 		<dependency>
 			<groupId>no.nav.regoppslag</groupId>
 			<artifactId>core</artifactId>
+			<version>1.0-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
