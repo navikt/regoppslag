@@ -191,6 +191,16 @@ public class Treg001PDLIT extends AbstractIT {
 				.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001_full_response_dodperson.xml"));
 	}
 
+	@Test
+	public void shouldGetKomplettBrevdataWhenDkifPersonIkkeFunnet() {
+		getStsToken(HttpStatus.OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(HttpStatus.OK.value(), "pdl/BosattVegadresse.json");
+		postPdlDigdir(HttpStatus.OK.value(), "dkif/ikke-funnet.json");
+		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
+		assertThat(actualResponse
+				.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001pdl_full_response.xml"));
+	}
+
 	/**
 	 * Testbetingelser:
 	 * -HVIS det oppstår en funksjonell feil for   et brevdataelement i en berikerplugin SÅ oppdater feillogg funksjonelle feil   OG fortsett til neste brevdataelement
