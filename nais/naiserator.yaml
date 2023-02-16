@@ -82,6 +82,7 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
 {{#if AZURE_IAC_RULES}}
       claims:
         extra:
