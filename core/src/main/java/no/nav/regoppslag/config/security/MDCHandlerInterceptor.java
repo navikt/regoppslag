@@ -2,8 +2,6 @@ package no.nav.regoppslag.config.security;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.util.MDCConstants;
-import no.nav.regoppslag.util.NavHeaders;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -16,12 +14,18 @@ import java.util.UUID;
 
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_CONSUMER_ID;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_ID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.USER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class MDCHandlerInterceptor implements HandlerInterceptor {
+
 	private static final String AUTH_ERRORMESSAGE = "Tilgang er avvist. " +
 			"Ingen gyldig token på Authorization header. Token må være utsted av NAV onprem security-token-service eller azure.";
+
 	private final TokenValidationContextHolder tokenValidationContextHolder;
 	private final TokenClaimExtractor tokenClaimExtractor = new TokenClaimExtractor();
 
@@ -30,8 +34,9 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
+
 		JwtToken jwtToken = tokenValidationContext.getFirstValidToken()
 				.orElseThrow(() -> new RegOppslagSecurityException(AUTH_ERRORMESSAGE));
 
@@ -44,34 +49,36 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private void populateCallId(HttpServletRequest request) {
-		final String navCallId = request.getHeader(NavHeaders.NAV_CALLID);
+		final String navCallId = request.getHeader(NAV_CALLID);
+
 		if (isNotBlank(navCallId)) {
-			MDC.put(MDCConstants.CALL_ID, navCallId);
+			MDC.put(CALL_ID, navCallId);
 			return;
 		}
-		// Fallback
-		MDC.put(MDCConstants.CALL_ID, UUID.randomUUID().toString());
+
+		MDC.put(CALL_ID, UUID.randomUUID().toString());
 	}
 
 	private void populateConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		final String consumerId = tokenClaimExtractor.getConsumerId(tokenValidationContext, jwtToken);
+
 		if (isNotBlank(consumerId)) {
-			MDC.put(MDCConstants.CONSUMER_ID, consumerId);
+			MDC.put(CONSUMER_ID, consumerId);
 			return;
 		}
-		// Fallback
-		MDC.put(MDCConstants.CONSUMER_ID, UKJENT_CONSUMER_ID);
+
+		MDC.put(CONSUMER_ID, UKJENT_CONSUMER_ID);
 	}
 
 	private void populateUserId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		final String consumerId = tokenClaimExtractor.getUserId(tokenValidationContext, jwtToken);
+
 		if (isNotBlank(consumerId)) {
-			MDC.put(MDCConstants.USER_ID, consumerId);
+			MDC.put(USER_ID, consumerId);
 			return;
 		}
-		// Fallback
-		MDC.put(MDCConstants.USER_ID, UKJENT_USER_ID);
-	}
 
+		MDC.put(USER_ID, UKJENT_USER_ID);
+	}
 
 }

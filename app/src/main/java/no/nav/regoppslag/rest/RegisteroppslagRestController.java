@@ -17,8 +17,6 @@ import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseService;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +31,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(REST)
@@ -48,7 +47,6 @@ public class RegisteroppslagRestController {
 	private final KompletterBrevdataService kompletterBrevdataService;
 	private final HentMottakerOgAdresseService hentMottakerOgAdresseService;
 
-	@Autowired
 	public RegisteroppslagRestController(KompletterBrevdataService kompletterBrevdataService,
 										 HentMottakerOgAdresseService hentMottakerOgAdresseService) {
 		this.kompletterBrevdataService = kompletterBrevdataService;
@@ -62,11 +60,10 @@ public class RegisteroppslagRestController {
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
-	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody
-	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody)
-			throws RegOppslagSecurityException {
+	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody) throws RegOppslagSecurityException {
 
 		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 
@@ -94,17 +91,15 @@ public class RegisteroppslagRestController {
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
-	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody
-	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody)
-			throws RegOppslagSecurityException {
+	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
 
 		try {
 			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody
-					.getType()));
+			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody.getType()));
 			return response;
 		} finally {
 			SecurityContextHolder.clearContext();
