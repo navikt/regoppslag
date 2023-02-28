@@ -4,7 +4,6 @@ import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -40,7 +38,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@TestInstance(PER_CLASS) // @MethodSource krever i utgangspunktet en statisk metode, men det gir trøbbel med mock-serveren
 public class Rreg003IT extends AbstractIT {
 
 	private static final String VALID_IDENT = "01020304051";
@@ -63,18 +60,18 @@ public class Rreg003IT extends AbstractIT {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldThrowWhenBadRequestWithInvalidInput(HttpEntity<PostadresseRequest> request) {
+	public void shouldThrowWhenBadRequestWithInvalidInput(String ident, String tema) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, request, PostadresseResponse.class),
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, tema), PostadresseResponse.class),
 				"Test did not throw exception");
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
 	}
 
-	private Stream<Arguments> shouldThrowWhenBadRequestWithInvalidInput() {
+	private static Stream<Arguments> shouldThrowWhenBadRequestWithInvalidInput() {
 		return Stream.of(
-				Arguments.of(createRequest(VALID_IDENT, INVALID_TEMA)),
-				Arguments.of(createRequest(INVALID_IDENT, VALID_TEMA))
+				Arguments.of(VALID_IDENT, INVALID_TEMA),
+				Arguments.of(INVALID_IDENT, VALID_TEMA)
 		);
 	}
 
