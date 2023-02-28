@@ -33,6 +33,8 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 
 public class PDLResponseUtil {
@@ -680,32 +682,32 @@ public class PDLResponseUtil {
 	}
 
 	public static void postPdlGraphql(int status, String filePath) {
-		stubFor(post("/graphql")
-				.willReturn(aResponse().withStatus(status)
-						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
-						.withHeader("Connection", "close")
-						.withBodyFile(filePath)));
+		stubFor(post("/graphql").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+				.withHeader("Connection", "close")
+				.withBodyFile(filePath)));
 	}
 
 	public static void postPdlDigdir(int status, String filePath) {
-		stubFor(post("/digdir/rest/v1/personer?inkluderSikkerDigitalPost=false")
-				.willReturn(aResponse().withStatus(status)
-						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
-						.withHeader("Connection", "close")
-						.withBodyFile(filePath)));
+		stubFor(post("/digdir/rest/v1/personer?inkluderSikkerDigitalPost=false").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+				.withHeader("Connection", "close")
+				.withBodyFile(filePath)));
 	}
 
 	public static void postPdlGraphqlWithErrorResponse(int status) {
-		stubFor(post("/graphql")
-				.willReturn(aResponse().withStatus(status)
-						.withHeader("Connection", "close")
-						.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())));
+		stubFor(post("/graphql").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader("Connection", "close")
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())));
 	}
 
 	public static void getStsToken(int status, String filePath) {
 		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
 				.withStatus(status)
-				.withHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}

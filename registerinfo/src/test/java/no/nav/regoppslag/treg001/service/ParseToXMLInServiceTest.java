@@ -14,24 +14,24 @@ import java.util.Collection;
 
 import static org.mockito.Mockito.mock;
 
-public class ParseToXMLInService {
+public class ParseToXMLInServiceTest {
 
 	ExpectedException exception = ExpectedException.none();
 	ElementEnricher elementEnricher = mock(ElementEnricher.class);
 
-	private String brevdata = "<ole>brumm</ole>";
-	private KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
+	private final String brevdata = "<ole>brumm</ole>";
+	private final KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
 			.brevdata(brevdata)
 			.build();
-	private KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
+	private final KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
 
 	@Parameterized.Parameter
 	public String brevdataFeilFormat;
 
 	@Parameterized.Parameters
 	public static Collection parameters() {
-		return Arrays.asList(new String[]{"", "<ole>brumm<ole>", "<ole>brumm/ole>", "\"<ole>brumm<ole>", "<ole><idolet>brumm</ole>"});
+		return Arrays.asList("", "<ole>brumm<ole>", "<ole>brumm/ole>", "\"<ole>brumm<ole>", "<ole><idolet>brumm</ole>");
 	}
 
 	/**
