@@ -3,7 +3,7 @@
 	"ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL": "https://app.adeo.no/norg2/ws/OrganisasjonEnhetKontaktinformasjon/v1",
 	"DOKUMENTTYPEINFO_URL": "https://dokmet.intern.nav.no/rest/dokumenttypeinfo",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
-	"EREG_ORGANISASJON_SERVICE_URL": "https://modapp.adeo.no/ereg/api/v1/organisasjon/",
+	"EREG_ORGANISASJON_SERVICE_URL": "https://ereg-services.intern.nav.no/v2/organisasjon/",
 	"DIGDIR_KRR_PROXY_URL": "https://digdir-krr-proxy.intern.nav.no",
 	"PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"SRVREGOPPSLAG": "/serviceuser/data/prod/srvregoppslag",

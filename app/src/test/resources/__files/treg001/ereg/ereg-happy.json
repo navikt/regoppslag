@@ -2,7 +2,7 @@
   "organisasjonsnummer": "889640782",
   "type": "Organisasjonsledd",
   "navn": {
-    "redigertnavn": "ARBEIDS- OG VELFERDSETATEN",
+    "sammensattnavn": "ARBEIDS- OG VELFERDSETATEN",
     "navnelinje1": "ARBEIDS- OG VELFERDSETATEN",
     "bruksperiode": {
       "fom": "2015-02-23T08:04:53.2"
@@ -13,12 +13,23 @@
   },
   "organisasjonDetaljer": {
     "registreringsdato": "2006-03-23T00:00:00",
-    "stiftelsesdato": "2005-12-31",
     "enhetstyper": [
       {
         "enhetstype": "ORGL",
         "bruksperiode": {
-          "fom": "2014-05-21T18:52:38"
+          "fom": "2020-04-28T04:01:22.192"
+        },
+        "gyldighetsperiode": {
+          "fom": "2006-03-23"
+        }
+      }
+    ],
+    "navn": [
+      {
+        "sammensattnavn": "ARBEIDS- OG VELFERDSETATEN",
+        "navnelinje1": "ARBEIDS- OG VELFERDSETATEN",
+        "bruksperiode": {
+          "fom": "2015-02-23T08:04:53.2"
         },
         "gyldighetsperiode": {
           "fom": "2006-03-23"
@@ -37,45 +48,33 @@
         }
       }
     ],
-    "navn": [
-      {
-        "redigertnavn": "ARBEIDS- OG VELFERDSETATEN",
-        "navnelinje1": "ARBEIDS- OG VELFERDSETATEN",
-        "bruksperiode": {
-          "fom": "2015-02-23T08:04:53.2"
-        },
-        "gyldighetsperiode": {
-          "fom": "2006-03-23"
-        }
-      }
-    ],
     "forretningsadresser": [
       {
         "type": "Forretningsadresse",
-        "adresselinje1": "Økernveien 94",
-        "postnummer": "0579",
+        "adresselinje1": "Fyrstikkalléen 1",
+        "postnummer": "0661",
         "landkode": "NO",
         "kommunenummer": "0301",
         "bruksperiode": {
-          "fom": "2014-07-13T04:02:31.517"
+          "fom": "2020-08-11T04:00:59.864"
         },
         "gyldighetsperiode": {
-          "fom": "2014-07-12"
+          "fom": "2020-08-10"
         }
       }
     ],
     "postadresser": [
       {
         "type": "Postadresse",
-        "adresselinje1": "Postboks 5 St Olavs Plass",
-        "postnummer": "0130",
+        "adresselinje1": "Postboks 354",
+        "postnummer": "8601",
         "landkode": "NO",
-        "kommunenummer": "0301",
+        "kommunenummer": "1833",
         "bruksperiode": {
-          "fom": "2015-02-23T10:38:34.403"
+          "fom": "2021-02-18T04:01:02.509"
         },
         "gyldighetsperiode": {
-          "fom": "2010-11-03"
+          "fom": "2021-02-17"
         }
       }
     ],
@@ -105,8 +104,13 @@
     "telefaksnummer": [
       {
         "nummer": "21 07 00 01",
-        "bruksperiode": {},
-        "gyldighetsperiode": {}
+        "telefontype": "TFAX",
+        "bruksperiode": {
+          "fom": "2014-05-21T18:52:38"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-03-18"
+        }
       }
     ],
     "formaal": [
@@ -120,8 +124,6 @@
         }
       }
     ],
-    "maalform": "NB",
-    "sistEndret": "2015-10-07",
     "registrertMVA": [
       {
         "registrertIMVA": true,
@@ -132,7 +134,29 @@
           "fom": "2014-03-18"
         }
       }
-    ]
+    ],
+    "ansatte": [
+      {
+        "antall": 1535,
+        "bruksperiode": {
+          "fom": "2022-10-16T01:00:44.781"
+        },
+        "gyldighetsperiode": {
+          "fom": "2022-10-12"
+        }
+      }
+    ],
+    "navSpesifikkInformasjon": {
+      "erIA": true,
+      "bruksperiode": {
+        "fom": "2014-12-29T09:43:08.386"
+      },
+      "gyldighetsperiode": {
+        "fom": "2014-12-29"
+      }
+    },
+    "maalform": "NB",
+    "sistEndret": "2022-10-18"
   },
   "organisasjonsleddDetaljer": {
     "enhetstype": "ORGL",

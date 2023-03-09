@@ -11,5 +11,5 @@ public class Navn {
 	protected String navnelinje3;
 	protected String navnelinje4;
 	protected String navnelinje5;
-	protected String redigertnavn;
+	protected String sammensattnavn;
 }

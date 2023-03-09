@@ -255,7 +255,7 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnBadReqeustWhenPersonHasUkjentAdresse() {
+	public void shouldReturnBadRequestWhenPersonHasUkjentAdresse() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktinformasjonfordoedsbo.json"); //mottakerPlugin
 		postPdlDigdir(BAD_REQUEST.value(), "dkif/dkif-happy.json");

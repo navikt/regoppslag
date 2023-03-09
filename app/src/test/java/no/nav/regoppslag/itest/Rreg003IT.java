@@ -182,7 +182,15 @@ public class Rreg003IT extends AbstractIT {
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
 
-		assertEquals("NAV IKT", response.getBody().getNavn());
+		var postadresse = response.getBody();
+		assertEquals("YARA INTERNATIONAL ASA", postadresse.getNavn());
+		assertEquals("Postboks 343  Skøyen", postadresse.getAdresse().getAdresselinje1());
+		assertNull(postadresse.getAdresse().getAdresselinje2());
+		assertNull(postadresse.getAdresse().getAdresselinje3());
+		assertEquals("0213", postadresse.getAdresse().getPostnummer());
+		assertEquals("OSLO", postadresse.getAdresse().getPoststed());
+		assertEquals("NO", postadresse.getAdresse().getLandkode());
+		assertEquals("Norge", postadresse.getAdresse().getLand());
 	}
 
 	@Test

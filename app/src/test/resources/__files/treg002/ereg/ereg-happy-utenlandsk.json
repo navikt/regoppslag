@@ -2,10 +2,10 @@
   "organisasjonsnummer": "213028782",
   "type": "JuridiskEnhet",
   "navn": {
-    "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+    "sammensattnavn": "LYS KOSTBAR STRUTS GMBH",
     "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
     "bruksperiode": {
-      "fom": "2021-09-17T16:17:11.609"
+      "fom": "2023-01-24T09:53:00.035"
     },
     "gyldighetsperiode": {
       "fom": "2021-03-14"
@@ -17,7 +17,19 @@
       {
         "enhetstype": "NUF",
         "bruksperiode": {
-          "fom": "2021-09-17T16:17:11.607"
+          "fom": "2023-01-24T09:53:00.035"
+        },
+        "gyldighetsperiode": {
+          "fom": "2021-03-14"
+        }
+      }
+    ],
+    "navn": [
+      {
+        "sammensattnavn": "LYS KOSTBAR STRUTS GMBH",
+        "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
+        "bruksperiode": {
+          "fom": "2023-01-24T09:53:00.035"
         },
         "gyldighetsperiode": {
           "fom": "2021-03-14"
@@ -29,22 +41,10 @@
         "naeringskode": "71.129",
         "hjelpeenhet": false,
         "bruksperiode": {
-          "fom": "2021-09-17T16:17:11.609"
+          "fom": "2023-01-24T09:53:00.035"
         },
         "gyldighetsperiode": {
           "fom": "2007-11-15"
-        }
-      }
-    ],
-    "navn": [
-      {
-        "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
-        "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
-        "bruksperiode": {
-          "fom": "2021-09-17T16:17:11.609"
-        },
-        "gyldighetsperiode": {
-          "fom": "2021-03-14"
         }
       }
     ],
@@ -55,7 +55,7 @@
         "poststed": "78246 MAXDORF",
         "landkode": "DE",
         "bruksperiode": {
-          "fom": "2021-09-17T16:17:11.603"
+          "fom": "2023-01-24T09:53:00.032"
         },
         "gyldighetsperiode": {
           "fom": "2021-03-14"
@@ -66,13 +66,22 @@
       {
         "formaal": "Annen teknisk konsulentvirksomhet",
         "bruksperiode": {
-          "fom": "2021-09-17T16:17:11.608"
+          "fom": "2023-01-24T09:53:00.031"
         },
         "gyldighetsperiode": {
           "fom": "2021-03-14"
         }
       }
     ],
+    "navSpesifikkInformasjon": {
+      "erIA": false,
+      "bruksperiode": {
+        "fom": "1900-01-01T00:00:00"
+      },
+      "gyldighetsperiode": {
+        "fom": "1900-01-01"
+      }
+    },
     "maalform": "NB",
     "sistEndret": "2021-03-14"
   },
@@ -86,10 +95,10 @@
         "organisasjonsnummer": "314351614",
         "type": "JuridiskEnhet",
         "navn": {
-          "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+          "sammensattnavn": "LYS KOSTBAR STRUTS GMBH",
           "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
           "bruksperiode": {
-            "fom": "2021-09-21T10:14:31.634"
+            "fom": "2023-01-27T10:21:11.294"
           },
           "gyldighetsperiode": {
             "fom": "2021-03-14"
@@ -98,21 +107,20 @@
         "organisasjonDetaljer": {
           "navn": [
             {
-              "redigertnavn": "LYS KOSTBAR STRUTS GMBH",
+              "sammensattnavn": "LYS KOSTBAR STRUTS GMBH",
               "navnelinje1": "LYS KOSTBAR STRUTS GMBH",
               "bruksperiode": {
-                "fom": "2021-09-21T10:14:31.634"
+                "fom": "2023-01-27T10:21:11.294"
               },
               "gyldighetsperiode": {
                 "fom": "2021-03-14"
               }
             }
           ]
-        },
-        "juridiskEnhetDetaljer": {}
+        }
       },
       "bruksperiode": {
-        "fom": "2021-09-21T19:11:35.829"
+        "fom": "2023-01-27T23:32:17.624"
       },
       "gyldighetsperiode": {
         "fom": "2021-03-14"

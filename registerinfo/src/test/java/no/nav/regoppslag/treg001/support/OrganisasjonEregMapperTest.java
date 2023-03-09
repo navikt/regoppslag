@@ -127,7 +127,6 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldThrowWhenOpphoertOrg() {
-
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		org.getOrganisasjonDetaljer().setOpphoersdato(LocalDate.now().minusDays(1));
 
@@ -137,7 +136,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonSemistrukturertPostadresse() {
+	public void shouldMapOrganisasjonSemistrukturertPostadresse() {
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
@@ -169,7 +168,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonSemistrukturertForretningsadresse() {
+	public void shouldMapOrganisasjonSemistrukturertForretningsadresse() {
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settPostAdresse(org, "FORRETNINGSADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
@@ -186,7 +185,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonStrukturertPostadresse() {
+	public void shouldMapOrganisasjonStrukturertPostadresse() {
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
@@ -203,7 +202,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonStrukturertForretningsadresse() {
+	public void shouldMapOrganisasjonStrukturertForretningsadresse() {
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settPostAdresse(org, "FORRETNINGSADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
@@ -267,7 +266,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseUtenPostnr() {
+	public void shouldMapPersonPostadresseUtenPostnr() {
 		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);

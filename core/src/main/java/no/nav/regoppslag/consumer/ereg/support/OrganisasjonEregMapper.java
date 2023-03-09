@@ -125,7 +125,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
-		return wsOrganisasjon.getNavn().getRedigertnavn();
+		return wsOrganisasjon.getNavn().getSammensattnavn();
 	}
 
 	private String mapOrganisasjonNavn(Organisasjon orgDet) {
@@ -150,8 +150,8 @@ public class OrganisasjonEregMapper {
 		final LocalDate nowDate = LocalDate.now();
 
 		return gyldighetsperiode.getFom().isBefore(nowDate)
-				&& (gyldighetsperiode.getTom() == null || gyldighetsperiode.getTom().isAfter(nowDate))
-				&& (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
+			   && (gyldighetsperiode.getTom() == null || gyldighetsperiode.getTom().isAfter(nowDate))
+			   && (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
 	}
 
 	// Postadresse skal overstyre forretningsadresse dersom den finnes
