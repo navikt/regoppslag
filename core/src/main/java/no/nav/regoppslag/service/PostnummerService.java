@@ -73,5 +73,5 @@ public class PostnummerService {
 		} else {
 			return postalCodeTable.get(postnr).getPoststed();
 		}
-	}x
+	}
 }
