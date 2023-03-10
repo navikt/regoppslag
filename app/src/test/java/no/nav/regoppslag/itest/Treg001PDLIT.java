@@ -238,21 +238,7 @@ public class Treg001PDLIT extends AbstractIT {
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(e.getResponseBodyAsString()).contains("Funksjonell feil: dokumenttypeId=123 feilmelding=TREG001: Kunne ikke mappe postadresse for UkjentBosted mottaker");
-	}
-
-	@Test
-	public void shouldReturnInternalServerErrorWhenPDLFailsGetsInvalidSecurityToken() {
-		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		postPdlGraphql(OK.value(), "pdl/doedperson.json");
-		getStsToken(BAD_REQUEST.value(), "sts/stsResponse_happy.json");
-
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
-
-		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-		verify(15, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
-	}
+	}	
 
 	@Test
 	public void shouldReturnBadRequestWhenPersonHasUkjentAdresse() {

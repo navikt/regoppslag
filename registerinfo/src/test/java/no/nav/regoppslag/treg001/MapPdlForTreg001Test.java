@@ -63,10 +63,7 @@ class MapPdlForTreg001Test {
 	private static final String TEMA = "PEN";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+	private static final String ORGNAVN = "Firma AS";
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private EregConsumer eregConsumer;
@@ -137,8 +134,8 @@ class MapPdlForTreg001Test {
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(ORGANISASJONNUMMER, mottaker.getId());
-		assertEquals(ORGKORTNAVN + " " + ORGKORTNAVN_2, mottaker.getKortNavn());
-		assertEquals(ORGNAVN + " " + ORGNAVN_2, mottaker.getNavn());
+		assertEquals(ORGNAVN, mottaker.getKortNavn());
+		assertEquals(ORGNAVN, mottaker.getNavn());
 		assertEquals(GATENAVN + " " + HUSNR + HUSBOKSTAV, adresse.getAdresselinje1());
 		assertEquals("HUSNES", adresse.getPoststed());
 		assertEquals(POSTNR, adresse.getPostnummer());
@@ -163,8 +160,7 @@ class MapPdlForTreg001Test {
 	}
 
 	private static no.nav.regoppslag.consumer.ereg.support.Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
-		no.nav.regoppslag.consumer.ereg.support.Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
-				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		no.nav.regoppslag.consumer.ereg.support.Organisasjon org = TestDataUtil.createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", 10000L);
 		return org;
 	}
