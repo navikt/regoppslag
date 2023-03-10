@@ -39,7 +39,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 @Slf4j
 public class OrganisasjonEregMapper {
-
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE_NORGE = "NO";
 
@@ -57,20 +56,15 @@ public class OrganisasjonEregMapper {
 	}
 
 	public String getSakspartNavn(Organisasjon wsOrganisasjon) {
-		OrganisasjonDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
-		Navn orgNavn = findValidOrgNavn(orgDet)
-				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + wsOrganisasjon.getOrganisasjonsnummer(), NOT_FOUND));
-
-		return aggregerNavn(orgNavn);
+		return mapOrganisasjonNavn(wsOrganisasjon);
 	}
-
 
 	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
 
-		mottaker.setKortNavn(mapOrganisasjonKortnavn(wsOrganisasjon));
+		mottaker.setKortNavn(mapOrganisasjonNavn(wsOrganisasjon));
 		mottaker.setNavn(mapOrganisasjonNavn(wsOrganisasjon));
 		no.nav.regoppslag.consumer.map.Postadresse postadresse;
 		try {
@@ -107,7 +101,6 @@ public class OrganisasjonEregMapper {
 		metrics.meter(serviceCode, EREG_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
 	}
 
-
 	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
 		if (orgDet.getOpphoersdato() != null && LocalDate.now().isAfter(orgDet.getOpphoersdato())) {
 			String message = String.format("Organisasjon har opphørt, opphørsdato=%s, orgnr=%s", ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
@@ -124,21 +117,8 @@ public class OrganisasjonEregMapper {
 		return orgDet.getMaalform();
 	}
 
-	private String mapOrganisasjonKortnavn(Organisasjon wsOrganisasjon) {
-		return wsOrganisasjon.getNavn().getRedigertnavn();
-	}
-
-	private String mapOrganisasjonNavn(Organisasjon orgDet) {
-		Navn organisasjonsnavn = findValidOrgNavn(orgDet.getOrganisasjonDetaljer())
-				.orElseThrow(() -> new RegOppslagIkkeFunnetException("Ingen gyldige organisasjonsnavn funnet for orgnummer=" + orgDet.getOrganisasjonsnummer(), NOT_FOUND));
-
-		return aggregerNavn(organisasjonsnavn);
-	}
-
-	private Optional<Navn> findValidOrgNavn(OrganisasjonDetaljer orgDet) {
-		return orgDet.getNavn().stream()
-				.filter((org) -> isValidGyldighetsAndBruksPeriode(org.getGyldighetsperiode(), org.getBruksperiode()))
-				.findFirst();
+	private String mapOrganisasjonNavn(Organisasjon wsOrganisasjon) {
+		return wsOrganisasjon.getNavn().getSammensattnavn();
 	}
 
 	private AdresseKildeCode mapAdresseKilde(OrganisasjonDetaljer orgDet) {
@@ -150,8 +130,8 @@ public class OrganisasjonEregMapper {
 		final LocalDate nowDate = LocalDate.now();
 
 		return gyldighetsperiode.getFom().isBefore(nowDate)
-				&& (gyldighetsperiode.getTom() == null || gyldighetsperiode.getTom().isAfter(nowDate))
-				&& (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
+			   && (gyldighetsperiode.getTom() == null || gyldighetsperiode.getTom().isAfter(nowDate))
+			   && (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
 	}
 
 	// Postadresse skal overstyre forretningsadresse dersom den finnes
@@ -212,17 +192,5 @@ public class OrganisasjonEregMapper {
 		postadresse.setAdresselinje3(eregAdresse.getAdresselinje3());
 
 		return postadresse;
-	}
-
-	private String aggregerNavn(Navn navn) {
-		List<String> navnelinjer = Arrays.asList(
-				navn.getNavnelinje1(),
-				navn.getNavnelinje2(),
-				navn.getNavnelinje3(),
-				navn.getNavnelinje4(),
-				navn.getNavnelinje5());
-		return navnelinjer.stream().filter(StringUtils::isNotBlank)
-				.map(String::trim)
-				.collect(joining(" "));
 	}
 }

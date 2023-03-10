@@ -321,7 +321,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, TEMA, TYPE_ORGANISASJON), HentMottakerOgAdresseResponse.class);
 
 		assertEquals(ORGANISASJONNUMMER, response.getIdentifikator());
-		assertEquals("NAV IKT", response.getNavn());
+		assertEquals("YARA INTERNATIONAL ASA", response.getNavn());
 		assertOrgAdresse(response);
 
 		verify(getRequestedFor(urlMatching("/v1/organisasjon/" + ORGANISASJONNUMMER)));
@@ -512,11 +512,11 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	private void assertOrgAdresse(HentMottakerOgAdresseResponse response) {
-		assertEquals("Postboks 5 St Olavs plass", response.getAdresse().getAdresselinje1());
+		assertEquals("Postboks 343  Skøyen", response.getAdresse().getAdresselinje1());
 		assertNull(response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
-		assertEquals("0130", response.getAdresse().getPostnummer());
+		assertEquals("0213", response.getAdresse().getPostnummer());
 		assertEquals("OSLO", response.getAdresse().getPoststed());
 	}
 

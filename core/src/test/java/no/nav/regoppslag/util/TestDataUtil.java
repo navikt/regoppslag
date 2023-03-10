@@ -84,27 +84,17 @@ public class TestDataUtil {
 		return utenlandskPostadresse;
 	}
 
-	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+	public static Organisasjon createOrganisasjon(String navn) {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonDetaljer organisasjonsDetaljer = new OrganisasjonDetaljer();
 		Navn organisasjonKortnavn = new Navn();
-		StringBuilder tempNavn = new StringBuilder();
-		for (String navn : orgKortnavn) {
-			tempNavn.append(" ").append(navn);
-		}
-
-		organisasjonKortnavn.setNavnelinje1(tempNavn.toString().trim());
-		organisasjonKortnavn.setRedigertnavn(tempNavn.toString().trim());
+		organisasjonKortnavn.setNavnelinje1(navn);
+		organisasjonKortnavn.setSammensattnavn(navn);
 		organisasjon.setNavn(organisasjonKortnavn);
 
 		Navn organisasjonsnavn = new Navn();
-		StringBuilder tempNavn2 = new StringBuilder();
-		for (String navn : orgNavn) {
-			tempNavn2.append(" ").append(navn);
-		}
-
-		organisasjonsnavn.setNavnelinje1(tempNavn2.toString().trim());
-		organisasjonsnavn.setRedigertnavn(tempNavn2.toString().trim());
+		organisasjonsnavn.setNavnelinje1(navn);
+		organisasjonsnavn.setSammensattnavn(navn);
 		Bruksperiode bruksperiode = new Bruksperiode();
 		bruksperiode.setFom(LocalDateTime.now().minusDays(1));
 		organisasjonsnavn.setBruksperiode(bruksperiode);
