@@ -1,6 +1,7 @@
 package no.nav.regoppslag.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -37,6 +38,15 @@ public class PostnummerServiceTest {
 		String poststed = postnummerService.finnPoststed("111111");
 
 		assertNull(poststed);
+	}
+
+	// workaround for å få gjennom brev som skal til endrede poststeder
+	@Test
+	void shouldFinnWorkaroundPoststeder() {
+		String haroy = postnummerService.finnPoststed("6485");
+		assertThat(haroy, is("HARØY"));
+		String oslo = postnummerService.finnPoststed("0025");
+		assertThat(oslo, is("OSLO"));
 	}
 }
 
