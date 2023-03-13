@@ -16,20 +16,4 @@ public class Oppholdsadresse implements AdresseGyldigKilde {
 	private Matrikkeladresse matrikkeladresse;
 	private UtenlandskAdresse utenlandskAdresse;
 	private Metadata metadata;
-
-	@Override
-	public boolean isGyldigPdlKilde() {
-		if (metadata == null) {
-			return false;
-		}
-		return metadata.isKildePdl();
-	}
-
-	@Override
-	public boolean isGyldigFregKilde() {
-		if (metadata == null) {
-			return false;
-		}
-		return metadata.isKildeFreg();
-	}
 }

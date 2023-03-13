@@ -7,11 +7,9 @@ import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.service.PostnummerService;
-
-import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
@@ -20,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
+@Component
 public class NorskAdresseService {
 
 	private final PostnummerService postnummerService;
@@ -39,62 +38,69 @@ public class NorskAdresseService {
 		if (nonNull(kontaktadresse.getVegadresse())) {
 			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).adressekilde(KONTAKTADRESSE).build();
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
-			Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
-			if (isBlank(kontaktadresse.getCoAdressenavn())) {
-				return PostadresseTo.builder()
-						.adressekilde(KONTAKTADRESSE)
-						.adresseType(POSTADRESSE_INNLAND)
-						.adresselinje1(isBlank(postadresse.getAdresselinje1()) ? null : postadresse.getAdresselinje1())
-						.adresselinje2(postadresse.getAdresselinje2()).adresselinje3(postadresse.getAdresselinje3())
-						.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
-						.poststed(isBlank(postadresse.getPostnummer()) ? null : postnummerService.finnPoststed(postadresse.getPostnummer()))
-						.landkode(LANDKODE_NORGE)
-						.build();
-			}
-			return PostadresseTo.builder()
-					.adressekilde(KONTAKTADRESSE)
-					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(kontaktadresse.getCoAdressenavn())
-					.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
-					.adresselinje3(postadresse.getAdresselinje2())
-					.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
-					.poststed(isBlank(postadresse.getPostnummer()) ? null : postnummerService.finnPoststed(postadresse.getPostnummer()))
-					.landkode(LANDKODE_NORGE)
-					.build();
+			return mapPostadresseFrittFormat(kontaktadresse);
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
-			Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
-			return PostadresseTo.builder()
-					.adressekilde(KONTAKTADRESSE)
-					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(isNotBlank(postboksadresse.getPostbokseier()) ? CARE_OF + postboksadresse.getPostbokseier() : POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
-					.adresselinje2(isNotBlank(postboksadresse.getPostbokseier()) ? POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")) : null)
-					.postnummer(postboksadresse.getPostnummer())
-					.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
-					.landkode(LANDKODE_NORGE)
-					.build();
+			return mapPostboksadresse(kontaktadresse);
 		}
 		return null;
 	}
 
 	PostadresseTo.PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
-		return isBlank(coAdressenavn) ?
-				PostadresseTo.builder()
-						.adresseType(POSTADRESSE_INNLAND)
-						.adresselinje1(Optional.ofNullable(vegadresse.getAdressenavn())
-								.orElse("") + " " + Optional.ofNullable(isNull(vegadresse.getHusnummer()) ? null : vegadresse.getHusnummer())
-								.orElse("") + Optional.ofNullable(vegadresse.getHusbokstav()).orElse(""))
-						.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-						.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
-						.landkode(LANDKODE_NORGE) :
-				PostadresseTo.builder()
-						.adresseType(POSTADRESSE_INNLAND)
-						.adresselinje1(coAdressenavn)
-						.adresselinje2(Optional.ofNullable(vegadresse.getAdressenavn())
-								.orElse("") + " " + Optional.ofNullable(isNull(vegadresse.getHusnummer()) ? null : vegadresse.getHusnummer())
-								.orElse("") + Optional.ofNullable(vegadresse.getHusbokstav()).orElse(""))
-						.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-						.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
-						.landkode(LANDKODE_NORGE);
+		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+				.adresseType(POSTADRESSE_INNLAND)
+				.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
+				.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
+				.landkode(LANDKODE_NORGE);
+		if (isBlank(coAdressenavn)) {
+			builder.adresselinje1(vegadresse.mapAdresselinjeFromVegadresse());
+		} else {
+			builder.adresselinje1(coAdressenavn)
+					.adresselinje2(vegadresse.mapAdresselinjeFromVegadresse());
+		}
+		return builder;
+	}
+
+	private PostadresseTo mapPostadresseFrittFormat(Kontaktadresse kontaktadresse) {
+		Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
+		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+				.adressekilde(KONTAKTADRESSE)
+				.adresseType(POSTADRESSE_INNLAND)
+				.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
+				.poststed(isBlank(postadresse.getPostnummer()) ? null : postnummerService.finnPoststed(postadresse.getPostnummer()))
+				.landkode(LANDKODE_NORGE);
+
+		if (isBlank(kontaktadresse.getCoAdressenavn())) {
+			return builder
+					.adresselinje1(isBlank(postadresse.getAdresselinje1()) ? null : postadresse.getAdresselinje1())
+					.adresselinje2(postadresse.getAdresselinje2())
+					.adresselinje3(postadresse.getAdresselinje3())
+					.build();
+		}
+		return builder
+				.adresselinje1(kontaktadresse.getCoAdressenavn())
+				.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
+				.adresselinje3(postadresse.getAdresselinje2())
+				.build();
+	}
+
+	private PostadresseTo mapPostboksadresse(Kontaktadresse kontaktadresse) {
+		Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
+		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+				.adressekilde(KONTAKTADRESSE)
+				.adresseType(POSTADRESSE_INNLAND)
+				.postnummer(postboksadresse.getPostnummer())
+				.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
+				.landkode(LANDKODE_NORGE);
+
+		if (isNotBlank(postboksadresse.getPostbokseier())) {
+			return builder
+					.adresselinje1(CARE_OF + postboksadresse.getPostbokseier())
+					.adresselinje2(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.build();
+		}
+		return builder
+				.adresselinje1(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+				.build();
 	}
 
 	PostadresseTo mapMatrikkeladresse(Matrikkeladresse matrikkeladresse, AdresseKildeCode adresseKildeCode) {

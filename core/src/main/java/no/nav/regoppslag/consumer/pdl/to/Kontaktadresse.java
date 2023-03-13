@@ -20,19 +20,11 @@ public class Kontaktadresse implements Comparable<Kontaktadresse>, AdresseGyldig
 	private Metadata metadata;
 
 	@Override
-	public boolean isGyldigPdlKilde() {
-		if(metadata == null) {
-			return false;
-		}
-		return metadata.isKildePdl();
-	}
-
-	@Override
 	public boolean isGyldigFregKilde() {
-		if(gyldigFraOgMed == null && metadata == null) {
+		if (gyldigFraOgMed == null && metadata == null) {
 			return false;
 		}
-		if(gyldigFraOgMed == null) {
+		if (gyldigFraOgMed == null) {
 			return metadata.isKildeFreg();
 		}
 		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg();
@@ -40,7 +32,7 @@ public class Kontaktadresse implements Comparable<Kontaktadresse>, AdresseGyldig
 
 	@Override
 	public int compareTo(Kontaktadresse o) {
-		if(gyldigFraOgMed == null || o.getGyldigFraOgMed() == null) {
+		if (gyldigFraOgMed == null || o.getGyldigFraOgMed() == null) {
 			return 0;
 		}
 

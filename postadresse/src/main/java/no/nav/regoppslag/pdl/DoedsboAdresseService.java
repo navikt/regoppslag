@@ -8,8 +8,8 @@ import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.service.PostnummerService;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,13 +17,7 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
-import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getFoedselsdato;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getForkortetNavn;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getFulltnavn;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getIdentifikasjonsnummer;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getNavn;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -31,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.trim;
 import static org.springframework.http.HttpStatus.GONE;
 
 @Slf4j
+@Component
 public class DoedsboAdresseService {
 
 	private final PostnummerService postnummerService;
@@ -48,11 +43,11 @@ public class DoedsboAdresseService {
 
 	PdlMottakerInfo mapFoerDoedsbo(HentPerson hentPerson, String tema) {
 		return PdlMottakerInfo.builder()
-				.identifikasjonsnummer(getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
-				.navn(getFulltnavn(hentPerson.getNavn()))
-				.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-				.foedselsdato(getFoedselsdato(hentPerson))
-				.doedsdato(getDoedsdato(hentPerson))
+				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
+				.navn(hentPerson.getFulltnavn())
+				.kortNavn(hentPerson.getForkortetNavn())
+				.foedselsdato(hentPerson.getFoedselsdato())
+				.doedsdato(hentPerson.getDoedsdato().orElse(null))
 				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson), tema))
 				.build();
 	}
@@ -140,6 +135,11 @@ public class DoedsboAdresseService {
 				getNavn(personnavn.getEtternavn()));
 	}
 
+	public static String getNavn(String navn) {
+		return isBlank(navn) ? "" : navn + " ";
+	}
+
+
 	private String getAdresselinje(String adresselinje) {
 		return isBlank(adresselinje) ? null : adresselinje;
 	}
@@ -151,19 +151,4 @@ public class DoedsboAdresseService {
 		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny();
 	}
 
-	boolean isDoed(HentPerson hentPerson) {
-		return nonNull(getDoedsdato(hentPerson)) &&
-				PERSONSTATUS_DOED.equals(MapPDLUtils.getFolkeregisterstatus(hentPerson));
-	}
-
-	static LocalDate getDoedsdato(HentPerson hentPerson) {
-		if (isNull(hentPerson.getDoedsfall())) {
-			return null;
-		}
-		return hentPerson.getDoedsfall().stream()
-				.map(HentPerson.Doedsfall::getDoedsdato)
-				.filter(Objects::nonNull)
-				.findAny()
-				.orElse(null);
-	}
 }

@@ -1,7 +1,6 @@
 package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.AdresseGyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
@@ -15,7 +14,6 @@ import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
-import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,10 +28,6 @@ import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getFoedselsdato;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getFolkeregisterstatus;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getForkortetNavn;
-import static no.nav.regoppslag.pdl.MapPDLUtils.getFulltnavn;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostAdresse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -61,20 +55,17 @@ public class MapPDLResponse {
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 
-	private static final String UKJENT_KILDE = " Kilde Ukjent";
 
 	@Autowired
 	public MapPDLResponse(
-			PostnummerService postnummerService,
-			PdlGraphQLConsumer pdlGraphQLConsumer
-	) {
-		this.doedsboAdresseService = new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer);
-		this.norskAdresseService = new NorskAdresseService(postnummerService);
+			DoedsboAdresseService doedsboAdresseService, NorskAdresseService norskAdresseService) {
+		this.doedsboAdresseService = doedsboAdresseService;
+		this.norskAdresseService = norskAdresseService;
 	}
 
 	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode, String tema) {
 		// sjekk at personen ikke er død
-		if (doedsboAdresseService.isDoed(hentPerson)) {
+		if (hentPerson.isDoed()) {
 			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
 		}
 
@@ -99,14 +90,14 @@ public class MapPDLResponse {
 		}
 
 		// prøver bostedsadresse
-		Bostedsadresse bostedsadresse = getBostedsadresse(hentPerson);
+		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
 		if (nonNull(bostedsadresse)) {
 			return mapBostedsadresse(hentPerson, serviceCode);
 		}
 
-		if (PERSONSTATUS_UTFLYTTET.equalsIgnoreCase(getFolkeregisterstatus(hentPerson))) {
+		if (PERSONSTATUS_UTFLYTTET.equalsIgnoreCase(hentPerson.getFolkeregisterstatus())) {
 			throw new UkjentAdresseException(format("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=%s",
-					getFolkeregistermetadata(hentPerson)), NOT_FOUND);
+					hentPerson.getFolkeregistermetadataKilde()), NOT_FOUND);
 		}
 
 		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", NOT_FOUND);
@@ -133,7 +124,6 @@ public class MapPDLResponse {
 						// Sorteres naturlig etter kontaktadresse.gyldigFraOgMed
 						.max(Comparator.naturalOrder())
 						.orElse(null));
-
 	}
 
 	private PdlMottakerInfo mapKontaktadresse(HentPerson hentPerson) {
@@ -145,31 +135,31 @@ public class MapPDLResponse {
 				.orElse(null);
 		Kontaktadresse kontaktadresse = getKontaktadresse(hentPerson);
 		PostadresseTo postadresse = mapPostadresseFraKontaktadresse(kontaktadresse, coAdressenavn);
-		return PdlMottakerInfo.builder().identifikasjonsnummer(MapPDLUtils.getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
-				.navn(getFulltnavn(hentPerson.getNavn()))
-				.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-				.foedselsdato(getFoedselsdato(hentPerson))
-				.doedsdato(DoedsboAdresseService.getDoedsdato(hentPerson))
+		return PdlMottakerInfo.builder().identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
+				.navn(hentPerson.getFulltnavn())
+				.kortNavn(hentPerson.getForkortetNavn())
+				.foedselsdato(hentPerson.getFoedselsdato())
+				.doedsdato(hentPerson.getDoedsdato().orElse(null))
 				.postadresse(postadresse)
 				.build();
 	}
 
 	private PdlMottakerInfo mapBostedsadresse(HentPerson hentPerson, String serviceCode) {
 		return PdlMottakerInfo.builder()
-				.identifikasjonsnummer(MapPDLUtils.getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
-				.navn(getFulltnavn(hentPerson.getNavn()))
-				.foedselsdato(getFoedselsdato(hentPerson))
-				.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-				.postadresse(mapPostadresseFraBostedsadresse(getBostedsadresse(hentPerson), serviceCode))
+				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
+				.navn(hentPerson.getFulltnavn())
+				.foedselsdato(hentPerson.getFoedselsdato())
+				.kortNavn(hentPerson.getForkortetNavn())
+				.postadresse(mapPostadresseFraBostedsadresse(hentPerson.getBostedsadresse(), serviceCode))
 				.build();
 	}
 
 	private PdlMottakerInfo mapOppholdsadresse(HentPerson hentPerson, String serviceCode) {
 		return PdlMottakerInfo.builder()
-				.identifikasjonsnummer(MapPDLUtils.getIdentifikasjonsnummer(hentPerson.getFolkeregisteridentifikator()))
-				.navn(getFulltnavn(hentPerson.getNavn()))
-				.kortNavn(getForkortetNavn(hentPerson.getNavn()))
-				.foedselsdato(getFoedselsdato(hentPerson))
+				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
+				.navn(hentPerson.getFulltnavn())
+				.kortNavn(hentPerson.getForkortetNavn())
+				.foedselsdato(hentPerson.getFoedselsdato())
 				.postadresse(mapPostadresseFraOppholdsadresse(hentPerson.getOppholdsadresse().stream()
 						.filter(Objects::nonNull).findAny()
 						.orElse(null), serviceCode))
@@ -244,25 +234,8 @@ public class MapPDLResponse {
 								.findAny().orElse(null));
 	}
 
-	private Bostedsadresse getBostedsadresse(HentPerson hentPerson) {
-		if (isNull(hentPerson.getBostedsadresse())) {
-			return null;
-		}
-		return hentPerson.getBostedsadresse().stream()
-				.filter(Objects::nonNull).findAny().orElse(null);
-	}
-
 	private boolean isInnlandAdresseTypeAndPostnummerNull(PdlMottakerInfo pdlMottakerInfo) {
 		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
-	private static String getFolkeregistermetadata(HentPerson hentPerson) {
-		return hentPerson.getFolkeregisterpersonstatus().stream()
-				.filter(Objects::nonNull)
-				.map(status ->
-						nonNull(status.getFolkeregistermetadata()) ? status.getFolkeregistermetadata().getKilde() :
-								UKJENT_KILDE
-				)
-				.findAny().orElse(UKJENT_KILDE);
-	}
 }

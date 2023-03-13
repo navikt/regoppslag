@@ -6,7 +6,9 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
+import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import no.nav.regoppslag.service.PostnummerService;
@@ -52,7 +54,7 @@ public class AdresseMapperTest {
 		landkodeService = new LandkodeService();
 		landkodeServiceNorsk = new LandkodeServiceNorsk();
 		postnummerService.init();
-		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 		adresseMapper = new AdresseMapper(landkodeService, metrics, landkodeServiceNorsk);
 	}
 

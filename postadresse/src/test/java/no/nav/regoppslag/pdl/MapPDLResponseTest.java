@@ -108,7 +108,8 @@ public class MapPDLResponseTest {
 	@BeforeEach
 	public void setUp() {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
+
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 	}
 
 	@Test

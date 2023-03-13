@@ -16,7 +16,9 @@ import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
+import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
@@ -114,7 +116,7 @@ public class MottakerPluginTest {
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		landkodeService = new LandkodeService();
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
