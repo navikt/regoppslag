@@ -114,7 +114,7 @@ public class MottakerPluginTest {
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		landkodeService = new LandkodeService();
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();

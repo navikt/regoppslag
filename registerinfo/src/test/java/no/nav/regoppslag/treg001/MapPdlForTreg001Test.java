@@ -83,7 +83,7 @@ class MapPdlForTreg001Test {
 		landkodeService = new LandkodeService();
 		postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		eregConsumer = mock(EregConsumer.class);

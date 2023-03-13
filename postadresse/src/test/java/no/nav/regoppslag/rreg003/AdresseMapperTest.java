@@ -52,7 +52,7 @@ public class AdresseMapperTest {
 		landkodeService = new LandkodeService();
 		landkodeServiceNorsk = new LandkodeServiceNorsk();
 		postnummerService.init();
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
 		adresseMapper = new AdresseMapper(landkodeService, metrics, landkodeServiceNorsk);
 	}
 

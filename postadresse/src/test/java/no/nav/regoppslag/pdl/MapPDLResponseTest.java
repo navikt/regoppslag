@@ -101,16 +101,14 @@ public class MapPDLResponseTest {
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
-	private LandkodeService landkodeService;
 
 	@InjectMocks
 	private PostnummerService postnummerService;
 
 	@BeforeEach
 	public void setUp() {
-		landkodeService = new LandkodeService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(postnummerService, pdlGraphQLConsumer);
 	}
 
 	@Test
