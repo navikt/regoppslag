@@ -57,42 +57,35 @@ public class DoedsboAdresseService {
 				.build();
 	}
 
-	private PostadresseTo mapKontaktinformasjonForDoedsbo(KontaktinformasjonForDoedsbo kontaktinformasjon, String tema) {
-		if (isNull(kontaktinformasjon)) {
-			log.warn(MOTTAKER_DOED);
-			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
-		}
-
-		if (!isDoedPersonValidKontaktAdresse(kontaktinformasjon)) {
-			log.warn(MOTTAKER_DOED);
-			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
-		}
-
-		return mapAndValidateKontaktinformasjonForDoeds(kontaktinformasjon, tema).orElseThrow(
-				() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE));
+	private PostadresseTo mapKontaktinformasjonForDoedsbo(Optional<KontaktinformasjonForDoedsbo> kontaktinformasjon, String tema) {
+		return kontaktinformasjon
+				.filter(DoedsboAdresseService::isDoedPersonValidKontaktAdresse)
+				.map(kinfo -> mapAndValidateKontaktinformasjonForDoeds(kinfo, tema))
+				.orElseThrow(
+						() -> {
+							log.warn(MOTTAKER_DOED);
+							return new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
+						});
 	}
 
-	private boolean isDoedPersonValidKontaktAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {
+	private static boolean isDoedPersonValidKontaktAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {
 		return nonNull(kontaktinformasjon.getAttestutstedelsesdato()) && ((nonNull(kontaktinformasjon.getOrganisasjonSomKontakt()) ||
 				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt())));
 	}
 
-	private Optional<PostadresseTo> mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo
-																					 kontaktinformasjonForDoedsbo, String tema) {
-		Optional<KontaktinformasjonForDoedsbo.KontaktAdresse> kontaktAdresseOptional = Optional.ofNullable(kontaktinformasjonForDoedsbo.getAdresse());
-		if (kontaktAdresseOptional.isEmpty()) {
-			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
-		}
+	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo, String tema) {
+		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = kontaktinformasjonForDoedsbo.getAdresse();
+
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
 			KontaktinformasjonForDoedsbo.AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
-			return mapMidlertidigPostboksadresse(kontaktAdresseOptional, getAdvokatOrOrgKontaktNavn(advokatSomKontakt.getPersonnavn(), advokatSomKontakt.getOrganisasjonsnavn()));
+			return mapMidlertidigPostboksadresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(advokatSomKontakt.getPersonnavn(), advokatSomKontakt.getOrganisasjonsnavn()));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getPersonSomKontakt())) {
 			KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
-			return mapMidlertidigPostboksadresse(kontaktAdresseOptional, getPersonSomKontaktNavn(personSomKontakt, tema));
-		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt())) {
+			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt, tema));
+		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt()) && nonNull(kontaktAdresse)) {
 			KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
 			String fulltnavn = getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn());
-			return kontaktAdresseOptional.map(kontaktAdresse -> PostadresseTo.builder()
+			return PostadresseTo.builder()
 					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 					.adresseType(POSTADRESSE_INNLAND)
 					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
@@ -101,24 +94,26 @@ public class DoedsboAdresseService {
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
 					.landkode(LANDKODE_NORGE)
-					.build());
+					.build();
 		}
-		return Optional.empty();
+		return null;
 	}
 
-	private Optional<PostadresseTo> mapMidlertidigPostboksadresse(Optional<KontaktinformasjonForDoedsbo.KontaktAdresse> optionalAdresse, String navn) {
-		return optionalAdresse.map(adresse ->
-				PostadresseTo.builder()
-						.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
-						.adresseType(POSTADRESSE_INNLAND)
-						.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
-						.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
-						.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
-						.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-						.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
-								: adresse.getPoststedsnavn())
-						.landkode(LANDKODE_NORGE)
-						.build());
+	private PostadresseTo mapMidlertidigPostboksadresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
+		if (adresse == null) {
+			return null;
+		}
+		return PostadresseTo.builder()
+				.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
+				.adresseType(POSTADRESSE_INNLAND)
+				.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
+				.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
+				.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
+				.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
+				.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
+						: adresse.getPoststedsnavn())
+				.landkode(LANDKODE_NORGE)
+				.build();
 	}
 
 	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String
@@ -149,12 +144,11 @@ public class DoedsboAdresseService {
 		return isBlank(adresselinje) ? null : adresselinje;
 	}
 
-	private KontaktinformasjonForDoedsbo getKontaktForDoedsbo(HentPerson hentPerson) {
-		if (isNull(hentPerson.getKontaktinformasjonForDoedsbo()) || hentPerson.getKontaktinformasjonForDoedsbo().isEmpty()) {
-			throw new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
+	private Optional<KontaktinformasjonForDoedsbo> getKontaktForDoedsbo(HentPerson hentPerson) {
+		if (isNull(hentPerson.getKontaktinformasjonForDoedsbo())) {
+			return Optional.empty();
 		}
-		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny()
-				.orElseThrow(() -> new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE));
+		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny();
 	}
 
 	boolean isDoed(HentPerson hentPerson) {
