@@ -21,7 +21,6 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.trim;
 import static org.springframework.http.HttpStatus.GONE;
 
 @Slf4j
@@ -79,19 +78,22 @@ public class DoedsboAdresseService {
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt, tema));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt()) && nonNull(kontaktAdresse)) {
 			KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
-			String fulltnavn = getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn());
-			return PostadresseTo.builder()
-					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
-					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
-					.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
-					.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
-					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
-					.landkode(LANDKODE_NORGE)
-					.build();
+			return mapOrganisasjonSomKontaktAdresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn()));
 		}
 		return null;
+	}
+
+	private PostadresseTo mapOrganisasjonSomKontaktAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse, String fulltnavn) {
+		return PostadresseTo.builder()
+				.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
+				.adresseType(POSTADRESSE_INNLAND)
+				.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
+				.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
+				.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
+				.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
+				.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
+				.landkode(LANDKODE_NORGE)
+				.build();
 	}
 
 	private PostadresseTo mapMidlertidigPostboksadresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
@@ -113,32 +115,19 @@ public class DoedsboAdresseService {
 
 	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String
 			organisasjonsnavn) {
-		return isNotBlank(getFulltnavnForDoedsbo(personnavn)) ? getFulltnavnForDoedsbo(personnavn) : organisasjonsnavn;
+		return personnavn != null && isNotBlank(personnavn.getFulltnavn()) ? personnavn.getFulltnavn() : organisasjonsnavn;
 	}
 
 	private String getPersonSomKontaktNavn(KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt, String
 			tema) {
-		if (nonNull(personSomKontakt.getPersonnavn()) && nonNull(personSomKontakt.getPersonnavn())) {
-			return getFulltnavnForDoedsbo(personSomKontakt.getPersonnavn());
+		if (nonNull(personSomKontakt.getPersonnavn()) && isNotBlank(personSomKontakt.getPersonnavn().getFulltnavn())) {
+			return personSomKontakt.getPersonnavn().getFulltnavn();
 		}
 		if (isBlank(personSomKontakt.getIdentifikasjonsnummer())) {
 			return null;
 		}
 		return pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(personSomKontakt.getIdentifikasjonsnummer(), tema).orElse(null);
 	}
-
-	public String getFulltnavnForDoedsbo(KontaktinformasjonForDoedsbo.Personnavn personnavn) {
-		if (isNull(personnavn)) {
-			return null;
-		}
-		return trim(getNavn(personnavn.getFornavn()) + getNavn(personnavn.getMellomnavn()) +
-				getNavn(personnavn.getEtternavn()));
-	}
-
-	public static String getNavn(String navn) {
-		return isBlank(navn) ? "" : navn + " ";
-	}
-
 
 	private String getAdresselinje(String adresselinje) {
 		return isBlank(adresselinje) ? null : adresselinje;

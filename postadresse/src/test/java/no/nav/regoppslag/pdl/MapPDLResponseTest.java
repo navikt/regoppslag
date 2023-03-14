@@ -13,26 +13,22 @@ import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
-import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static com.neovisionaries.i18n.CountryCode.XK;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
-import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
@@ -47,8 +43,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
-import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
-import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_FRA_MED_DATO;
@@ -63,44 +57,40 @@ import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTBOKSNUMMERNA
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsadresseWithUkjentBosted;
-import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
 import static no.nav.regoppslag.util.PDLResponseUtil.createHentePersonBuilder;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsbo;
-import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithNoContact;
-import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithOrginasjon;
 import static no.nav.regoppslag.util.PDLResponseUtil.createMetadata;
-import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrginasjonSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonStatusUtflyttet;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithOppholdsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVegadresse;
-import static no.nav.regoppslag.util.PDLResponseUtil.createPersonKontaktAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
-import static no.nav.regoppslag.util.PDLResponseUtil.organisasjonSomKontakt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(SpringExtension.class)
 public class MapPDLResponseTest {
 
-	private static final String FEILMELDING_PERSON_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String LANDKODE_FEILMELDING = "Feltet landkode kan ikke være null eller tomt for utenlandskAdresse";
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
+	private DoedsboAdresseService doedsboAdresseService;
 
 	@InjectMocks
 	private PostnummerService postnummerService;
@@ -109,25 +99,17 @@ public class MapPDLResponseTest {
 	public void setUp() {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
+		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer));
+		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService));
 	}
 
 	@Test
-	public void shouldMapMottakerInfoForDoedWithAdvokatSomKontakt() {
+	public void shouldDelegateToDoedsboserviceWhenPersonIsDead() {
 		List<KontaktinformasjonForDoedsbo> kontaktinformasjon = singletonList(createKontaktinformasjonForDoedsbo());
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), SERVICE_CODE_TREG002, TEMA);
 
-		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
-		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
-		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
-		assertEquals(V_ADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
-		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje2());
-		assertEquals(POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
-		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
-		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
-		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
-		assertEquals(KONTAKTINFORMASJONFORDØDSBO, mottakerInfo.getPostadresse().getAdressekilde());
+		verify(doedsboAdresseService, times(1)).mapFoerDoedsbo(any(), anyString());
 	}
 
 	@Test
@@ -145,6 +127,7 @@ public class MapPDLResponseTest {
 		assertEquals(POSTSTED, mottakerInfo.getPostadresse().getPoststed());
 		assertEquals(LANDKODE_NORGE, mottakerInfo.getPostadresse().getLandkode());
 		assertEquals(KONTAKTADRESSE, mottakerInfo.getPostadresse().getAdressekilde());
+		verify(doedsboAdresseService, times(0)).mapFoerDoedsbo(any(), anyString());
 	}
 
 	@SneakyThrows
@@ -440,144 +423,11 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shlouldMapKontaktinformasjonForDoedsWithAdvokatAsContact() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsbo();
-
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-
-		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
-		assertNull(response.getAdresselinje3());
-
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertEquals(LANDKODE_NORGE, response.getLandkode());
-		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
-		assertEquals(POSTSTED, response.getPoststed());
-		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
-	}
-
-	@Test
-	public void shouldMapKontaktinformasjonForDoedsboWithPersonAsContact() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = PDLResponseUtil.createKontaktinformasjonForDoedsboWithPerson();
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
-		assertNull(response.getAdresselinje3());
-
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertEquals(LANDKODE_NORGE, response.getLandkode());
-		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
-		assertEquals(POSTSTED, response.getPoststed());
-		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
-	}
-
-	@Test
-	public void shouldMapKontaktinformasjonForDoedsboSomHenteKontaktFraPDL() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = PDLResponseUtil.createKontaktinformasjonForDoedsboWithPerson();
-		kontaktinformasjon.getPersonSomKontakt().setPersonnavn(null);
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		when(pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(anyString(), anyString())).thenReturn(Optional.ofNullable(FULLT_NAVN));
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-		assertEquals("v/ " + FULLT_NAVN, response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
-		assertNull(response.getAdresselinje3());
-
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertEquals(LANDKODE_NORGE, response.getLandkode());
-		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
-		assertEquals(POSTSTED, response.getPoststed());
-		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
-	}
-
-	@Test
-	public void shouldMapKontaktinformasjonForDoedsboWithOrganisasjonAsContact() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrginasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), createPersonKontaktAdresse());
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
-		assertNull(response.getAdresselinje3());
-
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertEquals(LANDKODE_NORGE, response.getLandkode());
-		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
-		assertEquals(POSTSTED, response.getPoststed());
-		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
-	}
-
-	@Test
-	public void shouldMapKontaktinformasjonForDoedsboWithKontaktPersonNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrginasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), createPersonKontaktAdresse());
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		kontaktinformasjon.getOrganisasjonSomKontakt().setKontaktperson(null);
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
-		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
-		assertNull(response.getAdresselinje3());
-
-		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
-		assertEquals(LANDKODE_NORGE, response.getLandkode());
-		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
-		assertEquals(POSTSTED, response.getPoststed());
-	}
-
-	@Test
 	public void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 
 		assertThrows(UkjentAdresseException.class,
 				() -> mapPDLResponse.mapHentPerson(PDLResponseUtil.createPdlHentPersonWithNoAdresse(), SERVICE_CODE_TREG002, TEMA), "Fant ikke adresse for personen i PDL");
-	}
-
-	@Test
-	public void shouldThrowFunctionalExceptionIfPersonErDoedOgHarIngenAdresse() {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
-				mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), SERVICE_CODE_TREG002, TEMA));
-		assertEquals(GONE, e.getHttpStatus());
-		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
 	@Test
@@ -630,62 +480,12 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenKontaktAdresseForDoedsboIsNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrginasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), null);
-
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
-				mapPDLResponse.mapHentPerson(hentPerson, null, TEMA));
-
-		assertEquals(GONE, e.getHttpStatus());
-		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenKontakterAdresseForDoedsboWithOrginasjonIsNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrginasjon(null, createPersonKontaktAdresse());
-
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.build();
-
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, null, TEMA));
-
-		assertEquals(GONE, e.getHttpStatus());
-		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
-	}
-
-	@Test
-	public void shouldThrowFunctionalGoneExceptionWhenDoedboWithNoKontakt() {
-
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithNoContact(createPersonKontaktAdresse());
-		HentPerson hentPerson = createHentePersonBuilder()
-				.doedsfall(singletonList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
-				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
-				.folkeregisterpersonstatus(singletonList(HentPerson.Folkeregisterpersonstatus.builder()
-						.status(PERSONSTATUS_DOED)
-						.forenkletStatus("bosattEtterFolkeregisterloven")
-						.build()))
-				.build();
-		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> mapPDLResponse.mapHentPerson(hentPerson, "TREG002", TEMA),
-				"Mottaker er registrert som død og har ugyldig postadresse");
-		assertEquals(GONE, e.getHttpStatus());
-	}
-
-	@Test
 	public void shouldmapVegadresseWhenCoAdressenavnIsSett() {
 		Vegadresse vegadresse = PDLResponseUtil.createVegadresse();
 
 		HentPerson hentPerson = createHentePersonBuilder()
-				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
-				.kontaktadresse(singletonList(Kontaktadresse.builder()
+				.folkeregisterpersonstatus(List.of(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktadresse(List.of(Kontaktadresse.builder()
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.type(POSTADRESSE_INNLAND)
