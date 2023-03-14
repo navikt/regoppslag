@@ -36,9 +36,10 @@ public class NorskAdresseService {
 		this.postnummerService = postnummerService;
 	}
 
-	Optional<PostadresseTo> mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	Optional<PostadresseTo> mapNorskPostAdresse(Kontaktadresse kontaktadresse) {
 		if (nonNull(kontaktadresse.getVegadresse())) {
-			return Optional.of(mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).adressekilde(KONTAKTADRESSE).build());
+			return Optional.of(mapVegadresse(kontaktadresse.getVegadresse(), kontaktadresse.getCoAdressenavn())
+					.adressekilde(KONTAKTADRESSE).build());
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
 			return Optional.of(mapPostadresseFrittFormat(kontaktadresse));
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {

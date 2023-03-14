@@ -24,7 +24,8 @@ public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
 
-	static Optional<PostadresseTo> mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	static Optional<PostadresseTo> mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse) {
+		String coAdressenavn = kontaktadresse.getCoAdressenavn();
 		if (nonNull(kontaktadresse.getUtenlandskAdresse())) {
 			UtenlandskAdresse utenlandskAdresse = kontaktadresse.getUtenlandskAdresse();
 			return Optional.of(mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn)

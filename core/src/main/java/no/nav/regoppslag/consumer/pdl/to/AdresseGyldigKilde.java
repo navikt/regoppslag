@@ -1,6 +1,8 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
-public interface AdresseGyldigKilde {
+import java.time.LocalDateTime;
+
+public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 
 	default boolean isGyldigPdlKilde() {
 		if (getMetadata() == null) {
@@ -16,5 +18,16 @@ public interface AdresseGyldigKilde {
 		return getMetadata().isKildeFreg();
 	}
 
+	@Override
+	default int compareTo(AdresseGyldigKilde o) {
+		if (getGyldigFraOgMed() == null || o.getGyldigFraOgMed() == null) {
+			return 0;
+		}
+
+		return getGyldigFraOgMed().compareTo(o.getGyldigFraOgMed());
+	}
+
 	Metadata getMetadata();
+
+	LocalDateTime getGyldigFraOgMed();
 }
