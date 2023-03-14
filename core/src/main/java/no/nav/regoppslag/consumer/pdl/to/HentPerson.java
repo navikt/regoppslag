@@ -176,7 +176,8 @@ public class HentPerson {
 			throw new RegoppslagIllegalArgumentException(format(ERROR_MELDING, isBlank(personNavn.getFornavn()) ? FORNAVN : ETTERNAVN), BAD_REQUEST);
 		}
 		return Stream.of(personNavn.getFornavn(), personNavn.getMellomnavn(), personNavn.getEtternavn())
-				.map(navn -> isBlank(navn) ? "" : navn)
+				.map(navn -> isBlank(navn) ? null : navn)
+				.filter(Objects::nonNull)
 				.collect(Collectors.joining(" "))
 				.trim();
 	}
