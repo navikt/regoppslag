@@ -6,6 +6,8 @@ import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.service.LandkodeService;
 
+import java.util.Optional;
+
 import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -22,24 +24,24 @@ public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
 
-	static PostadresseTo mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	static Optional<PostadresseTo> mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		if (nonNull(kontaktadresse.getUtenlandskAdresse())) {
 			UtenlandskAdresse utenlandskAdresse = kontaktadresse.getUtenlandskAdresse();
-			return mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn)
+			return Optional.of(mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn)
 					.adressekilde(KONTAKTADRESSE)
-					.build();
+					.build());
 		} else if (nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
 			Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktadresse.getUtenlandskAdresseIFrittFormat();
-			return PostadresseTo.builder()
+			return Optional.of(PostadresseTo.builder()
 					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_UTLAND)
 					.adresselinje1(isBlank(coAdressenavn) ? utenlandskAdresse.getAdresselinje1() : coAdressenavn + ", " + utenlandskAdresse.getAdresselinje1())
 					.adresselinje2(utenlandskAdresse.getAdresselinje2())
 					.adresselinje3(utenlandskAdresse.getAdresselinje3())
 					.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")))
-					.build();
+					.build());
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	static PostadresseTo.PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {

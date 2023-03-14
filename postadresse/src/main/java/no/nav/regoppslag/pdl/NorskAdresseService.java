@@ -9,6 +9,8 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
@@ -34,15 +36,15 @@ public class NorskAdresseService {
 		this.postnummerService = postnummerService;
 	}
 
-	PostadresseTo mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
+	Optional<PostadresseTo> mapNorskPostAdresse(Kontaktadresse kontaktadresse, String coAdressenavn) {
 		if (nonNull(kontaktadresse.getVegadresse())) {
-			return mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).adressekilde(KONTAKTADRESSE).build();
+			return Optional.of(mapVegadresse(kontaktadresse.getVegadresse(), coAdressenavn).adressekilde(KONTAKTADRESSE).build());
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
-			return mapPostadresseFrittFormat(kontaktadresse);
+			return Optional.of(mapPostadresseFrittFormat(kontaktadresse));
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
-			return mapPostboksadresse(kontaktadresse);
+			return Optional.of(mapPostboksadresse(kontaktadresse));
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	PostadresseTo.PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
