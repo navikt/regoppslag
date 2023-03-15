@@ -1,0 +1,102 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1989,
+          "foedselsdato": "1989-06-27"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "ØVRIG",
+          "mellomnavn": null,
+          "etternavn": "ANDRIK",
+          "forkortetNavn": "ØVRIG ANDRIK"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2022-07-14T19:00:38",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": null,
+            "bygningEtasjeLeilighet": "ESTLANDSHUSET",
+            "postboksNummerNavn": null,
+            "postkode": "90210",
+            "bySted": "BEVERLY HILLS",
+            "regionDistriktOmraade": "",
+            "landkode": "USA"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "bff431fc-ae8c-4723-8bc4-11e300a61c8f",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-07-14T19:00:40",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "27068916459",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "2021-10-11",
+          "gyldigFraOgMed": "2021-10-14T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "1",
+            "husbokstav": "A",
+            "bruksenhetsnummer": "H0101",
+            "adressenavn": "Gamlisveien",
+            "kommunenummer": "5001",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7017"
+          },
+          "utenlandskAdresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "c9ab305e-430a-4f35-a31b-87096b9279b6",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

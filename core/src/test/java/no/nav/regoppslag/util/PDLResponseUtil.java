@@ -13,8 +13,6 @@ import no.nav.regoppslag.consumer.pdl.to.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
-import org.apache.http.HttpHeaders;
-import org.apache.http.entity.ContentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -126,6 +124,9 @@ public class PDLResponseUtil {
 
 	public static final LocalDateTime GYLDIG_TIL_MED_DATO = LocalDateTime.now().plusMonths(10L);
 	public static final LocalDateTime GYLDIG_FRA_MED_DATO = LocalDateTime.now().minusDays(2L);
+	public static final String BYGNING_ETASJE_LEILIGHET_BVH = "ESTLANDSHUSET";
+	public static final String BYSTED_BVH = "BEVERLY HILLS";
+	public static final String POSTKODE_BVH = "90210";
 
 	public static PDLHentPersonResponse pdlHentPersonResponse(HentPerson.PersonNavn personNavn) {
 		return PDLHentPersonResponse.builder()

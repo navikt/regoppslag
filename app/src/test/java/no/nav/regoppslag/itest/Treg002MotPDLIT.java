@@ -30,6 +30,8 @@ import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.ALPHA2_SWEDEN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.BYGNINGETASJELEILIGHET;
+import static no.nav.regoppslag.util.PDLResponseUtil.BYGNING_ETASJE_LEILIGHET_BVH;
+import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.CONAVN_UTENLANDSK_ADRESSELINJE1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CONAVN_UTENLANDSK_ADRESSELINJE2;
@@ -44,6 +46,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_US;
 import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.ORGANISASJONNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE1;
@@ -116,7 +119,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavn.json");
 
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA,TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
@@ -290,6 +293,24 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertNotNull(response.getAdresse());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(GREECE_LANDKODE, response.getAdresse().getLandkode());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
+	public void should_dothething_GetMottakerAndAdresseForUtenlandskKontakadresee() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_uten_postboksadressenavnnummer.json");
+
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+		assertNotNull(response.getAdresse());
+		assertEquals(BYGNING_ETASJE_LEILIGHET_BVH, response.getAdresse().getAdresselinje1());
+		assertEquals(POSTKODE_BVH + " " + BYSTED_BVH, response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals(LANDKODE_US, response.getAdresse().getLandkode());
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
