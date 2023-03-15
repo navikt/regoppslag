@@ -55,28 +55,24 @@ public class UtenlandskAdresseService {
 	}
 
 	private static String mapUtenlandskAdresselinje1(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		String postOrAdressenavnNummer = getPostOrAdressenavnNummer(utenlandskAdresse);
-		String utenlandskPostkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
+		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
-		if (isBlank(coAdressenavn) && isNotBlank(postOrAdressenavnNummer)) {
-			return postOrAdressenavnNummer;
-		} else if (isNotBlank(coAdressenavn)) {
-			if (isNotBlank(utenlandskPostkodeAndByStedAndOmraade) && isNotBlank(bygningEtasjeLeilighet)) {
-				return coAdressenavn + ", " + postOrAdressenavnNummer;
-			} else if (isNotBlank(utenlandskPostkodeAndByStedAndOmraade) && isNotBlank(postOrAdressenavnNummer)) {
+		if (isNotBlank(coAdressenavn)) {
+			if (isNotBlank(postkodeAndByStedAndOmraade) && isNotBlank(bygningEtasjeLeilighet)) {
+				return coAdressenavn + ", " + postboksOrAdressenavnNummer;
+			} else if (isNotBlank(postkodeAndByStedAndOmraade) && isNotBlank(postboksOrAdressenavnNummer)) {
 				return coAdressenavn;
 			}
+		} else if (isBlank(coAdressenavn) && isNotBlank(postboksOrAdressenavnNummer)) {
+			return postboksOrAdressenavnNummer;
 		}
-		return postOrAdressenavnNummer;
-	}
-
-	private static String getPostOrAdressenavnNummer(UtenlandskAdresse utenlandskAdresse) {
-		return isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ? utenlandskAdresse.getPostboksNummerNavn() :
-				utenlandskAdresse.getAdressenavnNummer();
+		return postboksOrAdressenavnNummer;
 	}
 
 	private static String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
+		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
 		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
@@ -84,51 +80,64 @@ public class UtenlandskAdresseService {
 			if (isNotBlank(postkodeAndByStedAndOmraade) && isNotBlank(bygningEtasjeLeilighet)) {
 				return bygningEtasjeLeilighet;
 			} else if (isNotBlank(postkodeAndByStedAndOmraade) && isBlank(bygningEtasjeLeilighet)) {
-				return getPostOrAdressenavnNummer(utenlandskAdresse);
+				return postboksOrAdressenavnNummer;
 			}
-		} else if (isBlank(coAdressenavn) && isNotBlank(mapBygningEtasjeLeilighet(utenlandskAdresse))) {
-			return mapBygningEtasjeLeilighet(utenlandskAdresse);
+		} else {
+			if (isNotBlank(bygningEtasjeLeilighet)) {
+				return bygningEtasjeLeilighet;
+			}
 		}
 		return postkodeAndByStedAndOmraade;
 	}
 
 	private static String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-
+		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
 		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
-		String postOrAdressenavnNummer = getPostOrAdressenavnNummer(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
 		if (isNotBlank(coAdressenavn)) {
 			if (isNotBlank(postkodeAndByStedAndOmraade) && isNotBlank(bygningEtasjeLeilighet)) {
 				return postkodeAndByStedAndOmraade;
-			} else if (isBlank(postkodeAndByStedAndOmraade) && isNotBlank(postOrAdressenavnNummer)) {
+			} else if (isBlank(postkodeAndByStedAndOmraade) && isNotBlank(postboksOrAdressenavnNummer)) {
 				return bygningEtasjeLeilighet;
 			}
-		} else if (isBlank(bygningEtasjeLeilighet) || isBlank(postOrAdressenavnNummer)) {
+		} else if (isBlank(bygningEtasjeLeilighet) || isBlank(postboksOrAdressenavnNummer)) {
 			return null;
 		}
 		return postkodeAndByStedAndOmraade;
 	}
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
-		if (isNotBlank(utenlandskAdresse.getPostkode())) {
-			if (isNotBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+		boolean hasPostKode = isNotBlank(utenlandskAdresse.getPostkode());
+		boolean hasBySted = isNotBlank(utenlandskAdresse.getBySted());
+		boolean hasRegionDistriktOmr = isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
+
+		if (hasPostKode) {
+			if (hasBySted && hasRegionDistriktOmr) {
 				return format("%s %s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else if (isBlank(utenlandskAdresse.getBySted()) && isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
-				return format("%s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else if (isNotBlank(utenlandskAdresse.getBySted()) && isBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
-				return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
-			} else if (isBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
-				return utenlandskAdresse.getPostkode();
+			} else {
+				if (!hasBySted && hasRegionDistriktOmr) {
+					return format("%s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getRegionDistriktOmraade());
+				} else if (hasBySted) {
+					return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+				} else {
+					return utenlandskAdresse.getPostkode();
+				}
 			}
-		} else if (isNotBlank(utenlandskAdresse.getBySted())) {
-			if (isNotBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+		} else if (hasBySted) {
+			if (hasRegionDistriktOmr) {
 				return format("%s, %s", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else if (isBlank(utenlandskAdresse.getRegionDistriktOmraade())) {
+			} else {
 				return utenlandskAdresse.getBySted();
 			}
+		} else {
+			return utenlandskAdresse.getRegionDistriktOmraade();
 		}
-		return utenlandskAdresse.getRegionDistriktOmraade();
+	}
+
+	private static String getPostboksOrAdressenavnNummer(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getPostboksNummerNavn()) ? utenlandskAdresse.getPostboksNummerNavn() :
+				utenlandskAdresse.getAdressenavnNummer();
 	}
 
 	private static String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
