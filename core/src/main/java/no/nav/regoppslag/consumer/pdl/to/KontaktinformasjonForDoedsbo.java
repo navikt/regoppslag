@@ -5,6 +5,11 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Data
 @Builder
@@ -38,6 +43,14 @@ public class KontaktinformasjonForDoedsbo {
 		private String mellomnavn;
 		@ToString.Exclude
 		private String etternavn;
+
+		public String getFulltnavn() {
+			return Stream.of(getFornavn(), getMellomnavn(), getEtternavn())
+					.map(navn -> isBlank(navn) ? null : navn)
+					.filter(Objects::nonNull)
+					.collect(Collectors.joining(" "))
+					.trim();
+		}
 	}
 
 	@Data

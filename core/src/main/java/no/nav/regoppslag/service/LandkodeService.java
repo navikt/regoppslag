@@ -21,7 +21,7 @@ public class LandkodeService {
 	private static final String NORGE = "Norge";
 	private static final String NORWAY = "Norway";
 
-	public String finnLandnavn(String landkode) {
+	public static String finnLandnavn(String landkode) {
 
 		/*
 		 * Spesialtilfelle. I en periode lå Kosovo lagret på landkode XXK, mens den senere ble oppdatert til XKX.
@@ -41,7 +41,7 @@ public class LandkodeService {
 		}
 	}
 
-	public String finnLandkode(String landnavn) {
+	public static String finnLandkode(String landnavn) {
 
 		if (isBlank(landnavn)) {
 			return null;
@@ -59,7 +59,7 @@ public class LandkodeService {
 		return countryCodeList.get(0).getAlpha2();
 	}
 
-	public String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
+	public static String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
 		if (isBlank(landkodeAlpha3)) return null;
 		CountryCode countryCode = CountryCode.getByAlpha3Code(landkodeAlpha3);
 		if(countryCode == null) {
