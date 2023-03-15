@@ -21,5 +21,12 @@
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
 		"https://regoppslag-q0.dev.intern.nav.no"
-	]
+	],
+	"AZURE_IAC_RULES": [
+		{
+			"application": "pensjon-persondata-q0",
+			"namespace": "pensjon-person",
+			"cluster": "dev-fss"
+		}
+    ]
 }
