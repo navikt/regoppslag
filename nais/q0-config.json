@@ -24,7 +24,7 @@
 	],
 	"AZURE_IAC_RULES": [
 		{
-			"application": "pensjon-persondata-q0",
+			"app": "pensjon-persondata-q0",
 			"namespace": "pensjon-person",
 			"cluster": "dev-fss"
 		}

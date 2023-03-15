@@ -47,7 +47,7 @@
 			"cluster": "dev-fss"
 		},
 		{
-			"application": "pensjon-persondata-q2",
+			"app": "pensjon-persondata-q2",
 			"namespace": "pensjon-person",
 			"cluster": "dev-fss"
 		}

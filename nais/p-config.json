@@ -48,7 +48,7 @@
 			"cluster": "prod-gcp"
 		},
 		{
-			"application": "pensjon-persondata",
+			"app": "pensjon-persondata",
 			"namespace": "pensjon-person",
 			"cluster": "prod-fss"
 		}

@@ -52,7 +52,7 @@
 			"cluster": "dev-gcp"
 		},
 		{
-			"application": "pensjon-persondata-q1",
+			"app": "pensjon-persondata-q1",
 			"namespace": "pensjon-person",
 			"cluster": "dev-fss"
 		}
