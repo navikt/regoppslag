@@ -46,6 +46,11 @@
 			"app": "yrkesskade-saksbehandling-backend",
 			"namespace": "yrkesskade",
 			"cluster": "prod-gcp"
+		},
+		{
+			"application": "pensjon-persondata",
+			"namespace": "pensjon-person",
+			"cluster": "prod-fss"
 		}
 	]
 }
