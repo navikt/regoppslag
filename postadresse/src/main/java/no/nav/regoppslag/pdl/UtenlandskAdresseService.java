@@ -68,7 +68,7 @@ public class UtenlandskAdresseService {
 		} else if (isBlank(coAdressenavn) && isNotBlank(postboksOrAdressenavnNummer)) {
 			return postboksOrAdressenavnNummer;
 		}
-		return postboksOrAdressenavnNummer;
+		return bygningEtasjeLeilighet;
 	}
 
 	private static String mapUtenlandskAdresselinje2(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
@@ -83,7 +83,7 @@ public class UtenlandskAdresseService {
 				return postboksOrAdressenavnNummer;
 			}
 		} else {
-			if (isNotBlank(bygningEtasjeLeilighet)) {
+			if (isNotBlank(bygningEtasjeLeilighet) && isNotBlank(postboksOrAdressenavnNummer)) {
 				return bygningEtasjeLeilighet;
 			}
 		}
