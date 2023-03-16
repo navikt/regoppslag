@@ -11,26 +11,26 @@ import java.util.Optional;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.util.PDLResponseUtil.BYGNING_ETASJE_LEILIGHET_BVH;
+import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED_BVH;
+import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_USA;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_BVH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UtenlandskAdresseServiceTest {
-	public static final String BY_STED = "Beverly Hills";
-	public static final String LANDKODE = "EST";
-	private static final String BYGNING_ETASJE_LEILIGHET = "ESTLANDSHUSET";
-	private static final String POSTKODE = "90210";
 
 	@Test
 	public void ShouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
 		UtenlandskAdresse adresse = UtenlandskAdresse.builder()
 				.adressenavnNummer(null)
-				.bygningEtasjeLeilighet(BYGNING_ETASJE_LEILIGHET)
+				.bygningEtasjeLeilighet(BYGNING_ETASJE_LEILIGHET_BVH)
 				.postboksNummerNavn(null)
-				.postkode(POSTKODE)
-				.bySted(BY_STED)
+				.postkode(POSTKODE_BVH)
+				.bySted(BYSTED_BVH)
 				.regionDistriktOmraade("")
-				.landkode(LANDKODE)
+				.landkode(LANDKODE_USA)
 				.build();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
@@ -43,8 +43,8 @@ class UtenlandskAdresseServiceTest {
 
 		PostadresseTo response = mottakerInfo.get();
 
-		assertNull(response.getAdresselinje1());
-		assertEquals(BYGNING_ETASJE_LEILIGHET, response.getAdresselinje2());
+		assertEquals(BYGNING_ETASJE_LEILIGHET_BVH, response.getAdresselinje1());
+		assertEquals(POSTKODE_BVH + " " + BYSTED_BVH, response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
