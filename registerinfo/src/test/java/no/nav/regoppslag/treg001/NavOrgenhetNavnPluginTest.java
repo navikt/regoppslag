@@ -3,15 +3,13 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
-import no.nav.regoppslag.util.TestUtil;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +47,7 @@ public class NavOrgenhetNavnPluginTest {
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer;
+	private OrganisasjonsenhetConsumer norgConsumer;
 	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
@@ -63,7 +61,7 @@ public class NavOrgenhetNavnPluginTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		norgConsumer = Mockito.mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
+		norgConsumer = Mockito.mock(OrganisasjonsenhetConsumer.class);
 		securityContext = new SecurityContextImpl();
 		token = new UsernamePasswordAuthenticationToken("username", "password");
 		postnummerService = new PostnummerService();
@@ -78,7 +76,7 @@ public class NavOrgenhetNavnPluginTest {
 		postnummerService.init();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper, metrics);
-		when(norgConsumer.hentKontaktinformasjonForEnhet(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 
 	@Test
@@ -158,9 +156,9 @@ public class NavOrgenhetNavnPluginTest {
 	}
 
 
-	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
-		Organisasjonsenhet enhet = new Organisasjonsenhet();
-		enhet.setEnhetNavn(navEnhetNavn);
-		return enhet;
+	private EnhetNavn createEnhet(String navEnhetNavn) {
+		return EnhetNavn.builder()
+				.navn(navEnhetNavn)
+				.build();
 	}
 }

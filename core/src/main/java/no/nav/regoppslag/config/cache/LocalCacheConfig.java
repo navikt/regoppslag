@@ -11,19 +11,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
-import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
 import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.metrics.MetricLabels.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 
 /**
  * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
@@ -35,6 +28,16 @@ import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
 @EnableCaching
 public class LocalCacheConfig {
 
+	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
+	public static final String HENT_ENHET_KONTAKTINFO = "hentEnhetKontaktInfo";
+	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
+	public static final String HENT_PERSON = "hentPerson";
+	public static final String HENT_NAVN = "hentNavn";
+	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
+	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
+	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
+	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE = "AZURE_CACHE_NAME";
+
 	@Bean
 	@Primary
 	public CacheManager cacheManager() {
@@ -42,28 +45,31 @@ public class LocalCacheConfig {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(Arrays.asList(
 				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
-						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
-						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
+						.build()),
+				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
-						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
-						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder()
-						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build())));
 		return cacheManager;
 	}

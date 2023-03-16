@@ -2,6 +2,7 @@ package no.nav.regoppslag.rreg003;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
@@ -12,7 +13,7 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,7 +83,7 @@ public class PostadresseService {
 	}
 
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
-		no.nav.regoppslag.consumer.ereg.support.Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
+		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
 
 		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
 		return PostadresseResponse.builder()

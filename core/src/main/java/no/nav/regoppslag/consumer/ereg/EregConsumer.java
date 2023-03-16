@@ -5,7 +5,6 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.UUID;
 
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
@@ -51,7 +51,7 @@ public class EregConsumer {
 	}
 
 	@Retryable(include = HttpServerErrorException.class, exclude = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
 
 		HttpHeaders headers = new HttpHeaders();
@@ -81,7 +81,7 @@ public class EregConsumer {
 	}
 
 	private String getCallId() {
-		String callId = MDC.get(CALL_ID);
+		String callId = MDC.get(NAV_CALLID);
 		if (isBlank(callId)) {
 			return UUID.randomUUID().toString();
 		} else {

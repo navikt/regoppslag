@@ -1,6 +1,6 @@
 package no.nav.regoppslag.config.sts;
 
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.config.Serviceuser;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,12 @@ public class STSConfig {
 	private String stsUrl;
 	
 	@Autowired
-	private ServiceuserAlias serviceuserAlias;
+	private Serviceuser serviceuser;
 	
 	public void configureSTS(Object port){
 		Client client = ClientProxy.getClient(port);
-		STSConfigUtil.configureStsRequestSamlToken(client, stsUrl, serviceuserAlias.getUsername(), serviceuserAlias.getPassword());
+		STSConfigUtil.configureStsRequestSamlToken(client, stsUrl, serviceuser.getUsername(),
+				serviceuser.getPassword());
 	}
 	
 }

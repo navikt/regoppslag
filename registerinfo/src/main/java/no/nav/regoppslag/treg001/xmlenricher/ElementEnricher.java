@@ -35,7 +35,7 @@ import java.util.Set;
 import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
 import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static org.springframework.http.HttpStatus.GONE;
@@ -72,7 +72,7 @@ public class ElementEnricher {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMER_ID);
 		final String userId = MDC.get(USER_ID);
-		final String callId = MDC.get(CALL_ID);
+		final String callId = MDC.get(NAV_CALLID);
 
 		List<Payload> processingList = new ArrayList<>();
 		Set<String> supportedElementsXpathExpressions = registry.getSupportedElements();
@@ -98,7 +98,7 @@ public class ElementEnricher {
 
 							MDC.put(CONSUMER_ID, consumerId);
 							MDC.put(USER_ID, userId);
-							MDC.put(CALL_ID, callId);
+							MDC.put(NAV_CALLID, callId);
 
 							Map<String, Object> valueMap = new HashMap<>();
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);

@@ -11,7 +11,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -220,7 +220,7 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void shouldMapOrganisasjonEmptyPostAdresse() throws DatatypeConfigurationException {
+	public void shouldMapOrganisasjonEmptyPostAdresse() {
 		Organisasjon org = createOrganisasjon(singletonList(ORGNAVN), singletonList(ORGKORTNAVN));
 		settKunForretningsadresse(org);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);

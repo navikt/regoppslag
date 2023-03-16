@@ -13,8 +13,6 @@ import no.nav.regoppslag.consumer.pdl.to.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
-import org.apache.http.HttpHeaders;
-import org.apache.http.entity.ContentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
@@ -34,7 +33,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 public class PDLResponseUtil {
@@ -684,7 +683,7 @@ public class PDLResponseUtil {
 	public static void postPdlGraphql(int status, String filePath) {
 		stubFor(post("/graphql").willReturn(aResponse()
 				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}
@@ -692,22 +691,36 @@ public class PDLResponseUtil {
 	public static void postPdlDigdir(int status, String filePath) {
 		stubFor(post("/digdir/rest/v1/personer?inkluderSikkerDigitalPost=false").willReturn(aResponse()
 				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}
 
+	public static void stubGetEnhetNavn(int status, String filePath) {
+		stubFor(get("/norg2/enhet/0136").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBodyFile(filePath)));
+	}
+
+	public static void stubGetEnhetKontaktInfo(int status, String filePath) {
+		stubFor(get(urlMatching("/norg2/enhet/0136/kontaktinformasjon")).willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withBodyFile(filePath)));
+	}
 	public static void postPdlGraphqlWithErrorResponse(int status) {
 		stubFor(post("/graphql").willReturn(aResponse()
 				.withStatus(status)
 				.withHeader("Connection", "close")
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())));
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
 	}
 
 	public static void getStsToken(int status, String filePath) {
 		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
 				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}

@@ -1,0 +1,26 @@
+{
+  "id": 100000908,
+  "enhetNr": "0136",
+  "telefonnummer": "55553333",
+  "telefonnummerKommentar": null,
+  "faksnummer": "53044011",
+  "epost": null,
+  "postadresse": {
+    "type": "postboksadresse",
+    "postnummer": "5807",
+    "poststed": "BERGEN",
+    "postboksnummer": "2303",
+    "postboksanlegg": "Solheimsviken"
+  },
+  "besoeksadresse": {
+    "type": "stedsadresse",
+    "postnummer": "5058",
+    "poststed": "BERGEN",
+    "gatenavn": "Solheimsgaten",
+    "husnummer": "13",
+    "husbokstav": null,
+    "adresseTilleggsnavn": null
+  },
+  "spesielleOpplysninger": null,
+  "publikumsmottak": []
+}

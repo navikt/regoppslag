@@ -1,12 +1,13 @@
 package no.nav.regoppslag.itest.config;
 
 import no.nav.regoppslag.config.CacheTestConfig;
+import no.nav.regoppslag.config.WebClientConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Import({CacheTestConfig.class, RestTemplateTestConfig.class})
+@Import({CacheTestConfig.class, RestTemplateTestConfig.class, WebClientConfig.class})
 @Profile("itest")
 public class ApplicationTestConfig {
 }

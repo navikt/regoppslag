@@ -1,6 +1,6 @@
 package no.nav.regoppslag.consumer.stsrest;
 
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
+import no.nav.regoppslag.config.Serviceuser;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.StsTechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
 
 @Component
 public class StsRestConsumer {
@@ -29,12 +29,12 @@ public class StsRestConsumer {
 	@Autowired
 	public StsRestConsumer(@Value("${security-token-service-token.url}") String stsUrl,
 						   RestTemplateBuilder restTemplateBuilder,
-						   final ServiceuserAlias serviceuserAlias) {
+						   final Serviceuser serviceuser) {
 		this.stsUrl = stsUrl;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
-				.basicAuthentication(serviceuserAlias.getUsername(), serviceuserAlias.getPassword())
+				.basicAuthentication(serviceuser.getUsername(), serviceuser.getPassword())
 				.build();
 	}
 

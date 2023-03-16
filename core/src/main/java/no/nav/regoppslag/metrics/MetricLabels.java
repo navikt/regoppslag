@@ -18,14 +18,6 @@ public final class MetricLabels {
 	public static final String SERVICE_CODE_TREG002="TREG002";
 	public static final String SERVICE_CODE_RREG003 = "RREG003";
 
-	// Caches
-	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
-	public static final String HENT_PERSON = "hentPerson";
-	public static final String HENT_NAVN = "hentNavn";
-	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
-	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
-	public static final String AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE = "AZURE_DIGDIR_CACHE_NAME";
-
 	private MetricLabels() {
 		//no-op
 	}
@@ -36,7 +28,6 @@ public final class MetricLabels {
 	public static final String UKJENT_POSTSTED = "ukjent_poststed";
 	public static final String LAND = "land";
 	public static final String UNKNOWN_LANDKODE = "???";
-	public static final String KOSOVO = "Kosovo, Republic of";
 	public static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
 	public static final String POSTSTED = "poststed";
 	public static final String EREG_MAPPER = "OrganisasjonEregMapper";

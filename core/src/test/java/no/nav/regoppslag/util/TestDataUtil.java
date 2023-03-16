@@ -4,6 +4,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Bruksperiode;
 import no.nav.regoppslag.consumer.ereg.support.Gyldighetsperiode;
 import no.nav.regoppslag.consumer.ereg.support.Navn;
@@ -11,16 +12,9 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
 import no.nav.regoppslag.consumer.ereg.support.Postadresse;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
-import no.nav.regoppslag.to.MottakerTo;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -217,88 +211,4 @@ public class TestDataUtil {
 		org.setOrganisasjonDetaljer(orgdet);
 	}
 
-    /*
-    public static void settSemistrukturertAdresse(Organisasjon org, String adressetype, long validSeconds) throws DatatypeConfigurationException {
-        SemistrukturertAdresse semistrukturertAdresse = new SemistrukturertAdresse();
-
-        semistrukturertAdresse.setFomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(validSeconds))));
-        semistrukturertAdresse.setTomGyldighetsperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(validSeconds))));
-
-        semistrukturertAdresse.setFomBruksperiode(dateToGregorian(Date.from(Instant.now().minusSeconds(validSeconds))));
-        semistrukturertAdresse.setTomBruksperiode(dateToGregorian(Date.from(Instant.now().plusSeconds(validSeconds))));
-
-        //Adresselinje1
-        NoekkelVerdiAdresse noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        NoeklerAdresseleddSemistrukturerteAdresser noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("adresselinje1");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(SEMIADR1);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-        //Adresselinje2
-        noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("adresselinje2");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(SEMIADR2);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-        //Adresselinje3
-        noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("Adresse 3 split 1");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(SEMIADR3);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-        //Adresselinje4
-        noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("Adresse 3 split 2");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(SEMIADR4);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-        //Postnr
-        noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("postnr");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(POSTNR);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-        //Poststed
-        noekkelVerdiAdresse = new NoekkelVerdiAdresse();
-        noekkel = new NoeklerAdresseleddSemistrukturerteAdresser();
-        noekkel.setKodeRef("poststed");
-        noekkelVerdiAdresse.setNoekkel(noekkel);
-        noekkelVerdiAdresse.setVerdi(POSTSTED);
-        semistrukturertAdresse.getAdresseledd().add(noekkelVerdiAdresse);
-
-
-        Landkoder landkoder = new Landkoder();
-        landkoder.setKodeRef(LANDKODE);
-        landkoder.setValue(LANDKODE);
-        semistrukturertAdresse.setLandkode(landkoder);
-
-        OrganisasjonsDetaljer orgdet = org.getOrganisasjonDetaljer();
-
-        if ("POSTADRESSE".equals(adressetype)) {
-            orgdet.getPostadresse().add(semistrukturertAdresse);
-        } else {
-            orgdet.getForretningsadresse().add(semistrukturertAdresse);
-        }
-        org.setOrganisasjonDetaljer(orgdet);
-    } */
-
-	public static XMLGregorianCalendar dateToGregorian(Date date) throws DatatypeConfigurationException {
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(date);
-		return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-	}
-
-	public static XMLGregorianCalendar dateToGregorian(LocalDate localDate) throws DatatypeConfigurationException {
-		GregorianCalendar gregorianCalendar = GregorianCalendar.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-		return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-	}
 }

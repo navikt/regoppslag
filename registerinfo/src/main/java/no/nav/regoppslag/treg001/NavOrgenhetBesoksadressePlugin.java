@@ -2,15 +2,16 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Besoksadresse;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
+import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	public static final String UGYLDIG_INPUT = "NavOrgenhetBesokAdressePlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetBesoksadressePlugin";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
+	private OrganisasjonsenhetConsumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
 	private MicrometerMetrics metrics;
 
@@ -42,7 +43,8 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	}
 
 	@Autowired
-	public NavOrgenhetBesoksadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
+	public NavOrgenhetBesoksadressePlugin(OrganisasjonsenhetConsumer norg2Consumer,
+										  Norg2Mapper norg2Mapper,
 										  MicrometerMetrics metrics) {
 		super(Besoksadresse.class);
 		this.norg2Consumer = norg2Consumer;
@@ -67,8 +69,11 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
 				validateAdresse(adresse);
-				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
-				norg2Mapper.mapBesokadresse(wsEnhet, adresse);
+
+				EnhetNavn enhetNavn = norg2Consumer.hentEnhetNavn(adresse.getEnhetsId());
+				EnhetKontaktinformasjon kontaktinformasjon = norg2Consumer.hentEnhetKontaktinformasjon(adresse.getEnhetsId());
+
+				norg2Mapper.mapBesokadresse(enhetNavn, kontaktinformasjon, adresse);
 			}
 
 			Document newNode = convertObjectToDocument(adresse);

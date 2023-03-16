@@ -2,7 +2,6 @@ package no.nav.regoppslag.consumer.digdirkrr;
 
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.regoppslag.consumer.azure.TokenResponse;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -28,8 +27,8 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.APP_ID;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_PERSONIDENTER;
@@ -101,16 +100,16 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private HttpHeaders createHeaders() {
-		TokenResponse clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopedigdirkrr());
+		String clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopedigdirkrr());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(clientCredentialToken.getAccess_token());
-		headers.add(NAV_CONSUMER_ID, APP_ID);
+		headers.setBearerAuth(clientCredentialToken);
+		headers.add(NAV_CONSUMER_ID, APP_NAME);
 		headers.add(NAV_CALL_ID, getCallId());
 		return headers;
 	}
 
 	private String getCallId() {
-		return isBlank(MDC.get(CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(CALL_ID);
+		return isBlank(MDC.get(NAV_CALLID)) ? UUID.randomUUID().toString() : MDC.get(NAV_CALLID);
 	}
 }

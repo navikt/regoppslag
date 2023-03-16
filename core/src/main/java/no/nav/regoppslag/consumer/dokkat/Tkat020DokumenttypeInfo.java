@@ -6,9 +6,7 @@ import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.regoppslag.consumer.azure.TokenResponse;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.MetricLabels;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.slf4j.MDC;
@@ -30,12 +28,12 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKKAT_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
-import static no.nav.regoppslag.util.NavHeaders.APP_NAME;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -69,13 +67,13 @@ public class Tkat020DokumenttypeInfo {
 		this.metrics = metrics;
 	}
 
-	@Cacheable(value = MetricLabels.HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
+	@Cacheable(value = HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, MetricLabels.HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoToV4> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		HttpHeaders headers = createHeaders();
 
-		metrics.cacheMiss(MetricLabels.HENT_DOKKAT_SPRAAKINFO);
+		metrics.cacheMiss(HENT_DOKKAT_SPRAAKINFO);
 		try {
 			HttpEntity<String> request = new HttpEntity(headers);
 
@@ -94,13 +92,14 @@ public class Tkat020DokumenttypeInfo {
 					.getStatusCode(), dokumenttypeId, e.getMessage()), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
 		}
 	}
+
 	private HttpHeaders createHeaders() {
-		TokenResponse clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopeDokmet());
+		String clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopeDokmet());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setBearerAuth(clientCredentialToken.getAccess_token());
+		headers.setBearerAuth(clientCredentialToken);
 		headers.add(NAV_CONSUMER_ID, APP_NAME);
-		headers.add(NAV_CALLID, MDC.get(CALL_ID));
+		headers.add(NAV_CALLID, MDC.get(NAV_CALLID));
 		return headers;
 	}
 }

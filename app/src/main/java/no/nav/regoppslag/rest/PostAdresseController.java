@@ -29,7 +29,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
+import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController

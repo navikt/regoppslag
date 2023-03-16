@@ -5,13 +5,12 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokkat.api.tkat020.v4.DokumentProduksjonsInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.regoppslag.config.DokumenttypeInfoProperties;
+import no.nav.regoppslag.config.RestConsumerConfig;
+import no.nav.regoppslag.config.Serviceuser;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
-import no.nav.regoppslag.config.RestConsumerConfig;
-import no.nav.regoppslag.config.DokumenttypeInfoProperties;
-import no.nav.regoppslag.config.fasit.ServiceuserAlias;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.regoppslag.consumer.azure.TokenResponse;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,7 +83,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldHentSpraakinfo() {
-		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
 				.thenReturn(new ResponseEntity<>(defaultResponse(Arrays.asList(LANG1, LANG2)), HttpStatus.OK));
 
 		List<SpraakInfoToV4> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
@@ -96,7 +95,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
-		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
@@ -105,26 +104,26 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerErrorAndRetry() {
-		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class));
+		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class));
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerException() {
-		when(restTemplate.exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(),eq(GET), any(HttpEntity.class),eq(DokumentTypeInfoToV4.class));
+		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class));
 	}
 
 	private DokumentTypeInfoToV4 defaultResponse(List<String> langs) {
@@ -170,11 +169,11 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public ServiceuserAlias serviceuserAlias() {
-			ServiceuserAlias serviceuserAlias = new ServiceuserAlias();
-			serviceuserAlias.setPassword("psw");
-			serviceuserAlias.setUsername("usr");
-			return serviceuserAlias;
+		public Serviceuser serviceuserAlias() {
+			Serviceuser serviceuser = new Serviceuser();
+			serviceuser.setPassword("psw");
+			serviceuser.setUsername("usr");
+			return serviceuser;
 		}
 
 		@Bean
@@ -198,7 +197,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 		@Bean
 		public TokenConsumer tokenConsumer() {
-			return (String s) -> new TokenResponse();
+			return (String s) -> new String();
 		}
 
 		@Bean

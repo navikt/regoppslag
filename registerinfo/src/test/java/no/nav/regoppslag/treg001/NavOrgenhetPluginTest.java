@@ -3,15 +3,14 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
+import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
-import no.nav.regoppslag.util.TestUtil;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static no.nav.regoppslag.util.TestUtil.*;
+import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +44,7 @@ public class NavOrgenhetPluginTest {
 	private static final String NAV_ENHET_NAVN = "Pensjon Inc.";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norgConsumer;
+	private OrganisasjonsenhetConsumer norgConsumer;
 	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
@@ -57,7 +56,7 @@ public class NavOrgenhetPluginTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		norgConsumer = mock(OrganisasjonEnhetKontaktinformasjonV1Consumer.class);
+		norgConsumer = mock(OrganisasjonsenhetConsumer.class);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
@@ -71,7 +70,8 @@ public class NavOrgenhetPluginTest {
 		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper, metrics);
 		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper, metrics);
 
-		when(norgConsumer.hentKontaktinformasjonForEnhet(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentEnhetKontaktinformasjon(anyString())).thenReturn(EnhetKontaktinformasjon.builder().build());
 	}
 
 	@Test
@@ -187,9 +187,9 @@ public class NavOrgenhetPluginTest {
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
 	}
 
-	private Organisasjonsenhet createEnhet(String navEnhetNavn) {
-		Organisasjonsenhet enhet = new Organisasjonsenhet();
-		enhet.setEnhetNavn(navEnhetNavn);
-		return enhet;
+	private EnhetNavn createEnhet(String navEnhetNavn) {
+		return EnhetNavn.builder()
+				.navn(navEnhetNavn)
+				.build();
 	}
 }

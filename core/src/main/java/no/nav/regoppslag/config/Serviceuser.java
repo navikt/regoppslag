@@ -1,19 +1,15 @@
-package no.nav.regoppslag.config.fasit;
+package no.nav.regoppslag.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 
-@Getter
-@Setter
-@ToString
+@Data
 @ConfigurationProperties("serviceuser")
 @Validated
-public class ServiceuserAlias {
+public class Serviceuser {
 	@NotEmpty
 	private String username;
 	@NotEmpty
