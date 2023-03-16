@@ -5,13 +5,13 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.LocalDate;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE2;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE3;
@@ -55,11 +53,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class OrganisasjonEregMapperTest {
 	private static final long VALID_SECONDS = 10000;
 
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGID = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+	private static final String ORGNAVN = "Firma AS";
+	private static final String ORGID = "999999999";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LAND = "Norge";
 	private static final String SERVICECODE = "SERVICECODE";
@@ -78,7 +73,7 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldMapSpraakKode() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		org.getOrganisasjonDetaljer().setMaalform("NO");
 		settPostAdresse(org, "POSTADRESSE", 20000L);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
@@ -92,14 +87,14 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldMapSakspartnavn() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		String navn = mapper.getSakspartNavn(org);
-		assertThat(navn, is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(navn, is(ORGNAVN));
 	}
 
 	@Test
 	public void shouldThrowWhenMissingAdresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
 		assertEquals(NOT_FOUND, e.getHttpStatus());
@@ -107,7 +102,7 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldThrowWhenExpiredAdresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", -20000L);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
@@ -116,7 +111,7 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldThrowWhenMissingPoststed() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", 10000L);
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPoststed(null);
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
@@ -127,8 +122,7 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldThrowWhenOpphoertOrg() {
-
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		org.getOrganisasjonDetaljer().setOpphoersdato(LocalDate.now().minusDays(1));
 
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
@@ -137,12 +131,12 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonSemistrukturertPostadresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	public void shouldMapOrganisasjonSemistrukturertPostadresse() {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
-		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGNAVN));
+		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN));
 
 		Mottaker mottaker = mottakerTo.getMottaker();
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), Matchers.is(ADRESSELINJE1));
@@ -155,7 +149,7 @@ public class OrganisasjonEregMapperTest {
 
 	@Test
 	public void shouldMapAdresseWhenLandskodeNotNOAndAlleAdresselinjerSatt() throws RegOppslagFunctionalException {
-		Organisasjon org = createOrganisasjon(singletonList(ORGNAVN), singletonList(ORGKORTNAVN));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settUtlandskPostadresseMedAlleAdresselinjerOgPoststed(org);
 
 		MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
@@ -169,12 +163,12 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonSemistrukturertForretningsadresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	public void shouldMapOrganisasjonSemistrukturertForretningsadresse() {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "FORRETNINGSADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
-		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGNAVN));
+		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN));
 
 		Mottaker mottaker = mottakerTo.getMottaker();
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), Matchers.is(ADRESSELINJE1));
@@ -186,12 +180,12 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonStrukturertPostadresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	public void shouldMapOrganisasjonStrukturertPostadresse() {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
-		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGNAVN));
+		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN));
 
 		Mottaker mottaker = mottakerTo.getMottaker();
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -203,12 +197,12 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapOrganisasjonStrukturertForretningsadresse() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	public void shouldMapOrganisasjonStrukturertForretningsadresse() {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "FORRETNINGSADRESSE", VALID_SECONDS);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
-		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGKORTNAVN + " " + ORGKORTNAVN_2));
-		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGNAVN));
+		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN));
 
 		Mottaker mottaker = mottakerTo.getMottaker();
 		assertThat((((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -220,11 +214,11 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void shouldMapOrganisasjonEmptyPostAdresse() {
-		Organisasjon org = createOrganisasjon(singletonList(ORGNAVN), singletonList(ORGKORTNAVN));
+	public void shouldMapOrganisasjonEmptyPostAdresse() throws DatatypeConfigurationException {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settKunForretningsadresse(org);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);
-		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGKORTNAVN));
+		assertThat(mottakerTo.getMottaker().getKortNavn(), is(ORGNAVN));
 		assertThat(mottakerTo.getMottaker().getNavn(), is(ORGNAVN));
 
 		Mottaker mottaker = mottakerTo.getMottaker();
@@ -240,7 +234,7 @@ public class OrganisasjonEregMapperTest {
 	public void shouldMapSemistrukturertAdresseWhenLandskodeNotNO() throws RegOppslagFunctionalException {
 		UtenlandskPostadresse expectedAdresse = createUtenlandsPostadresse();
 
-		Organisasjon org = createOrganisasjon(singletonList(ORGNAVN), singletonList(ORGKORTNAVN));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settUtlandskPostadresse(org);
 		MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
 
@@ -256,7 +250,7 @@ public class OrganisasjonEregMapperTest {
 	public void shouldMapSemistrukturertAdresseWithAdresseledPoststedWhenLandskodeNotNO() throws RegOppslagFunctionalException {
 		UtenlandskPostadresse expectedAdresse = createUtenlandsPostadresse();
 
-		Organisasjon org = createOrganisasjon(singletonList(ORGNAVN), singletonList(ORGKORTNAVN));
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settUtlandskPostadresseMedPoststed(org);
 		MottakerTo mottaker = mapper.map(ORGID, org, SERVICECODE);
 
@@ -267,8 +261,8 @@ public class OrganisasjonEregMapperTest {
 	}
 
 	@Test
-	public void mapPersonPostadresseUtenPostnr() {
-		Organisasjon org = createOrganisasjon(asList(ORGNAVN, ORGNAVN_2), asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	public void shouldMapPersonPostadresseUtenPostnr() {
+		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
 		MottakerTo mottakerTo = mapper.map(ORGID, org, SERVICECODE);

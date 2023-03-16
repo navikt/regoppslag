@@ -2,7 +2,7 @@
   "organisasjonsnummer": "985164312",
   "type": "JuridiskEnhet",
   "navn": {
-    "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+    "sammensattnavn": "SUBSEA 7 (UK SERVICE COMPANY) LIMITED",
     "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
     "navnelinje2": "LIMITED",
     "bruksperiode": {
@@ -25,6 +25,19 @@
         }
       }
     ],
+    "navn": [
+      {
+        "sammensattnavn": "SUBSEA 7 (UK SERVICE COMPANY) LIMITED",
+        "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
+        "navnelinje2": "LIMITED",
+        "bruksperiode": {
+          "fom": "2015-02-23T08:04:53.2"
+        },
+        "gyldighetsperiode": {
+          "fom": "2002-12-04"
+        }
+      }
+    ],
     "naeringer": [
       {
         "naeringskode": "09.109",
@@ -34,19 +47,6 @@
         },
         "gyldighetsperiode": {
           "fom": "2014-06-10"
-        }
-      }
-    ],
-    "navn": [
-      {
-        "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
-        "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
-        "navnelinje2": "LIMITED",
-        "bruksperiode": {
-          "fom": "2015-02-23T08:04:53.2"
-        },
-        "gyldighetsperiode": {
-          "fom": "2002-12-04"
         }
       }
     ],
@@ -90,19 +90,28 @@
         }
       }
     ],
-    "maalform": "NB",
-    "sistEndret": "2021-12-14",
     "ansatte": [
       {
-        "antall": 30,
+        "antall": 42,
         "bruksperiode": {
-          "fom": "2021-12-16T01:01:50.545"
+          "fom": "2022-12-16T00:55:14.532"
         },
         "gyldighetsperiode": {
-          "fom": "2021-12-14"
+          "fom": "2022-12-13"
         }
       }
-    ]
+    ],
+    "navSpesifikkInformasjon": {
+      "erIA": false,
+      "bruksperiode": {
+        "fom": "1900-01-01T00:00:00"
+      },
+      "gyldighetsperiode": {
+        "fom": "1900-01-01"
+      }
+    },
+    "maalform": "NB",
+    "sistEndret": "2022-12-13"
   },
   "juridiskEnhetDetaljer": {
     "enhetstype": "NUF"
@@ -114,7 +123,7 @@
         "organisasjonsnummer": "985167192",
         "type": "JuridiskEnhet",
         "navn": {
-          "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+          "sammensattnavn": "SUBSEA 7 (UK SERVICE COMPANY) LIMITED",
           "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
           "navnelinje2": "LIMITED",
           "bruksperiode": {
@@ -127,7 +136,7 @@
         "organisasjonDetaljer": {
           "navn": [
             {
-              "redigertnavn": "SUBSEA 7 UK SERVICE COMPANY LIMITED",
+              "sammensattnavn": "SUBSEA 7 (UK SERVICE COMPANY) LIMITED",
               "navnelinje1": "SUBSEA 7 (UK SERVICE COMPANY)",
               "navnelinje2": "LIMITED",
               "bruksperiode": {
@@ -138,8 +147,7 @@
               }
             }
           ]
-        },
-        "juridiskEnhetDetaljer": {}
+        }
       },
       "bruksperiode": {
         "fom": "2014-05-23T19:17:48.816"

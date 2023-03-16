@@ -1,87 +1,325 @@
 {
-  "organisasjonsnummer": "990983666",
-  "type": "Virksomhet",
+  "organisasjonsnummer": "986228608",
+  "type": "JuridiskEnhet",
   "navn": {
-    "redigertnavn": "NAV IKT",
-    "navnelinje1": "NAV IKT",
+    "sammensattnavn": "YARA INTERNATIONAL ASA",
+    "navnelinje1": "YARA INTERNATIONAL ASA",
     "bruksperiode": {
       "fom": "2015-02-23T08:04:53.2"
     },
     "gyldighetsperiode": {
-      "fom": "2010-04-09"
+      "fom": "2003-12-19"
     }
   },
   "organisasjonDetaljer": {
-    "registreringsdato": "2007-03-05T00:00:00",
+    "registreringsdato": "2003-11-12T00:00:00",
+    "stiftelsesdato": "2003-11-10",
     "enhetstyper": [
       {
-        "enhetstype": "BEDR",
+        "enhetstype": "ASA",
         "bruksperiode": {
-          "fom": "2014-05-21T15:46:47.225"
+          "fom": "2014-05-21T21:23:47.231"
         },
         "gyldighetsperiode": {
-          "fom": "2007-03-05"
-        }
-      }
-    ],
-    "naeringer": [
-      {
-        "naeringskode": "84.300",
-        "hjelpeenhet": false,
-        "bruksperiode": {
-          "fom": "2014-05-22T01:18:10.661"
-        },
-        "gyldighetsperiode": {
-          "fom": "2006-07-01"
+          "fom": "2003-11-12"
         }
       }
     ],
     "navn": [
       {
-        "redigertnavn": "NAV IKT",
-        "navnelinje1": "NAV IKT",
+        "sammensattnavn": "YARA INTERNATIONAL ASA",
+        "navnelinje1": "YARA INTERNATIONAL ASA",
         "bruksperiode": {
           "fom": "2015-02-23T08:04:53.2"
         },
         "gyldighetsperiode": {
-          "fom": "2010-04-09"
+          "fom": "2003-12-19"
+        }
+      }
+    ],
+    "naeringer": [
+      {
+        "naeringskode": "20.150",
+        "hjelpeenhet": false,
+        "bruksperiode": {
+          "fom": "2014-05-22T01:10:29.866"
+        },
+        "gyldighetsperiode": {
+          "fom": "2003-11-13"
+        }
+      },
+      {
+        "naeringskode": "70.100",
+        "hjelpeenhet": true,
+        "bruksperiode": {
+          "fom": "2014-05-22T01:10:29.866"
+        },
+        "gyldighetsperiode": {
+          "fom": "2003-11-13"
         }
       }
     ],
     "forretningsadresser": [
       {
         "type": "Forretningsadresse",
-        "adresselinje1": "Sannergata 2",
-        "postnummer": "0557",
+        "adresselinje1": "Drammensveien 131",
+        "postnummer": "0277",
         "landkode": "NO",
         "kommunenummer": "0301",
         "bruksperiode": {
-          "fom": "2015-02-23T10:38:34.403"
+          "fom": "2014-05-25T16:19:16.371"
         },
         "gyldighetsperiode": {
-          "fom": "2007-08-23"
+          "fom": "2014-05-10"
         }
       }
     ],
     "postadresser": [
       {
         "type": "Postadresse",
-        "adresselinje1": "Postboks 5 St Olavs plass",
-        "postnummer": "0130",
+        "adresselinje1": "Postboks 343  Skøyen",
+        "postnummer": "0213",
         "landkode": "NO",
         "kommunenummer": "0301",
         "bruksperiode": {
-          "fom": "2015-02-23T10:38:34.403"
+          "fom": "2014-05-25T16:19:16.376"
         },
         "gyldighetsperiode": {
-          "fom": "2010-10-08"
+          "fom": "2014-05-10"
         }
       }
     ],
-    "sistEndret": "2014-02-17"
+    "epostadresser": [
+      {
+        "adresse": "yara@yara.com",
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.221"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "internettadresser": [
+      {
+        "adresse": "www.yara.com",
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.221"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "telefonnummer": [
+      {
+        "nummer": "24 15 70 00",
+        "telefontype": "TFON",
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.231"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "telefaksnummer": [
+      {
+        "nummer": "24 15 70 01",
+        "telefontype": "TFAX",
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.231"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "formaal": [
+      {
+        "formaal": "Drive industri, handel og transport samt å drive annen virksomhet\nknyttet til disse formål.",
+        "bruksperiode": {
+          "fom": "2014-05-22T00:13:30.057"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "registrertMVA": [
+      {
+        "registrertIMVA": true,
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.231"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ],
+    "ansatte": [
+      {
+        "antall": 653,
+        "bruksperiode": {
+          "fom": "2022-12-16T01:03:19.494"
+        },
+        "gyldighetsperiode": {
+          "fom": "2022-12-14"
+        }
+      }
+    ],
+    "navSpesifikkInformasjon": {
+      "erIA": true,
+      "bruksperiode": {
+        "fom": "2016-07-15T11:00:05.098"
+      },
+      "gyldighetsperiode": {
+        "fom": "2016-07-15"
+      }
+    },
+    "maalform": "NB",
+    "sistEndret": "2022-12-14"
   },
-  "virksomhetDetaljer": {
-    "enhetstype": "BEDR",
-    "oppstartsdato": "2006-07-01"
-  }
+  "juridiskEnhetDetaljer": {
+    "enhetstype": "ASA",
+    "sektorkode": "2100",
+    "kapitalopplysninger": [
+      {
+        "kapital": 433033565.9,
+        "kapitalInnbetalt": 433033565.9,
+        "valuta": "NOK",
+        "fritekst": "null",
+        "bruksperiode": {
+          "fom": "2022-08-26T04:01:56.163"
+        },
+        "gyldighetsperiode": {
+          "fom": "2022-08-25"
+        }
+      }
+    ],
+    "foretaksregisterRegistreringer": [
+      {
+        "registrert": true,
+        "bruksperiode": {
+          "fom": "2014-05-21T21:23:47.231"
+        },
+        "gyldighetsperiode": {
+          "fom": "2014-02-26"
+        }
+      }
+    ]
+  },
+  "knytninger": [
+    {
+      "knytning": "REPR",
+      "juridiskEnhet": {
+        "organisasjonsnummer": "984201729",
+        "type": "JuridiskEnhet",
+        "navn": {
+          "sammensattnavn": "YARA BELGIUM S.A.",
+          "navnelinje1": "YARA BELGIUM S.A.",
+          "bruksperiode": {
+            "fom": "2015-02-23T08:04:53.2"
+          },
+          "gyldighetsperiode": {
+            "fom": "2004-09-09"
+          }
+        },
+        "organisasjonDetaljer": {
+          "navn": [
+            {
+              "sammensattnavn": "YARA BELGIUM S.A.",
+              "navnelinje1": "YARA BELGIUM S.A.",
+              "bruksperiode": {
+                "fom": "2015-02-23T08:04:53.2"
+              },
+              "gyldighetsperiode": {
+                "fom": "2004-09-09"
+              }
+            }
+          ]
+        }
+      },
+      "bruksperiode": {
+        "fom": "2014-05-23T19:07:34.753"
+      },
+      "gyldighetsperiode": {
+        "fom": "2005-03-02"
+      }
+    },
+    {
+      "knytning": "REPR",
+      "juridiskEnhet": {
+        "organisasjonsnummer": "986550534",
+        "type": "JuridiskEnhet",
+        "navn": {
+          "sammensattnavn": "YARA ENVIRONMENTAL TECHNOLOGIES AB",
+          "navnelinje1": "YARA ENVIRONMENTAL TECHNOLOGIES AB",
+          "bruksperiode": {
+            "fom": "2018-02-04T04:00:56.167"
+          },
+          "gyldighetsperiode": {
+            "fom": "2018-02-03"
+          }
+        },
+        "organisasjonDetaljer": {
+          "navn": [
+            {
+              "sammensattnavn": "YARA ENVIRONMENTAL TECHNOLOGIES AB",
+              "navnelinje1": "YARA ENVIRONMENTAL TECHNOLOGIES AB",
+              "bruksperiode": {
+                "fom": "2018-02-04T04:00:56.167"
+              },
+              "gyldighetsperiode": {
+                "fom": "2018-02-03"
+              }
+            }
+          ]
+        }
+      },
+      "bruksperiode": {
+        "fom": "2014-05-23T19:31:27.267"
+      },
+      "gyldighetsperiode": {
+        "fom": "2012-05-07"
+      }
+    },
+    {
+      "knytning": "REPR",
+      "juridiskEnhet": {
+        "organisasjonsnummer": "989215809",
+        "type": "JuridiskEnhet",
+        "navn": {
+          "sammensattnavn": "YARA SWITZERLAND LTD",
+          "navnelinje1": "YARA SWITZERLAND LTD",
+          "bruksperiode": {
+            "fom": "2015-02-23T08:04:53.2"
+          },
+          "gyldighetsperiode": {
+            "fom": "2013-02-03"
+          }
+        },
+        "organisasjonDetaljer": {
+          "navn": [
+            {
+              "sammensattnavn": "YARA SWITZERLAND LTD",
+              "navnelinje1": "YARA SWITZERLAND LTD",
+              "bruksperiode": {
+                "fom": "2015-02-23T08:04:53.2"
+              },
+              "gyldighetsperiode": {
+                "fom": "2013-02-03"
+              }
+            }
+          ]
+        }
+      },
+      "bruksperiode": {
+        "fom": "2014-05-23T20:00:06.914"
+      },
+      "gyldighetsperiode": {
+        "fom": "2006-02-25"
+      }
+    }
+  ]
 }

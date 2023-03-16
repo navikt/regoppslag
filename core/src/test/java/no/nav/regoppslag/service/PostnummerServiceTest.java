@@ -38,5 +38,14 @@ public class PostnummerServiceTest {
 
 		assertNull(poststed);
 	}
+
+	// workaround for å få gjennom brev som skal til endrede poststeder
+	@Test
+	void shouldFinnWorkaroundPoststeder() {
+		String haroy = postnummerService.finnPoststed("6485");
+		assertThat(haroy, is("HARØY"));
+		String oslo = postnummerService.finnPoststed("0025");
+		assertThat(oslo, is("OSLO"));
+	}
 }
 

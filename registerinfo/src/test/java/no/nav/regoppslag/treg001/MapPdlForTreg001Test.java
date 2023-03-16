@@ -7,15 +7,15 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
+import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.util.CreateStubs;
@@ -28,10 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
@@ -63,10 +61,7 @@ class MapPdlForTreg001Test {
 	private static final String TEMA = "PEN";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+	private static final String ORGNAVN = "Firma AS";
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private EregConsumer eregConsumer;
@@ -86,7 +81,7 @@ class MapPdlForTreg001Test {
 		landkodeService = new LandkodeService();
 		postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		eregConsumer = mock(EregConsumer.class);
@@ -137,8 +132,8 @@ class MapPdlForTreg001Test {
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(ORGANISASJONNUMMER, mottaker.getId());
-		assertEquals(ORGKORTNAVN + " " + ORGKORTNAVN_2, mottaker.getKortNavn());
-		assertEquals(ORGNAVN + " " + ORGNAVN_2, mottaker.getNavn());
+		assertEquals(ORGNAVN, mottaker.getKortNavn());
+		assertEquals(ORGNAVN, mottaker.getNavn());
 		assertEquals(GATENAVN + " " + HUSNR + HUSBOKSTAV, adresse.getAdresselinje1());
 		assertEquals("HUSNES", adresse.getPoststed());
 		assertEquals(POSTNR, adresse.getPostnummer());
@@ -163,8 +158,7 @@ class MapPdlForTreg001Test {
 	}
 
 	private static no.nav.regoppslag.consumer.ereg.support.Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
-		no.nav.regoppslag.consumer.ereg.support.Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
-				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+		no.nav.regoppslag.consumer.ereg.support.Organisasjon org = TestDataUtil.createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", 10000L);
 		return org;
 	}

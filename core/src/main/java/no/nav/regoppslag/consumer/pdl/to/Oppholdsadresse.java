@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Oppholdsadresse {
+public class Oppholdsadresse implements AdresseGyldigKilde {
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;
 	private String coAdressenavn;
@@ -16,18 +16,4 @@ public class Oppholdsadresse {
 	private Matrikkeladresse matrikkeladresse;
 	private UtenlandskAdresse utenlandskAdresse;
 	private Metadata metadata;
-
-	public boolean isGyldigPdlKilde() {
-		if(metadata == null) {
-			return false;
-		}
-		return metadata.isKildePdl();
-	}
-
-	public boolean isGyldigFregKilde() {
-		if(metadata == null) {
-			return false;
-		}
-		return metadata.isKildeFreg();
-	}
 }

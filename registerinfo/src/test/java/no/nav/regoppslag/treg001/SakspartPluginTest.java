@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Sakspart;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Bruksperiode;
@@ -37,10 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
@@ -66,10 +62,7 @@ public class SakspartPluginTest {
 	private static final String TEMA = "PEN";
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
-	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
+	private static final String ORGNAVN = "Firma AS";
 	private static final String DOKUMENTTYPEID = "I000003";
 
 	private PostnummerService postnummerService;
@@ -93,12 +86,10 @@ public class SakspartPluginTest {
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 		SecurityContextHolder.setContext(securityContext);
 
-		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
 		sakspartPlugin = new SakspartPlugin(metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
-		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(Arrays
-				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2)));
+		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(ORGNAVN));
 	}
 
 	@Test
@@ -177,7 +168,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertThat(sakspart.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(sakspart.getNavn(), is(ORGNAVN));
 	}
 
 	@Test
@@ -211,25 +202,17 @@ public class SakspartPluginTest {
 
 	}
 
-	public static Organisasjon createOrganisasjon(List<String> orgNavn, List<String> orgKortnavn) {
+	public static Organisasjon createOrganisasjon(String navn) {
 		Organisasjon organisasjon = new Organisasjon();
 		OrganisasjonDetaljer organisasjonsDetaljer = new OrganisasjonDetaljer();
 		Navn organisasjonKortnavn = new Navn();
-		StringBuilder tempNavn = new StringBuilder();
-		for (String navn : orgKortnavn) {
-			tempNavn.append(" ").append(navn);
-		}
-
-		organisasjonKortnavn.setNavnelinje1(tempNavn.toString());
+		organisasjonKortnavn.setNavnelinje1(navn);
+		organisasjonKortnavn.setSammensattnavn(navn);
 		organisasjon.setNavn(organisasjonKortnavn);
 
 		Navn organisasjonsnavn = new Navn();
-		StringBuilder tempNavn2 = new StringBuilder();
-		for (String navn : orgNavn) {
-			tempNavn2.append(" ").append(navn);
-		}
-
-		organisasjonsnavn.setNavnelinje1(tempNavn2.toString());
+		organisasjonsnavn.setNavnelinje1(navn);
+		organisasjonsnavn.setSammensattnavn(navn);
 		Bruksperiode bruksperiode = new Bruksperiode();
 		bruksperiode.setFom(LocalDateTime.now().minusDays(1));
 		organisasjonsnavn.setBruksperiode(bruksperiode);

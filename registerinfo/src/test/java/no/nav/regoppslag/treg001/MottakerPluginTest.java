@@ -16,7 +16,9 @@ import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
+import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
@@ -36,7 +38,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -86,9 +87,6 @@ public class MottakerPluginTest {
 	private static final String FORNAVN = "TOM";
 	private static final String ETTERNAVN = "RIDDLE";
 	private static final String ORGNAVN = "Orgnavn 1";
-	private static final String ORGNAVN_2 = "Orgnavn_2";
-	private static final String ORGKORTNAVN = "OrgKortnavn 1";
-	private static final String ORGKORTNAVN_2 = "OrgKortnavn_2";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
 	private static final String MOTTAKER_ID = "30085849677";
@@ -118,7 +116,7 @@ public class MottakerPluginTest {
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		landkodeService = new LandkodeService();
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
-		mapPDLResponse = new MapPDLResponse(postnummerService, landkodeService, pdlGraphQLConsumer);
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 		securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
@@ -300,13 +298,12 @@ public class MottakerPluginTest {
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		assertThat(mottaker.getNavn(), is(ORGNAVN + " " + ORGNAVN_2));
+		assertThat(mottaker.getNavn(), is(ORGNAVN));
 		assertThat(mottaker.getTypeKode(), is(ORGANISASJON));
 		assertThat(mottaker.getId(), is("974727854"));
-		assertThat(mottaker.getKortNavn(), is("OrgKortnavn 1 OrgKortnavn_2"));
+		assertThat(mottaker.getKortNavn(), is(ORGNAVN));
 		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
 	}
-
 
 	@Test
 	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
@@ -322,7 +319,6 @@ public class MottakerPluginTest {
 				() -> mottakerPlugin.processElement(node, valueMap, null),
 				"Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 		assertEquals(exception.getMessage(), "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
-
 	}
 
 	@Test
@@ -340,10 +336,8 @@ public class MottakerPluginTest {
 
 	}
 
-
-	private static Organisasjon createOrganisasjon() throws DatatypeConfigurationException {
-		Organisasjon org = TestDataUtil.createOrganisasjon(Arrays
-				.asList(ORGNAVN, ORGNAVN_2), Arrays.asList(ORGKORTNAVN, ORGKORTNAVN_2));
+	private static Organisasjon createOrganisasjon() {
+		Organisasjon org = TestDataUtil.createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", 10000L);
 		return org;
 	}
