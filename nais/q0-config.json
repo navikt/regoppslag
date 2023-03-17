@@ -1,6 +1,6 @@
 {
 	"SECURITYTOKENSERVICE_URL": "https://sts-q0.preprod.local/SecurityTokenServiceProvider/",
-	"NORG2_REST_URL": "https://norg2.dev.intern.nav.no/norg2/api/v1/enhet/",
+	"NORG2_REST_URL": "https://norg2.dev.intern.nav.no/norg2/api/v1/enhet",
 	"DOKUMENTTYPEINFO_URL": "https://dokmet.dev.intern.nav.no/rest/dokumenttypeinfo",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.dev.adeo.no/rest/v1/sts/token",
 	"EREG_ORGANISASJON_SERVICE_URL": "https://ereg-services-q0.dev.intern.nav.no/v2/organisasjon/",

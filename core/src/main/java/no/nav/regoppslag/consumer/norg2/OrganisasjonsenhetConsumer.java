@@ -25,9 +25,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class OrganisasjonsenhetConsumer {
 
-	private WebClient webClient;
+	private final WebClient webClient;
 
-	public OrganisasjonsenhetConsumer(WebClient webClient, @Value("${norg2.rest.url}") String norg2Url) {
+	public OrganisasjonsenhetConsumer(WebClient webClient,
+									  @Value("${norg2.rest.url}") String norg2Url) {
 		this.webClient = webClient.mutate()
 				.baseUrl(norg2Url)
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -42,7 +43,7 @@ public class OrganisasjonsenhetConsumer {
 	public EnhetNavn hentEnhetNavn(String enhetNr) {
 
 		return webClient.get()
-				.uri("/enhet/{enhetNr}", enhetNr)
+				.uri("/{enhetNr}", enhetNr)
 				.retrieve()
 				.bodyToMono(EnhetNavn.class)
 				.doOnError(this::handleError)
@@ -55,7 +56,7 @@ public class OrganisasjonsenhetConsumer {
 	public EnhetKontaktinformasjon hentEnhetKontaktinformasjon(String enhetNr) {
 
 		return webClient.get()
-				.uri("/enhet/{enhetNr}/kontaktinformasjon", enhetNr)
+				.uri("/{enhetNr}/kontaktinformasjon", enhetNr)
 				.retrieve()
 				.bodyToMono(EnhetKontaktinformasjon.class)
 				.doOnError(this::handleError)
