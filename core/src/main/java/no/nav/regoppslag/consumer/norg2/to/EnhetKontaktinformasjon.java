@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @Builder
@@ -20,7 +19,6 @@ public class EnhetKontaktinformasjon {
 	private Adresse postadresse;
 	private Stedsadresse besoeksadresse;
 	private String spesielleOpplysninger;
-	private List<Publikumsmottak> publikumsmottak;
 
 	@Data
 	@Builder
@@ -30,16 +28,5 @@ public class EnhetKontaktinformasjon {
 		private String adresse;
 		private String kommentar;
 		private boolean kunIntern;
-	}
-
-	@Data
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Publikumsmottak {
-		private int id;
-		private Stedsadresse besoeksadresse;
-		private List<Aapningstid> aapningstider;
-		private String stedsbeskrivelse;
 	}
 }

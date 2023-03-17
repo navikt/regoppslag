@@ -7,7 +7,7 @@ import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
 import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
-import no.nav.regoppslag.config.Serviceuser;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
@@ -169,8 +169,8 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public Serviceuser serviceuserAlias() {
-			Serviceuser serviceuser = new Serviceuser();
+		public RegoppslagProperties.Serviceuser serviceuserAlias() {
+			RegoppslagProperties.Serviceuser serviceuser = new RegoppslagProperties.Serviceuser();
 			serviceuser.setPassword("psw");
 			serviceuser.setUsername("usr");
 			return serviceuser;

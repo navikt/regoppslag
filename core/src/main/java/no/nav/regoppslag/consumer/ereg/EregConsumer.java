@@ -27,10 +27,10 @@ import java.util.UUID;
 import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
@@ -81,7 +81,7 @@ public class EregConsumer {
 	}
 
 	private String getCallId() {
-		String callId = MDC.get(NAV_CALLID);
+		String callId = MDC.get(CALL_ID);
 		if (isBlank(callId)) {
 			return UUID.randomUUID().toString();
 		} else {

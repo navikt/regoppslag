@@ -60,7 +60,7 @@ public class Norg2MapperTest {
 	@Test
 	public void shouldMapPostboksadresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
-		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithPostbokssadresse(NAV_ENHET_NAVN), postadresse);
+		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithPostboksadresse(NAV_ENHET_NAVN), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -86,7 +86,7 @@ public class Norg2MapperTest {
 		return enhet;
 	}
 
-	private EnhetKontaktinformasjon createEnhetWithPostbokssadresse(String enhetNavn) {
+	private EnhetKontaktinformasjon createEnhetWithPostboksadresse(String enhetNavn) {
 		return EnhetKontaktinformasjon.builder()
 				.postadresse(Adresse.builder()
 						.type(POSTBOKSADRESSE)

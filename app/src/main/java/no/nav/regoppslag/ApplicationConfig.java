@@ -4,10 +4,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
-import no.nav.regoppslag.config.Serviceuser;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.WebClientConfig;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.metrics.DokTimedAspect;
 import no.nav.regoppslag.treg001.ElementEnricherConfig;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableConfigurationProperties({
 		DokumenttypeInfoProperties.class,
-		Serviceuser.class,
+		RegoppslagProperties.class,
 		AzureProperties.class
 })
 @Import({TomcatConfig.class,

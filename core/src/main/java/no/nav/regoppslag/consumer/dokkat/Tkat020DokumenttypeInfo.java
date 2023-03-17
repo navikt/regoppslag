@@ -32,8 +32,9 @@ import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKKAT_SPRAAK
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -99,7 +100,7 @@ public class Tkat020DokumenttypeInfo {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);
 		headers.add(NAV_CONSUMER_ID, APP_NAME);
-		headers.add(NAV_CALLID, MDC.get(NAV_CALLID));
+		headers.add(NAV_CALLID, MDC.get(CALL_ID));
 		return headers;
 	}
 }

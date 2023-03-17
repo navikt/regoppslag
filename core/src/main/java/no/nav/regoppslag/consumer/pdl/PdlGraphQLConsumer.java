@@ -35,7 +35,7 @@ import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_NAVN;
 import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -132,7 +132,7 @@ public class PdlGraphQLConsumer {
 				.header(AUTHORIZATION, serviceUserToken)
 				.header(NAV_CONSUMER_TOKEN, serviceUserToken)
 				.header(HEADER_PDL_TEMA, tema)
-				.header(NAV_CALL_ID, MDC.get(NAV_CALLID))
+				.header(NAV_CALL_ID, MDC.get(CALL_ID))
 				.body(mapRequest(aktoerId, query));
 	}
 

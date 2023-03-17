@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_CONSUMER_ID;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -48,14 +48,14 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private void populateCallId(HttpServletRequest request) {
-		final String navCallId = request.getHeader(NAV_CALLID);
+		final String navCallId = request.getHeader(CALL_ID);
 
 		if (isNotBlank(navCallId)) {
-			MDC.put(NAV_CALLID, navCallId);
+			MDC.put(CALL_ID, navCallId);
 			return;
 		}
 
-		MDC.put(NAV_CALLID, UUID.randomUUID().toString());
+		MDC.put(CALL_ID, UUID.randomUUID().toString());
 	}
 
 	private void populateConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {

@@ -1,6 +1,6 @@
 package no.nav.regoppslag.consumer.norg2;
 
-import no.nav.regoppslag.config.NavMdcHeader;
+import no.nav.regoppslag.config.NavHeaderFilter;
 import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.Norg2FunctionalException;
@@ -20,7 +20,6 @@ import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
@@ -32,7 +31,7 @@ public class OrganisasjonsenhetConsumer {
 		this.webClient = webClient.mutate()
 				.baseUrl(norg2Url)
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.filter(new NavMdcHeader())
+				.filter(new NavHeaderFilter())
 				.build();
 	}
 
@@ -51,13 +50,12 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_KONTAKTINFO, key = "#enhetNr")
-	@Retryable(include = RegOppslagTechnicalException.class,  maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public EnhetKontaktinformasjon hentEnhetKontaktinformasjon(String enhetNr) {
 
 		return webClient.get()
 				.uri("/enhet/{enhetNr}/kontaktinformasjon", enhetNr)
-				.accept(APPLICATION_JSON)
 				.retrieve()
 				.bodyToMono(EnhetKontaktinformasjon.class)
 				.doOnError(this::handleError)

@@ -28,10 +28,10 @@ import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALLID;
+import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_PERSONIDENTER;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -75,7 +75,7 @@ public class DigitalKontaktinformasjon {
 		try {
 			PostPersonerRequest postPersonRequest = PostPersonerRequest.builder().personidenter(List.of(fnrTrimmed)).build();
 			HttpEntity<String> request = new HttpEntity(postPersonRequest, headers);
-			DkifResponse response = restTemplate.postForEntity(digdirKrrUrl + "/rest/v1/personer?inkluderSikkerDigitalPost="+inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
+			DkifResponse response = restTemplate.postForEntity(digdirKrrUrl + "/rest/v1/personer?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
 
 			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.getKontaktinfo().get(fnrTrimmed)) : null;
 			return isBlank(spraak) ? null : spraak.toUpperCase();
@@ -110,6 +110,6 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private String getCallId() {
-		return isBlank(MDC.get(NAV_CALLID)) ? UUID.randomUUID().toString() : MDC.get(NAV_CALLID);
+		return isBlank(MDC.get(CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(CALL_ID);
 	}
 }

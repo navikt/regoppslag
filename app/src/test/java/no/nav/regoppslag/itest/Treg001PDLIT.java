@@ -1,16 +1,13 @@
 package no.nav.regoppslag.itest;
 
 
-import com.github.tomakehurst.wiremock.admin.model.ListStubMappingsResult;
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -19,7 +16,6 @@ import static com.github.tomakehurst.wiremock.client.CountMatchingStrategy.GREAT
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.listAllStubMappings;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -70,7 +66,6 @@ public class Treg001PDLIT extends AbstractIT {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		ListStubMappingsResult stubs = listAllStubMappings();
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 
 		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001pdl_full_response.xml"));
