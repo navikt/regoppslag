@@ -86,8 +86,8 @@ public class PDLResponseUtil {
 	public static final String FRITTFORMAT_ADRESSELINJE2 = "Kirkegata 12";
 	public static final String FRITTFORMAT_POSTNUMMER = "7320";
 	public static final String POSTSTED = "FANNREM";
-	public static final String UTENLAND_POSTSTED = "Berlin";
-	public static final String UTENLAND_POSTNUMMER = "12345";
+	public static final String UTENLANDSK_POSTSTED = "Berlin";
+	public static final String UTENLANDSK_POSTNUMMER = "12345";
 	public static final String ALPHA3_LANDKODE_TYSKLAND = "DEU";
 	public static final String POSTBOKSEIER = "Byggfirma A/S";
 	public static final String STATE = "Yorkshire";
@@ -570,8 +570,8 @@ public class PDLResponseUtil {
 	private static KontaktinformasjonForDoedsbo.KontaktAdresse createDoedsboKontaktAdresseForUtenland() {
 		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
 		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
-		kontaktAdresse.setPostnummer(UTENLAND_POSTNUMMER);
-		kontaktAdresse.setPoststedsnavn(UTENLAND_POSTSTED);
+		kontaktAdresse.setPostnummer(UTENLANDSK_POSTNUMMER);
+		kontaktAdresse.setPoststedsnavn(UTENLANDSK_POSTSTED);
 		kontaktAdresse.setLandkode(ALPHA3_LANDKODE_TYSKLAND);
 		return kontaktAdresse;
 	}

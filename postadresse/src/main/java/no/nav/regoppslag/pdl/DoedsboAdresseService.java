@@ -31,8 +31,8 @@ public class DoedsboAdresseService {
 
 	private final PostnummerService postnummerService;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
-	private static final String ALPHA2_LANDKODE_NORGE = "NO";
-	private static final String ALPHA3_LANDKODE_NORGE = "NOR";
+	private static final String ALPHA2_NORGE_LANDKODE = "NO";
+	private static final String ALPHA3_NORGE_LANDKODE = "NOR";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ON_BEHALF_OF = "v/ ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
@@ -97,11 +97,11 @@ public class DoedsboAdresseService {
 					.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
-					.landkode(ALPHA2_LANDKODE_NORGE)
+					.landkode(ALPHA2_NORGE_LANDKODE)
 					.build();
 		}
 
-		return mapDoedsboUtenlandAdresse(kontaktAdresse, fulltnavn);
+		return mapDoedsboForUtenlandskAdresse(kontaktAdresse, fulltnavn);
 	}
 
 	private PostadresseTo mapMidlertidigPostboksadresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
@@ -119,14 +119,14 @@ public class DoedsboAdresseService {
 					.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 					.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
 							: adresse.getPoststedsnavn())
-					.landkode(ALPHA2_LANDKODE_NORGE)
+					.landkode(ALPHA2_NORGE_LANDKODE)
 					.build();
 		}
 
-		return mapDoedsboUtenlandAdresse(adresse,navn);
+		return mapDoedsboForUtenlandskAdresse(adresse,navn);
 	}
 
-	private PostadresseTo mapDoedsboUtenlandAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
+	private PostadresseTo mapDoedsboForUtenlandskAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
 		if (Objects.isNull(adresse)) {
 			return null;
 		}
@@ -170,7 +170,7 @@ public class DoedsboAdresseService {
 	}
 
 	private boolean isNorskadresse(String landkode) {
-		return ALPHA3_LANDKODE_NORGE.equals(landkode) || isBlank(landkode);
+		return ALPHA3_NORGE_LANDKODE.equals(landkode) || isBlank(landkode);
 	}
 
 	private String concatenateAdresse(String adresse1, String adresse2) {
