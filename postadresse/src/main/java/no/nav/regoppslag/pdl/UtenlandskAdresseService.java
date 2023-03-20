@@ -4,17 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
-import no.nav.regoppslag.service.LandkodeService;
 
 import java.util.Optional;
 
-import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
-import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -142,14 +139,5 @@ public class UtenlandskAdresseService {
 
 	private static String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
-	}
-
-	private static String getAlpha2Landkode(String alpha3Landkode) {
-		String alpha2Landkode = KOSOVO_LANDKODE_NAV_REGISTRENE.equalsIgnoreCase(alpha3Landkode) ? XK.name() : LandkodeService.finnLandkodeAlpha2FraAlpha3(alpha3Landkode);
-		if (alpha2Landkode == null) {
-			log.info("Mottaker har ingen gyldig landkode registert. alpha3Landkode={}. Setter landkode={}.", alpha3Landkode, UNKNOWN_LANDKODE);
-			return UNKNOWN_LANDKODE;
-		}
-		return alpha2Landkode;
 	}
 }

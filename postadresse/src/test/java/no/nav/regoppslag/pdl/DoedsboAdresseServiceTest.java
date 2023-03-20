@@ -30,6 +30,7 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
@@ -38,7 +39,10 @@ import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.REGION_DISTRIKTOMRAADE;
 import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLAND_POSTNUMMER;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLAND_POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
@@ -189,6 +193,29 @@ class DoedsboAdresseServiceTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
+	}
+
+	@Test
+	public void shouldMapKontaktinformasjonForDoedsboWithUtenlandiskAdresse() {
+		KontaktinformasjonForDoedsbo kontaktinformasjon = PDLResponseUtil.createKontaktinformasjonForDoeds().build();
+		HentPerson hentPerson = createHentePersonBuilder()
+				.doedsfall(List.of(createDoedsfall(DOEDSDATO)))
+				.folkeregisterpersonstatus(List.of(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktinformasjonForDoedsbo(List.of(kontaktinformasjon))
+				.build();
+
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(ADRESSENAVN_1, response.getAdresselinje2());
+		assertEquals(UTENLAND_POSTNUMMER + " " + UTENLAND_POSTSTED, response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
+		assertEquals("DE", response.getLandkode());
+		assertNull(response.getPostnummer());
+		assertNull(response.getPoststed());
 		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 
