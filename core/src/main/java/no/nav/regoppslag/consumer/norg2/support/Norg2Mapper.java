@@ -8,7 +8,6 @@ import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.consumer.norg2.to.Stedsadresse;
 import no.nav.regoppslag.service.PostnummerService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +67,6 @@ public class Norg2Mapper {
 		}
 	}
 
-
 	public void mapBesokadresse(EnhetNavn organisasjonsenhetNavn, EnhetKontaktinformasjon kontaktinformasjon, AdresseEnhet adresseEnhet) {
 		if (nonNull(organisasjonsenhetNavn)) {
 			adresseEnhet.setEnhetsNavn(organisasjonsenhetNavn.getNavn());
@@ -76,22 +74,35 @@ public class Norg2Mapper {
 
 		if (nonNull(kontaktinformasjon)) {
 			adresseEnhet.setKontaktTelefonnummer(kontaktinformasjon.getTelefonnummer());
-			adresseEnhet.setAdresse(mapEnhetBesokadresse(kontaktinformasjon.getBesoeksadresse()));
+			adresseEnhet.setAdresse(mapEnhetBesokadresse(kontaktinformasjon.getBesoeksadresse(), kontaktinformasjon.getPostadresse()));
 		}
 	}
 
-	private NorskPostadresse mapEnhetBesokadresse(Stedsadresse besoeksadresse) {
+	private NorskPostadresse mapEnhetBesokadresse(Stedsadresse besoeksadresse, Adresse adresse) {
 		if (isNull(besoeksadresse)) {
 			return null;
 		}
 		NorskPostadresse postadresse = new NorskPostadresse();
 
-		postadresse.setAdresselinje1(ofNullable(besoeksadresse.getGatenavn()).orElse("") + " " + ofNullable(besoeksadresse.getHusnummer()).orElse("") + ofNullable(besoeksadresse.getHusbokstav()).orElse(""));
-		if (StringUtils.isNotBlank(besoeksadresse.getPostnummer())) {
-			postadresse.setPostnummer(besoeksadresse.getPostnummer());
-			postadresse.setPoststed(isNotBlank(besoeksadresse.getPoststed()) ? besoeksadresse.getPoststed() : postnummerService.finnPoststed(besoeksadresse.getPostnummer()));
+		if (STEDSADRESSE.equals(adresse.getType())) {
+			setAdresselinje1(postadresse, adresse.getGatenavn(), adresse.getHusnummer(), adresse.getHusbokstav());
+			if (isNotBlank(adresse.getPostnummer())) {
+				postadresse.setPostnummer(adresse.getPostnummer());
+				postadresse.setPoststed(isNotBlank(adresse.getPoststed()) ? adresse.getPoststed() : postnummerService.finnPoststed(adresse.getPostnummer()));
+			}
+		} else {
+			setAdresselinje1(postadresse, besoeksadresse.getGatenavn(), besoeksadresse.getHusnummer(), adresse.getHusbokstav());
+			if (isNotBlank(besoeksadresse.getPostnummer())) {
+				postadresse.setPostnummer(besoeksadresse.getPostnummer());
+				postadresse.setPoststed(isNotBlank(besoeksadresse.getPoststed()) ? besoeksadresse.getPoststed() : postnummerService.finnPoststed(besoeksadresse.getPostnummer()));
+			}
 		}
 		return postadresse;
+	}
+
+	private void setAdresselinje1(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav) {
+		postadresse.setAdresselinje1(ofNullable(gatenavn)
+				.orElse("") + " " + ofNullable(husnummer).orElse("") + ofNullable(husbokstav).orElse(""));
 	}
 
 	public void mapEnhetNavn(EnhetNavn rsEnhetNavn, NavEnhet navEnhet) {
