@@ -86,6 +86,9 @@ public class PDLResponseUtil {
 	public static final String FRITTFORMAT_ADRESSELINJE2 = "Kirkegata 12";
 	public static final String FRITTFORMAT_POSTNUMMER = "7320";
 	public static final String POSTSTED = "FANNREM";
+	public static final String UTENLANDSK_POSTSTED = "Berlin";
+	public static final String UTENLANDSK_POSTNUMMER = "12345";
+	public static final String ALPHA3_LANDKODE_TYSKLAND = "DEU";
 	public static final String POSTBOKSEIER = "Byggfirma A/S";
 	public static final String STATE = "Yorkshire";
 	public static final String ADRESSENAVN_NUMMER = "";
@@ -488,7 +491,7 @@ public class PDLResponseUtil {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
 				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
-				.adresse(createAdvokatKontaktAdresse())
+				.adresse(createDoedsboKontaktAdresseForUtenland())
 				.personSomKontakt(KontaktinformasjonForDoedsbo.PersonSomKontakt.builder()
 						.personnavn(createKontaktPersonnavn())
 						.identifikasjonsnummer(ORGANISASJONNUMMER)
@@ -562,6 +565,15 @@ public class PDLResponseUtil {
 		personnavn.setMellomnavn(ADVOKAT_MELLOMNAVN);
 		personnavn.setMellomnavn(ADVOKAT_ETTERNAVN);
 		return personnavn;
+	}
+
+	private static KontaktinformasjonForDoedsbo.KontaktAdresse createDoedsboKontaktAdresseForUtenland() {
+		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
+		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
+		kontaktAdresse.setPostnummer(UTENLANDSK_POSTNUMMER);
+		kontaktAdresse.setPoststedsnavn(UTENLANDSK_POSTSTED);
+		kontaktAdresse.setLandkode(ALPHA3_LANDKODE_TYSKLAND);
+		return kontaktAdresse;
 	}
 
 	private static KontaktinformasjonForDoedsbo.KontaktAdresse createAdvokatKontaktAdresse() {

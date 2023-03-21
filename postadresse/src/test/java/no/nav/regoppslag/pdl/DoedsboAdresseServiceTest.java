@@ -3,13 +3,9 @@ package no.nav.regoppslag.pdl;
 
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
-import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
-import no.nav.regoppslag.consumer.pdl.to.Metadata;
-import no.nav.regoppslag.consumer.pdl.to.PDLConstant;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
-import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
@@ -20,16 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
-import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
-import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
@@ -39,6 +33,8 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTNUMMER;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
@@ -46,7 +42,6 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createHentePersonBuilder;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsbo;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithNoContact;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithOrginasjon;
-import static no.nav.regoppslag.util.PDLResponseUtil.createMetadata;
 import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrginasjonSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonKontaktAdresse;
@@ -189,6 +184,29 @@ class DoedsboAdresseServiceTest {
 		assertEquals(LANDKODE_NORGE, response.getLandkode());
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
+	}
+
+	@Test
+	public void shouldMapKontaktinformasjonForDoedsboWithUtenlandskAdresse() {
+		KontaktinformasjonForDoedsbo kontaktinformasjon = PDLResponseUtil.createKontaktinformasjonForDoeds().build();
+		HentPerson hentPerson = createHentePersonBuilder()
+				.doedsfall(List.of(createDoedsfall(DOEDSDATO)))
+				.folkeregisterpersonstatus(List.of(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktinformasjonForDoedsbo(List.of(kontaktinformasjon))
+				.build();
+
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(ADRESSENAVN_1, response.getAdresselinje2());
+		assertEquals(UTENLANDSK_POSTNUMMER + " " + UTENLANDSK_POSTSTED, response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
+		assertEquals("DE", response.getLandkode());
+		assertNull(response.getPostnummer());
+		assertNull(response.getPoststed());
 		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
 	}
 

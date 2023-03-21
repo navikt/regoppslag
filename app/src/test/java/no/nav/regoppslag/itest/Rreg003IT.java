@@ -137,6 +137,19 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetUtenlandskPostadresseForDoedsbo() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/pdl_utenlandsk_doedsbo_adresse.json");
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+
+		assertNotNull(response);
+		assertEquals(OK, response.getStatusCode());
+		assertNotNull(response.getBody().getNavn());
+		assertNotNull(response.getBody().getAdresse());
+	}
+
+	@Test
 	public void shouldGetDoedPerson() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");

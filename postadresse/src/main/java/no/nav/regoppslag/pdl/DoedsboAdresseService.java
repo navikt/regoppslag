@@ -18,6 +18,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -29,7 +31,8 @@ public class DoedsboAdresseService {
 
 	private final PostnummerService postnummerService;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
-	private static final String LANDKODE_NORGE = "NO";
+	private static final String ALPHA2_NORGE_LANDKODE = "NO";
+	private static final String ALPHA3_NORGE_LANDKODE = "NOR";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ON_BEHALF_OF = "v/ ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
@@ -84,33 +87,59 @@ public class DoedsboAdresseService {
 	}
 
 	private PostadresseTo mapOrganisasjonSomKontaktAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse, String fulltnavn) {
-		return PostadresseTo.builder()
-				.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
-				.adresseType(POSTADRESSE_INNLAND)
-				.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
-				.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
-				.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
-				.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-				.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
-				.landkode(LANDKODE_NORGE)
-				.build();
+
+		if (isNorskadresse(kontaktAdresse.getLandkode())) {
+			return PostadresseTo.builder()
+					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
+					.adresseType(POSTADRESSE_INNLAND)
+					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
+					.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
+					.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
+					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
+					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
+					.landkode(ALPHA2_NORGE_LANDKODE)
+					.build();
+		}
+
+		return mapDoedsboForUtenlandskAdresse(kontaktAdresse, fulltnavn);
 	}
 
 	private PostadresseTo mapMidlertidigPostboksadresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
 		if (adresse == null) {
 			return null;
 		}
+
+		if (isNorskadresse(adresse.getLandkode())) {
+			return PostadresseTo.builder()
+					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
+					.adresseType(POSTADRESSE_INNLAND)
+					.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
+					.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
+					.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
+					.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
+					.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
+							: adresse.getPoststedsnavn())
+					.landkode(ALPHA2_NORGE_LANDKODE)
+					.build();
+		}
+
+		return mapDoedsboForUtenlandskAdresse(adresse,navn);
+	}
+
+	private PostadresseTo mapDoedsboForUtenlandskAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
+		if (Objects.isNull(adresse)) {
+			return null;
+		}
+
 		return PostadresseTo.builder()
 				.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
-				.adresseType(POSTADRESSE_INNLAND)
+				.adresseType(POSTADRESSE_UTLAND)
 				.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
-				.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
-				.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
-				.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-				.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
-						: adresse.getPoststedsnavn())
-				.landkode(LANDKODE_NORGE)
+				.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : concatenateAdresse(adresse.getAdresselinje1(), adresse.getAdresselinje2()))
+				.adresselinje3(adresse.getPostnummer() + " " + adresse.getPoststedsnavn())
+				.landkode(getAlpha2Landkode(adresse.getLandkode()))
 				.build();
+
 	}
 
 	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String
@@ -140,4 +169,17 @@ public class DoedsboAdresseService {
 		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny();
 	}
 
+	private boolean isNorskadresse(String landkode) {
+		return ALPHA3_NORGE_LANDKODE.equals(landkode) || isBlank(landkode);
+	}
+
+	private String concatenateAdresse(String adresse1, String adresse2) {
+		if (isNotBlank(adresse1) && isBlank(adresse2)) {
+			return adresse1;
+		} else if (isNotBlank(adresse1) && isNotBlank(adresse2)) {
+			return adresse1 + ", " + adresse2;
+		}  else {
+			return adresse2;
+		}
+	}
 }
