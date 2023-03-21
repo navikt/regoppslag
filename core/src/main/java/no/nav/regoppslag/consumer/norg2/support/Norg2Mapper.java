@@ -37,7 +37,10 @@ public class Norg2Mapper {
 
 		if (nonNull(kontaktinformasjon)) {
 			adresseEnhet.setKontaktTelefonnummer(kontaktinformasjon.getTelefonnummer());
-			adresseEnhet.setAdresse(mapEnhetKontaktinformasjon(kontaktinformasjon));
+			NorskPostadresse norskPostadresse = mapEnhetKontaktinformasjon(kontaktinformasjon);
+			if (nonNull(norskPostadresse)) {
+				adresseEnhet.setAdresse(norskPostadresse);
+			}
 		}
 	}
 
@@ -74,7 +77,10 @@ public class Norg2Mapper {
 
 		if (nonNull(kontaktinformasjon)) {
 			adresseEnhet.setKontaktTelefonnummer(kontaktinformasjon.getTelefonnummer());
-			adresseEnhet.setAdresse(mapEnhetBesokadresse(kontaktinformasjon.getBesoeksadresse(), kontaktinformasjon.getPostadresse()));
+			NorskPostadresse norskPostadresse = mapEnhetBesokadresse(kontaktinformasjon.getBesoeksadresse(), kontaktinformasjon.getPostadresse());
+			if (nonNull(norskPostadresse)) {
+				adresseEnhet.setAdresse(norskPostadresse);
+			}
 		}
 	}
 
