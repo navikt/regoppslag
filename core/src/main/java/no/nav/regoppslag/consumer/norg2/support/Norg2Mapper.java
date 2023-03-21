@@ -79,30 +79,26 @@ public class Norg2Mapper {
 	}
 
 	private NorskPostadresse mapEnhetBesokadresse(Stedsadresse besoeksadresse, Adresse adresse) {
-		if (isNull(besoeksadresse)) {
-			return null;
-		}
 		NorskPostadresse postadresse = new NorskPostadresse();
 
-		if (STEDSADRESSE.equals(adresse.getType())) {
-			setAdresselinje1(postadresse, adresse.getGatenavn(), adresse.getHusnummer(), adresse.getHusbokstav());
-			if (isNotBlank(adresse.getPostnummer())) {
-				postadresse.setPostnummer(adresse.getPostnummer());
-				postadresse.setPoststed(isNotBlank(adresse.getPoststed()) ? adresse.getPoststed() : postnummerService.finnPoststed(adresse.getPostnummer()));
-			}
-		} else {
-			setAdresselinje1(postadresse, besoeksadresse.getGatenavn(), besoeksadresse.getHusnummer(), adresse.getHusbokstav());
-			if (isNotBlank(besoeksadresse.getPostnummer())) {
-				postadresse.setPostnummer(besoeksadresse.getPostnummer());
-				postadresse.setPoststed(isNotBlank(besoeksadresse.getPoststed()) ? besoeksadresse.getPoststed() : postnummerService.finnPoststed(besoeksadresse.getPostnummer()));
-			}
+		if (nonNull(adresse) && STEDSADRESSE.equals(adresse.getType())) {
+			return getNorskPostadresse(postadresse, adresse.getGatenavn(), adresse.getHusnummer(), adresse.getHusbokstav(),
+					adresse.getPostnummer(), adresse.getPoststed(), adresse);
+		} else if (nonNull(besoeksadresse)) {
+			return getNorskPostadresse(postadresse, besoeksadresse.getGatenavn(), besoeksadresse.getHusnummer(),
+					besoeksadresse.getHusbokstav(), besoeksadresse.getPostnummer(), besoeksadresse.getPoststed(), adresse);
 		}
-		return postadresse;
+		return null;
 	}
 
-	private void setAdresselinje1(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav) {
+	private NorskPostadresse getNorskPostadresse(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav, String postnummer, String poststed, Adresse adresse) {
 		postadresse.setAdresselinje1(ofNullable(gatenavn)
 				.orElse("") + " " + ofNullable(husnummer).orElse("") + ofNullable(husbokstav).orElse(""));
+		if (isNotBlank(postnummer)) {
+			postadresse.setPostnummer(postnummer);
+			postadresse.setPoststed(isNotBlank(poststed) ? poststed : postnummerService.finnPoststed(postnummer));
+		}
+		return postadresse;
 	}
 
 	public void mapEnhetNavn(EnhetNavn rsEnhetNavn, NavEnhet navEnhet) {
