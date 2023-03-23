@@ -80,6 +80,19 @@ public class Norg2MapperTest {
 		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
 
+	@Test
+	public void shouldMapWhenBesokAdresseIsNull() {
+		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
+		EnhetKontaktinformasjon enhetWithBesoksadresse = createEnhetWithBesoksadresse();
+		enhetWithBesoksadresse.setBesoeksadresse(null);
+		norg2Mapper.mapBesokadresse(createEnhetNavn(NAV_ENHET_NAVN), enhetWithBesoksadresse, postadresse);
+		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
+
+		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
+		assertThat(postadresse.getAdresse().getPostnummer(), is(POSTNR));
+		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
+	}
+
 	private Postadresse createPostadresse(String enhetId) {
 		Postadresse enhet = new Postadresse();
 		enhet.setEnhetsId(enhetId);

@@ -36,7 +36,7 @@ public class LocalCacheConfig {
 	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
 	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
-	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE = "AZURE_CACHE_NAME";
+	public static final String AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE = "AZURE_CACHE_NAME";
 
 	@Bean
 	@Primary
@@ -68,7 +68,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE, Caffeine.newBuilder()
+				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build())));
 		return cacheManager;

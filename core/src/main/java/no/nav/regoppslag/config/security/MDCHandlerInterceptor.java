@@ -17,6 +17,7 @@ import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -48,7 +49,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private void populateCallId(HttpServletRequest request) {
-		final String navCallId = request.getHeader(CALL_ID);
+		final String navCallId = request.getHeader(NAV_CALLID);
 
 		if (isNotBlank(navCallId)) {
 			MDC.put(CALL_ID, navCallId);

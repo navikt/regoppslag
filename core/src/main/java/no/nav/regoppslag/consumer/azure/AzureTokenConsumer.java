@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -40,7 +40,7 @@ public class AzureTokenConsumer implements TokenConsumer {
 	@Override
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
-	@Cacheable(AZURE_CLIENT_CREDENTIAL_TOKEN_CACHE)
+	@Cacheable(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE)
 	public String getClientCredentialToken(String scope) {
 
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
