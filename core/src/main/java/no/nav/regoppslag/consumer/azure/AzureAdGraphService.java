@@ -56,7 +56,7 @@ public class AzureAdGraphService {
 
 
 	private String getUserToken() {
-		return tokenConsumer.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP).getAccess_token();
+		return tokenConsumer.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 
 	GraphServiceClient<Request> getGraphClient(String accessToken) {

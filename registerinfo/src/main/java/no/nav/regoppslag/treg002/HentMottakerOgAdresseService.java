@@ -15,7 +15,7 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

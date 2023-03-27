@@ -1,6 +1,5 @@
 {
-	"SECURITYTOKENSERVICE_URL": "https://sts-q4.preprod.local/SecurityTokenServiceProvider/",
-	"ORGANISASJONENHETKONTAKTINFORMASJON_V1_ENDPOINTURL": "https://app-q4.adeo.no/norg2/ws/OrganisasjonEnhetKontaktinformasjon/v1",
+	"NORG2_REST_URL": "https://norg2.dev.intern.nav.no/norg2/api/v1/enhet",
 	"DOKUMENTTYPEINFO_URL": "https://dokmet.dev.intern.nav.no/rest/dokumenttypeinfo",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.dev.adeo.no/rest/v1/sts/token",
 	"EREG_ORGANISASJON_SERVICE_URL": "https://ereg-services-q2.dev.intern.nav.no/v2/organisasjon//ereg/api/v1/organisasjon/",

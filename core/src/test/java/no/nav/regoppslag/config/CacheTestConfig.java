@@ -15,13 +15,15 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_KONTAKTINFO;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ORGANISASJON;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.STS_CACHE_NAME;
 import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
-import static no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_DOKKAT_SPRAAKINFO;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_ORGANISASJON;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
+
 
 @Profile("itest")
 @Configuration
@@ -30,12 +32,12 @@ public class CacheTestConfig {
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
-	
+
 	@Bean
 	public LettuceConnectionFactory lettuceConnectionFactory() {
 		return new LettuceConnectionFactory();
 	}
-	
+
 	@Bean
 	public CacheManager cacheManager() {
 
@@ -53,6 +55,9 @@ public class CacheTestConfig {
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
+						.build()),
+				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()

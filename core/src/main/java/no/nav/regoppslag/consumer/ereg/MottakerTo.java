@@ -1,4 +1,4 @@
-package no.nav.regoppslag.to;
+package no.nav.regoppslag.consumer.ereg;
 
 import lombok.Builder;
 import lombok.Data;

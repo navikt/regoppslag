@@ -10,7 +10,7 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

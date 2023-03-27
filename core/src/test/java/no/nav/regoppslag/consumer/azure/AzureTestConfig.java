@@ -1,8 +1,5 @@
 package no.nav.regoppslag.consumer.azure;
 
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.regoppslag.consumer.azure.TokenResponse;
-import no.nav.regoppslag.consumer.azure.AzureProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,7 +10,7 @@ public class AzureTestConfig {
 
 	@Bean
 	public TokenConsumer tokenConsumer() {
-		return (String s) -> new TokenResponse();
+		return (String s) -> new String();
 	}
 
 	@Bean

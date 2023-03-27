@@ -24,10 +24,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 import java.util.HashMap;
 
-import static no.nav.regoppslag.config.nais.NaisCheckSTSTokenRetriever.STS_CACHE_NAME;
-import static no.nav.regoppslag.metrics.MetricLabels.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
-import static no.nav.regoppslag.metrics.MetricLabels.HENT_PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.RESTSTS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.STS_CACHE_NAME;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
 @Profile("nais")

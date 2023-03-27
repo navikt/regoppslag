@@ -2,15 +2,15 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,22 +28,17 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 @Slf4j
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
-	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
 	public static final String ELEMENT_LOCALNAME_BEHANDLENDEENHET = "behandlendeEnhet";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
-	private Norg2Mapper norg2Mapper;
-	private MicrometerMetrics metrics;
-
-	public NavOrgenhetNavnPlugin() {
-		super(NavEnhet.class);
-	}
+	private final OrganisasjonsenhetConsumer norg2Consumer;
+	private final Norg2Mapper norg2Mapper;
+	private final MicrometerMetrics metrics;
 	
 	@Autowired
-	public NavOrgenhetNavnPlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
+	public NavOrgenhetNavnPlugin(OrganisasjonsenhetConsumer norg2Consumer, Norg2Mapper norg2Mapper,
 								 MicrometerMetrics metrics) {
 		super(NavEnhet.class);
 		this.norg2Consumer = norg2Consumer;
@@ -66,8 +61,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			//Skal elementet berikes?
 			if (navEnhet.isBerik()) {
 				validateEnhet(navEnhet);
-				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(navEnhet.getEnhetsId());
-				norg2Mapper.mapEnhetNavn(wsEnhet, navEnhet);
+				EnhetNavn rsEnhetNavn = norg2Consumer.hentEnhetNavn(navEnhet.getEnhetsId());
+				norg2Mapper.mapEnhetNavn(rsEnhetNavn, navEnhet);
 			} else {
 				log.info(format("TREG001 NavOrgEnhetPlugin: element-berik=%s. Hopper over beriking av element=%s med enhetsId=%s.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId()));
 				return content;

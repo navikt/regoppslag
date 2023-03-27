@@ -20,7 +20,7 @@ import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.service.LandkodeService;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

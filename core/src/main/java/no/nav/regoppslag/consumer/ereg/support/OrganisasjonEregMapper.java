@@ -11,7 +11,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import no.nav.regoppslag.to.MottakerTo;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -134,7 +134,7 @@ public class OrganisasjonEregMapper {
 			   && (bruksperiode.getTom() == null || bruksperiode.getTom().isAfter(nowTime));
 	}
 
-	// Postadresse skal overstyre forretningsadresse dersom den finnes
+	// Adresse skal overstyre forretningsadresse dersom den finnes
 	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectActiveAddress(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> postadresse, List<no.nav.regoppslag.consumer.ereg.support.Postadresse> forretningsadresse) {
 		// Stream.of er basert på array så rekkefølgen er ordered, gyldige postadresse vil bli funnet før forretningsadresse
 		return Stream.of(selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))

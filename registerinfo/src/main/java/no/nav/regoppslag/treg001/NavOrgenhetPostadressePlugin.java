@@ -2,15 +2,16 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
-import no.nav.regoppslag.consumer.norg2.OrganisasjonEnhetKontaktinformasjonV1Consumer;
+import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
+import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
+import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import no.nav.tjeneste.virksomhet.organisasjonenhetkontaktinformasjon.v1.informasjon.Organisasjonsenhet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	public static final String UGYLDIG_INPUT = "NavOrgenhetPostAdressePlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetPostadressePlugin";
 
-	private OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer;
+	private OrganisasjonsenhetConsumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
 	private MicrometerMetrics metrics;
 
@@ -43,12 +44,12 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	@Autowired
-	public NavOrgenhetPostadressePlugin(OrganisasjonEnhetKontaktinformasjonV1Consumer norg2Consumer, Norg2Mapper norg2Mapper,
+	public NavOrgenhetPostadressePlugin(OrganisasjonsenhetConsumer norg2Consumer, Norg2Mapper norg2Mapper,
 										MicrometerMetrics metrics) {
 		super(Postadresse.class);
-		this.norg2Consumer = norg2Consumer;
 		this.norg2Mapper = norg2Mapper;
 		this.metrics = metrics;
+		this.norg2Consumer = norg2Consumer;
 	}
 
 	@Override
@@ -64,8 +65,10 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
 				validateAdresse(adresse);
-				Organisasjonsenhet wsEnhet = norg2Consumer.hentKontaktinformasjonForEnhet(adresse.getEnhetsId());
-				norg2Mapper.mapPostadresse(wsEnhet, adresse);
+
+				EnhetNavn enhetNavn = norg2Consumer.hentEnhetNavn(adresse.getEnhetsId());
+				EnhetKontaktinformasjon kontaktinformasjon = norg2Consumer.hentEnhetKontaktinformasjon(adresse.getEnhetsId());
+				norg2Mapper.mapPostadresse(enhetNavn, kontaktinformasjon, adresse);
 			}
 
 			Document newNode = convertObjectToDocument(adresse);
@@ -80,13 +83,13 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 		}
 	}
 
-	private void validateAdresse(Postadresse adresse)  {
+	private void validateAdresse(Postadresse adresse) {
 		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
 			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetId.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 
-	private void validateElementType(Node element)  {
+	private void validateElementType(Node element) {
 		if (!(ELEMENT_LOCALNAME_POST.equals(element.getLocalName()) || ELEMENT_LOCALNAME_RETUR.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME_POST
 					+ " or " + ELEMENT_LOCALNAME_RETUR + ". Found {" + element.getNamespaceURI() + "}" + element

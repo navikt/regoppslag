@@ -7,8 +7,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.dokkat.api.tkat020.v3.SpraakInfoTo;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokkat.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
@@ -30,10 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
