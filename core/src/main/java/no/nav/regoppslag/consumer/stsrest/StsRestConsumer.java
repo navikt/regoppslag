@@ -43,7 +43,7 @@ public class StsRestConsumer {
 	public String getOidcToken() {
 		try {
 			return requireNonNull(restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponse.class))
-					.getAccessToken();
+					.accessToken();
 		} catch (HttpStatusCodeException e) {
 			throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
 					.getMessage()), e);

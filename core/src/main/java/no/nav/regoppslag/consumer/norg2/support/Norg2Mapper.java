@@ -8,7 +8,6 @@ import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.consumer.norg2.to.Stedsadresse;
 import no.nav.regoppslag.service.PostnummerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.util.Objects.isNull;
@@ -22,7 +21,6 @@ public class Norg2Mapper {
 	public static final String POSTBOKSADRESSE = "postboksadresse";
 	public static final String STEDSADRESSE = "stedsadresse";
 
-	@Autowired
 	private final PostnummerService postnummerService;
 
 	public Norg2Mapper(PostnummerService postnummerService) {

@@ -26,14 +26,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class KompletterBrevdataServiceTest {
-	private String brevdata = "<ole>brumm</ole>";
-	private String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
 
-	private KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
+	private static final  String brevdata = "<ole>brumm</ole>";
+	private static final  String brevdataUtfylt = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ole>brumm</ole>";
+
+	private final KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
 			.brevdata(brevdata)
 			.build();
-	private KompletterBrevdataRequest illegalRequest = KompletterBrevdataRequest.builder()
+	private final KompletterBrevdataRequest illegalRequest = KompletterBrevdataRequest.builder()
 			.dokumentTypeId("123")
 			.brevdata("<ole>brumm</oleIllegal>")
 			.build();
@@ -55,7 +56,9 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(), any(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
+
 		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
+
 		assertNotNull(actualResponse.getBrevdata());
 		verify(elementEnricher, times(1)).process(any(), any(), any());
 	}
@@ -66,9 +69,9 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldHandleMissingPluginException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(), any(), anyString())).thenThrow(MissingPluginException.class);
+
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
-
 	}
 
 	/**
@@ -77,9 +80,9 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
 		when(elementEnricher.process(any(), any(), anyString())).thenThrow(XPathExpressionException.class);
+
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
-
 	}
 
 	/**
@@ -89,9 +92,9 @@ public class KompletterBrevdataServiceTest {
 	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
 		Document document = null;
 		when(elementEnricher.process(any(), any(), anyString())).thenReturn(document);
+
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest), "org.xml.sax.SAXParseException");
-
 	}
 }
 

@@ -11,6 +11,7 @@ import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 
 public record NavHeaderFilter() implements ExchangeFilterFunction {
+
 	@Override
 	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
 

@@ -1,29 +1,24 @@
 package no.nav.regoppslag.consumer.ldap.support;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SaksbehandlerMapperTest {
-	private final String SAKSBEHANDLER_NAVN = "Sverre Saksbehandler";
 
-	private SaksbehandlerMapper saksbehandlerMapper = new SaksbehandlerMapper();
+	private final SaksbehandlerMapper saksbehandlerMapper = new SaksbehandlerMapper();
 
-	@Test
-	public void mapSaksbehandler() {
+	@ParameterizedTest
+	@ValueSource(strings = {"Sverre Saksbehandler"})
+	@NullSource
+	public void mapSaksbehandler(String saksbehandler) {
 		NavAnsatt navAnsatt = new NavAnsatt();
-		navAnsatt = saksbehandlerMapper.map(SAKSBEHANDLER_NAVN, navAnsatt);
-		assertThat(navAnsatt.getNavn(), is(SAKSBEHANDLER_NAVN));
-	}
-
-	@Test
-	public void mapNullSaksbehandler() {
-		NavAnsatt navAnsatt = new NavAnsatt();
-		navAnsatt = saksbehandlerMapper.map(null, navAnsatt);
-		assertNull(navAnsatt.getNavn());
+		navAnsatt = saksbehandlerMapper.map(saksbehandler, navAnsatt);
+		assertThat(navAnsatt.getNavn(), is(saksbehandler));
 	}
 
 }

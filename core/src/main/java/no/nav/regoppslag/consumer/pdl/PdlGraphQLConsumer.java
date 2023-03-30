@@ -139,231 +139,233 @@ public class PdlGraphQLConsumer {
 	private PDLRequest mapRequest(final String aktoerId, String query) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", aktoerId);
-		return PDLRequest.builder().query(query).variables(variables).build();
+		return new PDLRequest(query, variables);
 	}
 
-	private String hentNavn = "query hentPerson($ident: ID!){\n" +
-			"  hentPerson(ident: $ident){\n" +
-			"    navn(historikk: false){\n" +
-			"      fornavn\n" +
-			"      mellomnavn\n" +
-			"      etternavn\n" +
-			"      forkortetNavn\n" +
-			"    }\n" +
-			"   \n" +
-			"  }\n" +
-			"}";
+	private final String hentNavn = """
+			query hentPerson($ident: ID!){
+			  hentPerson(ident: $ident){
+			    navn(historikk: false){
+			      fornavn
+			      mellomnavn
+			      etternavn
+			      forkortetNavn
+			    }
+			  }
+			}""";
 
-	private String hentPerson = "query hentPerson($ident: ID!){\n" +
-			"  hentPerson(ident: $ident){\n" +
-			"    adressebeskyttelse(historikk: false){\n" +
-			"      gradering\n" +
-			"    }\n" +
-			"    doedsfall{\n" +
-			"      doedsdato\n" +
-			"    }\n" +
-			"    foedsel{\n" +
-			"      foedselsaar\n" +
-			"      foedselsdato\n" +
-			"    }\n" +
-			"    navn(historikk: false){\n" +
-			"      fornavn\n" +
-			"      mellomnavn\n" +
-			"      etternavn\n" +
-			"      forkortetNavn\n" +
-			"    }\n" +
-			"    kontaktadresse(historikk: false){\n" +
-			"      gyldigFraOgMed\n" +
-			"      gyldigTilOgMed\n" +
-			"      type\n" +
-			"      coAdressenavn\n" +
-			"      postboksadresse{\n" +
-			"        postbokseier\n" +
-			"        postboks\n" +
-			"        postnummer\n" +
-			"      }\n" +
-			"      vegadresse{\n" +
-			"        matrikkelId\n" +
-			"        husnummer\n" +
-			"        husbokstav\n" +
-			"        bruksenhetsnummer\n" +
-			"        adressenavn\n" +
-			"        kommunenummer\n" +
-			"        bydelsnummer\n" +
-			"        tilleggsnavn\n" +
-			"        postnummer\n" +
-			"      }\n" +
-			"      postadresseIFrittFormat{\n" +
-			"        adresselinje1\n" +
-			"        adresselinje2\n" +
-			"        adresselinje3\n" +
-			"        postnummer\n" +
-			"      }\n" +
-			"      utenlandskAdresse{\n" +
-			"        adressenavnNummer\n" +
-			"        bygningEtasjeLeilighet\n" +
-			"        postboksNummerNavn\n" +
-			"        postkode\n" +
-			"        bySted\n" +
-			"        regionDistriktOmraade\n" +
-			"        landkode\n" +
-			"      }\n" +
-			"      utenlandskAdresseIFrittFormat{\n" +
-			"        adresselinje1\n" +
-			"        adresselinje2\n" +
-			"        adresselinje3\n" +
-			"        postkode\n" +
-			"        byEllerStedsnavn\n" +
-			"        landkode\n" +
-			"      }\n" +
-			"      metadata{\n" +
-			"        opplysningsId\n" +
-			"        master\n" +
-			"        endringer{\n" +
-			"          type\n" +
-			"          registrert\n" +
-			"          registrertAv\n" +
-			"          systemkilde\n" +
-			"          kilde\n" +
-			"        }\n" +
-			"        historisk\n" +
-			"      }\n" +
-			"    }\n" +
-			"    oppholdsadresse(historikk: false){\n" +
-			"      gyldigFraOgMed\n" +
-			"      gyldigTilOgMed\n" +
-			"      coAdressenavn\n" +
-			"      utenlandskAdresse{\n" +
-			"        adressenavnNummer\n" +
-			"        bygningEtasjeLeilighet\n" +
-			"        postboksNummerNavn\n" +
-			"        postkode\n" +
-			"        bySted\n" +
-			"        regionDistriktOmraade\n" +
-			"        landkode\n" +
-			"      }\n" +
-			"      vegadresse{\n" +
-			"        matrikkelId\n" +
-			"        husnummer\n" +
-			"        husbokstav\n" +
-			"        bruksenhetsnummer\n" +
-			"        adressenavn\n" +
-			"        kommunenummer\n" +
-			"        bydelsnummer\n" +
-			"        tilleggsnavn\n" +
-			"        postnummer\n" +
-			"      }\n" +
-			"      matrikkeladresse{\n" +
-			"        matrikkelId\n" +
-			"        bruksenhetsnummer\n" +
-			"        tilleggsnavn\n" +
-			"        postnummer\n" +
-			"        kommunenummer\n" +
-			"      }\n" +
-			"      oppholdAnnetSted\n" +
-			"      metadata{\n" +
-			"        opplysningsId\n" +
-			"        master\n" +
-			"      }\n" +
-			"    }\n" +
-			"    kontaktinformasjonForDoedsbo(historikk: false){\n" +
-			"      skifteform\n" +
-			"      attestutstedelsesdato\n" +
-			"      personSomKontakt{\n" +
-			"        foedselsdato\n" +
-			"        personnavn{\n" +
-			"          fornavn\n" +
-			"          mellomnavn\n" +
-			"          etternavn\n" +
-			"        }\n" +
-			"        identifikasjonsnummer\n" +
-			"      }\n" +
-			"      advokatSomKontakt{\n" +
-			"        personnavn{\n" +
-			"          fornavn\n" +
-			"          mellomnavn\n" +
-			"          etternavn\n" +
-			"        }\n" +
-			"        organisasjonsnavn\n" +
-			"        organisasjonsnummer\n" +
-			"      }\n" +
-			"      organisasjonSomKontakt{\n" +
-			"        kontaktperson{\n" +
-			"          fornavn\n" +
-			"          mellomnavn\n" +
-			"          etternavn\n" +
-			"        }\n" +
-			"        organisasjonsnavn\n" +
-			"        organisasjonsnummer\n" +
-			"      }\n" +
-			"      adresse{\n" +
-			"        adresselinje1\n" +
-			"        adresselinje2\n" +
-			"        poststedsnavn\n" +
-			"        postnummer\n" +
-			"        landkode\n" +
-			"      }\n" +
-			"      metadata{\n" +
-			"        opplysningsId\n" +
-			"        master\n" +
-			"      }\n" +
-			"    }\n" +
-			"    sikkerhetstiltak{\n" +
-			"      tiltakstype\n" +
-			"      beskrivelse\n" +
-			"    }\n" +
-			"    folkeregisteridentifikator(historikk: false){\n" +
-			"      identifikasjonsnummer\n" +
-			"      type\n" +
-			"      status\n" +
-			"    }\n" +
-			"    bostedsadresse(historikk: false){\n" +
-			"      angittFlyttedato\n" +
-			"      gyldigFraOgMed\n" +
-			"      gyldigTilOgMed\n" +
-			"      coAdressenavn\n" +
-			"      vegadresse{\n" +
-			"        matrikkelId\n" +
-			"        husnummer\n" +
-			"        husbokstav\n" +
-			"        bruksenhetsnummer\n" +
-			"        adressenavn\n" +
-			"        kommunenummer\n" +
-			"        bydelsnummer\n" +
-			"        tilleggsnavn\n" +
-			"        postnummer\n" +
-			"      }\n" +
-			"      utenlandskAdresse{\n" +
-			"        adressenavnNummer\n" +
-			"        bygningEtasjeLeilighet\n" +
-			"        postboksNummerNavn\n" +
-			"        postkode\n" +
-			"        bySted\n" +
-			"        regionDistriktOmraade\n" +
-			"        landkode\n" +
-			"      },\n" +
-			"      matrikkeladresse{\n" +
-			"        matrikkelId\n" +
-			"        bruksenhetsnummer\n" +
-			"        tilleggsnavn\n" +
-			"        postnummer\n" +
-			"        kommunenummer\n" +
-			"      },\n" +
-			"      ukjentBosted{\n" +
-			"        bostedskommune\n" +
-			"      }\n" +
-			"      metadata{\n" +
-			"        opplysningsId\n" +
-			"        master\n" +
-			"      }\n" +
-			"    }\n" +
-			"    folkeregisterpersonstatus(historikk: false){\n" +
-			"      status\n" +
-			"      forenkletStatus\n" +
-			"      folkeregistermetadata{\n" +
-			"        kilde\n" +
-			"      }\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n";
+	private final String hentPerson = """
+			query hentPerson($ident: ID!){
+			  hentPerson(ident: $ident){
+			    adressebeskyttelse(historikk: false){
+			      gradering
+			    }
+			    doedsfall{
+			      doedsdato
+			    }
+			    foedsel{
+			      foedselsaar
+			      foedselsdato
+			    }
+			    navn(historikk: false){
+			      fornavn
+			      mellomnavn
+			      etternavn
+			      forkortetNavn
+			    }
+			    kontaktadresse(historikk: false){
+			      gyldigFraOgMed
+			      gyldigTilOgMed
+			      type
+			      coAdressenavn
+			      postboksadresse{
+			        postbokseier
+			        postboks
+			        postnummer
+			      }
+			      vegadresse{
+			        matrikkelId
+			        husnummer
+			        husbokstav
+			        bruksenhetsnummer
+			        adressenavn
+			        kommunenummer
+			        bydelsnummer
+			        tilleggsnavn
+			        postnummer
+			      }
+			      postadresseIFrittFormat{
+			        adresselinje1
+			        adresselinje2
+			        adresselinje3
+			        postnummer
+			      }
+			      utenlandskAdresse{
+			        adressenavnNummer
+			        bygningEtasjeLeilighet
+			        postboksNummerNavn
+			        postkode
+			        bySted
+			        regionDistriktOmraade
+			        landkode
+			      }
+			      utenlandskAdresseIFrittFormat{
+			        adresselinje1
+			        adresselinje2
+			        adresselinje3
+			        postkode
+			        byEllerStedsnavn
+			        landkode
+			      }
+			      metadata{
+			        opplysningsId
+			        master
+			        endringer{
+			          type
+			          registrert
+			          registrertAv
+			          systemkilde
+			          kilde
+			        }
+			        historisk
+			      }
+			    }
+			    oppholdsadresse(historikk: false){
+			      gyldigFraOgMed
+			      gyldigTilOgMed
+			      coAdressenavn
+			      utenlandskAdresse{
+			        adressenavnNummer
+			        bygningEtasjeLeilighet
+			        postboksNummerNavn
+			        postkode
+			        bySted
+			        regionDistriktOmraade
+			        landkode
+			      }
+			      vegadresse{
+			        matrikkelId
+			        husnummer
+			        husbokstav
+			        bruksenhetsnummer
+			        adressenavn
+			        kommunenummer
+			        bydelsnummer
+			        tilleggsnavn
+			        postnummer
+			      }
+			      matrikkeladresse{
+			        matrikkelId
+			        bruksenhetsnummer
+			        tilleggsnavn
+			        postnummer
+			        kommunenummer
+			      }
+			      oppholdAnnetSted
+			      metadata{
+			        opplysningsId
+			        master
+			      }
+			    }
+			    kontaktinformasjonForDoedsbo(historikk: false){
+			      skifteform
+			      attestutstedelsesdato
+			      personSomKontakt{
+			        foedselsdato
+			        personnavn{
+			          fornavn
+			          mellomnavn
+			          etternavn
+			        }
+			        identifikasjonsnummer
+			      }
+			      advokatSomKontakt{
+			        personnavn{
+			          fornavn
+			          mellomnavn
+			          etternavn
+			        }
+			        organisasjonsnavn
+			        organisasjonsnummer
+			      }
+			      organisasjonSomKontakt{
+			        kontaktperson{
+			          fornavn
+			          mellomnavn
+			          etternavn
+			        }
+			        organisasjonsnavn
+			        organisasjonsnummer
+			      }
+			      adresse{
+			        adresselinje1
+			        adresselinje2
+			        poststedsnavn
+			        postnummer
+			        landkode
+			      }
+			      metadata{
+			        opplysningsId
+			        master
+			      }
+			    }
+			    sikkerhetstiltak{
+			      tiltakstype
+			      beskrivelse
+			    }
+			    folkeregisteridentifikator(historikk: false){
+			      identifikasjonsnummer
+			      type
+			      status
+			    }
+			    bostedsadresse(historikk: false){
+			      angittFlyttedato
+			      gyldigFraOgMed
+			      gyldigTilOgMed
+			      coAdressenavn
+			      vegadresse{
+			        matrikkelId
+			        husnummer
+			        husbokstav
+			        bruksenhetsnummer
+			        adressenavn
+			        kommunenummer
+			        bydelsnummer
+			        tilleggsnavn
+			        postnummer
+			      }
+			      utenlandskAdresse{
+			        adressenavnNummer
+			        bygningEtasjeLeilighet
+			        postboksNummerNavn
+			        postkode
+			        bySted
+			        regionDistriktOmraade
+			        landkode
+			      },
+			      matrikkeladresse{
+			        matrikkelId
+			        bruksenhetsnummer
+			        tilleggsnavn
+			        postnummer
+			        kommunenummer
+			      },
+			      ukjentBosted{
+			        bostedskommune
+			      }
+			      metadata{
+			        opplysningsId
+			        master
+			      }
+			    }
+			    folkeregisterpersonstatus(historikk: false){
+			      status
+			      forenkletStatus
+			      folkeregistermetadata{
+			        kilde
+			      }
+			    }
+			  }
+			}
+			""";
 }

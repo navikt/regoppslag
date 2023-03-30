@@ -1,6 +1,5 @@
 package no.nav.regoppslag.service;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.Appender;
 import no.nav.regoppslag.util.LogbackCapturingAppender;
@@ -14,15 +13,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static ch.qos.logback.classic.Level.WARN;
+import static no.nav.regoppslag.service.LandkodeService.LOG;
+import static no.nav.regoppslag.service.LandkodeService.finnLandkode;
+import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.slf4j.Logger.ROOT_LOGGER_NAME;
 
 @ExtendWith(MockitoExtension.class)
 public class LandkodeServiceTest {
 
 	@Mock
 	private Appender mockAppender;
+
 	private static final String NORGE = "Norge";
 	private static final String NO = "NO";
 	private static final String NOR = "NOR";
@@ -31,60 +36,58 @@ public class LandkodeServiceTest {
 	private static final String KOSOVO_LANDKODE_FEIL = "XXK";
 	private static final String KOSOVO_LANDKODE_RIKTIG = "XKX";
 
-	private LandkodeService landkodeService = new LandkodeService();
-
 	@BeforeEach
 	public void setUp() throws IOException {
 	}
 
 	@AfterEach
 	public void tearDown() {
-		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		final Logger logger = (Logger) LoggerFactory.getLogger(ROOT_LOGGER_NAME);
 		logger.detachAppender(mockAppender);
 	}
 
 
 	@Test
-	public void testFinnLandkode() throws Exception {
-		String landKode = landkodeService.finnLandkode(NORGE);
+	public void testFinnLandkode() {
+		String landKode = finnLandkode(NORGE);
 		assertThat(landKode, is(NO));
 	}
 
 	@Test
-	public void testFinnLandNavn() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(NO);
+	public void testFinnLandNavn() {
+		String landNavn = finnLandnavn(NO);
 		assertThat(landNavn, is(NORGE));
 	}
 
 	@Test
-	public void testFinnLandNavnKode3() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(NOR);
+	public void testFinnLandNavnKode3() {
+		String landNavn = finnLandnavn(NOR);
 		assertThat(landNavn, is(NORGE));
 	}
 
 	@Test
-	public void testFinnLandNavnNullLandkode() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(null);
+	public void testFinnLandNavnNullLandkode() {
+		String landNavn = finnLandnavn(null);
 		assertNull(landNavn);
 	}
 
 	@Test
-	public void testFinnLandNavnKosovo() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_FEIL);
+	public void testFinnLandNavnKosovo() {
+		String landNavn = finnLandnavn(KOSOVO_LANDKODE_FEIL);
 		assertThat(landNavn, is(KOSOVO));
-		landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_RIKTIG);
+		landNavn = finnLandnavn(KOSOVO_LANDKODE_RIKTIG);
 		assertThat(landNavn, is(KOSOVO));
 	}
 
 	@Test
-	public void testFinnUkjentLandNavn() throws Exception {
-		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(LandkodeService.LOG);
-		String landNavn = landkodeService.finnLandnavn(FINNES_IKKE);
+	public void testFinnUkjentLandNavn() {
+		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(LOG);
+		String landNavn = finnLandnavn(FINNES_IKKE);
 		LogbackCapturingAppender.Factory.cleanUp();
 
 		assertNull(landNavn);
 		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon"));
-		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
+		assertThat(capture.getCapturedLogLevel(), is(WARN));
 	}
 }
 

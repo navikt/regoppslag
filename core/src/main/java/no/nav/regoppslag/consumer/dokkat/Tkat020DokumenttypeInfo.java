@@ -37,19 +37,21 @@ import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @Slf4j
 public class Tkat020DokumenttypeInfo {
-	private final RestTemplate restTemplate;
+
 	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
 	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
-	private final String dokumenttypeInfoUrl;
-	private MicrometerMetrics metrics;
-	private TokenConsumer tokenConsumer;
-	private AzureProperties azureProperties;
 
-	@Autowired
+	private final RestTemplate restTemplate;
+	private final String dokumenttypeInfoUrl;
+	private final MicrometerMetrics metrics;
+	private final TokenConsumer tokenConsumer;
+	private final AzureProperties azureProperties;
+
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
 								   DokumenttypeInfoProperties dokumenttypeInfoProperties,
@@ -97,7 +99,7 @@ public class Tkat020DokumenttypeInfo {
 	private HttpHeaders createHeaders() {
 		String clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopeDokmet());
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);
 		headers.add(NAV_CONSUMER_ID, APP_NAME);
 		headers.add(NAV_CALLID, MDC.get(CALL_ID));

@@ -17,9 +17,9 @@ import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDE
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
-
 @Component
 public class AzureTokenConsumer implements TokenConsumer {
+
 	private static final String AZURE_TOKEN_INSTANCE = "azuretoken";
 
 	private final AzureProperties azureProperties;
@@ -28,7 +28,8 @@ public class AzureTokenConsumer implements TokenConsumer {
 
 	@Autowired
 	public AzureTokenConsumer(AzureProperties azureProperties,
-							  ObjectMapper objectMapper, WebClient webClient) {
+							  ObjectMapper objectMapper,
+							  WebClient webClient) {
 		this.azureProperties = azureProperties;
 		this.objectMapper = objectMapper;
 		this.webClient = webClient.mutate()

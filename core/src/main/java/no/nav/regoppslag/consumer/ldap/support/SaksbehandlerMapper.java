@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SaksbehandlerMapper {
+
 	public NavAnsatt map(String saksbehandlerNavn, NavAnsatt navAnsatt) {
 		navAnsatt.setNavn(saksbehandlerNavn);
 		return navAnsatt;

@@ -40,7 +40,6 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
-	@Autowired
 	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
 						RestTemplateBuilder restTemplateBuilder) {
 		this.eregUrl = eregUrl;

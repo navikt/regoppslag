@@ -3,6 +3,7 @@ package no.nav.regoppslag.exceptions;
 import org.springframework.http.HttpStatus;
 
 public class PdlFunctionalException extends RegOppslagFunctionalException {
+
     public PdlFunctionalException(String message, HttpStatus httpStatus) {
         super(message, httpStatus);
     }
