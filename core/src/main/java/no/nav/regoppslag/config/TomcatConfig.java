@@ -1,9 +1,8 @@
 package no.nav.regoppslag.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.threads.ThreadPoolExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -14,10 +13,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Configuration
+@Slf4j
 public class TomcatConfig {
+
 	// Kopiert fra https://github.com/spring-projects/spring-boot/issues/4657#issuecomment-422561557
 	@Bean
 	WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> tomcatCustomizer() {
@@ -36,8 +38,6 @@ public class TomcatConfig {
 	private static class GracefulShutdown implements TomcatConnectorCustomizer,
 			ApplicationListener<ContextClosedEvent> {
 
-		private static final Logger log = LoggerFactory.getLogger(GracefulShutdown.class);
-
 		private volatile Connector connector;
 
 		@Override
@@ -51,9 +51,11 @@ public class TomcatConfig {
 			if (executor instanceof ThreadPoolExecutor) {
 				try {
 					log.info("Graceful shutdown initiated. 30s until kill.");
+
 					ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
 					threadPoolExecutor.shutdown();
-					if (!threadPoolExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+
+					if (!threadPoolExecutor.awaitTermination(30, SECONDS)) {
 						log.warn("Tomcat thread pool did not shut down gracefully within "
 								+ "30 seconds. Proceeding with forceful shutdown");
 					}
