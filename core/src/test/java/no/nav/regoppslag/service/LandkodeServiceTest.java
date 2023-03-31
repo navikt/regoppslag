@@ -1,19 +1,15 @@
 package no.nav.regoppslag.service;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.core.Appender;
-import no.nav.regoppslag.util.LogbackCapturingAppender;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
+import static no.nav.regoppslag.service.LandkodeService.finnLandkode;
+import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -21,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 public class LandkodeServiceTest {
 
-	@Mock
-	private Appender mockAppender;
 	private static final String NORGE = "Norge";
 	private static final String NO = "NO";
 	private static final String NOR = "NOR";
@@ -31,60 +25,44 @@ public class LandkodeServiceTest {
 	private static final String KOSOVO_LANDKODE_FEIL = "XXK";
 	private static final String KOSOVO_LANDKODE_RIKTIG = "XKX";
 
-	private LandkodeService landkodeService = new LandkodeService();
-
-	@BeforeEach
-	public void setUp() throws IOException {
-	}
-
-	@AfterEach
-	public void tearDown() {
-		final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		logger.detachAppender(mockAppender);
-	}
-
-
 	@Test
-	public void testFinnLandkode() throws Exception {
-		String landKode = landkodeService.finnLandkode(NORGE);
+	public void skalFinneLandkode() {
+		String landKode = finnLandkode(NORGE);
 		assertThat(landKode, is(NO));
 	}
 
 	@Test
-	public void testFinnLandNavn() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(NO);
-		assertThat(landNavn, is(NORGE));
+	public void skalReturnereLandkodeNullForLandnavnNull() {
+		String landkode = finnLandkode(null);
+		assertNull(landkode);
 	}
 
-	@Test
-	public void testFinnLandNavnKode3() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(NOR);
-		assertThat(landNavn, is(NORGE));
+	@ParameterizedTest
+	@CsvSource(value = {
+			NO,
+			NOR,
+	})
+	public void skalFinneLandnavnFraAlpha2EllerAlpha3(String landkode) {
+		String landnavn = finnLandnavn(landkode);
+		assertThat(landnavn, is(NORGE));
 	}
 
-	@Test
-	public void testFinnLandNavnNullLandkode() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(null);
-		assertNull(landNavn);
+	@ParameterizedTest
+	@ValueSource(strings = FINNES_IKKE)
+	@NullSource
+	public void skalReturnereLandnavnNullForUgyldigLandkode(String landkode) {
+		String landnavn = finnLandnavn(landkode);
+		assertNull(landnavn);
 	}
 
-	@Test
-	public void testFinnLandNavnKosovo() throws Exception {
-		String landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_FEIL);
-		assertThat(landNavn, is(KOSOVO));
-		landNavn = landkodeService.finnLandnavn(KOSOVO_LANDKODE_RIKTIG);
-		assertThat(landNavn, is(KOSOVO));
-	}
-
-	@Test
-	public void testFinnUkjentLandNavn() throws Exception {
-		LogbackCapturingAppender capture = LogbackCapturingAppender.Factory.weaveInto(LandkodeService.LOG);
-		String landNavn = landkodeService.finnLandnavn(FINNES_IKKE);
-		LogbackCapturingAppender.Factory.cleanUp();
-
-		assertNull(landNavn);
-		assertThat(capture.getCapturedLogMessage(), is("Finner ikke land for landkode: FINNES IKKE, sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon"));
-		assertThat(capture.getCapturedLogLevel(), is(Level.WARN));
+	@ParameterizedTest
+	@ValueSource(strings = {
+			KOSOVO_LANDKODE_FEIL,
+			KOSOVO_LANDKODE_RIKTIG
+	})
+	public void skalFinneLandnavnForKosovoFraNyOgGammelAlpha3Kode(String landkode) {
+		String landnavn = finnLandnavn(landkode);
+		assertThat(landnavn, is(KOSOVO));
 	}
 }
 

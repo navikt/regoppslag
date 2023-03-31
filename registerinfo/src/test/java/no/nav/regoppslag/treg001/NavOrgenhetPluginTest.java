@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
@@ -44,29 +42,23 @@ public class NavOrgenhetPluginTest {
 	private static final String NAV_ENHET_NAVN = "Pensjon Inc.";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private OrganisasjonsenhetConsumer norgConsumer;
-	private PostnummerService postnummerService;
-	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
 	private NavOrgenhetBesoksadressePlugin norgBesoksadressePlugin;
-	private SecurityContext securityContext = new SecurityContextImpl();
+	private final SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
-	private MicrometerMetrics metrics;
-	private MeterRegistry registry;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		norgConsumer = mock(OrganisasjonsenhetConsumer.class);
+		OrganisasjonsenhetConsumer norgConsumer = mock(OrganisasjonsenhetConsumer.class);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
-		postnummerService = new PostnummerService();
+		PostnummerService postnummerService = new PostnummerService();
 
 		postnummerService.init();
-		registry = mock(SimpleMeterRegistry.class);
-		metrics = mock(MicrometerMetrics.class);
-		norg2Mapper = new Norg2Mapper(postnummerService);
+		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
+		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper, metrics);
 		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper, metrics);
 

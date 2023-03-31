@@ -197,7 +197,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 		@Bean
 		public TokenConsumer tokenConsumer() {
-			return (String s) -> new String();
+			return (String s) -> "";
 		}
 
 		@Bean

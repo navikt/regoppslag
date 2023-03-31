@@ -1,7 +1,6 @@
 package no.nav.regoppslag.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -11,8 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -22,7 +19,6 @@ public class LandkodeServiceNorsk {
 
 	private final Map<String, String> landkodeTable;
 
-	@Autowired
 	public LandkodeServiceNorsk() throws IOException {
 		landkodeTable = new HashMap<>();
 		init();
@@ -52,14 +48,6 @@ public class LandkodeServiceNorsk {
 		} else {
 			return landkodeTable.get(landKode);
 		}
-	}
-
-	public String finnLandkodeNorsk(String landPaaNorsk) {
-		return landkodeTable.entrySet()
-				.stream()
-				.filter(entry -> Objects.equals(entry.getValue(), landPaaNorsk))
-				.map(Map.Entry::getKey)
-				.collect(Collectors.joining());
 	}
 
 }

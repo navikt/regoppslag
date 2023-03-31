@@ -29,7 +29,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implements ElementEnricherPlugin {
 
-	public static final String ELEMENT_NS = "http://nav.no/dok/brevdata/felles/v1/NAVFelles";
 	public static final String ELEMENT_LOCALNAME_POST = "postadresse";
 	public static final String ELEMENT_LOCALNAME_RETUR = "returadresse";
 	public static final String UGYLDIG_INPUT = "NavOrgenhetPostAdressePlugin - Ugyldig input";
@@ -44,7 +43,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	@Autowired
-	public NavOrgenhetPostadressePlugin(OrganisasjonsenhetConsumer norg2Consumer, Norg2Mapper norg2Mapper,
+	public NavOrgenhetPostadressePlugin(OrganisasjonsenhetConsumer norg2Consumer,
+										Norg2Mapper norg2Mapper,
 										MicrometerMetrics metrics) {
 		super(Postadresse.class);
 		this.norg2Mapper = norg2Mapper;

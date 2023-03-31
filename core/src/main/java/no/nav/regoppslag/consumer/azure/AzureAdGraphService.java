@@ -24,13 +24,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class AzureAdGraphService {
 
-
 	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
-	private final TokenConsumer tokenConsumer;
 	public static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
-
 	public static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
 	public static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
+
+	private final TokenConsumer tokenConsumer;
 
 	public AzureAdGraphService(TokenConsumer tokenConsumer) {
 		this.tokenConsumer = tokenConsumer;
@@ -39,18 +38,21 @@ public class AzureAdGraphService {
 	@Cacheable(value = HENT_FULLT_NAVN, key = "#navIdent")
 	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
-		LinkedList<Option> requestOptions = new LinkedList<Option>();
+		LinkedList<Option> requestOptions = new LinkedList<>();
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
+
 		List<User> res = getGraphClient(getUserToken())
 				.users()
 				.buildRequest(requestOptions)
 				.count(true)
 				.select("givenname, surname")
 				.get().getCurrentPage();
+
 		if (res.size() != 1) {
 			throw new RegOppslagIkkeFunnetException(String.format("Azure AD finner ikke bruker med ident=%s. %s", navIdent, BRUKER_IKKE_FUNNET), NOT_FOUND);
 		}
+
 		return res.get(0).givenName + " " + res.get(0).surname;
 	}
 

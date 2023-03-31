@@ -22,6 +22,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class PostnummerService {
+
 	private static final String FILENAME = "/kodeverk/postnummerregister.txt";
 
 	private final Map<String, PostData> postalCodeTable;

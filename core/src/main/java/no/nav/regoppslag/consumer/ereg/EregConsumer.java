@@ -32,6 +32,7 @@ import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.http.HttpMethod.GET;
 
 @Slf4j
 @Service
@@ -40,7 +41,6 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
-	@Autowired
 	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
 						RestTemplateBuilder restTemplateBuilder) {
 		this.eregUrl = eregUrl;
@@ -60,7 +60,7 @@ public class EregConsumer {
 
 		try {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(headers);
-			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, HttpMethod.GET, httpEntity, Organisasjon.class);
+			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, GET, httpEntity, Organisasjon.class);
 			return organisasjonResponseEntity.getBody();
 		} catch (HttpClientErrorException.NotFound e) {
 			throw new RegOppslagIkkeFunnetException("Fant ikke Organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());

@@ -9,9 +9,12 @@ import ch.qos.logback.core.AppenderBase;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ch.qos.logback.classic.Level.ALL;
+
 public class LogbackCapturingAppender extends AppenderBase<ILoggingEvent> {
 	public static class Factory {
-		private static List<LogbackCapturingAppender> ALL = new ArrayList<LogbackCapturingAppender>();
+
+		private static final List<LogbackCapturingAppender> ALL = new ArrayList<>();
 
 		public static LogbackCapturingAppender weaveInto(org.slf4j.Logger sl4jLogger) {
 			LogbackCapturingAppender appender = new LogbackCapturingAppender(sl4jLogger);
@@ -46,7 +49,7 @@ public class LogbackCapturingAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	private void connect(Logger logger) {
-		logger.setLevel(Level.ALL);
+		logger.setLevel(ALL);
 		logger.addAppender(this);
 		this.start();
 	}

@@ -1,10 +1,11 @@
 package no.nav.regoppslag.exceptions;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
+@ResponseStatus(value = UNAUTHORIZED)
 @Getter
 public class RegOppslagSecurityException extends RuntimeException {
 	

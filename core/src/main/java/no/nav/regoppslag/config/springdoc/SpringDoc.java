@@ -8,7 +8,10 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import no.nav.regoppslag.config.AppVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+
+import static io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER;
+import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Configuration
 public class SpringDoc {
@@ -25,12 +28,12 @@ public class SpringDoc {
 						new Components()
 								.addSecuritySchemes("JWT-Authorization",
 										new SecurityScheme()
-												.type(SecurityScheme.Type.HTTP)
+												.type(HTTP)
 												.scheme("bearer")
 												.bearerFormat("JWT")
-												.in(SecurityScheme.In.HEADER)
+												.in(HEADER)
 												.description("Eksempel på verdi som skal inn i Value-feltet (Bearer trengs altså ikke å oppgis): 'eyAidH...'")
-												.name(HttpHeaders.AUTHORIZATION)
+												.name(AUTHORIZATION)
 								)
 
 				)

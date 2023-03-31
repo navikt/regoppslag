@@ -56,7 +56,7 @@ public class RegisteroppslagRestController {
 	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når mottakertype=PERSON", content = @Content),
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det er feil i inputverdiene", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
@@ -85,7 +85,7 @@ public class RegisteroppslagRestController {
 	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene, eller om det mangler SAML token når type=PERSON", content = @Content),
+			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det er feil i inputverdiene", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),

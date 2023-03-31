@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -43,12 +42,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SaksbehandlerPluginTest.Config.class})
 public class SaksbehandlerPluginTest {
+
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
-	private SecurityContext securityContext = new SecurityContextImpl();
+	private final SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
-	private UsernamePasswordAuthenticationToken token;
 
 	@Autowired
 	private AzureAdGraphService azureAdGraphService;
@@ -58,13 +57,12 @@ public class SaksbehandlerPluginTest {
 
 	@BeforeEach
 	public void init() {
-		token = new UsernamePasswordAuthenticationToken("username", "password");
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
 		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
-
 	}
 
 	@Test

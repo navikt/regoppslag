@@ -14,8 +14,7 @@ public class CustomWebMvcConfiguration extends WebMvcConfigurationSupport {
 	protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
 
 		for (HttpMessageConverter<?> converter : converters) {
-			if (converter instanceof MappingJackson2HttpMessageConverter) {
-				MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+			if (converter instanceof MappingJackson2HttpMessageConverter jacksonConverter) {
 				jacksonConverter.setPrettyPrint(true);
 			}
 		}

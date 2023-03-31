@@ -8,9 +8,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class OrganisasjonPostadresseMapper {
 
-	private OrganisasjonPostadresseMapper() {
-	}
-
 	public static NorskPostadresse mapPostadresseToNorskPostadresse(Postadresse postadresse) {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		norskPostadresse.setLand(postadresse.getLand());

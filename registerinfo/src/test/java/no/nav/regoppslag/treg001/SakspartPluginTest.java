@@ -27,7 +27,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -74,7 +73,7 @@ public class SakspartPluginTest {
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	@BeforeEach
-	public void setUp() throws RegOppslagSecurityException, DatatypeConfigurationException, IOException {
+	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		landkodeService = new LandkodeService();
 		eregConsumer = mock(EregConsumer.class);

@@ -15,11 +15,4 @@
 		<appender-ref ref="CONSOLE"/>
 	</logger>
 
-
-	<logger name="org.apache.cxf.interceptor" additivity="true">
-		    
-		<appender-ref ref="CONSOLE"/>
-		  
-	</logger>
-
 </configuration>
