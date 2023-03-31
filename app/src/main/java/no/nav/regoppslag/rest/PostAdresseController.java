@@ -43,9 +43,7 @@ public class PostAdresseController {
 
 	private final PostadresseService postadresseService;
 
-	@Autowired
-	public PostAdresseController(PostadresseService postadresseService
-	) {
+	public PostAdresseController(PostadresseService postadresseService) {
 		this.postadresseService = postadresseService;
 	}
 
@@ -60,8 +58,7 @@ public class PostAdresseController {
 	})
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
-	public @ResponseBody
-	ResponseEntity<PostadresseResponse> postadresse(
+	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(
 			@RequestBody PostadresseRequest requestBody,
 			@RequestHeader(value = NAV_CALLID, required = false) String navCallid)
 			throws RegOppslagSecurityException {

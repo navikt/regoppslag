@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.AppVersion;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
-import no.nav.regoppslag.config.TomcatConfig;
 import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
@@ -26,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 		RegoppslagProperties.class,
 		AzureProperties.class
 })
-@Import({TomcatConfig.class,
+@Import({
 		ElementEnricherConfig.class,
 		RestConsumerConfig.class,
 		AppVersion.class,

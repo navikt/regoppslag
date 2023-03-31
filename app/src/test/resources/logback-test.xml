@@ -8,14 +8,10 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.apache.cxf.common.logging" level="WARN" additivity="false"/>
-
 	<root level="WARN">
-		<!--<appender-ref ref="CONSOLE"/>-->
+		<appender-ref ref="CONSOLE"/>
 	</root>
 
 	<logger name="no.nav.regoppslag" level="WARN" additivity="false"/>
-
-	<logger name="org.apache.cxf.interceptor" additivity="true"/>
 
 </configuration>

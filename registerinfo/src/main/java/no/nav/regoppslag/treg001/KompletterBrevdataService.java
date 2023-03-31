@@ -68,7 +68,7 @@ public class KompletterBrevdataService {
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
-			if(isBlank(request.getTema())){
+			if (isBlank(request.getTema())) {
 				log.error("Tema er ikke satt.");
 			}
 
@@ -79,14 +79,15 @@ public class KompletterBrevdataService {
 		} catch (MarshallerTechnicalException e) {
 			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
-		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
+		} catch (ParserConfigurationException | IOException | TransformerConfigurationException |
+				 MissingPluginException e) {
 			log.error("Teknisk feil ved parsing av brevdata: " + e.getMessage(), e);
 			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
 		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException
-				| UkjentAdresseException | UkjentAdressePersonErDoed e) {
+				 | UkjentAdresseException | UkjentAdressePersonErDoed e) {
 			if (GONE.equals(e.getHttpStatus())) {
 				log.warn("TREG001 funksjonell feil : {}", e.getMessage());
 				throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", e.getHttpStatus());
