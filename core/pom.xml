@@ -66,6 +66,10 @@
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec-dns</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
