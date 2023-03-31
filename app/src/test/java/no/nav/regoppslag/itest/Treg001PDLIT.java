@@ -50,7 +50,6 @@ public class Treg001PDLIT extends AbstractIT {
 	@BeforeEach
 	public void runBefore() {
 		stubDokkatResponse();
-		stubSts();
 
 		stubAzureToken();
 		this.token = token("subject1");
@@ -334,9 +333,6 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldReturnNotFoundIfFunctionalExceptionFromNorgPlugins() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		stubFor(post("/ORGANISASJONENHETKONTAKTINFORMASJON_V1").willReturn(aResponse()
-				.withStatus(OK.value())
-				.withBodyFile("treg001/norg/hentEnhet-FunksjonellFeil-EnhetIkkeFunnet.xml"))); //mottakerPlugin
 		stubGetEnhetNavn(NOT_FOUND.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(NOT_FOUND.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
@@ -385,7 +381,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnInternalServerErrorIfNotFoundFromNorgPlugin() {
-		stubFor(post("/ORGANISASJONENHETKONTAKTINFORMASJON_V1").willReturn(notFound().withStatus(NOT_FOUND.value())));
 		stubGetEnhetNavn(INTERNAL_SERVER_ERROR.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
@@ -458,18 +453,10 @@ public class Treg001PDLIT extends AbstractIT {
 		return new HttpEntity<>(kompletterBrevdataRequest, headers);
 	}
 
-
-	protected void stubSts() {
-		stubFor(post("/STS").willReturn(aResponse()
-				.withStatus(OK.value())
-				.withBodyFile("felles/sts/sts_signature-responsebody.xml"))); //mottakerPlugin
-	}
-
-
 	protected void stubDokkatResponse() {
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); //Brukes til hentDokumenttypeinfo for Spraak
+				.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak
 	}
 }
