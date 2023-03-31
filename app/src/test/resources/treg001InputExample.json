@@ -1,4 +1,0 @@
-{
-  "dokumenttypeid": "123233",
-  "brevdata": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><brevdata><felles xmlns:aktoer=\"http://nav.no/dok/pesysbrev/felles/v1/Aktoer\" xmlns:mottaker=\"http://nav.no/dok/pesysbrev/felles/v1/Mottaker\"><mottaker><aktoer:id>20096828390</aktoer:id><aktoer:typeKode>PERSON</aktoer:typeKode></mottaker><signerendeSaksbehandler><ansattId>Z991006</ansattId><enhet>NAV Sentrum i bygda</enhet></signerendeSaksbehandler><signerendeBeslutter><ansattId>Z991006</ansattId><navn>Sandor Clegane</navn><enhet>Sentrale NAV i hovedstaden</enhet></signerendeBeslutter></felles></brevdata>"
-}
