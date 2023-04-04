@@ -106,8 +106,8 @@
 
 		<!-- grensesnitt/kontrakter -->
 		<dependency>
-			<groupId>no.nav.dokkat</groupId>
-			<artifactId>dokkat-api</artifactId>
+			<groupId>no.nav.dokmet</groupId>
+			<artifactId>api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>

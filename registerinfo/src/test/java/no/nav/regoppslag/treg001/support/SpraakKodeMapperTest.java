@@ -3,7 +3,7 @@ package no.nav.regoppslag.treg001.support;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class SpraakKodeMapperTest {
 	public void spraakPaaMalOgMottakerMatcher() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(NB);
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NB", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NB.name(), list);
 		assertThat(spraakkode, is(NB));
 
@@ -46,7 +46,7 @@ public class SpraakKodeMapperTest {
 	public void skalPrioritereMottakerSpraak() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
 		mottaker.setSpraakkode(EN);
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NB.name(), list);
 		assertThat(spraakkode, is(NB));
 
@@ -58,7 +58,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void skalSetteSpraakKodeNBNaarMottakerSpraakErDansk() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "DA", list);
 
@@ -68,7 +68,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void skalSetteSpraakKodeNBNaarPersonErUtenlandskMenMalManglerEngelskSpraak() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
 
@@ -78,7 +78,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void skalSetteSpraakKodeNBNaarMottakerSpraakErSvensk() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "SV", list);
 
@@ -88,7 +88,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void skalSetteSpraakKodeENNaarMottakerSpraakErIkkeSkandinavisk() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
 
@@ -99,7 +99,7 @@ public class SpraakKodeMapperTest {
 	public void spraakPaaMalOgMottakerMatcherSprakNO() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		// NO og NB skal behandles likt
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NO", "EN", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NB.name(), list);
 
@@ -109,7 +109,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgNB() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NN", "EN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NN", "EN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NB.name(), list);
 
@@ -119,7 +119,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgNN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NB", "EN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NN.name(), list);
 
@@ -129,7 +129,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgEN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(singletonList("EN"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, NN.name(), list);
 
@@ -139,7 +139,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerMatcherIkkeOgUkjentSpraak() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("NB", "EN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("NB", "EN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, "TR", list);
 
@@ -159,7 +159,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_NB() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("EN", "NB"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NB"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 
@@ -169,7 +169,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_EN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(singletonList("EN"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("EN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 
@@ -179,7 +179,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_NN() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(Arrays.asList("EN", "NN"));
+		List<SpraakInfoTo> list = createTkatResponse(Arrays.asList("EN", "NN"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 
@@ -189,7 +189,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakPaaMalOgMottakerSpraakNULL_UGYLDIGSPRAAK() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = createTkatResponse(singletonList("HOHO"));
+		List<SpraakInfoTo> list = createTkatResponse(singletonList("HOHO"));
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 
@@ -199,7 +199,7 @@ public class SpraakKodeMapperTest {
 	@Test
 	public void spraakIkkesatt() throws IngenGyldigEnumVerdiForSpraakKodeException {
 		Mottaker mottaker = new Person();
-		List<SpraakInfoToV4> list = null;
+		List<SpraakInfoTo> list = null;
 
 		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
 

@@ -34,7 +34,7 @@ public class LocalCacheConfig {
 	public static final String HENT_PERSON = "hentPerson";
 	public static final String HENT_NAVN = "hentNavn";
 	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
-	public static final String HENT_DOKKAT_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
+	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
 	public static final String AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE = "AZURE_CACHE_NAME";
 
@@ -59,7 +59,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder()
+				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()

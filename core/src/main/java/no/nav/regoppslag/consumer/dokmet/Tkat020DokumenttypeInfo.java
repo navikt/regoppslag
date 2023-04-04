@@ -1,8 +1,8 @@
-package no.nav.regoppslag.consumer.dokkat;
+package no.nav.regoppslag.consumer.dokmet;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
+import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
@@ -10,12 +10,10 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -28,7 +26,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
@@ -70,17 +68,17 @@ public class Tkat020DokumenttypeInfo {
 		this.metrics = metrics;
 	}
 
-	@Cacheable(value = HENT_DOKKAT_SPRAAKINFO, key = "#dokumenttypeId")
+	@Cacheable(value = HENT_DOKMET_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "#{!HttpStatus.NOT_FOUND.equals(httpStatus)}", maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKKAT_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
-	public List<SpraakInfoToV4> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKMET_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
+	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		HttpHeaders headers = createHeaders();
 
-		metrics.cacheMiss(HENT_DOKKAT_SPRAAKINFO);
+		metrics.cacheMiss(HENT_DOKMET_SPRAAKINFO);
 		try {
 			HttpEntity<String> request = new HttpEntity(headers);
 
-			DokumentTypeInfoToV4 response = restTemplate.exchange(dokumenttypeInfoUrl + "/" + dokumenttypeId, GET, request, DokumentTypeInfoToV4.class).getBody();
+			DokumenttypeInfoTo response = restTemplate.exchange(dokumenttypeInfoUrl + "/" + dokumenttypeId, GET, request, DokumenttypeInfoTo.class).getBody();
 			if (response.getDokumentProduksjonsInfo() == null || response.getDokumentProduksjonsInfo().getSpraakInfos() == null) {
 				return Collections.emptyList();
 			} else {
@@ -88,10 +86,10 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
+			throw new RegOppslagTechnicalException(String.format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
 					.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, INTERNAL_SERVER_ERROR);
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException(String.format("Dokkat.TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s", e
+			throw new RegOppslagTechnicalException(String.format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s", e
 					.getStatusCode(), dokumenttypeId, e.getMessage()), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
 		}
 	}
