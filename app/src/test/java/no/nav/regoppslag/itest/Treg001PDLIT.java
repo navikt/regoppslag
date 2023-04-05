@@ -16,8 +16,6 @@ import static com.github.tomakehurst.wiremock.client.CountMatchingStrategy.GREAT
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -49,7 +47,7 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@BeforeEach
 	public void runBefore() {
-		stubDokkatResponse();
+		stubDokmetResponse();
 
 		stubAzureToken();
 		this.token = token("subject1");
@@ -393,7 +391,7 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnInternalServerErrorWhenNotFoundFromDokkat() {
+	public void shouldReturnInternalServerErrorWhenNotFoundFromDokmet() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
@@ -410,7 +408,7 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnInternalServerErrorIfTechnicalExceptionFromDokkat() {
+	public void shouldReturnInternalServerErrorIfTechnicalExceptionFromDokmet() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
@@ -453,10 +451,10 @@ public class Treg001PDLIT extends AbstractIT {
 		return new HttpEntity<>(kompletterBrevdataRequest, headers);
 	}
 
-	protected void stubDokkatResponse() {
+	protected void stubDokmetResponse() {
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withBodyFile("treg001/dokkat/dokkat_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak
+				.withBodyFile("treg001/dokmet/dokmet_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak
 	}
 }

@@ -3,7 +3,7 @@ package no.nav.regoppslag.treg001.support;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
 import org.apache.commons.lang.StringUtils;
 
@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 public class SpraakKodeMapper {
 
-	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoToV4> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
+	public Spraakkode getSpraakKode(Mottaker mottaker, String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
 		if (isBlank(mottakerSpraakKode)) {
 			return getMaalFormNaarMottakerIkkeHarSattMaalform(mottaker, spraakInfoMal);
 		} else { //Bruker har ikke satt språk
@@ -29,29 +29,29 @@ public class SpraakKodeMapper {
 		}
 	}
 
-	private Spraakkode getMaalFormNaarMottakerHarSattMaalform(String mottakerSpraakKode, List<SpraakInfoToV4> spraakInfoMalDokkat) throws IngenGyldigEnumVerdiForSpraakKodeException {
-		if (spraakInfoMalDokkat == null) {
+	private Spraakkode getMaalFormNaarMottakerHarSattMaalform(String mottakerSpraakKode, List<SpraakInfoTo> spraakInfoMal) throws IngenGyldigEnumVerdiForSpraakKodeException {
+		if (spraakInfoMal == null) {
 			return NB;
 		}
 
 		final String spraakKodeValue = mottakerSpraakKode.toUpperCase();
 		//Dersom malen inneholder mottakers prefererte språk, ingen endring
-		if (malInneholderSpraak(spraakInfoMalDokkat, spraakKodeValue)) {
+		if (malInneholderSpraak(spraakInfoMal, spraakKodeValue)) {
 			return mapToSpraakKode(spraakKodeValue);
 		} else {
 			//Malen finnes ikke på mottakers prefererte språk
-			if (mottakerHarIkkeSkandinaviskSpraak(spraakKodeValue) && malInneholderSpraak(spraakInfoMalDokkat, "EN")) {
+			if (mottakerHarIkkeSkandinaviskSpraak(spraakKodeValue) && malInneholderSpraak(spraakInfoMal, "EN")) {
 				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Språket er ikke skandinavisk. Setter derfor språket til engelsk.", spraakKodeValue);
 				return EN;
-			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NB")) {
+			} else if (malInneholderSpraak(spraakInfoMal, "NB")) {
 				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til bokmål.", spraakKodeValue);
 				//Fallback til bokmål hvis bokmål finnes
 				return NB;
-			} else if (malInneholderSpraak(spraakInfoMalDokkat, "NN")) {
+			} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
 				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til nynorsk.", spraakKodeValue);
 				//Malen finnes på nynorsk
 				return NN;
-			} else if (malInneholderSpraak(spraakInfoMalDokkat, "EN")) {
+			} else if (malInneholderSpraak(spraakInfoMal, "EN")) {
 				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til engelsk.", spraakKodeValue);
 				//Malen finnes på engelsk
 				return EN;
@@ -64,7 +64,7 @@ public class SpraakKodeMapper {
 
 	}
 
-	private Spraakkode getMaalFormNaarMottakerIkkeHarSattMaalform(Mottaker mottaker, List<SpraakInfoToV4> spraakInfoMal) {
+	private Spraakkode getMaalFormNaarMottakerIkkeHarSattMaalform(Mottaker mottaker, List<SpraakInfoTo> spraakInfoMal) {
 		if (spraakInfoMal == null) {
 			return NB;
 		} else {
@@ -84,7 +84,7 @@ public class SpraakKodeMapper {
 	}
 
 
-	private boolean malInneholderSpraak(final List<SpraakInfoToV4> spraakInfoTos, final String spraak) {
+	private boolean malInneholderSpraak(final List<SpraakInfoTo> spraakInfoTos, final String spraak) {
 		if ("NO".equalsIgnoreCase(spraak) || "NB".equalsIgnoreCase(spraak)) {
 			// NO og NB skal begge bahandles som Bokmål
 			return spraakInfoInneholderSpraak(spraakInfoTos, "NO") || spraakInfoInneholderSpraak(spraakInfoTos, "NB");
@@ -93,7 +93,7 @@ public class SpraakKodeMapper {
 		}
 	}
 
-	private boolean spraakInfoInneholderSpraak(final List<SpraakInfoToV4> spraakInfoTos, final String forventetSpraak) {
+	private boolean spraakInfoInneholderSpraak(final List<SpraakInfoTo> spraakInfoTos, final String forventetSpraak) {
 		return spraakInfoTos.stream().anyMatch(spraakInfo -> spraakInfo.getSpraaklag().equals(forventetSpraak));
 	}
 

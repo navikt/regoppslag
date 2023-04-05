@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKKAT_SPRAAKINFO;
+import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_KONTAKTINFO;
 import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ORGANISASJON;
@@ -50,7 +50,7 @@ public class CacheTestConfig {
 				new NoOpCache(HENT_ENHET_NAVN),
 				new NoOpCache(HENT_PERSON),
 				new NoOpCache(HENT_ORGANISASJON),
-				new NoOpCache(HENT_DOKKAT_SPRAAKINFO),
+				new NoOpCache(HENT_DOKMET_SPRAAKINFO),
 				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
@@ -66,7 +66,7 @@ public class CacheTestConfig {
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
-				new CaffeineCache(HENT_DOKKAT_SPRAAKINFO, Caffeine.newBuilder()
+				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()

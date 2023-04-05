@@ -1,10 +1,10 @@
-package no.nav.regoppslag.consumer.dokkat;
+package no.nav.regoppslag.consumer.dokmet;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import no.nav.dokkat.api.tkat020.v4.DokumentProduksjonsInfoToV4;
-import no.nav.dokkat.api.tkat020.v4.DokumentTypeInfoToV4;
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
+import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
+import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
@@ -83,10 +83,10 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldHentSpraakinfo() {
-		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
 				.thenReturn(new ResponseEntity<>(defaultResponse(Arrays.asList(LANG1, LANG2)), HttpStatus.OK));
 
-		List<SpraakInfoToV4> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
+		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
 		assertThat(sprakinfos, hasSize(2));
 		assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
@@ -95,49 +95,49 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
-		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
-		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
+		assertThat(e.getMessage(), containsString("TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerErrorAndRetry() {
-		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
-		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class));
+		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
+		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerException() {
-		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class)))
+		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
 				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
-		assertThat(e.getMessage(), containsString("Dokkat.TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumentTypeInfoToV4.class));
+		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
+		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
-	private DokumentTypeInfoToV4 defaultResponse(List<String> langs) {
-		DokumentTypeInfoToV4 dokumentTypeInfoToV4 = new DokumentTypeInfoToV4();
-		DokumentProduksjonsInfoToV4 dokumentProduksjonsInfo = new DokumentProduksjonsInfoToV4();
-		List<SpraakInfoToV4> list = new ArrayList<>();
+	private DokumenttypeInfoTo defaultResponse(List<String> langs) {
+		DokumenttypeInfoTo dokumentTypeInfoTo = new DokumenttypeInfoTo();
+		DokumentProduksjonsInfoTo dokumentProduksjonsInfo = new DokumentProduksjonsInfoTo();
+		List<SpraakInfoTo> list = new ArrayList<>();
 		langs.forEach(lang -> {
-			SpraakInfoToV4 spraakInfoTo = new SpraakInfoToV4();
+			SpraakInfoTo spraakInfoTo = new SpraakInfoTo();
 			spraakInfoTo.setSpraaklag(lang);
 			list.add(spraakInfoTo);
 		});
 		dokumentProduksjonsInfo.getSpraakInfos().addAll(list);
-		dokumentTypeInfoToV4.setDokumentProduksjonsInfo(dokumentProduksjonsInfo);
-		return dokumentTypeInfoToV4;
+		dokumentTypeInfoTo.setDokumentProduksjonsInfo(dokumentProduksjonsInfo);
+		return dokumentTypeInfoTo;
 	}
 
 	@EnableRetry

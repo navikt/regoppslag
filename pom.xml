@@ -37,7 +37,7 @@
 
 		<!-- Interne NAV-avhengigheter -->
 		<pesysbrev01.version>2.9.9</pesysbrev01.version>
-		<dokkat-api.version>11.0.6</dokkat-api.version>
+		<dokmet-api.version>13-5459a4f</dokmet-api.version>
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
 
 		<!-- Test -->
@@ -109,9 +109,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>no.nav.dokkat</groupId>
-				<artifactId>dokkat-api</artifactId>
-				<version>${dokkat-api.version}</version>
+				<groupId>no.nav.dokmet</groupId>
+				<artifactId>api</artifactId>
+				<version>${dokmet-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>

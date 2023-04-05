@@ -1,17 +1,17 @@
 package no.nav.regoppslag.treg001.util;
 
-import no.nav.dokkat.api.tkat020.v4.SpraakInfoToV4;
+import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CreateStubs {
-	public static List<SpraakInfoToV4> createTkatResponse(List<String> langs) {
-		List<SpraakInfoToV4> list = new ArrayList<>();
+	public static List<SpraakInfoTo> createTkatResponse(List<String> langs) {
+		List<SpraakInfoTo> list = new ArrayList<>();
 		langs.forEach(lang -> {
-			SpraakInfoToV4 spraakInfoToV4 = new SpraakInfoToV4();
-			spraakInfoToV4.setSpraaklag(lang);
-			list.add(spraakInfoToV4);
+			SpraakInfoTo SpraakInfoTo = new SpraakInfoTo();
+			SpraakInfoTo.setSpraaklag(lang);
+			list.add(SpraakInfoTo);
 		});
 		return list;
 	}
