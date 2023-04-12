@@ -18,6 +18,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependCoAdressenavnWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -33,7 +34,6 @@ public class NorskAdresseService {
 	private static final String CARE_OF = "C/O ";
 	private static final String POSTBOKS = "Postboks ";
 	private static final String POSTNUMMER = "postnummer";
-
 
 	public NorskAdresseService(PostnummerService postnummerService) {
 		this.postnummerService = postnummerService;
@@ -54,18 +54,21 @@ public class NorskAdresseService {
 	}
 
 	PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
+		String coAdressenavnWithCoPrefix = prependCoAdressenavnWithCareOfIfMissing(coAdressenavn);
+
 		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adresseType(POSTADRESSE_INNLAND)
 				.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 				.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
 				.landkode(LANDKODE_NORGE);
 
-		if (isBlank(coAdressenavn)) {
+		if (isBlank(coAdressenavnWithCoPrefix)) {
 			builder.adresselinje1(vegadresse.mapAdresselinjeFromVegadresse());
 		} else {
-			builder.adresselinje1(coAdressenavn)
+			builder.adresselinje1(coAdressenavnWithCoPrefix)
 					.adresselinje2(vegadresse.mapAdresselinjeFromVegadresse());
 		}
+
 		return builder;
 	}
 
@@ -86,6 +89,7 @@ public class NorskAdresseService {
 					.adresselinje3(postadresse.getAdresselinje3())
 					.build();
 		}
+
 		return builder
 				.adresselinje1(kontaktadresse.getCoAdressenavn())
 				.adresselinje2(requireNonNull(postadresse.getAdresselinje1(), format(ERROR_MELDING, "adresselinje2")))
@@ -109,6 +113,7 @@ public class NorskAdresseService {
 					.adresselinje2(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
 					.build();
 		}
+
 		return builder
 				.adresselinje1(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
 				.build();
