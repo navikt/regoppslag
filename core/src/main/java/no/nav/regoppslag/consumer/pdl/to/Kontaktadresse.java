@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class Kontaktadresse implements AdresseGyldigKilde {
+
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;
 	private String type;
@@ -24,9 +25,11 @@ public class Kontaktadresse implements AdresseGyldigKilde {
 		if (gyldigFraOgMed == null && metadata == null) {
 			return false;
 		}
+
 		if (gyldigFraOgMed == null) {
 			return metadata.isKildeFreg();
 		}
+
 		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg();
 	}
 

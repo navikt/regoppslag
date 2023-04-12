@@ -71,11 +71,10 @@ public class PostadresseService {
 	}
 
 	private PostadresseResponse postadresseForPerson(PostadresseRequest request) {
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(
-				pdlGraphQLConsumer.hentPerson(request.getIdent(),
-						request.getTema()),
-				SERVICE_CODE_RREG003,
-				request.getTema());
+		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), request.getTema());
+
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003, request.getTema());
+
 		return PostadresseResponse.builder()
 				.navn(pdlMottakerInfo.getNavn())
 				.adresse(adresseMapper.mapFraPdl(pdlMottakerInfo))

@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
@@ -40,6 +38,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class NavOrgenhetNavnPluginTest {
+
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_8020 = "src/test/resources/brevdata/brevdata_behandlendeEnhet_8020.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
@@ -47,34 +46,24 @@ public class NavOrgenhetNavnPluginTest {
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private OrganisasjonsenhetConsumer norgConsumer;
-	private PostnummerService postnummerService;
-	private Norg2Mapper norg2Mapper;
 	private NavOrgenhetNavnPlugin norgPlugin;
 	private Map<String, Object> valueMap;
-	private MeterRegistry registry;
-	private MicrometerMetrics metrics;
-
-	private SecurityContext securityContext;
-	private UsernamePasswordAuthenticationToken token;
-
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		norgConsumer = Mockito.mock(OrganisasjonsenhetConsumer.class);
-		securityContext = new SecurityContextImpl();
-		token = new UsernamePasswordAuthenticationToken("username", "password");
-		postnummerService = new PostnummerService();
+		OrganisasjonsenhetConsumer norgConsumer = Mockito.mock(OrganisasjonsenhetConsumer.class);
+		SecurityContext securityContext = new SecurityContextImpl();
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
+		PostnummerService postnummerService = new PostnummerService();
 		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		SecurityContextHolder.setContext(securityContext);
 
-		registry = new SimpleMeterRegistry();
-		metrics = mock(MicrometerMetrics.class);
+		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		postnummerService.init();
-		norg2Mapper = new Norg2Mapper(postnummerService);
+		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper, metrics);
 		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
@@ -92,7 +81,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
-		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
@@ -111,7 +100,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
-		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(navEnhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
@@ -130,7 +119,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
-		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(navEnhet.getEnhetsNavn(), is("Ikke berik"));
@@ -149,7 +138,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node processed = norgPlugin.processElement(node, valueMap, null);
 
-		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<NavEnhet>(NavEnhet.class);
+		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(navEnhet.getEnhetsNavn(), nullValue());

@@ -75,6 +75,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class MottakerPluginTest {
+
 	private static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String BREVDATA_MOTTAKER_SPRAAKKODE_EN = "src/test/resources/brevdata/brevdata_mottaker_spraakkode_en.xml";
 	private static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
@@ -92,15 +93,13 @@ public class MottakerPluginTest {
 	private static final String MOTTAKER_ID = "30085849677";
 	private static final String TEMA = "PEN";
 
-	private LandkodeService landkodeService;
 	private EregConsumer eregConsumer;
-	private OrganisasjonEregMapper organisasjonEregMapper;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
 	private Map<String, Object> valueMap;
-	private SecurityContext securityContext;
 	private MottakerPlugin mottakerPlugin;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
+
 	@InjectMocks
 	private PostnummerService postnummerService;
 	@InjectMocks
@@ -114,10 +113,9 @@ public class MottakerPluginTest {
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
-		landkodeService = new LandkodeService();
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
-		securityContext = new SecurityContextImpl();
+		SecurityContext securityContext = new SecurityContextImpl();
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
@@ -130,8 +128,8 @@ public class MottakerPluginTest {
 		ReflectionTestUtils.setField(metrics, "registry", registry);
 
 		eregConsumer = mock(EregConsumer.class);
-		organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), new LandkodeService(), mock(MicrometerMetrics.class));
-		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, landkodeService, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), mock(MicrometerMetrics.class));
+		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001, metrics);
 	}
 

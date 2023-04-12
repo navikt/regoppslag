@@ -21,15 +21,18 @@ public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
 
-	static Optional<PostadresseTo> mapUtenlandskPostAdresse(Kontaktadresse kontaktadresse) {
+	static Optional<PostadresseTo> mapUtenlandskPostadresse(Kontaktadresse kontaktadresse) {
 		String coAdressenavn = kontaktadresse.getCoAdressenavn();
+
 		if (nonNull(kontaktadresse.getUtenlandskAdresse())) {
 			UtenlandskAdresse utenlandskAdresse = kontaktadresse.getUtenlandskAdresse();
+
 			return Optional.of(mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn)
 					.adressekilde(KONTAKTADRESSE)
 					.build());
 		} else if (nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
 			Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktadresse.getUtenlandskAdresseIFrittFormat();
+
 			return Optional.of(PostadresseTo.builder()
 					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_UTLAND)
@@ -39,6 +42,7 @@ public class UtenlandskAdresseService {
 					.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")))
 					.build());
 		}
+
 		return Optional.empty();
 	}
 
@@ -65,6 +69,7 @@ public class UtenlandskAdresseService {
 		} else if (isBlank(coAdressenavn) && isNotBlank(postboksOrAdressenavnNummer)) {
 			return postboksOrAdressenavnNummer;
 		}
+
 		return bygningEtasjeLeilighet;
 	}
 
@@ -84,6 +89,7 @@ public class UtenlandskAdresseService {
 				return bygningEtasjeLeilighet;
 			}
 		}
+
 		return postkodeAndByStedAndOmraade;
 	}
 
@@ -101,6 +107,7 @@ public class UtenlandskAdresseService {
 		} else if (isBlank(bygningEtasjeLeilighet) || isBlank(postboksOrAdressenavnNummer)) {
 			return null;
 		}
+
 		return postkodeAndByStedAndOmraade;
 	}
 

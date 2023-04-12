@@ -52,6 +52,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class SakspartPluginTest {
+
 	private static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	private static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	private static final String BREVDATA_ORG = "src/test/resources/brevdata/brevdata_organisasjon.xml";
@@ -64,21 +65,17 @@ public class SakspartPluginTest {
 	private static final String ORGNAVN = "Firma AS";
 	private static final String DOKUMENTTYPEID = "I000003";
 
-	private PostnummerService postnummerService;
-	private LandkodeService landkodeService;
 	private EregConsumer eregConsumer;
 	private Map<String, Object> valueMap;
-	private SecurityContext securityContext;
 	private SakspartPlugin sakspartPlugin;
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	@BeforeEach
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		landkodeService = new LandkodeService();
 		eregConsumer = mock(EregConsumer.class);
-		securityContext = new SecurityContextImpl();
-		postnummerService = new PostnummerService();
+		SecurityContext securityContext = new SecurityContextImpl();
+		PostnummerService postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
@@ -86,7 +83,7 @@ public class SakspartPluginTest {
 		SecurityContextHolder.setContext(securityContext);
 
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, metrics);
 		sakspartPlugin = new SakspartPlugin(metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(ORGNAVN));
 	}

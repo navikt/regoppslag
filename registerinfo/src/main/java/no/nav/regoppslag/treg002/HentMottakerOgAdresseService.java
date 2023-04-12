@@ -1,8 +1,8 @@
 package no.nav.regoppslag.treg002;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -15,11 +15,10 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
-import no.nav.regoppslag.consumer.ereg.MottakerTo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
+import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
@@ -34,31 +33,28 @@ public class HentMottakerOgAdresseService {
 	private final AdresseMapper adresseMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
-
-	@Autowired
-	EregConsumer eregConsumer;
-	@Autowired
-	OrganisasjonEregMapper organisasjonEregMapper;
+	private final EregConsumer eregConsumer;
+	private final OrganisasjonEregMapper organisasjonEregMapper;
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
-	@Autowired
 	public HentMottakerOgAdresseService(AdresseMapper adresseMapper,
 										PdlGraphQLConsumer pdlGraphQLConsumer,
-										MapPDLResponse mapPDLResponse) {
+										MapPDLResponse mapPDLResponse,
+										EregConsumer eregConsumer,
+										OrganisasjonEregMapper organisasjonEregMapper) {
 		this.adresseMapper = adresseMapper;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
+		this.eregConsumer = eregConsumer;
+		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagSecurityException {
-
 		try {
 			validateInput(request);
-
 			return PERSON.name().equals(request.getType()) ? hentMottakerOgAdresseForPerson(request) : hentMottakerOgAdresseForOrg(request);
-
 		} catch (Exception e) {
 			logAndRethrowException(e);
 		}
@@ -67,11 +63,10 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(
-				pdlGraphQLConsumer.hentPerson(request.getIdentifikator(),
-						request.getTema()),
-				SERVICE_CODE_TREG002,
-				request.getTema());
+		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema());
+
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002, request.getTema());
+
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
 				.navn(pdlMottakerInfo.getNavn())
@@ -91,7 +86,6 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private void validateInput(HentMottakerOgAdresseRequest request) {
-
 		if (request == null) {
 			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
@@ -102,13 +96,11 @@ public class HentMottakerOgAdresseService {
 
 		if (request.getType() == null) {
 			throw new RegoppslagIllegalArgumentException("Mottakertype kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
-		} else if (!(PERSON.name().equals(request.getType()) || AktoerType.ORGANISASJON.name()
-				.equals(request.getType()))) {
-			throw new RegoppslagIllegalArgumentException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.", request
-					.getType()) + UGYLDIG_INPUT, BAD_REQUEST);
+		} else if (!(PERSON.name().equals(request.getType()) || ORGANISASJON.name().equals(request.getType()))) {
+			throw new RegoppslagIllegalArgumentException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.",
+					request.getType()) + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 	}
-
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
