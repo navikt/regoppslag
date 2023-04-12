@@ -3,8 +3,11 @@ package no.nav.regoppslag.pdl;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
+import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse.PostadresseIFrittFormat;
+import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse.Postboksadresse;
 import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
+import no.nav.regoppslag.consumer.pdl.to.PostadresseTo.PostadresseToBuilder;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
@@ -36,7 +39,8 @@ public class NorskAdresseService {
 		this.postnummerService = postnummerService;
 	}
 
-	Optional<PostadresseTo> mapNorskPostAdresse(Kontaktadresse kontaktadresse) {
+	Optional<PostadresseTo> mapNorskPostadresse(Kontaktadresse kontaktadresse) {
+
 		if (nonNull(kontaktadresse.getVegadresse())) {
 			return Optional.of(mapVegadresse(kontaktadresse.getVegadresse(), kontaktadresse.getCoAdressenavn())
 					.adressekilde(KONTAKTADRESSE).build());
@@ -45,15 +49,17 @@ public class NorskAdresseService {
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
 			return Optional.of(mapPostboksadresse(kontaktadresse));
 		}
+
 		return Optional.empty();
 	}
 
-	PostadresseTo.PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
-		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+	PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
+		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adresseType(POSTADRESSE_INNLAND)
 				.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
 				.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
 				.landkode(LANDKODE_NORGE);
+
 		if (isBlank(coAdressenavn)) {
 			builder.adresselinje1(vegadresse.mapAdresselinjeFromVegadresse());
 		} else {
@@ -64,8 +70,9 @@ public class NorskAdresseService {
 	}
 
 	private PostadresseTo mapPostadresseFrittFormat(Kontaktadresse kontaktadresse) {
-		Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
-		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+		PostadresseIFrittFormat postadresse = kontaktadresse.getPostadresseIFrittFormat();
+
+		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adressekilde(KONTAKTADRESSE)
 				.adresseType(POSTADRESSE_INNLAND)
 				.postnummer(isBlank(postadresse.getPostnummer()) ? null : postadresse.getPostnummer())
@@ -87,8 +94,9 @@ public class NorskAdresseService {
 	}
 
 	private PostadresseTo mapPostboksadresse(Kontaktadresse kontaktadresse) {
-		Kontaktadresse.Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
-		PostadresseTo.PostadresseToBuilder builder = PostadresseTo.builder()
+		Postboksadresse postboksadresse = kontaktadresse.getPostboksadresse();
+
+		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adressekilde(KONTAKTADRESSE)
 				.adresseType(POSTADRESSE_INNLAND)
 				.postnummer(postboksadresse.getPostnummer())

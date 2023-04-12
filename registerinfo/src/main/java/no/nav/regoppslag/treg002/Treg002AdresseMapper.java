@@ -1,12 +1,13 @@
 package no.nav.regoppslag.treg002;
 
 import no.nav.regoppslag.rreg003.Adresse;
+import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse.Treg002Adresse;
 
 public class Treg002AdresseMapper {
 
-	public static HentMottakerOgAdresseResponse.Treg002Adresse mapAdresseTilTreg002Adresse(Adresse adresse) {
+	public static Treg002Adresse mapAdresseTilTreg002Adresse(Adresse adresse) {
 
-		return HentMottakerOgAdresseResponse.Treg002Adresse.builder()
+		return Treg002Adresse.builder()
 				.adresselinje1(adresse.getAdresselinje1())
 				.adresselinje2(adresse.getAdresselinje2())
 				.adresselinje3(adresse.getAdresselinje3())

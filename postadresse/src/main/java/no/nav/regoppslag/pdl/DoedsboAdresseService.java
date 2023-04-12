@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
+import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.KontaktAdresse;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
@@ -71,7 +72,7 @@ public class DoedsboAdresseService {
 	}
 
 	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo, String tema) {
-		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = kontaktinformasjonForDoedsbo.getAdresse();
+		KontaktAdresse kontaktAdresse = kontaktinformasjonForDoedsbo.getAdresse();
 
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
 			KontaktinformasjonForDoedsbo.AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
@@ -86,7 +87,7 @@ public class DoedsboAdresseService {
 		return null;
 	}
 
-	private PostadresseTo mapOrganisasjonSomKontaktAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse, String fulltnavn) {
+	private PostadresseTo mapOrganisasjonSomKontaktAdresse(KontaktAdresse kontaktAdresse, String fulltnavn) {
 
 		if (isNorskadresse(kontaktAdresse.getLandkode())) {
 			return PostadresseTo.builder()
@@ -104,7 +105,7 @@ public class DoedsboAdresseService {
 		return mapDoedsboForUtenlandskAdresse(kontaktAdresse, fulltnavn);
 	}
 
-	private PostadresseTo mapMidlertidigPostboksadresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
+	private PostadresseTo mapMidlertidigPostboksadresse(KontaktAdresse adresse, String navn) {
 		if (adresse == null) {
 			return null;
 		}
@@ -126,7 +127,7 @@ public class DoedsboAdresseService {
 		return mapDoedsboForUtenlandskAdresse(adresse,navn);
 	}
 
-	private PostadresseTo mapDoedsboForUtenlandskAdresse(KontaktinformasjonForDoedsbo.KontaktAdresse adresse, String navn) {
+	private PostadresseTo mapDoedsboForUtenlandskAdresse(KontaktAdresse adresse, String navn) {
 		if (Objects.isNull(adresse)) {
 			return null;
 		}
@@ -142,13 +143,11 @@ public class DoedsboAdresseService {
 
 	}
 
-	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String
-			organisasjonsnavn) {
+	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String organisasjonsnavn) {
 		return personnavn != null && isNotBlank(personnavn.getFulltnavn()) ? personnavn.getFulltnavn() : organisasjonsnavn;
 	}
 
-	private String getPersonSomKontaktNavn(KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt, String
-			tema) {
+	private String getPersonSomKontaktNavn(KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt, String tema) {
 		if (nonNull(personSomKontakt.getPersonnavn()) && isNotBlank(personSomKontakt.getPersonnavn().getFulltnavn())) {
 			return personSomKontakt.getPersonnavn().getFulltnavn();
 		}

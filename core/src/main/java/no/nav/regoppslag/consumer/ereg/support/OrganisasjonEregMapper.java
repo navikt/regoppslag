@@ -10,9 +10,7 @@ import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -30,6 +28,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
+import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -40,15 +39,12 @@ public class OrganisasjonEregMapper {
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE_NORGE = "NO";
 
-	private final LandkodeService landkodeService;
 	private final PostnummerService postnummerService;
 	private final MicrometerMetrics metrics;
 
 	private static final String LAND_NORGE = "Norge";
 
-	@Autowired
-	public OrganisasjonEregMapper(PostnummerService postnummerService, LandkodeService landkodeService, MicrometerMetrics metrics) {
-		this.landkodeService = landkodeService;
+	public OrganisasjonEregMapper(PostnummerService postnummerService, MicrometerMetrics metrics) {
 		this.postnummerService = postnummerService;
 		this.metrics = metrics;
 	}
@@ -182,7 +178,7 @@ public class OrganisasjonEregMapper {
 		}
 
 		if (eregAdresse.getLandkode() != null) {
-			postadresse.setLand(landkodeService.finnLandnavn(eregAdresse.getLandkode()));
+			postadresse.setLand(finnLandnavn(eregAdresse.getLandkode()));
 		}
 
 		postadresse.setAdresselinje1(eregAdresse.getAdresselinje1());

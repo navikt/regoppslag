@@ -11,6 +11,7 @@ import java.util.Optional;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.BYGNING_ETASJE_LEILIGHET_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_USA;
@@ -38,7 +39,7 @@ class UtenlandskAdresseServiceTest {
 				.build();
 		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 
-		Optional<PostadresseTo> mottakerInfo = UtenlandskAdresseService.mapUtenlandskPostAdresse(kontaktadresse);
+		Optional<PostadresseTo> mottakerInfo = mapUtenlandskPostadresse(kontaktadresse);
 		assertThat(mottakerInfo).isPresent();
 
 		PostadresseTo response = mottakerInfo.get();

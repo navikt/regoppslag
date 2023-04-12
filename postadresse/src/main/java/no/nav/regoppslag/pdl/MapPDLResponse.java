@@ -14,7 +14,6 @@ import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -32,7 +31,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTT
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
-import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostAdresse;
+import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -58,10 +57,8 @@ public class MapPDLResponse {
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 
-
-	@Autowired
-	public MapPDLResponse(
-			DoedsboAdresseService doedsboAdresseService, NorskAdresseService norskAdresseService) {
+	public MapPDLResponse(DoedsboAdresseService doedsboAdresseService,
+						  NorskAdresseService norskAdresseService) {
 		this.doedsboAdresseService = doedsboAdresseService;
 		this.norskAdresseService = norskAdresseService;
 	}
@@ -165,28 +162,44 @@ public class MapPDLResponse {
 
 	private Optional<PostadresseTo> mapPostadresseFraKontaktadresse(Kontaktadresse kontaktadresse) {
 		if (POSTADRESSE_INNLAND.equalsIgnoreCase(kontaktadresse.getType())) {
-			return norskAdresseService.mapNorskPostAdresse(kontaktadresse);
+			return norskAdresseService.mapNorskPostadresse(kontaktadresse);
 		} else if (POSTADRESSE_UTLAND.equalsIgnoreCase(kontaktadresse.getType())) {
-			return mapUtenlandskPostAdresse(kontaktadresse);
+			return mapUtenlandskPostadresse(kontaktadresse);
 		}
 		return empty();
 	}
 
 	private Optional<PostadresseTo> mapPostadresseFraBostedsadresse(Bostedsadresse bostedsadresse, String serviceCode) {
-		return getValidAdresse(bostedsadresse.getVegadresse(), bostedsadresse.getUtenlandskAdresse(),
+		return getValidAdresse(
+				bostedsadresse.getVegadresse(),
+				bostedsadresse.getUtenlandskAdresse(),
 				bostedsadresse.getMatrikkeladresse(),
-				bostedsadresse.getUkjentBosted(), bostedsadresse.getCoAdressenavn(), serviceCode, BOSTEDSADRESSE);
+				bostedsadresse.getUkjentBosted(),
+				bostedsadresse.getCoAdressenavn(),
+				serviceCode,
+				BOSTEDSADRESSE
+		);
 	}
 
 	private Optional<PostadresseTo> mapPostadresseFraOppholdsadresse(Oppholdsadresse oppholdsadresse, String serviceCode) {
-		return getValidAdresse(oppholdsadresse.getVegadresse(), oppholdsadresse.getUtenlandskAdresse(),
-				oppholdsadresse.getMatrikkeladresse(), null,
-				oppholdsadresse.getCoAdressenavn(), serviceCode, OPPHOLDSADRESSE);
+		return getValidAdresse(
+				oppholdsadresse.getVegadresse(),
+				oppholdsadresse.getUtenlandskAdresse(),
+				oppholdsadresse.getMatrikkeladresse(),
+				null,
+				oppholdsadresse.getCoAdressenavn(),
+				serviceCode,
+				OPPHOLDSADRESSE
+		);
 	}
 
-	private Optional<PostadresseTo> getValidAdresse(Vegadresse vegadresse, UtenlandskAdresse utenlandskAdresse,
-													Matrikkeladresse matrikkeladresse, UkjentBosted ukjentBosted,
-													String coAdressenavn, String serviceCode, AdresseKildeCode adresseKilde) {
+	private Optional<PostadresseTo> getValidAdresse(Vegadresse vegadresse,
+													UtenlandskAdresse utenlandskAdresse,
+													Matrikkeladresse matrikkeladresse,
+													UkjentBosted ukjentBosted,
+													String coAdressenavn,
+													String serviceCode,
+													AdresseKildeCode adresseKilde) {
 		if (nonNull(vegadresse)) {
 			return Optional.of(norskAdresseService.mapVegadresse(vegadresse, coAdressenavn).adressekilde(adresseKilde).build());
 		} else if (nonNull(utenlandskAdresse)) {
@@ -196,6 +209,7 @@ public class MapPDLResponse {
 		} else if (nonNull(ukjentBosted)) {
 			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", NOT_FOUND);
 		}
+
 		return empty();
 	}
 

@@ -38,24 +38,20 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 public class AdresseMapperTest {
 
-	private LandkodeService landkodeService;
-	private LandkodeServiceNorsk landkodeServiceNorsk;
 	private MapPDLResponse mapPDLResponse;
 	@Mock
 	private MicrometerMetrics metrics;
 	private AdresseMapper adresseMapper;
-	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	@InjectMocks
 	private PostnummerService postnummerService;
 
 	@BeforeEach
 	public void setUp() throws IOException {
-		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		landkodeService = new LandkodeService();
-		landkodeServiceNorsk = new LandkodeServiceNorsk();
+		PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
+		LandkodeServiceNorsk landkodeServiceNorsk = new LandkodeServiceNorsk();
 		postnummerService.init();
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
-		adresseMapper = new AdresseMapper(landkodeService, metrics, landkodeServiceNorsk);
+		adresseMapper = new AdresseMapper(metrics, landkodeServiceNorsk);
 	}
 
 	@Test

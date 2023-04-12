@@ -51,6 +51,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(SpringExtension.class)
 public class OrganisasjonEregMapperTest {
+
 	private static final long VALID_SECONDS = 10000;
 
 	private static final String ORGNAVN = "Firma AS";
@@ -63,12 +64,12 @@ public class OrganisasjonEregMapperTest {
 
 	@BeforeEach
 	public void initTests() throws Exception {
-		LandkodeService landkodeService = new LandkodeService();
 		MeterRegistry registry = new SimpleMeterRegistry();
 		MicrometerMetrics metrics = new MicrometerMetrics();
 		PostnummerService postnummerService = new PostnummerService();
 		ReflectionTestUtils.setField(metrics, "registry", registry);
-		mapper = new OrganisasjonEregMapper(postnummerService, landkodeService, metrics);
+
+		mapper = new OrganisasjonEregMapper(postnummerService, metrics);
 	}
 
 	@Test

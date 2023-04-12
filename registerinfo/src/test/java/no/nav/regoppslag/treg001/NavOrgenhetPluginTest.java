@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class NavOrgenhetPluginTest {
+
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 
