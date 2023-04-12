@@ -18,7 +18,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.prependCoAdressenavnWithCareOfIfMissing;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -54,7 +54,7 @@ public class NorskAdresseService {
 	}
 
 	PostadresseToBuilder mapVegadresse(Vegadresse vegadresse, String coAdressenavn) {
-		String coAdressenavnWithCoPrefix = prependCoAdressenavnWithCareOfIfMissing(coAdressenavn);
+		String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
 
 		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adresseType(POSTADRESSE_INNLAND)

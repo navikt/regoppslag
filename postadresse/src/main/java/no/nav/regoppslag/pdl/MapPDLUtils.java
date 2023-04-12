@@ -30,22 +30,26 @@ public class MapPDLUtils {
 		return alpha2Landkode;
 	}
 
-	public static String prependCoAdressenavnWithCareOfIfMissing(String coAdressenavn) {
+	public static String prependWithCareOfIfMissing(String coAdressenavn) {
 		if (isBlank(coAdressenavn)) {
 			return null;
 		}
 
-		if (coAdressenavnStartsWithCareOfPrefix(coAdressenavn)) {
+		if (startsWithCareOfPrefix(coAdressenavn)) {
 			return coAdressenavn;
 		} else {
 			return String.join(" ", "C/O", coAdressenavn);
 		}
 	}
 
-	private static boolean coAdressenavnStartsWithCareOfPrefix(String coAdressenavn) {
-		return coAdressenavn.startsWith("C/O")
-				|| coAdressenavn.startsWith("c/o")
-				|| coAdressenavn.startsWith("℅")
-				|| coAdressenavn.startsWith("v/");
+	private static boolean startsWithCareOfPrefix(String coAdressenavn) {
+		var lowerCaseCoAdressenavn = coAdressenavn.toLowerCase();
+
+		return lowerCaseCoAdressenavn.startsWith("c/o")
+				|| lowerCaseCoAdressenavn.startsWith("℅")
+				|| lowerCaseCoAdressenavn.startsWith("v/")
+				// Spesialhåndtering for navn som starter med co eller ved (conrad, vedantika etc.)
+				|| lowerCaseCoAdressenavn.startsWith("co ")
+				|| lowerCaseCoAdressenavn.startsWith("ved ");
 	}
 }

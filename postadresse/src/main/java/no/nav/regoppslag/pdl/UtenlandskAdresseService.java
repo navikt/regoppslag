@@ -12,7 +12,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.prependCoAdressenavnWithCareOfIfMissing;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -34,7 +34,7 @@ public class UtenlandskAdresseService {
 					.build());
 		} else if (nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
 			Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktadresse.getUtenlandskAdresseIFrittFormat();
-			String coAdressenavnWithCoPrefix = prependCoAdressenavnWithCareOfIfMissing(coAdressenavn);
+			String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
 
 			return Optional.of(PostadresseTo.builder()
 					.adressekilde(KONTAKTADRESSE)
@@ -50,7 +50,7 @@ public class UtenlandskAdresseService {
 	}
 
 	static PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
-		String coAdressenavnWithCoPrefix = prependCoAdressenavnWithCareOfIfMissing(coAdressenavn);
+		String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
 
 		return PostadresseTo.builder()
 				.adresseType(POSTADRESSE_UTLAND)
