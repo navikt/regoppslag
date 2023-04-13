@@ -83,8 +83,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN, response.getNavn());
@@ -93,6 +91,9 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
 		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -102,8 +103,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
@@ -112,17 +111,18 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
-	public void shouldMapUtenlandskadresseWithCoAdressenavn() {
+	public void shouldMapUtenlandskAdresseWithCoAdressenavn() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavn.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_US, response.getAdresse().getLandkode());
@@ -131,17 +131,38 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
-	public void shouldMapUtenlandskadresseWithCoAdressenavnAndDistriktOmraade() {
+	public void shouldMapUtenlandskAdresseWithCoAdressenavnWithoutCoPrefix() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavnUtenCo.json");
+
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+
+		assertEquals(D_NUMMER, response.getIdentifikator());
+		assertEquals(FULLT_NAVN, response.getNavn());
+		assertEquals(LANDKODE_US, response.getAdresse().getLandkode());
+		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
+		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje2());
+		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje3());
+		assertNull(response.getAdresse().getPostnummer());
+		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
+	public void shouldMapUtenlandskAdresseWithCoAdressenavnAndDistriktOmraade() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavnAndDistriktOmraade.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN, response.getNavn());
@@ -150,17 +171,18 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2 + ", " + CONAVN_UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
-	public void shouldMapUtenlandskadresseWithCoAdressenavnAndBygningEtasjeLeilighet() {
+	public void shouldMapUtenlandskAdresseWithCoAdressenavnAndBygningEtasjeLeilighet() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavn&BygningLeilighet.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(COADRESSENAVN + ", " + CONAVN_UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN, response.getNavn());
@@ -169,6 +191,10 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+
 	}
 
 	@Test
@@ -178,13 +204,14 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(D_NUMMER, response.getIdentifikator());
 		assertEquals(UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje1());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -194,8 +221,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN2, response.getNavn());
@@ -204,6 +229,9 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
 		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -213,8 +241,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals(ADRESSELINJE1_POSTBOKS, response.getAdresse().getAdresselinje1());
 		assertEquals(ADRESSELINJE2_POSTBOKS, response.getAdresse().getAdresselinje2());
@@ -222,6 +248,9 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
 		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
 		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}
 
 	@Test
@@ -327,6 +356,30 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertPersonCOAdresse(response);
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
 		assertEquals(FULLT_NAVN, response.getNavn());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
+	public void shouldGetMottakerWithCoAdresseWithoutCoPrefix() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/bosattadressemedconavnutenco.json");
+
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest("11111111111", TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+
+		assertNotNull(response);
+
+		assertEquals("C/O Max Mekker", response.getAdresse().getAdresselinje1());
+		assertEquals("Sesam Stasjon 1A", response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals("1461", response.getAdresse().getPostnummer());
+		assertEquals("LØRENSKOG", response.getAdresse().getPoststed());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
+
+		assertEquals("11111111111", response.getIdentifikator());
+		assertEquals("BJARNE BETJENT", response.getNavn());
+
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
 	}

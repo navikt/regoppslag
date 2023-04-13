@@ -1,0 +1,68 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1991,
+          "foedselsdato": "1991-01-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": "",
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BJARNE BETJENT"
+        }
+      ],
+      "kontaktadresse": [],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1991-11-30",
+          "gyldigFraOgMed": "1991-11-30T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "Max Mekker",
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "1",
+            "husbokstav": "A",
+            "bruksenhetsnummer": "H0101",
+            "adressenavn": "Sesam Stasjon",
+            "kommunenummer": "0230",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "1461"
+          },
+          "utenlandskAdresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "289ee7e7-a355-4315-a67c-c47f97bfe0b5",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

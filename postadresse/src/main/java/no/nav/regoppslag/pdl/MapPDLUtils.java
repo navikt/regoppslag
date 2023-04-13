@@ -7,10 +7,12 @@ import static com.neovisionaries.i18n.CountryCode.XK;
 import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.service.LandkodeService.finnLandkodeAlpha2FraAlpha3;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 public class MapPDLUtils {
+
 	public static <T> T requireNonNull(T obj, String message) {
 		if (obj == null)
 			throw new RegoppslagIllegalArgumentException(message, BAD_REQUEST);
@@ -26,5 +28,28 @@ public class MapPDLUtils {
 		}
 
 		return alpha2Landkode;
+	}
+
+	public static String prependWithCareOfIfMissing(String coAdressenavn) {
+		if (isBlank(coAdressenavn)) {
+			return null;
+		}
+
+		if (startsWithCareOfPrefix(coAdressenavn)) {
+			return coAdressenavn;
+		} else {
+			return String.join(" ", "C/O", coAdressenavn);
+		}
+	}
+
+	private static boolean startsWithCareOfPrefix(String coAdressenavn) {
+		var lowerCaseCoAdressenavn = coAdressenavn.toLowerCase();
+
+		return lowerCaseCoAdressenavn.startsWith("c/o")
+				|| lowerCaseCoAdressenavn.startsWith("℅")
+				|| lowerCaseCoAdressenavn.startsWith("v/")
+				// Spesialhåndtering for navn som starter med co eller ved (conrad, vedantika etc.)
+				|| lowerCaseCoAdressenavn.startsWith("co ")
+				|| lowerCaseCoAdressenavn.startsWith("ved ");
 	}
 }

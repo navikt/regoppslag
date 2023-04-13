@@ -3,6 +3,7 @@ package no.nav.regoppslag.pdl;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
+import no.nav.regoppslag.consumer.pdl.to.PostadresseTo.PostadresseToBuilder;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -32,11 +34,12 @@ public class UtenlandskAdresseService {
 					.build());
 		} else if (nonNull(kontaktadresse.getUtenlandskAdresseIFrittFormat())) {
 			Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktadresse.getUtenlandskAdresseIFrittFormat();
+			String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
 
 			return Optional.of(PostadresseTo.builder()
 					.adressekilde(KONTAKTADRESSE)
 					.adresseType(POSTADRESSE_UTLAND)
-					.adresselinje1(isBlank(coAdressenavn) ? utenlandskAdresse.getAdresselinje1() : coAdressenavn + ", " + utenlandskAdresse.getAdresselinje1())
+					.adresselinje1(isBlank(coAdressenavnWithCoPrefix) ? utenlandskAdresse.getAdresselinje1() : coAdressenavnWithCoPrefix + ", " + utenlandskAdresse.getAdresselinje1())
 					.adresselinje2(utenlandskAdresse.getAdresselinje2())
 					.adresselinje3(utenlandskAdresse.getAdresselinje3())
 					.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")))
@@ -46,12 +49,14 @@ public class UtenlandskAdresseService {
 		return Optional.empty();
 	}
 
-	static PostadresseTo.PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
+	static PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
+		String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
+
 		return PostadresseTo.builder()
 				.adresseType(POSTADRESSE_UTLAND)
-				.adresselinje1(mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavn))
-				.adresselinje2(mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavn))
-				.adresselinje3(mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavn))
+				.adresselinje1(mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavnWithCoPrefix))
+				.adresselinje2(mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavnWithCoPrefix))
+				.adresselinje3(mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavnWithCoPrefix))
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 

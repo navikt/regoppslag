@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
+import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.AdvokatSomKontakt;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.KontaktAdresse;
+import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt;
+import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.PersonSomKontakt;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
@@ -30,14 +33,15 @@ import static org.springframework.http.HttpStatus.GONE;
 @Component
 public class DoedsboAdresseService {
 
-	private final PostnummerService postnummerService;
-	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private static final String ALPHA2_NORGE_LANDKODE = "NO";
 	private static final String ALPHA3_NORGE_LANDKODE = "NOR";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 	private static final String ON_BEHALF_OF = "v/ ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String POSTNUMMER = "postnummer";
+
+	private final PostnummerService postnummerService;
+	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	public DoedsboAdresseService(PostnummerService postnummerService, PdlGraphQLConsumer pdlGraphQLConsumer) {
 		this.postnummerService = postnummerService;
@@ -58,7 +62,7 @@ public class DoedsboAdresseService {
 	private PostadresseTo mapKontaktinformasjonForDoedsbo(Optional<KontaktinformasjonForDoedsbo> kontaktinformasjon, String tema) {
 		return kontaktinformasjon
 				.filter(DoedsboAdresseService::isDoedPersonValidKontaktAdresse)
-				.map(kinfo -> mapAndValidateKontaktinformasjonForDoeds(kinfo, tema))
+				.map(kontaktinfo -> mapAndValidateKontaktinformasjonForDoeds(kontaktinfo, tema))
 				.orElseThrow(
 						() -> {
 							log.warn(MOTTAKER_DOED);
@@ -75,13 +79,13 @@ public class DoedsboAdresseService {
 		KontaktAdresse kontaktAdresse = kontaktinformasjonForDoedsbo.getAdresse();
 
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
-			KontaktinformasjonForDoedsbo.AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
+			AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(advokatSomKontakt.getPersonnavn(), advokatSomKontakt.getOrganisasjonsnavn()));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getPersonSomKontakt())) {
-			KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
+			PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt, tema));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt()) && nonNull(kontaktAdresse)) {
-			KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
+			OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
 			return mapOrganisasjonSomKontaktAdresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn()));
 		}
 		return null;
@@ -140,20 +144,21 @@ public class DoedsboAdresseService {
 				.adresselinje3(adresse.getPostnummer() + " " + adresse.getPoststedsnavn())
 				.landkode(getAlpha2Landkode(adresse.getLandkode()))
 				.build();
-
 	}
 
 	private String getAdvokatOrOrgKontaktNavn(KontaktinformasjonForDoedsbo.Personnavn personnavn, String organisasjonsnavn) {
 		return personnavn != null && isNotBlank(personnavn.getFulltnavn()) ? personnavn.getFulltnavn() : organisasjonsnavn;
 	}
 
-	private String getPersonSomKontaktNavn(KontaktinformasjonForDoedsbo.PersonSomKontakt personSomKontakt, String tema) {
+	private String getPersonSomKontaktNavn(PersonSomKontakt personSomKontakt, String tema) {
 		if (nonNull(personSomKontakt.getPersonnavn()) && isNotBlank(personSomKontakt.getPersonnavn().getFulltnavn())) {
 			return personSomKontakt.getPersonnavn().getFulltnavn();
 		}
+
 		if (isBlank(personSomKontakt.getIdentifikasjonsnummer())) {
 			return null;
 		}
+
 		return pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(personSomKontakt.getIdentifikasjonsnummer(), tema).orElse(null);
 	}
 
@@ -165,7 +170,10 @@ public class DoedsboAdresseService {
 		if (isNull(hentPerson.getKontaktinformasjonForDoedsbo())) {
 			return Optional.empty();
 		}
-		return hentPerson.getKontaktinformasjonForDoedsbo().stream().filter(Objects::nonNull).findAny();
+
+		return hentPerson.getKontaktinformasjonForDoedsbo().stream()
+				.filter(Objects::nonNull)
+				.findAny();
 	}
 
 	private boolean isNorskadresse(String landkode) {

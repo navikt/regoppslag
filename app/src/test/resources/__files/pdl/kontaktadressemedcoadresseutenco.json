@@ -26,15 +26,20 @@
           "gyldigFraOgMed": "2020-08-10T00:00",
           "gyldigTilOgMed": "2031-08-10T23:59:59",
           "type": "Innland",
-          "coAdressenavn": null,
+          "coAdressenavn": "Max Mekker",
           "postboksadresse": null,
-          "vegadresse": null,
-          "postadresseIFrittFormat": {
-            "adresselinje1": "POSTBOKS 15",
-            "adresselinje2": null,
-            "adresselinje3": null,
-            "postnummer": "9650"
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "1",
+            "husbokstav": "A",
+            "bruksenhetsnummer": "H0101",
+            "adressenavn": "Sesam Stasjon",
+            "kommunenummer": "0230",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "1461"
           },
+          "postadresseIFrittFormat": null,
           "utenlandskAdresse": null,
           "utenlandskAdresseIFrittFormat": null,
           "metadata": {
@@ -46,7 +51,7 @@
           "gyldigFraOgMed": "2021-08-10T00:00",
           "gyldigTilOgMed": "2022-08-10T00:00",
           "type": "Innland",
-          "coAdressenavn": null,
+          "coAdressenavn": "null",
           "postboksadresse": null,
           "vegadresse": {
             "matrikkelId": 285826942,
