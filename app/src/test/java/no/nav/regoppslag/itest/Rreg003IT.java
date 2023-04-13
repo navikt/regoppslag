@@ -95,6 +95,25 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetPersonMedNorskPostadresseOgCoAdresseUtenPrefix() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/kontaktadressemedcoadresseutenco.json");
+
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("TRIVIELL SKILPADDE");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Max Mekker");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Sesam Stasjon 1A");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("1461");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("LØRENSKOG");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
 	void shouldGetSisteGyldigeKontaktAdresseWhenFlereGyldigeKontaktadresser() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_flere_gyldige.json");
