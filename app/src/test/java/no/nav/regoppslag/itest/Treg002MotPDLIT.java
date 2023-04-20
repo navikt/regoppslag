@@ -235,6 +235,26 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGeBostedsadresseWhenBostedsadresseIsNewerThanKontaktadresse() {
+		getStsToken(OK.value(), "sts/stsResponse_happy.json");
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_new_bostedadresse.json");
+
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+
+		assertEquals(PERSON_IDENT, response.getIdentifikator());
+		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
+		assertEquals(FULLT_NAVN2, response.getNavn());
+		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
+		assertNull(response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
+		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
+		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+		verify(1, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
+	}
+
+	@Test
 	public void shouldGetMottakerAndAdresseForPersonWhenAdressenErFraPostboks() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");

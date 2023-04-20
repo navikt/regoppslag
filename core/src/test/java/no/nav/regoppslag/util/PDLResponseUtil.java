@@ -277,6 +277,97 @@ public class PDLResponseUtil {
 				.build();
 	}
 
+	public static HentPerson createPdlHentPersonWithBostedsadresseAndKontaktadresse(Bostedsadresse bostedsadresse, Kontaktadresse kontaktadresse) {
+		return HentPerson.builder()
+				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
+						.gradering(HentPerson.Gradering.FORTROLIG)
+						.build()))
+				.doedsfall(Collections.emptyList())
+				.foedsel(singletonList(HentPerson.Foedsel.builder()
+						.foedselsaar(FOEDSELSAAR)
+						.foedselsdato(FOEDSELDATO)
+						.build()))
+				.navn(singletonList(HentPerson.PersonNavn.builder()
+						.forkortetNavn(KORT_NAVN)
+						.fornavn(FORNAVN)
+						.mellomnavn(MELLOMNAVN)
+						.etternavn(ETTERNAVN)
+						.build()))
+				.bostedsadresse(singletonList(bostedsadresse))
+				.kontaktadresse(singletonList(kontaktadresse))
+				.sikkerhetstiltak(Collections.emptyList())
+				.folkeregisteridentifikator(singletonList(HentPerson.Folkeregisteridentifikator.builder()
+						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
+						.type(IDENTTYPE_FNR)
+						.status(STATUS)
+						.build()))
+				.folkeregisterpersonstatus(singletonList(HentPerson.Folkeregisterpersonstatus.builder()
+						.status(PERSONSTATUS_BOSATT)
+						.forenkletStatus("bosattEtterFolkeregisterloven")
+						.build()))
+				.build();
+	}
+
+	public static HentPerson createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(Bostedsadresse bostedsadresse, Oppholdsadresse oppholdsadresse) {
+		return HentPerson.builder()
+				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
+						.gradering(HentPerson.Gradering.FORTROLIG)
+						.build()))
+				.doedsfall(Collections.emptyList())
+				.foedsel(singletonList(HentPerson.Foedsel.builder()
+						.foedselsaar(FOEDSELSAAR)
+						.foedselsdato(FOEDSELDATO)
+						.build()))
+				.navn(singletonList(HentPerson.PersonNavn.builder()
+						.forkortetNavn(KORT_NAVN)
+						.fornavn(FORNAVN)
+						.mellomnavn(MELLOMNAVN)
+						.etternavn(ETTERNAVN)
+						.build()))
+				.oppholdsadresse(singletonList(oppholdsadresse))
+				.bostedsadresse(singletonList(bostedsadresse))
+				.sikkerhetstiltak(Collections.emptyList())
+				.folkeregisteridentifikator(singletonList(HentPerson.Folkeregisteridentifikator.builder()
+						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
+						.type(IDENTTYPE_FNR)
+						.status(STATUS)
+						.build()))
+				.folkeregisterpersonstatus(singletonList(HentPerson.Folkeregisterpersonstatus.builder()
+						.status(PERSONSTATUS_BOSATT)
+						.forenkletStatus("bosattEtterFolkeregisterloven")
+						.build()))
+				.build();
+	}
+
+	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(String antallDager){
+		return Oppholdsadresse.builder()
+				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
+				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
+				.vegadresse(createVegadresse())
+				.metadata(Metadata.builder().master(PDL.name()).build())
+				.build();
+	}
+
+	public static Bostedsadresse createBostedsAdresseWithAntallDager(String antallDager){
+		return Bostedsadresse.builder()
+				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
+				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
+				.vegadresse(createVegadresse())
+				.metadata(Metadata.builder().master(PDL.name()).build())
+				.build();
+	}
+
+
+	public static Kontaktadresse createKontaktAdresseWithAntallDager(String antallDager){
+		return Kontaktadresse.builder()
+				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
+				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
+				.type(PDLConstant.POSTADRESSE_INNLAND)
+				.vegadresse(createVegadresse())
+				.metadata(Metadata.builder().master(InformasjonKilde.PDL.name()).build())
+				.build();
+	}
+
 	public static HentPerson createBostedsadresseWithUkjentBosted() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
