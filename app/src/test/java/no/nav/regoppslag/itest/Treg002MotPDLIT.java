@@ -255,7 +255,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGeBostedsadresseWhenBostedsadresseIsNewerThanKontaktadresse() {
+	public void shouldMapFromBostedsadresseWhenNewerThanKontaktadresse() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_new_bostedadresse.json");
 
