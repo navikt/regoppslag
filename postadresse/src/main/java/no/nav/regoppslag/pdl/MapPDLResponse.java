@@ -16,6 +16,7 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  * 3. Oppholdsadresse med master PDL
  * 4. Oppholdsadresse med master Freg
  * 5. Bostedsadresse
+ * NB! Dersom personen har en bostedsadresse som er nyere enn den adressen som velges ved prioriteringen ovenfor her, anbefaler vi at det er bostedsadressen som benyttes.
  */
 @Slf4j
 @Component
@@ -69,34 +71,59 @@ public class MapPDLResponse {
 			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
 		}
 
-		// prøver å bruke kontaktadresse - regel 1 og 2
+		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
+		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
+		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
+		boolean erBostedsadresseGyldigMedDatoFra = false;
+		if (nonNull(bostedsadresse)) {
+			bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
+			if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed()) ) {
+				erBostedsadresseGyldigMedDatoFra = true;
+			}
+		}
+
 		Optional<Kontaktadresse> kontaktadresseOptional = getBestFitGyldigAdresse(hentPerson.getKontaktadresse());
+		// prøver å bruke kontaktadresse - regel 1 og 2
 		if (kontaktadresseOptional.isPresent()) {
-			Optional<PdlMottakerInfo> pdlMottakerInfo = mapKontaktadresse(hentPerson, kontaktadresseOptional.get());
+			Kontaktadresse kontaktadresse = kontaktadresseOptional.get();
+			Optional<PdlMottakerInfo> pdlMottakerInfo = mapKontaktadresse(hentPerson, kontaktadresse);
 			if (pdlMottakerInfo.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
-				return pdlMottakerInfo.get();
+				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
+				if (erBostedsadresseGyldigMedDatoFra &&
+						kontaktadresse.getGyldigFraOgMed() != null &&
+						bostedsadresse.getGyldigFraOgMed().isAfter(kontaktadresse.getGyldigFraOgMed())) {
+					return bostedsadresseOptional.get();
+				} else {
+					return pdlMottakerInfo.get();
+				}
 			} else {
 				log.info("Fant ikke kontaktadresse og søker etter oppholdsadresse for personen i PDL data");
 			}
 		}
 
+		Optional<Oppholdsadresse> oppholdsadresseOptional = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse());
 		// prøver å bruke oppholdsadresse - regel 3 og 4
-		Optional<Oppholdsadresse> oppholdsadresse = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse());
-		if (oppholdsadresse.isPresent()) {
-			Optional<PdlMottakerInfo> mottakerFraOppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode, oppholdsadresse.get());
+		if (oppholdsadresseOptional.isPresent()) {
+			Oppholdsadresse oppholdsadresse = oppholdsadresseOptional.get();
+			Optional<PdlMottakerInfo> mottakerFraOppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode, oppholdsadresse);
 			if (mottakerFraOppholdsadresse.isPresent()) {
-				return mottakerFraOppholdsadresse.get();
+				//Bruk bostedsadresse hvis denne er av nyere dato enn oppholdsadresse
+				if (erBostedsadresseGyldigMedDatoFra &&
+						oppholdsadresse.getGyldigFraOgMed() != null &&
+						bostedsadresse.getGyldigFraOgMed().isAfter(oppholdsadresse.getGyldigFraOgMed())) {
+					return bostedsadresseOptional.get();
+				} else {
+					return mottakerFraOppholdsadresse.get();
+				}
 			} else {
 				log.info("Fant ikke oppholdsadresse og søker etter bostedsadresse for personen i PDL data");
 			}
 		}
 
 		// prøver bostedsadresse - regel 5
-		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
 		if (nonNull(bostedsadresse)) {
-			Optional<PdlMottakerInfo> mottakerFraBostedsadresse = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
-			if (mottakerFraBostedsadresse.isPresent()) {
-				return mottakerFraBostedsadresse.get();
+			if (bostedsadresseOptional.isPresent()) {
+				return bostedsadresseOptional.get();
 			} else {
 				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND);
 			}

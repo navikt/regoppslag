@@ -18,6 +18,8 @@ import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -56,20 +58,26 @@ import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsAdresseWithAntallDager;
 import static no.nav.regoppslag.util.PDLResponseUtil.createBostedsadresseWithUkjentBosted;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
 import static no.nav.regoppslag.util.PDLResponseUtil.createHentePersonBuilder;
+import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktAdresseWithAntallDager;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsbo;
 import static no.nav.regoppslag.util.PDLResponseUtil.createMetadata;
+import static no.nav.regoppslag.util.PDLResponseUtil.createOppholdsAdresseWithAntallDager;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonStatusUtflyttet;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresseAndKontaktadresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBostedsadresseAndOppholdsAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithOppholdsadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVegadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
+import static no.nav.regoppslag.util.PDLResponseUtil.createVegadresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -168,7 +176,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithVegadresse() throws RegoppslagIllegalArgumentException {
-		Vegadresse adresse = PDLResponseUtil.createVegadresse();
+		Vegadresse adresse = createVegadresse();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
@@ -481,7 +489,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void shouldmapVegadresseWhenCoAdressenavnIsSett() {
-		Vegadresse vegadresse = PDLResponseUtil.createVegadresse();
+		Vegadresse vegadresse = createVegadresse();
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(List.of(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
@@ -511,7 +519,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void shouldMapVegadresseWhenCoAdressenavnIsNull() {
-		Vegadresse vegadresse = PDLResponseUtil.createVegadresse();
+		Vegadresse vegadresse = createVegadresse();
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
 				.kontaktadresse(singletonList(Kontaktadresse.builder()
@@ -536,4 +544,47 @@ public class MapPDLResponseTest {
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
+
+	@ParameterizedTest
+	@CsvSource(value = {
+			"1, 2, BOSTEDSADRESSE",
+			"2, 2, KONTAKTADRESSE",
+			"1, null, KONTAKTADRESSE",
+			"null, 2, KONTAKTADRESSE",
+			"null, null, KONTAKTADRESSE"
+	}, nullValues={"null"})
+	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseAlder, String kontaktadresseAlder, String adresseKilde) {
+		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createKontaktAdresseWithAntallDager(kontaktadresseAlder)
+		);
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(adresseKilde, response.getAdressekilde().name());
+	}
+
+
+	@ParameterizedTest
+	@CsvSource(value = {
+			"1, 2, BOSTEDSADRESSE",
+			"2, 2, OPPHOLDSADRESSE",
+			"2, null, OPPHOLDSADRESSE",
+			"null, 2, OPPHOLDSADRESSE",
+			"null, null, OPPHOLDSADRESSE"
+	}, nullValues={"null"})
+	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseAlder, String oppholdsadresseAlder, String adresseKilde) {
+		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createOppholdsAdresseWithAntallDager(oppholdsadresseAlder));
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(adresseKilde, response.getAdressekilde().name());
+	}
+
 }
