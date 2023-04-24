@@ -50,6 +50,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  * 3. Oppholdsadresse med master PDL
  * 4. Oppholdsadresse med master Freg
  * 5. Bostedsadresse
+ * NB! Dersom personen har en bostedsadresse som er nyere enn den adressen som velges ved prioriteringen ovenfor her, anbefaler vi at det er bostedsadressen som benyttes.
  */
 @Slf4j
 @Component
@@ -119,7 +120,7 @@ public class MapPDLResponse {
 
 		// prøver bostedsadresse - regel 5
 		if (nonNull(bostedsadresse)) {
-			if (erBostedsadresseGyldigMedDatoFra) {
+			if (bostedsadresseOptional.isPresent()) {
 				return bostedsadresseOptional.get();
 			} else {
 				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND);
