@@ -9,7 +9,6 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -31,11 +30,6 @@ public class CacheTestConfig {
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
-
-	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
-		return new LettuceConnectionFactory();
-	}
 
 	@Bean
 	public CacheManager cacheManager() {
