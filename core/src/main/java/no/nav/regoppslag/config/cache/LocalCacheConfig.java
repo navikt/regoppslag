@@ -28,16 +28,6 @@ import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NA
 @EnableCaching
 public class LocalCacheConfig {
 
-	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
-	public static final String HENT_ENHET_KONTAKTINFO = "hentEnhetKontaktInfo";
-	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
-	public static final String HENT_PERSON = "hentPerson";
-	public static final String HENT_NAVN = "hentNavn";
-	public static final String STS_CACHE_NAME = "STS_CACHE_NAME";
-	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
-	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
-	public static final String AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE = "AZURE_CACHE_NAME";
-
 	@Bean
 	@Primary
 	public CacheManager cacheManager() {
@@ -47,28 +37,25 @@ public class LocalCacheConfig {
 				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_ENHET_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_PERSON, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_ORGANISASJON, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
-						.build()),
-				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build())));
 		return cacheManager;

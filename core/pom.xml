@@ -27,6 +27,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 		<dependency>
@@ -37,30 +41,13 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-spring</artifactId>
 		</dependency>
-
-		<!--CaffeineCache dependencies-->
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
-		</dependency>
-
-		<!--Redis Cache dependencies-->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
@@ -70,7 +57,6 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-codec-dns</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -79,13 +65,10 @@
 			<groupId>io.reactivex.rxjava3</groupId>
 			<artifactId>rxjava</artifactId>
 		</dependency>
-
-		<!--Swagger-->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -94,7 +77,6 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.neovisionaries</groupId>
 			<artifactId>nv-i18n</artifactId>

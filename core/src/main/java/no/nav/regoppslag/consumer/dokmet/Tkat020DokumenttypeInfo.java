@@ -26,7 +26,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKMET_SPRAAKINFO;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.APP_NAME;

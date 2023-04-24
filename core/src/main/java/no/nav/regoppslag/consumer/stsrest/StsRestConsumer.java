@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.CacheConfig.RESTSTS_CACHE_NAME;
 
 @Component
 public class StsRestConsumer {

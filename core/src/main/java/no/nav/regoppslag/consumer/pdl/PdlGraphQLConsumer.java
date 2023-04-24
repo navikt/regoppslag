@@ -31,8 +31,8 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_NAVN;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;

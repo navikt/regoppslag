@@ -15,13 +15,12 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_DOKMET_SPRAAKINFO;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_KONTAKTINFO;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ORGANISASJON;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.STS_CACHE_NAME;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_KONTAKTINFO;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON;
+import static no.nav.regoppslag.config.cache.CacheConfig.RESTSTS_CACHE_NAME;
 import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
 
 
@@ -68,9 +67,6 @@ public class CacheTestConfig {
 						.build()),
 				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
-						.build()),
-				new CaffeineCache(STS_CACHE_NAME, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
