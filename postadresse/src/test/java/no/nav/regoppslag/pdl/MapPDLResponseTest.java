@@ -553,10 +553,10 @@ public class MapPDLResponseTest {
 			"null, 2, KONTAKTADRESSE",
 			"null, null, KONTAKTADRESSE"
 	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseDager, String kontaktadresseDager, String adresseKilde) {
+	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseAlder, String kontaktadresseAlder, String adresseKilde) {
 		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndKontaktadresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseDager),
-				createKontaktAdresseWithAntallDager(kontaktadresseDager)
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createKontaktAdresseWithAntallDager(kontaktadresseAlder)
 		);
 
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
@@ -575,10 +575,10 @@ public class MapPDLResponseTest {
 			"null, 2, OPPHOLDSADRESSE",
 			"null, null, OPPHOLDSADRESSE"
 	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseDager, String oppholdsadresseDager, String adresseKilde) {
+	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseAlder, String oppholdsadresseAlder, String adresseKilde) {
 		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseDager),
-				createOppholdsAdresseWithAntallDager(oppholdsadresseDager));
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createOppholdsAdresseWithAntallDager(oppholdsadresseAlder));
 
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 

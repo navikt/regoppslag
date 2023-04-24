@@ -1,0 +1,115 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1966,
+          "foedselsdato": "1966-05-05"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "AREMARK",
+          "mellomnavn": "",
+          "etternavn": "TESTFAMILIEN",
+          "forkortetNavn": ""
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2021-03-03T00:00",
+          "gyldigTilOgMed": "2032-03-03T23:59:59",
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "246e5181-db49-4b0e-9a8b-1eee1bb03e2b",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-03-03T11:57:46",
+                "registrertAv": "srvdolly",
+                "systemkilde": "srvdolly",
+                "kilde": "Dolly"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [
+        {
+          "gyldigFraOgMed": "2021-03-03T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "1KOLEJOWA 6/5",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": null,
+            "bySted": null,
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "oppholdAnnetSted": null,
+          "metadata": {
+            "opplysningsId": "8f2c745f-1276-45a2-8527-19e206de7573",
+            "master": "PDL"
+          }
+        }
+      ],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "45056649992",
+          "type": "DNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "2023-03-01",
+          "gyldigFraOgMed": "2023-03-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": 275433480,
+            "husnummer": "45",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "ikkeBosatt",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "Dolly"
+          }
+        }
+      ]
+    }
+  }
+}
