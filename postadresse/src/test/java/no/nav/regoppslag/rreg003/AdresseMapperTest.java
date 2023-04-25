@@ -70,7 +70,6 @@ public class AdresseMapperTest {
 	public void setUp() throws IOException {
 		PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		LandkodeServiceNorsk landkodeServiceNorsk = new LandkodeServiceNorsk();
-		postnummerService.init();
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
 		adresseMapper = new AdresseMapper(metrics, landkodeServiceNorsk);
 	}

@@ -33,8 +33,7 @@ public class PostnummerService {
 		init();
 	}
 
-	@PostConstruct
-	public void init() throws IOException {
+	void init() throws IOException {
 		try (InputStream in = getClass().getResourceAsStream(FILENAME)) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 

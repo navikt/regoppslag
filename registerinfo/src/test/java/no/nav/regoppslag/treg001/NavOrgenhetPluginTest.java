@@ -57,7 +57,6 @@ public class NavOrgenhetPluginTest {
 		SecurityContextHolder.setContext(securityContext);
 		PostnummerService postnummerService = new PostnummerService();
 
-		postnummerService.init();
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper, metrics);
