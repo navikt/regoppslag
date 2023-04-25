@@ -30,7 +30,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN = "AzureClientCredentialToken";
 
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(1L);
-	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
+	static final Duration HENT_NAVN_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
+	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
 	static final Duration AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
@@ -47,11 +48,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
 						.build()),
-				new CaffeineCache(HENT_NAVN, Caffeine.newBuilder()
-						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
-						.build()),
 				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.build()),
+				new CaffeineCache(HENT_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(HENT_NAVN_CACHE_EXPIRATION_TIME)
 						.build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME)
