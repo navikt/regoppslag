@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
-import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
@@ -177,15 +176,6 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public DokumenttypeInfoProperties dokumenttypeInfoProperties() {
-			DokumenttypeInfoProperties dokumenttypeInfoProperties = new DokumenttypeInfoProperties();
-			dokumenttypeInfoProperties.setConnecttimeoutms(1000);
-			dokumenttypeInfoProperties.setReadtimeoutms(1000);
-			dokumenttypeInfoProperties.setUrl("asdsad");
-			return dokumenttypeInfoProperties;
-		}
-
-		@Bean
 		public MeterRegistry registry() {
 			return new SimpleMeterRegistry();
 		}
@@ -197,18 +187,36 @@ public class Tkat020DokumenttypeInfoTest {
 
 		@Bean
 		public TokenConsumer tokenConsumer() {
-			return (String s) -> "";
+			return new TokenConsumer() {
+				@Override
+				public String getClientCredentialToken(String scope) {
+					return "token";
+				}
+
+				@Override
+				public String getOnBehalfOfToken(String scope, String token) {
+					return "token";
+				}
+			};
 		}
 
 		@Bean
 		public AzureProperties azureProperties() {
 			AzureProperties azureproperties = new AzureProperties();
-			azureproperties.setAppScopedigdirkrr("scope");
-			azureproperties.setAppScopeDokmet("scope");
 			azureproperties.setAppClientId("clientId");
 			azureproperties.setAppClientSecret("secret");
 			azureproperties.setOpenidConfigTokenEndpoint("url");
 			return azureproperties;
+		}
+
+		@Bean
+		public RegoppslagProperties regoppslagProperties() {
+			RegoppslagProperties regoppslagProperties = new RegoppslagProperties();
+			RegoppslagProperties.Oauth2SecuredEndpoint dokmet = new RegoppslagProperties.Oauth2SecuredEndpoint();
+			dokmet.setScope("scope");
+			dokmet.setUrl("https://dokmet");
+			regoppslagProperties.getEndpoints().setDokmet(dokmet);
+			return regoppslagProperties;
 		}
 	}
 

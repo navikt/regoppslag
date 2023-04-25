@@ -3,7 +3,6 @@ package no.nav.regoppslag;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import no.nav.regoppslag.config.AppVersion;
-import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
@@ -21,7 +20,6 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableConfigurationProperties({
-		DokumenttypeInfoProperties.class,
 		RegoppslagProperties.class,
 		AzureProperties.class
 })

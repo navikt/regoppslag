@@ -19,8 +19,4 @@ public class AzureProperties {
 	private String appClientId;
 	@NotEmpty
 	private String appClientSecret;
-	@NotEmpty
-	private String appScopedigdirkrr;
-	@NotEmpty
-	private String appScopeDokmet;
 }

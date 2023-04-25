@@ -3,8 +3,7 @@ package no.nav.regoppslag.consumer.dokmet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
-import no.nav.regoppslag.config.DokumenttypeInfoProperties;
-import no.nav.regoppslag.consumer.azure.AzureProperties;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
@@ -45,25 +44,22 @@ public class Tkat020DokumenttypeInfo {
 	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
 
 	private final RestTemplate restTemplate;
-	private final String dokumenttypeInfoUrl;
 	private final MicrometerMetrics metrics;
 	private final TokenConsumer tokenConsumer;
-	private final AzureProperties azureProperties;
+	private final RegoppslagProperties.Oauth2SecuredEndpoint dokmet;
 
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
-								   DokumenttypeInfoProperties dokumenttypeInfoProperties,
+								   RegoppslagProperties regoppslagProperties,
 								   MicrometerMetrics metrics,
-								   TokenConsumer tokenConsumer,
-								   AzureProperties azureProperties) {
+								   TokenConsumer tokenConsumer) {
 		this.tokenConsumer = tokenConsumer;
-		this.dokumenttypeInfoUrl = dokumenttypeInfoProperties.getUrl();
-		this.azureProperties = azureProperties;
+		this.dokmet = regoppslagProperties.getEndpoints().getDokmet();
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory.getClass())
-				.rootUri(dokumenttypeInfoProperties.getUrl())
-				.setConnectTimeout(Duration.ofMillis(dokumenttypeInfoProperties.getConnecttimeoutms()))
-				.setReadTimeout(Duration.ofMillis(dokumenttypeInfoProperties.getReadtimeoutms()))
+				.rootUri(this.dokmet.getUrl())
+				.setConnectTimeout(Duration.ofSeconds(3))
+				.setReadTimeout(Duration.ofSeconds(10))
 				.build();
 		this.metrics = metrics;
 	}
@@ -78,7 +74,7 @@ public class Tkat020DokumenttypeInfo {
 		try {
 			HttpEntity<String> request = new HttpEntity(headers);
 
-			DokumenttypeInfoTo response = restTemplate.exchange(dokumenttypeInfoUrl + "/" + dokumenttypeId, GET, request, DokumenttypeInfoTo.class).getBody();
+			DokumenttypeInfoTo response = restTemplate.exchange(dokmet.getUrl() + "/" + dokumenttypeId, GET, request, DokumenttypeInfoTo.class).getBody();
 			if (response.getDokumentProduksjonsInfo() == null || response.getDokumentProduksjonsInfo().getSpraakInfos() == null) {
 				return Collections.emptyList();
 			} else {
@@ -95,7 +91,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	private HttpHeaders createHeaders() {
-		String clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopeDokmet());
+		String clientCredentialToken = tokenConsumer.getClientCredentialToken(dokmet.getScope());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);

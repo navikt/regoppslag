@@ -10,14 +10,22 @@ public class AzureTestConfig {
 
 	@Bean
 	public TokenConsumer tokenConsumer() {
-		return (String s) -> "";
+		return new TokenConsumer() {
+			@Override
+			public String getClientCredentialToken(String scope) {
+				return "token";
+			}
+
+			@Override
+			public String getOnBehalfOfToken(String scope, String token) {
+				return "token";
+			}
+		};
 	}
 
 	@Bean
 	public AzureProperties azureProperties() {
 		AzureProperties azureproperties = new AzureProperties();
-		azureproperties.setAppScopedigdirkrr("scope");
-		azureproperties.setAppScopeDokmet("scope");
 		azureproperties.setAppClientId("clientId");
 		azureproperties.setAppClientSecret("secret");
 		azureproperties.setOpenidConfigTokenEndpoint("url");

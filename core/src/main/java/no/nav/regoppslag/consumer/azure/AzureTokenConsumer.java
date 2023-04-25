@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN;
+import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -21,6 +22,9 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 public class AzureTokenConsumer implements TokenConsumer {
 
 	private static final String AZURE_TOKEN_INSTANCE = "azuretoken";
+	static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+	static final String ON_BEHALF_OF = "on_behalf_of";
+	static final String CLIENT_CREDENTIALS = "client_credentials";
 
 	private final AzureProperties azureProperties;
 	private final ObjectMapper objectMapper;
@@ -43,12 +47,30 @@ public class AzureTokenConsumer implements TokenConsumer {
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
 	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_TOKEN)
 	public String getClientCredentialToken(String scope) {
+		return getAzureToken(scope, null);
+	}
 
+	@Override
+	@Retry(name = AZURE_TOKEN_INSTANCE)
+	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN)
+	public String getOnBehalfOfToken(String scope, String token) {
+		return getAzureToken(scope, token);
+	}
+
+	private String getAzureToken(String scope, String token) {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		formData.add("client_id", azureProperties.getAppClientId());
 		formData.add("client_secret", azureProperties.getAppClientSecret());
-		formData.add("grant_type", "client_credentials");
 		formData.add("scope", scope);
+
+		if (token != null) {
+			formData.add("requested_token_use", ON_BEHALF_OF);
+			formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
+			formData.add("assertion", token);
+		} else {
+			formData.add("grant_type", CLIENT_CREDENTIALS);
+		}
 
 		String responseJson = webClient.post()
 				.body(BodyInserters.fromFormData(formData))

@@ -1,6 +1,7 @@
 package no.nav.regoppslag.consumer.pdl;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.pdl.map.MapHentNavnResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.PDLHentNavnResponse;
@@ -51,18 +52,19 @@ public class PdlGraphQLConsumer {
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsConsumer;
-	private final String pdlUrl;
 	private final MapHentNavnResponse mapHentNavnResponse;
+	private final RegoppslagProperties.Oauth2SecuredEndpoint pdl;
 
 	@Autowired
 	public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder,
-							  StsRestConsumer stsConsumer, @Value("${pdl.url}") String pdlUrl) {
+							  StsRestConsumer stsConsumer,
+							  RegoppslagProperties regoppslagProperties) {
+		this.pdl = regoppslagProperties.getEndpoints().getPdl();
 		this.restTemplate = restTemplateBuilder
 				.setConnectTimeout(Duration.ofSeconds(5L))
 				.setReadTimeout(Duration.ofSeconds(15L))
 				.build();
 		this.stsConsumer = stsConsumer;
-		this.pdlUrl = pdlUrl;
 		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}
 
@@ -124,7 +126,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	private RequestEntity<PDLRequest> createRequestEntity(String aktoerId, String tema, String query) {
-		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdlUrl).build();
+		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdl.getUrl()).build();
 		final String serviceUserToken = "Bearer " + stsConsumer.getOidcToken();
 		return RequestEntity.post(uri.toUri())
 				.accept(APPLICATION_JSON)
