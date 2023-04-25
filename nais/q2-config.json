@@ -49,6 +49,11 @@
 			"app": "pensjon-persondata-q2",
 			"namespace": "pensjon-person",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "ida",
+			"namespace": "traktor",
+			"cluster": "prod-fss"
 		}
 	]
 }
