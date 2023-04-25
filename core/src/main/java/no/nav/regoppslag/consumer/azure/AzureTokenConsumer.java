@@ -67,13 +67,14 @@ public class AzureTokenConsumer implements TokenConsumer {
 	private void handleError(Throwable error) {
 		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 			throw new AzureTokenException(
-					String.format("Klarte ikke hente token fra Azure. Feilet med statuskode=%s Feilmelding=%s",
+					String.format("Klarte ikke hente token fra Azure. Feilet med statuskode=%s, feilmelding=%s, body=%s",
 							response.getRawStatusCode(),
-							response.getMessage()),
+							response.getMessage(),
+							response.getResponseBodyAsString()),
 					error);
 		} else {
 			throw new AzureTokenException(
-					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
+					String.format("Kall mot Azure feilet med feilmelding=%s, responseBody=%s", error.getMessage()),
 					error);
 		}
 	}

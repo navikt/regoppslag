@@ -13,6 +13,9 @@
 				<exclude>org\.springframework\.web\..*</exclude>
 				<exclude>sun\.net\.www\..*</exclude>
 				<exclude>org\.apache\.camel\.processor\..*</exclude>
+				<exclude>io\.netty\..*</exclude>
+				<exclude>reactor\.core\..*</exclude>
+				<exclude>reactor\.netty\..*</exclude>
 			</throwableConverter>
 		</encoder>
 	</appender>
