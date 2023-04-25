@@ -6,7 +6,7 @@
 	"DIGDIR_KRR_PROXY_URL": "https://digdir-krr-proxy.dev.intern.nav.no",
 	"PDL_URL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
-	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
+	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.dev.adeo.no/rest/v1/sts/.well-known/openid-configuration",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person,srvveilarbvedtakss,srvdokdistsentralp,srvbarnepensjon",
 	"APP_NAME": "regoppslag-q1",
 	"MIN_REPLICAS": 1,
