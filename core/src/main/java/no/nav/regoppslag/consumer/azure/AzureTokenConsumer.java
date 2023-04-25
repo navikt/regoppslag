@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
+import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -41,7 +41,7 @@ public class AzureTokenConsumer implements TokenConsumer {
 	@Override
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
-	@Cacheable(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE)
+	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_TOKEN)
 	public String getClientCredentialToken(String scope) {
 
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -67,13 +67,14 @@ public class AzureTokenConsumer implements TokenConsumer {
 	private void handleError(Throwable error) {
 		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 			throw new AzureTokenException(
-					String.format("Klarte ikke hente token fra Azure. Feilet med statuskode=%s Feilmelding=%s",
+					String.format("Klarte ikke hente token fra Azure. Feilet med statuskode=%s, feilmelding=%s, body=%s",
 							response.getRawStatusCode(),
-							response.getMessage()),
+							response.getMessage(),
+							response.getResponseBodyAsString()),
 					error);
 		} else {
 			throw new AzureTokenException(
-					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
+					String.format("Kall mot Azure feilet med feilmelding=%s, responseBody=%s", error.getMessage()),
 					error);
 		}
 	}

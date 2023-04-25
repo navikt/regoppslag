@@ -18,13 +18,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
 public class AzureAdGraphService {
 
-	public static final String HENT_FULLT_NAVN = "hentFulltNavn";
 	public static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
 	public static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
 	public static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
@@ -35,7 +35,7 @@ public class AzureAdGraphService {
 		this.tokenConsumer = tokenConsumer;
 	}
 
-	@Cacheable(value = HENT_FULLT_NAVN, key = "#navIdent")
+	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
 	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		LinkedList<Option> requestOptions = new LinkedList<>();

@@ -1,130 +1,81 @@
 package no.nav.regoppslag.config.cache;
 
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.SocketOptions;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
-import java.util.HashMap;
-
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_PERSON;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.STS_CACHE_NAME;
-import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
+import java.util.Arrays;
 
 @Profile("nais")
 @Configuration
 @EnableCaching
 @Slf4j
 public class CacheConfig extends CachingConfigurerSupport {
-	
-	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
-	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
+
+	public static final String HENT_NAV_ANSATT_NAVN = "hentNAVAnsattNavn";
+	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
+	public static final String HENT_ENHET_KONTAKTINFO = "hentEnhetKontaktInfo";
+	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
+	public static final String HENT_BRUKER_PERSONDATA = "hentBrukerPersondata";
+	public static final String HENT_BRUKER_NAVN = "hentBrukerNavn";
+	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
+	public static final String RESTSTS_TOKEN = "restStsToken";
+	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN = "AzureClientCredentialToken";
+
+	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(1L);
+	static final Duration HENT_NAVN_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
+	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
-	static final Duration AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
-
-	@Value("${redis.hostname:regoppslag-redis}")
-	private String redisHost;
-
-	@Value("${redis.port:6379}")
-	private int redisPort;
+	static final Duration AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
 	@Bean
-	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-		//Remaining caches uses the default value
-		HashMap<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
-		initialConfigs.put(STS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
-		initialConfigs.put(HENT_PERSON, generateCacheConfig(HENT_PERSON_CACHE_EXPIRATION_TIME));
-		initialConfigs.put(RESTSTS_CACHE_NAME, generateCacheConfig(STS_CACHE_EXPIRATION_TIME));
-		initialConfigs.put(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_CACHE, generateCacheConfig(AZURE_CLIENT_CREDENTIAL_DIGDIR_TOKEN_EXPIRATION_TIME));
-
-		return RedisCacheManager.builder(connectionFactory)
-				.cacheDefaults(generateCacheConfig(DEFAULT_CACHE_EXPIRATION_TIME))
-				.withInitialCacheConfigurations(initialConfigs)
-				.build();
+	public CacheManager inMemoryCacheManager() {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(Arrays.asList(
+				new CaffeineCache(HENT_NAV_ANSATT_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_BRUKER_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(HENT_NAVN_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(HENT_BRUKER_PERSONDATA, Caffeine.newBuilder()
+						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(RESTSTS_TOKEN, Caffeine.newBuilder()
+						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
+						.expireAfterWrite(AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME)
+						.recordStats()
+						.build())));
+		return cacheManager;
 	}
-
-	@Bean
-	RedisTemplate redisTemplate(RedisConnectionFactory factory) {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
-		template.setDefaultSerializer(new CustomRedisSerializer<>());
-		template.setConnectionFactory(factory);
-		return template;
-	}
-
-	private RedisCacheConfiguration generateCacheConfig(Duration duration) {
-		return RedisCacheConfiguration.defaultCacheConfig()
-				.disableCachingNullValues()
-				.entryTtl(duration != null ? duration : DEFAULT_CACHE_EXPIRATION_TIME)
-				.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
-				.serializeValuesWith(fromSerializer(new CustomRedisSerializer<>()));
-	}
-
-	@Bean
-	public RedisConnectionFactory connectionFactory(LettuceClientConfiguration clientConfiguration) {
-		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-		log.info("Starting redis connection to {} on port {}", redisHost, redisPort);
-		config.setHostName(redisHost);
-		config.setPort(redisPort);
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(config, clientConfiguration);
-		factory.setShareNativeConnection(true);
-		return factory;
-	}
-
-	@Bean
-	public LettuceClientConfiguration lettucePoolingClientConfiguration() {
-		return LettucePoolingClientConfiguration.builder()
-				.poolConfig(poolConfig())
-				.clientResources(io.lettuce.core.resource.DefaultClientResources.builder()
-						.reconnectDelay(io.lettuce.core.resource.Delay.constant(Duration.ofMillis(200)))
-						.build())
-				.clientOptions(ClientOptions.builder()
-						.autoReconnect(true)
-						.cancelCommandsOnReconnectFailure(true)
-						.pingBeforeActivateConnection(true)
-						.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-						.suspendReconnectOnProtocolFailure(false)
-						.socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(400)).build())
-						.build())
-				.build();
-	}
-
-	private GenericObjectPoolConfig poolConfig() {
-		GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
-		genericObjectPoolConfig.setTestOnReturn(false);
-		genericObjectPoolConfig.setTestOnCreate(false);
-		genericObjectPoolConfig.setTestWhileIdle(false);
-		genericObjectPoolConfig.setTestOnBorrow(false);
-		genericObjectPoolConfig.setMaxTotal(512);
-		genericObjectPoolConfig.setMaxIdle(512);
-		genericObjectPoolConfig.setMinIdle(0);
-		genericObjectPoolConfig.setTimeBetweenEvictionRunsMillis(3000);
-		genericObjectPoolConfig.setMinEvictableIdleTimeMillis(6000);
-		return genericObjectPoolConfig;
-	}
-	
-	@Bean
-	@Override
-	public CacheErrorHandler errorHandler(){
-		return new CustomCacheErrorHandler();
-	}
-	
 }

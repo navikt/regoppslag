@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_KONTAKTINFO;
-import static no.nav.regoppslag.config.cache.LocalCacheConfig.HENT_ENHET_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_KONTAKTINFO;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;

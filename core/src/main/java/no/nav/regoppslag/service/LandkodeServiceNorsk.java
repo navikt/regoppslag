@@ -24,21 +24,20 @@ public class LandkodeServiceNorsk {
 		init();
 	}
 
-	@PostConstruct
-	public void init() throws IOException {
+	void init() throws IOException {
+		try(InputStream in = getClass().getResourceAsStream(FILENAME)) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-		InputStream in = getClass().getResourceAsStream(FILENAME);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line;
+			String csvSplitBy = "\t";
 
-		String line;
-		String csvSplitBy = "\t";
+			while ((line = br.readLine()) != null) {
+				String[] kodeArray = line.split(csvSplitBy);
 
-		while ((line = br.readLine()) != null) {
-			String[] kodeArray = line.split(csvSplitBy);
-
-			landkodeTable.put(kodeArray[0], kodeArray[1]);
+				landkodeTable.put(kodeArray[0], kodeArray[1]);
+			}
+			log.info("Har importert kodeverk fra " + FILENAME);
 		}
-		log.info("Har importert kodeverk fra " + FILENAME);
 	}
 
 	public String finnLand(String landKode) {

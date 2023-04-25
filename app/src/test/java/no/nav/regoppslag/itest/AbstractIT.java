@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.nimbusds.jose.JOSEObjectType.JWT;
 import static java.util.Collections.emptyMap;
-import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,7 +52,7 @@ public abstract class AbstractIT {
 	@BeforeEach
 	public void setUp() {
 		clearCachene();
-		cacheManager.getCache(HENT_FULLT_NAVN).put("Z991006", "en vilkaarlig saksbehandler");
+		cacheManager.getCache(HENT_NAV_ANSATT_NAVN).put("Z991006", "en vilkaarlig saksbehandler");
 	}
 
 	private void clearCachene() {
