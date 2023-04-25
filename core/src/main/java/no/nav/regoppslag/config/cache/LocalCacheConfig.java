@@ -16,7 +16,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static no.nav.regoppslag.config.cache.CacheConfig.DEFAULT_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
-import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 
 /**
  * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
@@ -34,7 +34,7 @@ public class LocalCacheConfig {
 
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(Arrays.asList(
-				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(HENT_NAV_ANSATT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(CacheConfig.HENT_ENHET_NAVN, Caffeine.newBuilder()
@@ -43,7 +43,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(CacheConfig.HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(CacheConfig.HENT_PERSON, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.HENT_BRUKER_PERSONDATA, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(CacheConfig.HENT_ORGANISASJON, Caffeine.newBuilder()
@@ -52,7 +52,7 @@ public class LocalCacheConfig {
 				new CaffeineCache(CacheConfig.HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(CacheConfig.RESTSTS_CACHE_NAME, Caffeine.newBuilder()
+				new CaffeineCache(CacheConfig.RESTSTS_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
 				new CaffeineCache(CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()

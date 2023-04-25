@@ -18,9 +18,9 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_KONTAKTINFO;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_NAVN;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON;
-import static no.nav.regoppslag.config.cache.CacheConfig.RESTSTS_CACHE_NAME;
-import static no.nav.regoppslag.consumer.azure.AzureAdGraphService.HENT_FULLT_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
+import static no.nav.regoppslag.config.cache.CacheConfig.RESTSTS_TOKEN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 
 
 @Profile("itest")
@@ -35,16 +35,16 @@ public class CacheTestConfig {
 	public CacheManager cacheManager() {
 
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+		CaffeineCache cacheHentFulltNavn = new CaffeineCache(HENT_NAV_ANSATT_NAVN, Caffeine.newBuilder()
 				.expireAfterAccess(2, TimeUnit.DAYS)
 				.maximumSize(2000)
 				.build());
 		cacheManager.setCaches(Arrays.asList(cacheHentFulltNavn,
 				new NoOpCache(HENT_ENHET_NAVN),
-				new NoOpCache(HENT_PERSON),
+				new NoOpCache(HENT_BRUKER_PERSONDATA),
 				new NoOpCache(HENT_ORGANISASJON),
 				new NoOpCache(HENT_DOKMET_SPRAAKINFO),
-				new CaffeineCache(HENT_FULLT_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(HENT_NAV_ANSATT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
@@ -53,7 +53,7 @@ public class CacheTestConfig {
 				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
-				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
+				new CaffeineCache(HENT_BRUKER_PERSONDATA, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
@@ -62,7 +62,7 @@ public class CacheTestConfig {
 				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build()),
-				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
+				new CaffeineCache(RESTSTS_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
 						.build())));
 		return cacheManager;

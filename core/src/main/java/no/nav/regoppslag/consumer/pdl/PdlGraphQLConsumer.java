@@ -31,8 +31,8 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAVN;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
@@ -67,7 +67,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_PERSON}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_PERSONDATA}, percentiles = {0.5, 0.95}, histogram = true)
 	public HentPerson hentPerson(final String aktoerId, final String tema) {
 		try {
 			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentPerson);
@@ -93,7 +93,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentNavn(final String aktoerId, final String tema) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);

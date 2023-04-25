@@ -20,13 +20,14 @@ import java.util.Arrays;
 @Slf4j
 public class CacheConfig extends CachingConfigurerSupport {
 
+	public static final String HENT_NAV_ANSATT_NAVN = "hentNAVAnsattNavn";
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
 	public static final String HENT_ENHET_KONTAKTINFO = "hentEnhetKontaktInfo";
 	public static final String HENT_ORGANISASJON = "hentOrganisasjon";
-	public static final String HENT_PERSON = "hentPerson";
-	public static final String HENT_NAVN = "hentNavn";
+	public static final String HENT_BRUKER_PERSONDATA = "hentBrukerPersondata";
+	public static final String HENT_BRUKER_NAVN = "hentBrukerNavn";
 	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
-	public static final String RESTSTS_CACHE_NAME = "RESTSTS_CACHE_NAME";
+	public static final String RESTSTS_TOKEN = "restStsToken";
 	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN = "AzureClientCredentialToken";
 
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(1L);
@@ -39,6 +40,10 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public CacheManager inMemoryCacheManager() {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(Arrays.asList(
+				new CaffeineCache(HENT_NAV_ANSATT_NAVN, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
 				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
 						.recordStats()
@@ -55,15 +60,15 @@ public class CacheConfig extends CachingConfigurerSupport {
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
-				new CaffeineCache(HENT_NAVN, Caffeine.newBuilder()
+				new CaffeineCache(HENT_BRUKER_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_NAVN_CACHE_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
-				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
+				new CaffeineCache(HENT_BRUKER_PERSONDATA, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
-				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
+				new CaffeineCache(RESTSTS_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
