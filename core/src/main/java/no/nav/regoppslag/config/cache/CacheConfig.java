@@ -41,27 +41,35 @@ public class CacheConfig extends CachingConfigurerSupport {
 		cacheManager.setCaches(Arrays.asList(
 				new CaffeineCache(HENT_ENHET_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HENT_ENHET_KONTAKTINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HENT_ORGANISASJON, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HENT_NAVN, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_NAVN_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HENT_PERSON, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(RESTSTS_CACHE_NAME, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME)
+						.recordStats()
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME)
+						.recordStats()
 						.build())));
 		return cacheManager;
 	}
