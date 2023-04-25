@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class PDLHentPersonResponse {
 
-	private List<PdlError> errors;
+	private List<PDLError> errors;
 	private PDLHentPerson data;
 
 	@Setter
@@ -25,25 +25,5 @@ public class PDLHentPersonResponse {
 	@NoArgsConstructor
 	public static class PDLHentPerson {
 		private HentPerson hentPerson;
-	}
-
-	@Data
-	public static class PdlError {
-		private String message;
-		private PdlErrorExtensionTo extensions;
-	}
-
-	@Data
-	static class PdlErrorExtensionTo {
-		private String code;
-		private ErrorDetails details;
-		private String classification;
-	}
-
-	@Data
-	static class ErrorDetails {
-		private String type;
-		private String cause;
-		private String policy;
 	}
 }

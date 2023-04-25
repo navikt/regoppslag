@@ -266,22 +266,6 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnInternalServerErrorWhenPDLFailsGetsInvalidSecurityToken() {
-		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		postPdlGraphql(OK.value(), "pdl/doedperson.json");
-		getStsToken(BAD_REQUEST.value(), "sts/stsResponse_happy.json");
-		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
-		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
-
-		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
-
-		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-		verify(15, getRequestedFor(urlEqualTo("/stsRest/token?grant_type=client_credentials&scope=openid")));
-	}
-
-	@Test
 	public void shouldReturnBadRequestWhenPersonHasUkjentAdresse() {
 		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktinformasjonfordoedsbo.json"); //mottakerPlugin

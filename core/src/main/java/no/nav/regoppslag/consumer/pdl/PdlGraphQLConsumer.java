@@ -2,20 +2,25 @@ package no.nav.regoppslag.consumer.pdl;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
+import no.nav.regoppslag.consumer.AzureFlowInterceptor;
+import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapHentNavnResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
+import no.nav.regoppslag.consumer.pdl.to.PDLError;
 import no.nav.regoppslag.consumer.pdl.to.PDLHentNavnResponse;
 import no.nav.regoppslag.consumer.pdl.to.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.pdl.to.PDLRequest;
-import no.nav.regoppslag.consumer.stsrest.StsRestConsumer;
 import no.nav.regoppslag.exceptions.PdlFunctionalException;
 import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
+import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -28,6 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.nonNull;
@@ -38,8 +44,9 @@ import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -49,22 +56,28 @@ public class PdlGraphQLConsumer {
 
 	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String HEADER_PDL_TEMA = "Tema";
+	// https://pdldocs-navno.msappproxy.net/ekstern/index.html#_dokumenter_hjemmel_vha_tema
+	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
+	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
+	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
+	private static final String PDL_ERROR_EXTENSION_CODE_NOT_FOUND = "not_found";
+	private static final String PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED = "unauthorized";
 
 	private final RestTemplate restTemplate;
-	private final StsRestConsumer stsConsumer;
 	private final MapHentNavnResponse mapHentNavnResponse;
 	private final RegoppslagProperties.Oauth2SecuredEndpoint pdl;
 
 	@Autowired
 	public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder,
-							  StsRestConsumer stsConsumer,
-							  RegoppslagProperties regoppslagProperties) {
+							  TokenConsumer tokenConsumer,
+							  RegoppslagProperties regoppslagProperties,
+							  TokenValidationContextHolder tokenValidationContextHolder) {
 		this.pdl = regoppslagProperties.getEndpoints().getPdl();
 		this.restTemplate = restTemplateBuilder
 				.setConnectTimeout(Duration.ofSeconds(5L))
 				.setReadTimeout(Duration.ofSeconds(15L))
+				.additionalInterceptors(new AzureFlowInterceptor(tokenConsumer, tokenValidationContextHolder, pdl.getScope()))
 				.build();
-		this.stsConsumer = stsConsumer;
 		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}
 
@@ -73,13 +86,8 @@ public class PdlGraphQLConsumer {
 	public HentPerson hentPerson(final String aktoerId, final String tema) {
 		try {
 			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentPerson);
-
 			final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
-
-			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
-				log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", response.getErrors());
-				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
-			}
+			handterPdlFunksjonellFeil(response);
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
@@ -87,7 +95,6 @@ public class PdlGraphQLConsumer {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
 	}
-
 
 	public PDLHentNavnResponse hentPersonnavn(final String aktoerId, final String tema) {
 		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentNavn);
@@ -99,10 +106,7 @@ public class PdlGraphQLConsumer {
 	public String hentNavn(final String aktoerId, final String tema) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
-
-			if (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
-				throw new PdlFunctionalException("Kunne ikke hente person fra Pdl" + response.getErrors(), null);
-			}
+			handterPdlFunksjonellFeil(response);
 			return mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
@@ -111,13 +115,13 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, "hentDoedsBoKontaktPersonnavn"}, percentiles = {0.5, 0.95}, histogram = true)
 	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId, final String tema) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
-			return (nonNull(response.getErrors()) && !response.getErrors().isEmpty()) ? null : Optional.ofNullable(mapHentNavnResponse.mapNavnForDoedsbo(response));
+			handterPdlFunksjonellFeil(response);
+			return Optional.ofNullable(mapHentNavnResponse.mapNavnForDoedsbo(response));
 		} catch (HttpClientErrorException e) {
 			return Optional.empty();
 		} catch (HttpServerErrorException e) {
@@ -127,13 +131,11 @@ public class PdlGraphQLConsumer {
 
 	private RequestEntity<PDLRequest> createRequestEntity(String aktoerId, String tema, String query) {
 		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdl.getUrl()).build();
-		final String serviceUserToken = "Bearer " + stsConsumer.getOidcToken();
 		return RequestEntity.post(uri.toUri())
 				.accept(APPLICATION_JSON)
 				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.header(AUTHORIZATION, serviceUserToken)
-				.header(NAV_CONSUMER_TOKEN, serviceUserToken)
 				.header(HEADER_PDL_TEMA, tema)
+				.header(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER)
 				.header(NAV_CALL_ID, MDC.get(CALL_ID))
 				.body(mapRequest(aktoerId, query));
 	}
@@ -142,6 +144,35 @@ public class PdlGraphQLConsumer {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", aktoerId);
 		return new PDLRequest(query, variables);
+	}
+
+	private void handterPdlFunksjonellFeil(PDLHentPersonResponse response) {
+		List<PDLError> errors = response.getErrors();
+		handterPdlFunksjonellFeil(errors);
+	}
+
+	private void handterPdlFunksjonellFeil(PDLHentNavnResponse response) {
+		List<PDLError> errors = response.getErrors();
+		handterPdlFunksjonellFeil(errors);
+	}
+
+	private void handterPdlFunksjonellFeil(List<PDLError> errors) {
+		if (nonNull(errors) && !errors.isEmpty()) {
+			Optional<PDLError> pdlUnauthorized = errors.stream()
+					.filter(p -> PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED.equals(p.getExtensions().getCode()))
+					.findFirst();
+			if (pdlUnauthorized.isPresent()) {
+				throw new RegOppslagIngenTilgangException("Ingen tilgang til å se data om person. " + pdlUnauthorized.get(), FORBIDDEN);
+			}
+			Optional<PDLError> pdlNotFound = errors.stream()
+					.filter(p -> PDL_ERROR_EXTENSION_CODE_NOT_FOUND.equals(p.getExtensions().getCode()))
+					.findFirst();
+			if(pdlNotFound.isPresent()) {
+				throw new RegOppslagIkkeFunnetException("Fant ikke person i PDL. " + pdlNotFound.get(), NOT_FOUND);
+			}
+			log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", errors);
+			throw new PdlFunctionalException("Kunne ikke hente person fra Pdl " + errors, null);
+		}
 	}
 
 	private final String hentNavn = """

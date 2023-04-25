@@ -8,6 +8,7 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -124,6 +126,9 @@ public class PostadresseService {
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
+		} else if(e instanceof RegOppslagIngenTilgangException) {
+			log.warn(RREG003_FUNK_FEIL, e.getMessage());
+			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {

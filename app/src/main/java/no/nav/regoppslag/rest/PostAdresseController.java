@@ -52,6 +52,7 @@ public class PostAdresseController {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene.", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten.", content = @Content),
+			@ApiResponse(responseCode = "403", description = "Tilgang til å hente postadresse avvist", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.", content = @Content)
