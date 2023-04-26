@@ -162,7 +162,8 @@ public class PdlGraphQLConsumer {
 					.filter(p -> PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED.equals(p.getExtensions().getCode()))
 					.findFirst();
 			if (pdlUnauthorized.isPresent()) {
-				throw new RegOppslagIngenTilgangException("Ingen tilgang til å se data om person. " + pdlUnauthorized.get(), FORBIDDEN);
+				PDLError pdlError = pdlUnauthorized.get();
+				throw new RegOppslagIngenTilgangException("Ingen tilgang til å se data om person. Avvist av policy=" + pdlError.getExtensions().getDetails().getPolicy(), FORBIDDEN);
 			}
 			Optional<PDLError> pdlNotFound = errors.stream()
 					.filter(p -> PDL_ERROR_EXTENSION_CODE_NOT_FOUND.equals(p.getExtensions().getCode()))

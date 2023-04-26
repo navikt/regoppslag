@@ -22,6 +22,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new MDCHandlerInterceptor(tokenValidationContextHolder))
 				.addPathPatterns("/rest/**");
+		registry.addInterceptor(new SecurityContextHandlerInterceptor(tokenValidationContextHolder))
+				.addPathPatterns("/rest/**");
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package no.nav.regoppslag.treg001.xmlenricher;
 
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -15,6 +16,7 @@ import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolve
 import no.nav.regoppslag.treg001.xmlenricher.util.Payload;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -32,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
-import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
@@ -85,18 +85,15 @@ public class ElementEnricher {
 			}
 		}
 
-
 		final List<Throwable> unhandledError = new ArrayList<>();
 		List<Aggregate> aggregateList = new ArrayList<>();
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-							if (securityContextIsUsedForAuthentication(payload)) {
-								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
-							}
+					setSecurityContext(authentication);
 
-							MDC.put(CONSUMER_ID, consumerId);
+					MDC.put(CONSUMER_ID, consumerId);
 							MDC.put(USER_ID, userId);
 							MDC.put(CALL_ID, callId);
 
@@ -107,12 +104,13 @@ public class ElementEnricher {
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
 						}
 				)
+				.doOnError(throwable -> SecurityContextHolder.clearContext())
+				.doOnComplete(SecurityContextHolder::clearContext)
 				.sequential()
 				.blockingSubscribe(
 						aggregateList::add,
 						unhandledError::add
 				);
-
 
 		if (!unhandledError.isEmpty()) {
 			handleException(unhandledError.get(0));
@@ -152,6 +150,13 @@ public class ElementEnricher {
 		} else {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}
+	}
+
+	private static void setSecurityContext(Authentication authentication) {
+		// Setter securityContext for nye tråder
+		SecurityContext newThreadSecurityContext = SecurityContextHolder.createEmptyContext();
+		newThreadSecurityContext.setAuthentication(authentication);
+		SecurityContextHolder.setContext(newThreadSecurityContext);
 	}
 
 }

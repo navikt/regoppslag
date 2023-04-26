@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -52,14 +49,10 @@ public class NavOrgenhetNavnPluginTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		OrganisasjonsenhetConsumer norgConsumer = Mockito.mock(OrganisasjonsenhetConsumer.class);
-		SecurityContext securityContext = new SecurityContextImpl();
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
 		PostnummerService postnummerService = new PostnummerService();
-		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		SecurityContextHolder.setContext(securityContext);
 
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);

@@ -80,6 +80,8 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 		} catch (ParserConfigurationException | MarshallerException e) {
 			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+		} finally {
+			clearSecurityContext();
 		}
 	}
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -53,9 +54,9 @@ public class AzureTokenConsumer implements TokenConsumer {
 	@Override
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
-	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN)
-	public String getOnBehalfOfToken(String scope, String token) {
-		return getAzureToken(scope, token);
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN, key = "#token.subject")
+	public String getOnBehalfOfToken(String scope, JwtToken token) {
+		return getAzureToken(scope, token.getTokenAsString());
 	}
 
 	private String getAzureToken(String scope, String token) {

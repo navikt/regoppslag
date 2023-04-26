@@ -42,7 +42,6 @@ public class DigitalKontaktinformasjon {
 
 	private final RestTemplate restTemplate;
 	private final TokenConsumer tokenConsumer;
-	private final AzureProperties azureProperties;
 	private final RegoppslagProperties.Oauth2SecuredEndpoint digdirkrrproxy;
 
 	public static final String HENT_SIKKER_DIGITAL_POSTADRESSE = "hentSikkerDigitalPostadresse";
@@ -54,7 +53,6 @@ public class DigitalKontaktinformasjon {
 									 AzureProperties azureProperties) {
 		this.digdirkrrproxy = regoppslagProperties.getEndpoints().getDigdirkrrproxy();
 		this.tokenConsumer = tokenConsumer;
-		this.azureProperties = azureProperties;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))

@@ -12,6 +12,7 @@ import no.nav.regoppslag.consumer.azure.AzureTestConfig;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +65,6 @@ public class Tkat020DokumenttypeInfoTest {
 	private static final String LANG1 = "nb";
 	private static final String LANG2 = "no";
 
-
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -110,7 +110,7 @@ public class Tkat020DokumenttypeInfoTest {
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
+		verify(restTemplate, times(3)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class Tkat020DokumenttypeInfoTest {
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
+		verify(restTemplate, times(3)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	private DokumenttypeInfoTo defaultResponse(List<String> langs) {
@@ -194,7 +194,7 @@ public class Tkat020DokumenttypeInfoTest {
 				}
 
 				@Override
-				public String getOnBehalfOfToken(String scope, String token) {
+				public String getOnBehalfOfToken(String scope, JwtToken token) {
 					return "token";
 				}
 			};

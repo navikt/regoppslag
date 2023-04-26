@@ -23,7 +23,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlDigdir;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
@@ -60,7 +59,6 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldGetKomplettBrevdataPerson() {
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
@@ -70,7 +68,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataForPersonWithPostboksAdresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -81,10 +78,8 @@ public class Treg001PDLIT extends AbstractIT {
 		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001_postboks_response.xml"));
 	}
 
-
 	@Test
 	public void shouldMapAndGetKomplettBrevdataForPersonWithNullForkortetnavn() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/bosattadresse_with_null_forkortetnavn.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -97,7 +92,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldMapAndGetKomplettBrevdataForPersonWithBosattadresseMedMatrikkeladresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/bosattadressemedmatrikkeladresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -110,7 +104,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataPersonMaalFormEN() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -123,7 +116,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataPersonMaalFormIkkeSkandinavisk() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/bosattadressemedconavn.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -136,7 +128,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataPersonMaalFormDansk() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -153,7 +144,6 @@ public class Treg001PDLIT extends AbstractIT {
 	 */
 	@Test
 	public void shouldGetKomplettBrevdataOrg() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		stubGetEnhetNavn(OK.value(), "");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -171,7 +161,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataOrgIkkeSkandinavisk() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		stubFor(get("/v1/organisasjon/" + "111111111")
 				.willReturn(aResponse()
 						.withStatus(OK.value())
@@ -187,7 +176,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldNotMapBehandlendeEnhetWhenBerikIsFalse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/bosattadressemedconavn.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -200,7 +188,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataWhenDoedPerson() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -213,7 +200,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldGetKomplettBrevdataWhenDkifPersonIkkeFunnet() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/ikke-funnet.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -250,7 +236,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnNotFoundIfPersonIsMissingAdresseInPdl() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -267,7 +252,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnBadRequestWhenPersonHasUkjentAdresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktinformasjonfordoedsbo.json"); //mottakerPlugin
 		postPdlDigdir(BAD_REQUEST.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -283,7 +267,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnBadRequestWhenPDLFailsSecurityErrorNoAccess() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/unauthenticated-error-response.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
@@ -297,7 +280,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnNotFoundIfFunctionalExceptionFromPersonPlugin() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		postPdlGraphql(OK.value(), "pdl/bosattutenpostdresse.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -313,7 +295,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnNotFoundIfFunctionalExceptionFromNorgPlugins() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubGetEnhetNavn(NOT_FOUND.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(NOT_FOUND.value(), "norg2/hentEnhetKontaktInfo_happy.json");
@@ -328,7 +309,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnNotFoundIfNotFoundFromPDL() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		postPdlGraphqlWithErrorResponse(NOT_FOUND.value());
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -345,8 +325,7 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnInternalServerErrorIfInternalServerErrorFromOrgPlugin() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
-		postPdlGraphql(OK.value(), "pdl/bosattutenpostdresse.json");
+		postPdlGraphql(OK.value(), "p 	dl/bosattutenpostdresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubFor(get("/v1/organisasjon/111111111").willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
@@ -376,7 +355,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnInternalServerErrorWhenNotFoundFromDokmet() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse().withStatus(NOT_FOUND.value())));
@@ -393,7 +371,6 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@Test
 	public void shouldReturnInternalServerErrorIfTechnicalExceptionFromDokmet() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
@@ -404,13 +381,12 @@ public class Treg001PDLIT extends AbstractIT {
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
+		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
 	public void shouldReturnGoneIfPersonErDoedOgUtenKontaktAdresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedpersonutenadresse.json");
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");

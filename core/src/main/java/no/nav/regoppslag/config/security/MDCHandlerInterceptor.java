@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_CONSUMER_ID;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_ID;
+import static no.nav.regoppslag.config.security.TokenClaimExtractor.getConsumerId;
+import static no.nav.regoppslag.config.security.TokenClaimExtractor.getUserId;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
@@ -23,11 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 public class MDCHandlerInterceptor implements HandlerInterceptor {
 
-	private static final String AUTH_ERRORMESSAGE = "Tilgang er avvist. " +
-			"Ingen gyldig token på Authorization header. Token må være utsted av NAV onprem security-token-service eller azure.";
-
 	private final TokenValidationContextHolder tokenValidationContextHolder;
-	private final TokenClaimExtractor tokenClaimExtractor = new TokenClaimExtractor();
 
 	public MDCHandlerInterceptor(TokenValidationContextHolder tokenValidationContextHolder) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
@@ -38,7 +36,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 
 		JwtToken jwtToken = tokenValidationContext.getFirstValidToken()
-				.orElseThrow(() -> new RegOppslagSecurityException(AUTH_ERRORMESSAGE));
+				.orElseThrow(() -> new RegOppslagSecurityException(SecurityContextHandlerInterceptor.AUTH_ERRORMESSAGE));
 
 		populateCallId(request);
 		populateConsumerId(tokenValidationContext, jwtToken);
@@ -60,7 +58,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private void populateConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
-		final String consumerId = tokenClaimExtractor.getConsumerId(tokenValidationContext, jwtToken);
+		final String consumerId = getConsumerId(tokenValidationContext, jwtToken);
 
 		if (isNotBlank(consumerId)) {
 			MDC.put(CONSUMER_ID, consumerId);
@@ -71,7 +69,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private void populateUserId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
-		final String consumerId = tokenClaimExtractor.getUserId(tokenValidationContext, jwtToken);
+		final String consumerId = getUserId(tokenValidationContext, jwtToken);
 
 		if (isNotBlank(consumerId)) {
 			MDC.put(USER_ID, consumerId);

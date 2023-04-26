@@ -3,6 +3,7 @@ package no.nav.regoppslag.treg001.xmlenricher.util;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -76,7 +77,10 @@ public class JaxbHelper<T> {
 			throw new MarshallerTechnicalException(String.format("Teknisk feil ved marshalling. Feilmelding=%s, Localname=%s, namespaceUri=%s NodeName=%s Xml-element=%s", e.getMessage(), node
 					.getLocalName(), node.getNamespaceURI(), node.getNodeName(), documentToString(node)), e);
 		}
+	}
 
+	public void clearSecurityContext() {
+		SecurityContextHolder.clearContext();
 	}
 
 	//Only used for logging when exception occurs

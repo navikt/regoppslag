@@ -10,7 +10,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * Henter ut claims fra rest-sts / azure token for sporing.
  * Ingen tilstand / trådsikker.
  */
-public class TokenClaimExtractor {
+public final class TokenClaimExtractor {
 	private static final String ISSUER_REST_STS = "reststs";
 	private static final String ISSUER_AZUREV2 = "azurev2";
 	// Azure claims. https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens#payload-claims
@@ -25,7 +25,7 @@ public class TokenClaimExtractor {
 	static final String UKJENT_USER_ID = "ukjentBruker";
 	private static final String SERVICEUSER_PREFIX = "srv";
 
-	public String getConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+	public static String getConsumerId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		if (isRestStsSystemToken(tokenValidationContext, jwtToken)) {
 			return jwtToken.getSubject();
 		} else if (isClientCredentialFlowToken(tokenValidationContext, jwtToken) || isOnBehalfOfFlowToken(jwtToken)) {
@@ -34,7 +34,7 @@ public class TokenClaimExtractor {
 		return UKJENT_CONSUMER_ID;
 	}
 
-	public String getUserId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+	public static String getUserId(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		if (isRestStsSystemToken(tokenValidationContext, jwtToken)) {
 			return jwtToken.getSubject();
 		} else if (isClientCredentialFlowToken(tokenValidationContext, jwtToken)) {
@@ -49,19 +49,19 @@ public class TokenClaimExtractor {
 		return UKJENT_USER_ID;
 	}
 
-	private boolean isRestStsSystemToken(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+	public static boolean isRestStsSystemToken(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		return tokenValidationContext.hasTokenFor(ISSUER_REST_STS)
 				&& jwtToken.getSubject().toLowerCase().startsWith(SERVICEUSER_PREFIX);
 	}
 
-	private boolean isOnBehalfOfFlowToken(JwtToken jwtToken) {
+	public static boolean isOnBehalfOfFlowToken(JwtToken jwtToken) {
 		final JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
 		return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != null &&
 				jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID) != null &&
 				!jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB).equals(jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID));
 	}
 
-	private boolean isClientCredentialFlowToken(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
+	private static boolean isClientCredentialFlowToken(TokenValidationContext tokenValidationContext, JwtToken jwtToken) {
 		if (isJwtIssuedByAzure(tokenValidationContext)) {
 			final JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
 			return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != null &&
@@ -72,11 +72,11 @@ public class TokenClaimExtractor {
 		}
 	}
 
-	private boolean isJwtIssuedByAzure(TokenValidationContext tokenValidationContext) {
+	private static boolean isJwtIssuedByAzure(TokenValidationContext tokenValidationContext) {
 		return tokenValidationContext.hasTokenFor(ISSUER_AZUREV2);
 	}
 
-	private String findAzureAppnameClaim(JwtTokenClaims jwtTokenClaims) {
+	private static String findAzureAppnameClaim(JwtTokenClaims jwtTokenClaims) {
 		if (jwtTokenClaims.getAllClaims().containsKey(AZURE_NAV_CUSTOM_CLAIM_AZP_NAME)) {
 			String azpnameClaim = jwtTokenClaims.getStringClaim(AZURE_NAV_CUSTOM_CLAIM_AZP_NAME);
 			if (isNotBlank(azpnameClaim)) {

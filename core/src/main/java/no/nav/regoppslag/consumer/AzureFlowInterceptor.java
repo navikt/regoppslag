@@ -1,20 +1,23 @@
 package no.nav.regoppslag.consumer;
 
+import no.nav.regoppslag.config.security.BearerAuthenticationToken;
 import no.nav.regoppslag.consumer.azure.TokenConsumer;
-import no.nav.security.token.support.core.context.TokenValidationContext;
+import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
-import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 
+import static no.nav.regoppslag.config.security.SecurityContextHandlerInterceptor.AUTH_ERRORMESSAGE;
+import static no.nav.regoppslag.config.security.TokenClaimExtractor.isOnBehalfOfFlowToken;
+
 public class AzureFlowInterceptor implements ClientHttpRequestInterceptor {
-	static final String DEFAULT_CLAIM_OID = "oid";
-	static final String DEFAULT_CLAIM_SUB = "sub";
 	static final String AZURE_ISSUER_V2 = "azurev2";
 
 	private final TokenConsumer tokenConsumer;
@@ -29,26 +32,19 @@ public class AzureFlowInterceptor implements ClientHttpRequestInterceptor {
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
-		if(tokenValidationContext.hasValidToken() && tokenValidationContext.hasTokenFor(AZURE_ISSUER_V2)) {
-			JwtToken jwtToken = tokenValidationContext.getJwtToken(AZURE_ISSUER_V2);
-			if(isOnBehalfOfAzureToken(jwtToken)) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication instanceof BearerAuthenticationToken) {
+			JwtToken authenticatedJwtToken = (JwtToken) authentication.getCredentials();
+			if (isOnBehalfOfFlowToken(authenticatedJwtToken)) {
 				// on_behalf_of
-				request.getHeaders().setBearerAuth(tokenConsumer.getOnBehalfOfToken(scope, jwtToken.getTokenAsString()));
+				request.getHeaders().setBearerAuth(tokenConsumer.getOnBehalfOfToken(scope, authenticatedJwtToken));
 			} else {
 				// client_credential
 				request.getHeaders().setBearerAuth(tokenConsumer.getClientCredentialToken(scope));
 			}
+			return execution.execute(request, body);
 		} else {
-			// rest-sts
-			request.getHeaders().setBearerAuth(tokenConsumer.getClientCredentialToken(scope));
+			throw new RegOppslagSecurityException(AUTH_ERRORMESSAGE);
 		}
-		return execution.execute(request, body);
-	}
-
-	private boolean isOnBehalfOfAzureToken(JwtToken jwtToken) {
-		JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
-		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB) != null && jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID) != null
-			   && !jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB).equals(jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID));
 	}
 }

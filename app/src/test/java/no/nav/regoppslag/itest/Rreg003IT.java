@@ -21,7 +21,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.PDLResponseUtil.getStsToken;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,7 +76,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetPersonMedNorskPostadresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -96,7 +94,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetPersonMedNorskPostadresseOgCoAdresseUtenPrefix() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktadressemedcoadresseutenco.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -115,7 +112,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	void shouldGetSisteGyldigeKontaktAdresseWhenFlereGyldigeKontaktadresser() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_flere_gyldige.json");
 
 		PostadresseResponse response = hentPostadresse();
@@ -144,7 +140,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetPersonMedUtenlandskPostadresse() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse.json");
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
@@ -157,7 +152,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetUtenlandskPostadresseForDoedsbo() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/pdl_utenlandsk_doedsbo_adresse.json");
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
@@ -170,7 +164,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldGetDoedPerson() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");
 
 		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
@@ -183,7 +176,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenDoedPersonUtenKontaktinformasjon() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/doedpersonutenadresse.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
@@ -195,7 +187,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldThrowWhenPersonFinnesIkke() {
-		getStsToken(OK.value(), "sts/stsResponse_happy.json");
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
