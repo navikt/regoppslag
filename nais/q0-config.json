@@ -5,8 +5,6 @@
 	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.dev.adeo.no/rest/v1/sts/.well-known/openid-configuration",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling",
-	"AZURE_APP_CLIENT_ID": "d27067c2-f4e7-4fb6-89d0-24f062d31e18",
-	"AZURE_APP_WELL_KNOWN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
 	"REGOPPSLAG_PROXY_HOST": "webproxy.nais",
 	"REGOPPSLAG_PROXY_PORT": "8088",
 	"AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
