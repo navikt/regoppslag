@@ -16,11 +16,9 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -54,7 +52,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class PdlGraphQLConsumer {
 
-	private static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String HEADER_PDL_TEMA = "Tema";
 	// https://pdldocs-navno.msappproxy.net/ekstern/index.html#_dokumenter_hjemmel_vha_tema
 	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
@@ -70,13 +67,12 @@ public class PdlGraphQLConsumer {
 	@Autowired
 	public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder,
 							  TokenConsumer tokenConsumer,
-							  RegoppslagProperties regoppslagProperties,
-							  TokenValidationContextHolder tokenValidationContextHolder) {
+							  RegoppslagProperties regoppslagProperties) {
 		this.pdl = regoppslagProperties.getEndpoints().getPdl();
 		this.restTemplate = restTemplateBuilder
 				.setConnectTimeout(Duration.ofSeconds(5L))
 				.setReadTimeout(Duration.ofSeconds(15L))
-				.additionalInterceptors(new AzureFlowInterceptor(tokenConsumer, tokenValidationContextHolder, pdl.getScope()))
+				.additionalInterceptors(new AzureFlowInterceptor(tokenConsumer, pdl.getScope()))
 				.build();
 		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}

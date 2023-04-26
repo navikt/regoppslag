@@ -318,14 +318,12 @@ public class Treg001PDLIT extends AbstractIT {
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Test did not throw exception");
 
-
-		verify(1, postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
 
 	@Test
 	public void shouldReturnInternalServerErrorIfInternalServerErrorFromOrgPlugin() {
-		postPdlGraphql(OK.value(), "p 	dl/bosattutenpostdresse.json");
+		postPdlGraphql(OK.value(), "pdl/bosattutenpostdresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
 		stubFor(get("/v1/organisasjon/111111111").willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");

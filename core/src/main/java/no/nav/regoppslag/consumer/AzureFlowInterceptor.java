@@ -18,15 +18,12 @@ import static no.nav.regoppslag.config.security.SecurityContextHandlerIntercepto
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.isOnBehalfOfFlowToken;
 
 public class AzureFlowInterceptor implements ClientHttpRequestInterceptor {
-	static final String AZURE_ISSUER_V2 = "azurev2";
 
 	private final TokenConsumer tokenConsumer;
-	private final TokenValidationContextHolder tokenValidationContextHolder;
 	private final String scope;
 
-	public AzureFlowInterceptor(TokenConsumer tokenConsumer, TokenValidationContextHolder tokenValidationContextHolder, String scope) {
+	public AzureFlowInterceptor(TokenConsumer tokenConsumer, String scope) {
 		this.tokenConsumer = tokenConsumer;
-		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.scope = scope;
 	}
 

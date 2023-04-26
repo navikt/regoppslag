@@ -71,7 +71,6 @@ public class RegisteroppslagRestController {
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
 			log.info(String.format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 			return response;
-
 		} catch (MarshallerTechnicalException e) {
 			//Logger error hvis retry ikke fungerer
 			log.error("TREG001 Teknisk marshaller feil: " + e.getMessage(), e);

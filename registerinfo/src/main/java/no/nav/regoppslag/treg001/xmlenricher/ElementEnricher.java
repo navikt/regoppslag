@@ -1,11 +1,13 @@
 package no.nav.regoppslag.treg001.xmlenricher;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.exceptions.UndeliverableException;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -28,6 +30,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +57,24 @@ public class ElementEnricher {
 	public ElementEnricher(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
 		this.attributeValueNamespaceResolver = new AttributeValueNamespaceResolver();
+		// https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling
+		RxJavaPlugins.setErrorHandler(e -> {
+			if (e instanceof UndeliverableException) {
+				// Kan komme f.eks på grunn av adressebeskyttelse
+				e = e.getCause();
+				log.warn("Kunne ikke fullføre flow, sannsynligvis pga tilgang til ressurs", e);
+				return;
+			}
+			if ((e instanceof IOException) || (e instanceof SocketException)) {
+				// Nettverksproblem
+				return;
+			}
+			if (e instanceof InterruptedException) {
+				// Blokkende kode ble interrupted
+				return;
+			}
+			log.warn("Klarte ikke fullføre flow, forstår ikke hva som er galt", e);
+		});
 	}
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
@@ -91,9 +113,9 @@ public class ElementEnricher {
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-					setSecurityContext(authentication);
+							setSecurityContext(authentication);
 
-					MDC.put(CONSUMER_ID, consumerId);
+							MDC.put(CONSUMER_ID, consumerId);
 							MDC.put(USER_ID, userId);
 							MDC.put(CALL_ID, callId);
 
@@ -138,6 +160,8 @@ public class ElementEnricher {
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
+		} else if (e instanceof RegOppslagIngenTilgangException) {
+			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
