@@ -13,8 +13,6 @@ spec:
       value: {{REGOPPSLAG_PROXY_HOST}}
     - name: REGOPPSLAG_PROXY_PORT
       value: "{{REGOPPSLAG_PROXY_PORT}}"
-    - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
-      value: {{ SECURITY_TOKEN_SERVICE_TOKEN_URL }}
     - name: NORG2_REST_URL
       value: {{ NORG2_REST_URL }}
     - name: EREG_ORGANISASJON_SERVICE_URL
