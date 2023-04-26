@@ -14,13 +14,12 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_KONTAKTINFO;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_NAVN;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
-import static no.nav.regoppslag.config.cache.CacheConfig.RESTSTS_TOKEN;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
+import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
 
 
 @Profile("itest")
@@ -29,7 +28,6 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 public class CacheTestConfig {
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(2L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(10L);
-	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
 
 	@Bean
 	public CacheManager cacheManager() {
@@ -61,10 +59,8 @@ public class CacheTestConfig {
 						.build()),
 				new CaffeineCache(HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
-						.build()),
-				new CaffeineCache(RESTSTS_TOKEN, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), TimeUnit.SECONDS)
-						.build())));
+						.build())
+		));
 		return cacheManager;
 
 	}

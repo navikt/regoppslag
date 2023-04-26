@@ -67,9 +67,6 @@ spec:
       memory: 512Mi
   vault:
     enabled: true
-    paths:
-      - kvPath: {{ SRVREGOPPSLAG }}
-        mountPath: /var/run/secrets/nais.io/srvregoppslag
   webproxy: true
   azure:
     application:

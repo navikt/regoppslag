@@ -2,7 +2,6 @@
 	"NORG2_REST_URL": "https://norg2.dev.intern.nav.no/norg2/api/v1/enhet",
 	"SECURITY_TOKEN_SERVICE_TOKEN_URL": "https://security-token-service.dev.adeo.no/rest/v1/sts/token",
 	"EREG_ORGANISASJON_SERVICE_URL": "https://ereg-services-q2.dev.intern.nav.no/v2/organisasjon/",
-	"SRVREGOPPSLAG": "/serviceuser/data/dev/srvregoppslag",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.dev.adeo.no/rest/v1/sts/.well-known/openid-configuration",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling",
 	"REGOPPSLAG_PROXY_HOST": "webproxy.nais",

@@ -52,9 +52,6 @@ public class LocalCacheConfig {
 				new CaffeineCache(CacheConfig.HENT_DOKMET_SPRAAKINFO, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build()),
-				new CaffeineCache(CacheConfig.RESTSTS_TOKEN, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
-						.build()),
 				new CaffeineCache(CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME.getSeconds(), SECONDS)
 						.build())));

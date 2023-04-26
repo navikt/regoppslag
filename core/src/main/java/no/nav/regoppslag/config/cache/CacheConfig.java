@@ -27,7 +27,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public static final String HENT_BRUKER_PERSONDATA = "hentBrukerPersondata";
 	public static final String HENT_BRUKER_NAVN = "hentBrukerNavn";
 	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
-	public static final String RESTSTS_TOKEN = "restStsToken";
 	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN = "AzureClientCredentialToken";
 	public static final String AZURE_ON_BEHALF_OF_TOKEN = "AzureOnBehalfOfToken";
 
@@ -67,10 +66,6 @@ public class CacheConfig extends CachingConfigurerSupport {
 						.build()),
 				new CaffeineCache(HENT_BRUKER_PERSONDATA, Caffeine.newBuilder()
 						.expireAfterWrite(HENT_PERSON_CACHE_EXPIRATION_TIME)
-						.recordStats()
-						.build()),
-				new CaffeineCache(RESTSTS_TOKEN, Caffeine.newBuilder()
-						.expireAfterWrite(STS_CACHE_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()

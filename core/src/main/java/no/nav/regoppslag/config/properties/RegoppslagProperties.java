@@ -13,17 +13,7 @@ import java.net.URI;
 @ConfigurationProperties("regoppslag")
 public class RegoppslagProperties {
 
-	private final Serviceuser serviceuser = new Serviceuser();
 	private final Endpoints endpoints = new Endpoints();
-
-	@Data
-	@Validated
-	public static class Serviceuser {
-		@NotEmpty
-		private String username;
-		@NotEmpty
-		private String password;
-	}
 
 	@Data
 	@Validated

@@ -168,14 +168,6 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public RegoppslagProperties.Serviceuser serviceuserAlias() {
-			RegoppslagProperties.Serviceuser serviceuser = new RegoppslagProperties.Serviceuser();
-			serviceuser.setPassword("psw");
-			serviceuser.setUsername("usr");
-			return serviceuser;
-		}
-
-		@Bean
 		public MeterRegistry registry() {
 			return new SimpleMeterRegistry();
 		}
