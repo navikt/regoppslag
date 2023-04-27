@@ -3,7 +3,6 @@
 	"EREG_ORGANISASJON_SERVICE_URL": "https://ereg-services.intern.nav.no/v2/organisasjon/",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvccmarkivogdist,srvbidrag-person,srvveilarbvedtakss,srvdokdistsentralp,srvbarnepensjon",
-	"AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
 	"REGOPPSLAG_ENDPOINTS_PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"REGOPPSLAG_ENDPOINTS_PDL_SCOPE": "api://prod-fss.pdl.pdl-api/.default",
 	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "https://dokmet.intern.nav.no/rest/dokumenttypeinfo",

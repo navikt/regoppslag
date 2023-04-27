@@ -7,12 +7,6 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: AZURE_APP_TOKEN_URL
-      value: {{AZURE_APP_TOKEN_URL}}
-    - name: REGOPPSLAG_PROXY_HOST
-      value: {{REGOPPSLAG_PROXY_HOST}}
-    - name: REGOPPSLAG_PROXY_PORT
-      value: "{{REGOPPSLAG_PROXY_PORT}}"
     - name: NORG2_REST_URL
       value: {{ NORG2_REST_URL }}
     - name: EREG_ORGANISASJON_SERVICE_URL
