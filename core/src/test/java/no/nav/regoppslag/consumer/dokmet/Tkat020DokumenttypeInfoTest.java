@@ -6,6 +6,7 @@ import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.config.RestConsumerConfig;
+import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +36,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -56,6 +60,8 @@ import static org.springframework.http.HttpMethod.GET;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {Tkat020DokumenttypeInfo.class,
+		WebClientAutoConfiguration.class,
+		WebClientConfig.class,
 		RestConsumerConfig.class,
 		Tkat020DokumenttypeInfoTest.Config.class,
 		AzureTestConfig.class})
@@ -178,8 +184,10 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public AzureTokenConsumer azureTokenConsumer() {
-			return new AzureTokenConsumer(null, null, null) {
+		public AzureTokenConsumer azureTokenConsumer(WebClient webClient) {
+			AzureProperties azureProperties = new AzureProperties();
+			azureProperties.setOpenidConfigTokenEndpoint("https://azuredummy");
+			return new AzureTokenConsumer(azureProperties, null, webClient) {
 				@Override
 				public String getClientCredentialToken(String scope) {
 					return "token";
