@@ -7,36 +7,22 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: AZURE_APP_TOKEN_URL
-      value: {{AZURE_APP_TOKEN_URL}}
-    - name: AZURE_APP_SCOPEDIGDIRKRR
-      value: {{AZURE_APP_SCOPEDIGDIRKRR}}
-    - name: AZURE_APP_SCOPE_DOKMET
-      value: {{AZURE_APP_SCOPE_DOKMET}}
-    - name: REGOPPSLAG_PROXY_HOST
-      value: {{REGOPPSLAG_PROXY_HOST}}
-    - name: REGOPPSLAG_PROXY_PORT
-      value: "{{REGOPPSLAG_PROXY_PORT}}"
-    - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
-      value: {{ SECURITY_TOKEN_SERVICE_TOKEN_URL }}
-    - name: NORG2_REST_URL
-      value: {{ NORG2_REST_URL }}
-    - name: EREG_ORGANISASJON_SERVICE_URL
-      value: {{ EREG_ORGANISASJON_SERVICE_URL }}
-    - name: DOKUMENTTYPEINFO_URL
-      value: {{ DOKUMENTTYPEINFO_URL }}
-    - name: PDL_URL
-      value: {{ PDL_URL }}
-    - name: DIGDIR_KRR_PROXY_URL
-      value: {{ DIGDIR_KRR_PROXY_URL }}
-    {{#if AZURE_APP_CLIENT_ID}}
-    {{#if AZURE_APP_WELL_KNOWN_URL}}
-    - name: AZURE_APP_CLIENT_ID
-      value: {{ AZURE_APP_CLIENT_ID }}
-    - name: AZURE_APP_WELL_KNOWN_URL
-      value: {{ AZURE_APP_WELL_KNOWN_URL }}
-    {{/if}}
-    {{/if}}
+    - name: REGOPPSLAG_ENDPOINTS_NORG2_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_NORG2_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_EREG_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_EREG_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_PDL_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_PDL_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_PDL_SCOPE
+      value: {{ REGOPPSLAG_ENDPOINTS_PDL_SCOPE }}
+    - name: REGOPPSLAG_ENDPOINTS_DOKMET_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_DOKMET_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_DOKMET_SCOPE
+      value: {{ REGOPPSLAG_ENDPOINTS_DOKMET_SCOPE }}
+    - name: REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE
+      value: {{ REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
@@ -73,9 +59,6 @@ spec:
       memory: 512Mi
   vault:
     enabled: true
-    paths:
-      - kvPath: {{ SRVREGOPPSLAG }}
-        mountPath: /var/run/secrets/nais.io/srvregoppslag
   webproxy: true
   azure:
     application:

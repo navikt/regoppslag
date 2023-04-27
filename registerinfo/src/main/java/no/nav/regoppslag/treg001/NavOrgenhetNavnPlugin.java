@@ -76,6 +76,8 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 
 		} catch (ParserConfigurationException | MarshallerException e) {
 			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+		} finally {
+			clearSecurityContext();
 		}
 	}
 	

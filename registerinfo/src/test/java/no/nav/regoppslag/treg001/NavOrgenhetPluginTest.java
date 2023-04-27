@@ -12,9 +12,6 @@ import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -45,7 +42,6 @@ public class NavOrgenhetPluginTest {
 
 	private NavOrgenhetPostadressePlugin norgPostadressePlugin;
 	private NavOrgenhetBesoksadressePlugin norgBesoksadressePlugin;
-	private final SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
 
 	@BeforeEach
@@ -54,7 +50,6 @@ public class NavOrgenhetPluginTest {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		SecurityContextHolder.setContext(securityContext);
 		PostnummerService postnummerService = new PostnummerService();
 
 		MicrometerMetrics metrics = mock(MicrometerMetrics.class);

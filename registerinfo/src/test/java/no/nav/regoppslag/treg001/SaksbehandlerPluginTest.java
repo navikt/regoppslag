@@ -15,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.w3c.dom.Document;
@@ -46,7 +42,6 @@ public class SaksbehandlerPluginTest {
 	public static final String BREVDATA1 = "src/test/resources/brevdata/eksempel1.xml";
 	public static final String BREVDATA_IKKE_BERIK = "src/test/resources/brevdata/brevdata_ikkeBerik.xml";
 	private static final String DOKUMENTTYPEID = "I000003";
-	private final SecurityContext securityContext = new SecurityContextImpl();
 	private Map<String, Object> valueMap;
 
 	@Autowired
@@ -57,12 +52,9 @@ public class SaksbehandlerPluginTest {
 
 	@BeforeEach
 	public void init() {
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("username", "password");
-		securityContext.setAuthentication(token);
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		SecurityContextHolder.setContext(securityContext);
 	}
 
 	@Test

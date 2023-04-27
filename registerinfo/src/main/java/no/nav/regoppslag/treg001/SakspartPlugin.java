@@ -15,7 +15,6 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -88,7 +87,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		} catch (ParserConfigurationException | MarshallerException e) {
 			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
-			invalidateSecurityContext();
+			clearSecurityContext();
 		}
 	}
 
@@ -108,12 +107,6 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		if (!ELEMENT_LOCALNAME.equals(element.getLocalName())) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
 					+ ". Found {" + element.getNamespaceURI() + "}" + element.getLocalName(), BAD_REQUEST);
-		}
-	}
-
-	private void invalidateSecurityContext() {
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 		}
 	}
 }

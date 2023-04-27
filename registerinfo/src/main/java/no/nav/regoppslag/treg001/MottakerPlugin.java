@@ -10,7 +10,6 @@ import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,7 +67,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		} catch (ParserConfigurationException | MarshallerException e) {
 			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
 		} finally {
-			invalidateSecurityContext();
+			clearSecurityContext();
 		}
 
 	}
@@ -90,9 +89,4 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		}
 	}
 
-	private void invalidateSecurityContext() {
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
-		}
-	}
 }

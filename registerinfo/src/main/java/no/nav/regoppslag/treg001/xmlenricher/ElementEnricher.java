@@ -1,10 +1,13 @@
 package no.nav.regoppslag.treg001.xmlenricher;
 
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.exceptions.UndeliverableException;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -15,6 +18,7 @@ import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolve
 import no.nav.regoppslag.treg001.xmlenricher.util.Payload;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -26,14 +30,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static no.nav.regoppslag.treg001.support.PluginUtil.createNewSecurityContext;
-import static no.nav.regoppslag.treg001.support.PluginUtil.securityContextIsUsedForAuthentication;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
@@ -53,6 +57,24 @@ public class ElementEnricher {
 	public ElementEnricher(ElementEnricherPluginRegistry registry) {
 		this.registry = registry;
 		this.attributeValueNamespaceResolver = new AttributeValueNamespaceResolver();
+		// https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling
+		RxJavaPlugins.setErrorHandler(e -> {
+			if (e instanceof UndeliverableException) {
+				// Kan komme f.eks på grunn av adressebeskyttelse
+				e = e.getCause();
+				log.warn("Kunne ikke fullføre flow, sannsynligvis pga tilgang til ressurs", e);
+				return;
+			}
+			if ((e instanceof IOException) || (e instanceof SocketException)) {
+				// Nettverksproblem
+				return;
+			}
+			if (e instanceof InterruptedException) {
+				// Blokkende kode ble interrupted
+				return;
+			}
+			log.warn("Klarte ikke fullføre flow, forstår ikke hva som er galt", e);
+		});
 	}
 
 	public void setRegistry(ElementEnricherPluginRegistry registry) {
@@ -85,16 +107,13 @@ public class ElementEnricher {
 			}
 		}
 
-
 		final List<Throwable> unhandledError = new ArrayList<>();
 		List<Aggregate> aggregateList = new ArrayList<>();
 		Flowable.fromIterable(processingList)
 				.parallel()
 				.runOn(Schedulers.io())
 				.map(payload -> {
-							if (securityContextIsUsedForAuthentication(payload)) {
-								SecurityContextHolder.setContext(createNewSecurityContext(authentication, true));
-							}
+							setSecurityContext(authentication);
 
 							MDC.put(CONSUMER_ID, consumerId);
 							MDC.put(USER_ID, userId);
@@ -107,12 +126,13 @@ public class ElementEnricher {
 									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
 						}
 				)
+				.doOnError(throwable -> SecurityContextHolder.clearContext())
+				.doOnComplete(SecurityContextHolder::clearContext)
 				.sequential()
 				.blockingSubscribe(
 						aggregateList::add,
 						unhandledError::add
 				);
-
 
 		if (!unhandledError.isEmpty()) {
 			handleException(unhandledError.get(0));
@@ -140,6 +160,8 @@ public class ElementEnricher {
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
+		} else if (e instanceof RegOppslagIngenTilgangException) {
+			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
 				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
@@ -152,6 +174,13 @@ public class ElementEnricher {
 		} else {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}
+	}
+
+	private static void setSecurityContext(Authentication authentication) {
+		// Setter securityContext for nye tråder
+		SecurityContext newThreadSecurityContext = SecurityContextHolder.createEmptyContext();
+		newThreadSecurityContext.setAuthentication(authentication);
+		SecurityContextHolder.setContext(newThreadSecurityContext);
 	}
 
 }

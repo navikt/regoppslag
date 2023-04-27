@@ -1,7 +1,8 @@
 package no.nav.regoppslag.consumer.digdirkrr;
 
-import no.nav.regoppslag.consumer.azure.AzureProperties;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
+import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -9,7 +10,6 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,11 +27,8 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_PERSONIDENTER;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -39,21 +36,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class DigitalKontaktinformasjon {
 
+	static final String HEADER_NAV_PERSONIDENTER = "Nav-Personidenter";
 	private final RestTemplate restTemplate;
-	private final String digdirKrrUrl;
-	private final TokenConsumer tokenConsumer;
-	private final AzureProperties azureProperties;
+	private final AzureTokenConsumer azureTokenConsumer;
+	private final Oauth2SecuredEndpoint digdirkrrproxy;
 
 	public static final String HENT_SIKKER_DIGITAL_POSTADRESSE = "hentSikkerDigitalPostadresse";
 
 	@Autowired
 	public DigitalKontaktinformasjon(RestTemplateBuilder restTemplateBuilder,
-									 @Value("${digdir_krr_proxy_url}") String digdirKrrUrl,
-									 TokenConsumer tokenConsumer,
-									 AzureProperties azureProperties) {
-		this.digdirKrrUrl = digdirKrrUrl;
-		this.tokenConsumer = tokenConsumer;
-		this.azureProperties = azureProperties;
+									 RegoppslagProperties regoppslagProperties,
+									 AzureTokenConsumer azureTokenConsumer) {
+		this.digdirkrrproxy = regoppslagProperties.getEndpoints().getDigdirkrrproxy();
+		this.azureTokenConsumer = azureTokenConsumer;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
@@ -70,12 +65,12 @@ public class DigitalKontaktinformasjon {
 		}
 
 		final String fnrTrimmed = personidentifikator.trim();
-		headers.add(NAV_PERSONIDENTER, fnrTrimmed);
+		headers.add(HEADER_NAV_PERSONIDENTER, fnrTrimmed);
 
 		try {
 			PostPersonerRequest postPersonRequest = PostPersonerRequest.builder().personidenter(List.of(fnrTrimmed)).build();
 			HttpEntity<String> request = new HttpEntity(postPersonRequest, headers);
-			DkifResponse response = restTemplate.postForEntity(digdirKrrUrl + "/rest/v1/personer?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
+			DkifResponse response = restTemplate.postForEntity(digdirkrrproxy.getUrl() + "/rest/v1/personer?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
 
 			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.getKontaktinfo().get(fnrTrimmed)) : null;
 			return isBlank(spraak) ? null : spraak.toUpperCase();
@@ -100,11 +95,10 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private HttpHeaders createHeaders() {
-		String clientCredentialToken = tokenConsumer.getClientCredentialToken(azureProperties.getAppScopedigdirkrr());
+		String clientCredentialToken = azureTokenConsumer.getClientCredentialToken(digdirkrrproxy.getScope());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);
-		headers.add(NAV_CONSUMER_ID, APP_NAME);
 		headers.add(NAV_CALL_ID, getCallId());
 		return headers;
 	}

@@ -31,7 +31,6 @@
 		<microsoft-graph.version>5.51.0</microsoft-graph.version>
 		<springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
-		<xercesImpl.version>2.12.2</xercesImpl.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<token-support.version>2.1.4</token-support.version>
 
@@ -112,16 +111,17 @@
 				<groupId>no.nav.dok.metaforcemal</groupId>
 				<artifactId>pesysbrev01</artifactId>
 				<version>${pesysbrev01.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
 				<artifactId>brevdata-felles</artifactId>
 				<version>${brevdata-felles.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xercesImpl</artifactId>
-				<version>${xercesImpl.version}</version>
 			</dependency>
 			<dependency>
 				<!-- Include the sdk as a dependency -->

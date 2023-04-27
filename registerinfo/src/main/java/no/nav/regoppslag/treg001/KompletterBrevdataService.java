@@ -2,6 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
+import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagParsingException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -104,6 +105,9 @@ public class KompletterBrevdataService {
 			log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());
 			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
+		} catch(RegOppslagIngenTilgangException e) {
+			log.warn("TREG001 Ingen tilgang til ressurs: " + e.getMessage());
+			throw e;
 		}
 	}
 }

@@ -29,10 +29,10 @@ public class AzureAdGraphService {
 	public static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
 	public static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
 
-	private final TokenConsumer tokenConsumer;
+	private final AzureTokenConsumer azureTokenConsumer;
 
-	public AzureAdGraphService(TokenConsumer tokenConsumer) {
-		this.tokenConsumer = tokenConsumer;
+	public AzureAdGraphService(AzureTokenConsumer azureTokenConsumer) {
+		this.azureTokenConsumer = azureTokenConsumer;
 	}
 
 	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
@@ -58,7 +58,7 @@ public class AzureAdGraphService {
 
 
 	private String getUserToken() {
-		return tokenConsumer.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP);
+		return azureTokenConsumer.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 
 	GraphServiceClient<Request> getGraphClient(String accessToken) {

@@ -5,19 +5,22 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
-import no.nav.regoppslag.config.DokumenttypeInfoProperties;
 import no.nav.regoppslag.config.RestConsumerConfig;
+import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +36,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -56,6 +60,8 @@ import static org.springframework.http.HttpMethod.GET;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {Tkat020DokumenttypeInfo.class,
+		WebClientAutoConfiguration.class,
+		WebClientConfig.class,
 		RestConsumerConfig.class,
 		Tkat020DokumenttypeInfoTest.Config.class,
 		AzureTestConfig.class})
@@ -64,7 +70,6 @@ public class Tkat020DokumenttypeInfoTest {
 	private static final String DOKDUMENTYPE_ID = "I000003";
 	private static final String LANG1 = "nb";
 	private static final String LANG2 = "no";
-
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -111,7 +116,7 @@ public class Tkat020DokumenttypeInfoTest {
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=500 INTERNAL_SERVER_ERROR for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
+		verify(restTemplate, times(3)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	@Test
@@ -123,7 +128,7 @@ public class Tkat020DokumenttypeInfoTest {
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 
 		assertThat(e.getMessage(), containsString("TKAT020 feilet teknisk med statusKode=503 SERVICE_UNAVAILABLE for dokumenttypeId=I000003"));
-		verify(restTemplate, times(5)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
+		verify(restTemplate, times(3)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	private DokumenttypeInfoTo defaultResponse(List<String> langs) {
@@ -169,23 +174,6 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public RegoppslagProperties.Serviceuser serviceuserAlias() {
-			RegoppslagProperties.Serviceuser serviceuser = new RegoppslagProperties.Serviceuser();
-			serviceuser.setPassword("psw");
-			serviceuser.setUsername("usr");
-			return serviceuser;
-		}
-
-		@Bean
-		public DokumenttypeInfoProperties dokumenttypeInfoProperties() {
-			DokumenttypeInfoProperties dokumenttypeInfoProperties = new DokumenttypeInfoProperties();
-			dokumenttypeInfoProperties.setConnecttimeoutms(1000);
-			dokumenttypeInfoProperties.setReadtimeoutms(1000);
-			dokumenttypeInfoProperties.setUrl("asdsad");
-			return dokumenttypeInfoProperties;
-		}
-
-		@Bean
 		public MeterRegistry registry() {
 			return new SimpleMeterRegistry();
 		}
@@ -196,19 +184,39 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public TokenConsumer tokenConsumer() {
-			return (String s) -> "";
+		public AzureTokenConsumer azureTokenConsumer(WebClient webClient) {
+			AzureProperties azureProperties = new AzureProperties();
+			azureProperties.setOpenidConfigTokenEndpoint("https://azuredummy");
+			return new AzureTokenConsumer(azureProperties, null, webClient) {
+				@Override
+				public String getClientCredentialToken(String scope) {
+					return "token";
+				}
+
+				@Override
+				public String getOnBehalfOfToken(String scope, JwtToken token) {
+					return "token";
+				}
+			};
 		}
 
 		@Bean
 		public AzureProperties azureProperties() {
 			AzureProperties azureproperties = new AzureProperties();
-			azureproperties.setAppScopedigdirkrr("scope");
-			azureproperties.setAppScopeDokmet("scope");
 			azureproperties.setAppClientId("clientId");
 			azureproperties.setAppClientSecret("secret");
 			azureproperties.setOpenidConfigTokenEndpoint("url");
 			return azureproperties;
+		}
+
+		@Bean
+		public RegoppslagProperties regoppslagProperties() {
+			RegoppslagProperties regoppslagProperties = new RegoppslagProperties();
+			RegoppslagProperties.Oauth2SecuredEndpoint dokmet = new RegoppslagProperties.Oauth2SecuredEndpoint();
+			dokmet.setScope("scope");
+			dokmet.setUrl("https://dokmet");
+			regoppslagProperties.getEndpoints().setDokmet(dokmet);
+			return regoppslagProperties;
 		}
 	}
 

@@ -823,11 +823,4 @@ public class PDLResponseUtil {
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
 	}
 
-	public static void getStsToken(int status, String filePath) {
-		stubFor(get("/stsRest/token?grant_type=client_credentials&scope=openid").willReturn(aResponse()
-				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withHeader("Connection", "close")
-				.withBodyFile(filePath)));
-	}
 }

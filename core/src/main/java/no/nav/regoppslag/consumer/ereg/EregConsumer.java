@@ -1,13 +1,13 @@
 package no.nav.regoppslag.consumer.ereg;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +26,7 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -39,9 +37,9 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
-	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
-						RestTemplateBuilder restTemplateBuilder) {
-		this.eregUrl = eregUrl;
+	public EregConsumer(RestTemplateBuilder restTemplateBuilder,
+						RegoppslagProperties regoppslagProperties) {
+		this.eregUrl = regoppslagProperties.getEndpoints().getEreg().getUrl();
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
@@ -54,7 +52,6 @@ public class EregConsumer {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(NAV_CALL_ID, getCallId());
-		headers.set(NAV_CONSUMER_ID, getConsumerId());
 
 		try {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(headers);
@@ -66,15 +63,6 @@ public class EregConsumer {
 			throw new RegOppslagFunctionalException("Funksjonell feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new RegOppslagTechnicalException("Teknisk feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e);
-		}
-	}
-
-	private String getConsumerId() {
-		String consumerId = MDC.get(CONSUMER_ID);
-		if (isBlank(consumerId)) {
-			return "regoppslag";
-		} else {
-			return consumerId;
 		}
 	}
 

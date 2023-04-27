@@ -1,6 +1,7 @@
 package no.nav.regoppslag.consumer.norg2;
 
 import no.nav.regoppslag.config.NavHeaderFilter;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.Norg2FunctionalException;
@@ -28,14 +29,13 @@ public class OrganisasjonsenhetConsumer {
 	private final WebClient webClient;
 
 	public OrganisasjonsenhetConsumer(WebClient webClient,
-									  @Value("${norg2.rest.url}") String norg2Url) {
+									  RegoppslagProperties regoppslagProperties) {
 		this.webClient = webClient.mutate()
-				.baseUrl(norg2Url)
+				.baseUrl(regoppslagProperties.getEndpoints().getNorg2().getUrl())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.filter(new NavHeaderFilter())
 				.build();
 	}
-
 
 	@Cacheable(value = HENT_ENHET_NAVN, key = "#enhetNr")
 	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))

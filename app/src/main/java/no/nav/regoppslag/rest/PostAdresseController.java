@@ -13,7 +13,6 @@ import no.nav.regoppslag.rreg003.PostadresseResponse;
 import no.nav.regoppslag.rreg003.PostadresseService;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +51,7 @@ public class PostAdresseController {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene.", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten.", content = @Content),
+			@ApiResponse(responseCode = "403", description = "Tilgang til å hente postadresse avvist", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.", content = @Content)
