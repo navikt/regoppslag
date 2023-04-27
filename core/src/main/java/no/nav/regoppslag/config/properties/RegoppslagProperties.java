@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.net.URI;
 
 @Data
 @Validated
@@ -18,19 +17,14 @@ public class RegoppslagProperties {
 	@Data
 	@Validated
 	public static class Endpoints {
-		/**
-		 * URL til PDL (Persondataløsningen).
-		 */
+		@NotNull
+		private Endpoint norg2;
+		@NotNull
+		private Endpoint ereg;
 		@NotNull
 		private Oauth2SecuredEndpoint pdl;
-		/**
-		 * URL til dokmet.
-		 */
 		@NotNull
 		private Oauth2SecuredEndpoint dokmet;
-		/**
-		 * URL til digdir-krr-proxy.
-		 */
 		@NotNull
 		private Oauth2SecuredEndpoint digdirkrrproxy;
 	}
@@ -42,6 +36,13 @@ public class RegoppslagProperties {
 		private String url;
 		@NotEmpty
 		private String scope;
+	}
+
+	@Data
+	@Validated
+	public static class Endpoint {
+		@NotEmpty
+		private String url;
 	}
 
 }

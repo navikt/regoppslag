@@ -7,10 +7,10 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: NORG2_REST_URL
-      value: {{ NORG2_REST_URL }}
-    - name: EREG_ORGANISASJON_SERVICE_URL
-      value: {{ EREG_ORGANISASJON_SERVICE_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_NORG2_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_NORG2_URL }}
+    - name: REGOPPSLAG_ENDPOINTS_EREG_URL
+      value: {{ REGOPPSLAG_ENDPOINTS_EREG_URL }}
     - name: REGOPPSLAG_ENDPOINTS_PDL_URL
       value: {{ REGOPPSLAG_ENDPOINTS_PDL_URL }}
     - name: REGOPPSLAG_ENDPOINTS_PDL_SCOPE

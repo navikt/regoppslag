@@ -1,13 +1,13 @@
 package no.nav.regoppslag.consumer.ereg;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,9 +37,9 @@ public class EregConsumer {
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
-	public EregConsumer(@Value("${ereg-organisasjon-service.url}") String eregUrl,
-						RestTemplateBuilder restTemplateBuilder) {
-		this.eregUrl = eregUrl;
+	public EregConsumer(RestTemplateBuilder restTemplateBuilder,
+						RegoppslagProperties regoppslagProperties) {
+		this.eregUrl = regoppslagProperties.getEndpoints().getEreg().getUrl();
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
