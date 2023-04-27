@@ -26,9 +26,7 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -54,7 +52,6 @@ public class EregConsumer {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(NAV_CALL_ID, getCallId());
-		headers.set(NAV_CONSUMER_ID, getConsumerId());
 
 		try {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(headers);
@@ -66,15 +63,6 @@ public class EregConsumer {
 			throw new RegOppslagFunctionalException("Funksjonell feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new RegOppslagTechnicalException("Teknisk feil mot hentOrganisasjon for organisasjon med organisasjonsnummer=" + organisasjonsNummer, e);
-		}
-	}
-
-	private String getConsumerId() {
-		String consumerId = MDC.get(CONSUMER_ID);
-		if (isBlank(consumerId)) {
-			return "regoppslag";
-		} else {
-			return consumerId;
 		}
 	}
 

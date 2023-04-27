@@ -41,7 +41,7 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
-import static no.nav.regoppslag.util.MDCConstants.NAV_CALL_ID;
+import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;

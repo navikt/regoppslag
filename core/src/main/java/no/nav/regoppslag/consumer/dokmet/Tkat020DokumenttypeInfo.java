@@ -28,10 +28,8 @@ import java.util.List;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
 import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
-import static no.nav.regoppslag.util.MDCConstants.APP_NAME;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
-import static no.nav.regoppslag.util.NavHeaders.NAV_CONSUMER_ID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -95,7 +93,6 @@ public class Tkat020DokumenttypeInfo {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);
-		headers.add(NAV_CONSUMER_ID, APP_NAME);
 		headers.add(NAV_CALLID, MDC.get(CALL_ID));
 		return headers;
 	}
