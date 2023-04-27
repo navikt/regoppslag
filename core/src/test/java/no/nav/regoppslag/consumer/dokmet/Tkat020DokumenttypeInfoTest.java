@@ -9,7 +9,7 @@ import no.nav.regoppslag.config.RestConsumerConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -178,8 +178,8 @@ public class Tkat020DokumenttypeInfoTest {
 		}
 
 		@Bean
-		public TokenConsumer tokenConsumer() {
-			return new TokenConsumer() {
+		public AzureTokenConsumer azureTokenConsumer() {
+			return new AzureTokenConsumer(null, null, null) {
 				@Override
 				public String getClientCredentialToken(String scope) {
 					return "token";

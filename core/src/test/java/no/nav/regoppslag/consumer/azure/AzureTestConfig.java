@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Profile;
 public class AzureTestConfig {
 
 	@Bean
-	public TokenConsumer tokenConsumer() {
-		return new TokenConsumer() {
+	public AzureTokenConsumer azureTokenConsumer() {
+		return new AzureTokenConsumer(null, null, null) {
 			@Override
 			public String getClientCredentialToken(String scope) {
 				return "token";

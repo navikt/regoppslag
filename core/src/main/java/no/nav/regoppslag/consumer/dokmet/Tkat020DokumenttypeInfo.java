@@ -4,7 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
@@ -43,15 +44,15 @@ public class Tkat020DokumenttypeInfo {
 
 	private final RestTemplate restTemplate;
 	private final MicrometerMetrics metrics;
-	private final TokenConsumer tokenConsumer;
-	private final RegoppslagProperties.Oauth2SecuredEndpoint dokmet;
+	private final AzureTokenConsumer azureTokenConsumer;
+	private final Oauth2SecuredEndpoint dokmet;
 
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
 								   RegoppslagProperties regoppslagProperties,
 								   MicrometerMetrics metrics,
-								   TokenConsumer tokenConsumer) {
-		this.tokenConsumer = tokenConsumer;
+								   AzureTokenConsumer azureTokenConsumer) {
+		this.azureTokenConsumer = azureTokenConsumer;
 		this.dokmet = regoppslagProperties.getEndpoints().getDokmet();
 		this.restTemplate = restTemplateBuilder
 				.requestFactory(requestFactory.getClass())
@@ -89,7 +90,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	private HttpHeaders createHeaders() {
-		String clientCredentialToken = tokenConsumer.getClientCredentialToken(dokmet.getScope());
+		String clientCredentialToken = azureTokenConsumer.getClientCredentialToken(dokmet.getScope());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);

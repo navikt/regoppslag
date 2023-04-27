@@ -2,8 +2,9 @@ package no.nav.regoppslag.consumer.pdl;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
+import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
 import no.nav.regoppslag.consumer.AzureFlowInterceptor;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.consumer.pdl.map.MapHentNavnResponse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.PDLError;
@@ -62,17 +63,17 @@ public class PdlGraphQLConsumer {
 
 	private final RestTemplate restTemplate;
 	private final MapHentNavnResponse mapHentNavnResponse;
-	private final RegoppslagProperties.Oauth2SecuredEndpoint pdl;
+	private final Oauth2SecuredEndpoint pdl;
 
 	@Autowired
 	public PdlGraphQLConsumer(RestTemplateBuilder restTemplateBuilder,
-							  TokenConsumer tokenConsumer,
+							  AzureTokenConsumer azureTokenConsumer,
 							  RegoppslagProperties regoppslagProperties) {
 		this.pdl = regoppslagProperties.getEndpoints().getPdl();
 		this.restTemplate = restTemplateBuilder
 				.setConnectTimeout(Duration.ofSeconds(5L))
 				.setReadTimeout(Duration.ofSeconds(15L))
-				.additionalInterceptors(new AzureFlowInterceptor(tokenConsumer, pdl.getScope()))
+				.additionalInterceptors(new AzureFlowInterceptor(azureTokenConsumer, pdl.getScope()))
 				.build();
 		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}
@@ -161,10 +162,11 @@ public class PdlGraphQLConsumer {
 				PDLError pdlError = pdlUnauthorized.get();
 				throw new RegOppslagIngenTilgangException("Ingen tilgang til å se data om person. Avvist av policy=" + pdlError.getExtensions().getDetails().getPolicy(), FORBIDDEN);
 			}
+
 			Optional<PDLError> pdlNotFound = errors.stream()
 					.filter(p -> PDL_ERROR_EXTENSION_CODE_NOT_FOUND.equals(p.getExtensions().getCode()))
 					.findFirst();
-			if(pdlNotFound.isPresent()) {
+			if (pdlNotFound.isPresent()) {
 				throw new RegOppslagIkkeFunnetException("Fant ikke person i PDL. " + pdlNotFound.get(), NOT_FOUND);
 			}
 			log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", errors);

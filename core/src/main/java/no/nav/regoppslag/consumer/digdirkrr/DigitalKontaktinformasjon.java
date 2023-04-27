@@ -1,7 +1,8 @@
 package no.nav.regoppslag.consumer.digdirkrr;
 
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -37,17 +38,17 @@ public class DigitalKontaktinformasjon {
 
 	static final String HEADER_NAV_PERSONIDENTER = "Nav-Personidenter";
 	private final RestTemplate restTemplate;
-	private final TokenConsumer tokenConsumer;
-	private final RegoppslagProperties.Oauth2SecuredEndpoint digdirkrrproxy;
+	private final AzureTokenConsumer azureTokenConsumer;
+	private final Oauth2SecuredEndpoint digdirkrrproxy;
 
 	public static final String HENT_SIKKER_DIGITAL_POSTADRESSE = "hentSikkerDigitalPostadresse";
 
 	@Autowired
 	public DigitalKontaktinformasjon(RestTemplateBuilder restTemplateBuilder,
 									 RegoppslagProperties regoppslagProperties,
-									 TokenConsumer tokenConsumer) {
+									 AzureTokenConsumer azureTokenConsumer) {
 		this.digdirkrrproxy = regoppslagProperties.getEndpoints().getDigdirkrrproxy();
-		this.tokenConsumer = tokenConsumer;
+		this.azureTokenConsumer = azureTokenConsumer;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(20))
 				.setConnectTimeout(Duration.ofSeconds(5))
@@ -94,7 +95,7 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private HttpHeaders createHeaders() {
-		String clientCredentialToken = tokenConsumer.getClientCredentialToken(digdirkrrproxy.getScope());
+		String clientCredentialToken = azureTokenConsumer.getClientCredentialToken(digdirkrrproxy.getScope());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(clientCredentialToken);

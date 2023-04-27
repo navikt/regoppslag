@@ -1,9 +1,8 @@
 package no.nav.regoppslag.consumer;
 
 import no.nav.regoppslag.config.security.BearerAuthenticationToken;
-import no.nav.regoppslag.consumer.azure.TokenConsumer;
+import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -19,11 +18,11 @@ import static no.nav.regoppslag.config.security.TokenClaimExtractor.isOnBehalfOf
 
 public class AzureFlowInterceptor implements ClientHttpRequestInterceptor {
 
-	private final TokenConsumer tokenConsumer;
+	private final AzureTokenConsumer azureTokenConsumer;
 	private final String scope;
 
-	public AzureFlowInterceptor(TokenConsumer tokenConsumer, String scope) {
-		this.tokenConsumer = tokenConsumer;
+	public AzureFlowInterceptor(AzureTokenConsumer azureTokenConsumer, String scope) {
+		this.azureTokenConsumer = azureTokenConsumer;
 		this.scope = scope;
 	}
 
@@ -34,10 +33,10 @@ public class AzureFlowInterceptor implements ClientHttpRequestInterceptor {
 			JwtToken authenticatedJwtToken = (JwtToken) authentication.getCredentials();
 			if (isOnBehalfOfFlowToken(authenticatedJwtToken)) {
 				// on_behalf_of
-				request.getHeaders().setBearerAuth(tokenConsumer.getOnBehalfOfToken(scope, authenticatedJwtToken));
+				request.getHeaders().setBearerAuth(azureTokenConsumer.getOnBehalfOfToken(scope, authenticatedJwtToken));
 			} else {
 				// client_credential
-				request.getHeaders().setBearerAuth(tokenConsumer.getClientCredentialToken(scope));
+				request.getHeaders().setBearerAuth(azureTokenConsumer.getClientCredentialToken(scope));
 			}
 			return execution.execute(request, body);
 		} else {

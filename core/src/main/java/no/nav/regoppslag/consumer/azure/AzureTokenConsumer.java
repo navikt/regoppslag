@@ -20,7 +20,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
 @Component
-public class AzureTokenConsumer implements TokenConsumer {
+public class AzureTokenConsumer {
 
 	private static final String AZURE_TOKEN_INSTANCE = "azuretoken";
 	static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
@@ -43,7 +43,6 @@ public class AzureTokenConsumer implements TokenConsumer {
 				.build();
 	}
 
-	@Override
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
 	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_TOKEN)
@@ -51,7 +50,6 @@ public class AzureTokenConsumer implements TokenConsumer {
 		return getAzureToken(scope, null);
 	}
 
-	@Override
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
 	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN, key = "#token.subject")
