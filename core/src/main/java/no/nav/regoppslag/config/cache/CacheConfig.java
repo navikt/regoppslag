@@ -34,7 +34,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 	static final Duration HENT_NAVN_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
-	static final Duration AZURE_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
+	static final Duration AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
+	static final Duration AZURE_ON_BEHALF_OF_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(20L);
 
 	@Bean
 	public CacheManager inMemoryCacheManager() {
@@ -69,11 +70,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 						.recordStats()
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
-						.expireAfterWrite(AZURE_TOKEN_EXPIRATION_TIME)
+						.expireAfterWrite(AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME)
 						.recordStats()
 						.build()),
 				new CaffeineCache(AZURE_ON_BEHALF_OF_TOKEN, Caffeine.newBuilder()
-						.expireAfterWrite(AZURE_TOKEN_EXPIRATION_TIME)
+						.expireAfterWrite(AZURE_ON_BEHALF_OF_TOKEN_EXPIRATION_TIME)
 						.maximumSize(1000L)
 						.recordStats()
 						.build())));
