@@ -1,5 +1,5 @@
 {
-	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.dev.adeo.no/rest/v1/sts/.well-known/openid-configuration",
+	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.intern.dev.nav.no/rest/v1/sts/.well-known/openid-configuration",
 	"NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdokproduksjon,srvdokdistfordeling,srvArena,srvccmarkivogdist,srvbidrag-person,srvveilarbvedtakss,srvdokdistsentralp,srvbarnepensjon",
 	"REGOPPSLAG_ENDPOINTS_NORG2_URL": "https://norg2.dev.intern.nav.no/norg2/api/v1/enhet",
 	"REGOPPSLAG_ENDPOINTS_EREG_URL": "https://ereg-services-q1.dev.intern.nav.no/v2/organisasjon/",
