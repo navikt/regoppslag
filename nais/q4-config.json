@@ -7,7 +7,7 @@
 	"REGOPPSLAG_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api-q1/.default",
 	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "https://dokmet.dev.intern.nav.no/rest/dokumenttypeinfo",
 	"REGOPPSLAG_ENDPOINTS_DOKMET_SCOPE": "api://dev-fss.teamdokumenthandtering.dokmet/.default",
-	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.dev.intern.nav.no",
+	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.intern.dev.nav.no",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE": "api://dev-gcp.team-rocket.digdir-krr-proxy/.default",
 	"APP_NAME": "regoppslag-q4",
 	"MIN_REPLICAS": 1,
