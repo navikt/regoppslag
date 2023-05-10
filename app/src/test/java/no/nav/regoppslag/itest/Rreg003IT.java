@@ -128,6 +128,24 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
 	}
 
+	@Test
+	void shouldGetGyldigKontaktadresseWhenBostedsadresseUkjentBostedAndEqualOrMoreRecentGyldighetsdato() {
+		postPdlGraphql(OK.value(), "pdl/bostedsadresse_ukjent_gyldig_kontaktadresse.json");
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Polengata 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("01-001 LODZ");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+	}
+
 	private PostadresseResponse hentPostadresse() {
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
 

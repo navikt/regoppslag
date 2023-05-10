@@ -474,7 +474,7 @@ public class MapPDLResponseTest {
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
 		assertEquals(NOT_FOUND, e.getHttpStatus());
-		assertEquals("TREG002: Kunne ikke mappe postadresse for UkjentBosted mottaker", e.getMessage());
+		assertEquals("Fant ikke bostedsadresse for personen i PDL", e.getMessage());
 	}
 
 	@Test

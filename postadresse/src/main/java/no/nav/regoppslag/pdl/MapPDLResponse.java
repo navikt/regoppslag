@@ -76,9 +76,13 @@ public class MapPDLResponse {
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
 		boolean erBostedsadresseGyldigMedDatoFra = false;
 		if (nonNull(bostedsadresse)) {
-			bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
-			if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed()) ) {
-				erBostedsadresseGyldigMedDatoFra = true;
+			try {
+				bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
+				if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed())) {
+					erBostedsadresseGyldigMedDatoFra = true;
+				}
+			} catch(UkjentAdresseException e) {
+				bostedsadresseOptional = Optional.empty();
 			}
 		}
 
