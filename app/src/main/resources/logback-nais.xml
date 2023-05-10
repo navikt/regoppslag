@@ -28,9 +28,4 @@
 	<logger name="no.nav.regoppslag" level="INFO" additivity="false">
 		<appender-ref ref="stdout_json"/>
 	</logger>
-
-	<logger name="com.lambdaworks.redis" additivity="false" level="INFO">
-		<appender-ref ref="stdout_json"/>
-	</logger>
-
 </configuration>
