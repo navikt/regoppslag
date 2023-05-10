@@ -1,0 +1,100 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1980,
+          "foedselsdato": "1980-01-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BJARNE BETJENT"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2016-06-01T00:00",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "Polengata 1",
+            "adresselinje2": "01-001 LODZ",
+            "adresselinje3": "POLEN",
+            "postkode": null,
+            "byEllerStedsnavn": null,
+            "landkode": "POL"
+          },
+          "metadata": {
+            "opplysningsId": "3f122e62-ebb0-4fa7-b449-000000000000",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-05T03:11:10",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2020-12-20T22:51:38",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "2016-06-01",
+          "gyldigFraOgMed": "2016-06-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": null,
+          "utenlandskAdresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": {
+            "bostedskommune": "1108"
+          },
+          "metadata": {
+            "opplysningsId": "93a06187-d873-44a8-b042-000000000000",
+            "master": "Freg"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

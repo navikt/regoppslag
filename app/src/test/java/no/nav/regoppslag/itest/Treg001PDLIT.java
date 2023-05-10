@@ -247,7 +247,7 @@ public class Treg001PDLIT extends AbstractIT {
 
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertThat(e.getResponseBodyAsString()).contains("Funksjonell feil: dokumenttypeId=123 feilmelding=TREG001: Kunne ikke mappe postadresse for UkjentBosted mottaker");
+		assertThat(e.getResponseBodyAsString()).contains("Funksjonell feil: dokumenttypeId=123 feilmelding=Fant ikke bostedsadresse for personen i PDL");
 	}
 
 	@Test

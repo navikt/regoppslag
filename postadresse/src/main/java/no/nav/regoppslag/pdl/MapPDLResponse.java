@@ -16,7 +16,6 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -76,9 +75,13 @@ public class MapPDLResponse {
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
 		boolean erBostedsadresseGyldigMedDatoFra = false;
 		if (nonNull(bostedsadresse)) {
-			bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
-			if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed()) ) {
-				erBostedsadresseGyldigMedDatoFra = true;
+			try {
+				bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
+				if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed())) {
+					erBostedsadresseGyldigMedDatoFra = true;
+				}
+			} catch (UkjentAdresseException e) {
+				bostedsadresseOptional = Optional.empty();
 			}
 		}
 
@@ -90,8 +93,8 @@ public class MapPDLResponse {
 			if (pdlMottakerInfo.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
 				if (erBostedsadresseGyldigMedDatoFra &&
-						kontaktadresse.getGyldigFraOgMed() != null &&
-						bostedsadresse.getGyldigFraOgMed().isAfter(kontaktadresse.getGyldigFraOgMed())) {
+					kontaktadresse.getGyldigFraOgMed() != null &&
+					bostedsadresse.getGyldigFraOgMed().isAfter(kontaktadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
 				} else {
 					return pdlMottakerInfo.get();
@@ -109,8 +112,8 @@ public class MapPDLResponse {
 			if (mottakerFraOppholdsadresse.isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn oppholdsadresse
 				if (erBostedsadresseGyldigMedDatoFra &&
-						oppholdsadresse.getGyldigFraOgMed() != null &&
-						bostedsadresse.getGyldigFraOgMed().isAfter(oppholdsadresse.getGyldigFraOgMed())) {
+					oppholdsadresse.getGyldigFraOgMed() != null &&
+					bostedsadresse.getGyldigFraOgMed().isAfter(oppholdsadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
 				} else {
 					return mottakerFraOppholdsadresse.get();
