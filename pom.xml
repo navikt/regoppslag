@@ -35,7 +35,6 @@
 		<token-support.version>2.1.4</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
-		<pesysbrev01.version>2.9.9</pesysbrev01.version>
 		<dokmet-api.version>13-5459a4f</dokmet-api.version>
 		<brevdata-felles.version>0.0.10</brevdata-felles.version>
 
@@ -69,7 +68,6 @@
 				<artifactId>postadresse</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
@@ -90,7 +88,6 @@
 				<artifactId>rxjava</artifactId>
 				<version>${rxjava.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.neovisionaries</groupId>
 				<artifactId>nv-i18n</artifactId>
@@ -101,22 +98,10 @@
 				<artifactId>token-validation-spring</artifactId>
 				<version>${token-support.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>no.nav.dokmet</groupId>
 				<artifactId>api</artifactId>
 				<version>${dokmet-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dok.metaforcemal</groupId>
-				<artifactId>pesysbrev01</artifactId>
-				<version>${pesysbrev01.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xerces</groupId>
-						<artifactId>xercesImpl</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>

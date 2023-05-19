@@ -93,10 +93,6 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
-			<artifactId>pesysbrev01</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dok.metaforcemal</groupId>
 			<artifactId>brevdata-felles</artifactId>
 		</dependency>
 		<dependency>
