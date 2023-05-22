@@ -5,43 +5,31 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
-import java.util.Collection;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class ParseToXMLInServiceTest {
 
-	ExpectedException exception = ExpectedException.none();
 	ElementEnricher elementEnricher = mock(ElementEnricher.class);
 
-	private final String brevdata = "<ole>brumm</ole>";
-	private final KompletterBrevdataRequest request = KompletterBrevdataRequest.builder()
-			.dokumentTypeId("123")
-			.brevdata(brevdata)
-			.build();
 	private final KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
-
-	@Parameterized.Parameter
-	public String brevdataFeilFormat;
-
-	@Parameterized.Parameters
-	public static Collection parameters() {
-		return Arrays.asList("", "<ole>brumm<ole>", "<ole>brumm/ole>", "\"<ole>brumm<ole>", "<ole><idolet>brumm</ole>");
-	}
 
 	/**
 	 * HVIS parsing av brevdata til xml- fra streng-format feiler, SÅ skal funksjonell feil kastes
 	 */
-	@Test
-	public void shouldHandleSaxParserException() throws RegOppslagSecurityException {
-		exception.expect(RegOppslagFunctionalException.class);
+	@ParameterizedTest
+	@ValueSource(strings = {"", "<ole>brumm<ole>", "<ole>brumm/ole>", "\"<ole>brumm<ole>", "<ole><idolet>brumm</ole>"})
+	public void shouldHandleSaxParserException(String brevdata) throws RegOppslagSecurityException {
+		var request = KompletterBrevdataRequest.builder()
+				.dokumentTypeId("123")
+				.brevdata(brevdata)
+				.build();
+
 		String brevdataFeilFormat = "<ole>brumm<ole>";
 		KompletterBrevdataRequest.builder().dokumentTypeId("123").brevdata(brevdataFeilFormat).build();
-		kompletterBrevdataService.hentBrevdataFraRegistre(request);
+		assertThrows(RegOppslagFunctionalException.class, () -> kompletterBrevdataService.hentBrevdataFraRegistre(request));
 	}
 }
