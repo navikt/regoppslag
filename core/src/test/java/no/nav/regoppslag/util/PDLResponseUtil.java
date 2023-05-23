@@ -760,10 +760,10 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Kontaktadresse.Postboksadresse createPostboksadresse() {
+	public static Kontaktadresse.Postboksadresse createPostboksadresse(String postboks) {
 		return Kontaktadresse.Postboksadresse.builder()
 				.postbokseier(POSTBOKSEIER)
-				.postboks("7320")
+				.postboks(postboks)
 				.postnummer(POSTNUMMER)
 				.build();
 	}

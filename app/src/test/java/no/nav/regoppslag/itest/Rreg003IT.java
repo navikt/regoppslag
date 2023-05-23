@@ -93,6 +93,24 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldGetPersonAndAdresseFromPDLKontakatAdresseWhichStartsWithPostboks() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks.json");
+
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("GYNGEHEST A. ÅPENHJERTIG");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Finnesveien 27");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 7320");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
 	public void shouldGetPersonMedNorskPostadresseOgCoAdresseUtenPrefix() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadressemedcoadresseutenco.json");
 

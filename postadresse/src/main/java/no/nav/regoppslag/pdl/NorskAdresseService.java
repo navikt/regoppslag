@@ -110,12 +110,12 @@ public class NorskAdresseService {
 		if (isNotBlank(postboksadresse.getPostbokseier())) {
 			return builder
 					.adresselinje1(CARE_OF + postboksadresse.getPostbokseier())
-					.adresselinje2(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.adresselinje2(mapPostboks(postboksadresse.getPostboks()))
 					.build();
 		}
 
 		return builder
-				.adresselinje1(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+				.adresselinje1(mapPostboks(postboksadresse.getPostboks()))
 				.build();
 	}
 
@@ -128,5 +128,9 @@ public class NorskAdresseService {
 				.poststed(postnummerService.finnPoststed(matrikkeladresse.getPostnummer()))
 				.landkode(LANDKODE_NORGE)
 				.build();
+	}
+
+	private String mapPostboks(String postboks) {
+		return postboks.toLowerCase().contains(POSTBOKS.toLowerCase()) ? postboks : POSTBOKS + postboks;
 	}
 }
