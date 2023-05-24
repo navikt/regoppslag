@@ -93,7 +93,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldSettSinglePostboksPrefixFromPDLAdresseWhichStartsWithPostboks() {
+	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -108,6 +108,15 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
 		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
 		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
+	public void shouldThrowExceptionPDLAdresseWhichNullPostboks() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postboks.json");
+
+		HttpClientErrorException errorException = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
+
+		assertThat(errorException.getMessage()).contains("Fant ikke adresse for personen i PDL");
 	}
 
 	@Test
