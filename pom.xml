@@ -36,7 +36,7 @@
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>13-5459a4f</dokmet-api.version>
-		<brevdata-felles.version>0.0.10</brevdata-felles.version>
+		<brevdata-felles.version>5-2a6c16b</brevdata-felles.version>
 
 		<!-- Test -->
 		<spring-cloud-contract-wiremock.version>3.1.6</spring-cloud-contract-wiremock.version>
@@ -105,7 +105,7 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
-				<artifactId>brevdata-felles</artifactId>
+				<artifactId>dok-brevdata-felles</artifactId>
 				<version>${brevdata-felles.version}</version>
 			</dependency>
 			<dependency>
