@@ -9,6 +9,7 @@ import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo.PostadresseToBuilder;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @Component
@@ -131,6 +133,9 @@ public class NorskAdresseService {
 	}
 
 	private String mapPostboks(String postboks) {
+		if (isBlank(postboks)) {
+			throw new RegoppslagIllegalArgumentException(format(ERROR_MELDING, "postboks"), BAD_REQUEST);
+		}
 		return postboks.toLowerCase().contains(POSTBOKS.toLowerCase()) ? postboks : POSTBOKS + postboks;
 	}
 }

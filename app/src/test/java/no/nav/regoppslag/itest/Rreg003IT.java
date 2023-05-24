@@ -93,8 +93,8 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetPersonAndAdresseFromPDLKontakatAdresseWhichStartsWithPostboks() {
-		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks.json");
+	public void shouldGetPersonAndAdresseFromPDLKontakatAdresseWithPostboksPrefix() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
 		PostadresseResponse reponse = hentPostadresse();
 
