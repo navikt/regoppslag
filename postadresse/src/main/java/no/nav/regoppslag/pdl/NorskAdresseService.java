@@ -47,7 +47,7 @@ public class NorskAdresseService {
 		} else if (nonNull(kontaktadresse.getPostadresseIFrittFormat())) {
 			return Optional.of(mapPostadresseFrittFormat(kontaktadresse));
 		} else if (nonNull(kontaktadresse.getPostboksadresse())) {
-			return Optional.of(mapPostboksadresse(kontaktadresse));
+			return Optional.ofNullable(mapPostboksadresse(kontaktadresse));
 		}
 
 		return Optional.empty();
@@ -107,15 +107,15 @@ public class NorskAdresseService {
 				.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
 				.landkode(LANDKODE_NORGE);
 
-		if (isNotBlank(postboksadresse.getPostbokseier())) {
+		if (isNotBlank(postboksadresse.getPostbokseier()) & isNotBlank(postboksadresse.getPostboks())) {
 			return builder
 					.adresselinje1(CARE_OF + postboksadresse.getPostbokseier())
-					.adresselinje2(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+					.adresselinje2(mapPostboks(postboksadresse.getPostboks()))
 					.build();
 		}
 
-		return builder
-				.adresselinje1(POSTBOKS + requireNonNull(postboksadresse.getPostboks(), format(ERROR_MELDING, "postboks")))
+		return isBlank(postboksadresse.getPostboks()) ? null : builder
+				.adresselinje1(mapPostboks(postboksadresse.getPostboks()))
 				.build();
 	}
 
@@ -128,5 +128,9 @@ public class NorskAdresseService {
 				.poststed(postnummerService.finnPoststed(matrikkeladresse.getPostnummer()))
 				.landkode(LANDKODE_NORGE)
 				.build();
+	}
+
+	private String mapPostboks(String postboks) {
+		return postboks.toLowerCase().contains(POSTBOKS.toLowerCase()) ? postboks : POSTBOKS + postboks;
 	}
 }
