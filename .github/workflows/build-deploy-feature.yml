@@ -1,0 +1,12 @@
+name: Build, deploy dev feature
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+jobs:
+  build:
+    uses: navikt/dok-workflows/.github/workflows/build-deploy-feature.yml@main
+    secrets: inherit

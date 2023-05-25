@@ -1,0 +1,12 @@
+name: Build, deploy dev, draft main
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    uses: navikt/dok-workflows/.github/workflows/build-deploy-main.yml@main
+    secrets: inherit
