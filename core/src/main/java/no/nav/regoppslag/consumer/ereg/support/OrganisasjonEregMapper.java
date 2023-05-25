@@ -29,7 +29,7 @@ import static no.nav.regoppslag.metrics.MetricLabels.LAND;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
 import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component

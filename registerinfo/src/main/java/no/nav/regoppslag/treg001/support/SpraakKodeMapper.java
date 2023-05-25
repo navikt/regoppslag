@@ -5,7 +5,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.exceptions.IngenGyldigEnumVerdiForSpraakKodeException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.EN;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NB;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NN;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 

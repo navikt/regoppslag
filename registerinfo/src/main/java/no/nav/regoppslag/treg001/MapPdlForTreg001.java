@@ -31,8 +31,8 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j

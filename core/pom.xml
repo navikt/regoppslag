@@ -93,7 +93,7 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dok.metaforcemal</groupId>
-			<artifactId>brevdata-felles</artifactId>
+			<artifactId>dok-brevdata-felles</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.microsoft.graph</groupId>
