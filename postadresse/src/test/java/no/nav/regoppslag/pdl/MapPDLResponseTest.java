@@ -94,7 +94,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @ExtendWith(SpringExtension.class)
 public class MapPDLResponseTest {
 
-	private static final String LANDKODE_FEILMELDING = "Feltet landkode kan ikke være null eller tomt for utenlandskAdresse";
+	private static final String POSTBOKS = "postboks 73";
 
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private MapPDLResponse mapPDLResponse;
@@ -264,7 +264,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void shouldMapInnlandKontaktadresseWithPostboksAdresseAndPDLAsSource() throws RegoppslagIllegalArgumentException {
-		Kontaktadresse.Postboksadresse adresse = createPostboksadresse();
+		Kontaktadresse.Postboksadresse adresse = createPostboksadresse("73");
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
@@ -292,8 +292,37 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
+	public void shouldMapPostboksAdresseWhichStartsWithPostboks() throws RegoppslagIllegalArgumentException {
+		Kontaktadresse.Postboksadresse adresse = createPostboksadresse(POSTBOKS);
+		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
+				.postboksadresse(adresse)
+				.type(POSTADRESSE_INNLAND)
+				.build();
+		kontaktadresse.setMetadata(createMetadata(PDL.name()));
+
+		HentPerson hentPerson = createHentePersonBuilder()
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
+				.kontaktadresse(singletonList(kontaktadresse))
+				.build();
+
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals("C/O Byggfirma A/S", response.getAdresselinje1());
+		assertEquals(POSTBOKS, response.getAdresselinje2());
+		assertNull(response.getAdresselinje3());
+
+		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
+		assertEquals(adresse.getPostnummer(), response.getPostnummer());
+		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
+	}
+
+	@Test
 	public void shouldMapInnlandKontaktadresseWithPostboksAdresseAndFREGAsSource() {
-		Kontaktadresse.Postboksadresse adresse = createPostboksadresse();
+		Kontaktadresse.Postboksadresse adresse = createPostboksadresse("73");
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.gyldigFraOgMed(GYLDIG_FRA_MED_DATO)
 				.gyldigTilOgMed(GYLDIG_TIL_MED_DATO)
