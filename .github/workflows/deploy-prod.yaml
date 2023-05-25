@@ -1,0 +1,11 @@
+name: Deploy release to prod
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  deploy-prod:
+    uses: navikt/dok-workflows/.github/workflows/deploy-prod.yml@main
+    secrets: inherit
