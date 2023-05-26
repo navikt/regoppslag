@@ -9,9 +9,8 @@ Appen tilbyr tre Rest-tjenester med [dokumentasjon i Swagger](https://regoppslag
 Mer informasjon om hvordan appen fungerer finner du på [Confluence-siden for regoppslag](https://confluence.adeo.no/display/BOA/Registeroppslag).
 
 ## Distribusjon av tjenesten (deployment)
-Distribusjon av tjenesten er gjort av Jenkins:
-[regoppslag CI / CD](https://dok-jenkins.adeo.no/job/regoppslag/job/master/)
-Push/merge til masterbranch vil teste, bygge og deploye til produksjonsmiljø og testmiljø.
+Distribusjon av tjenesten er gjort av dok-workflows (GHA):
+[Reusable dok-workflows repo](https://github.com/navikt/dok-workflows)
 
 ## Kjøre prosjektet lokalt
 For å kjøre opp applikasjonen lokal, bruk profile `nais` og systemvariabler hentet fra vault: [System variabler](https://vault.adeo.no/ui/vault/secrets/secret/list/dokument/regoppslag/) 
