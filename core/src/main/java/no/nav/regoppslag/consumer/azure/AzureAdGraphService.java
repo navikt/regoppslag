@@ -36,7 +36,7 @@ public class AzureAdGraphService {
 	}
 
 	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
-	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = Exception.class, noRetryFor = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		LinkedList<Option> requestOptions = new LinkedList<>();
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));

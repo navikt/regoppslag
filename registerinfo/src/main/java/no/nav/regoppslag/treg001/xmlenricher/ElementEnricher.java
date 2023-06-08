@@ -158,15 +158,15 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
+			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagIngenTilgangException) {
 			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagSecurityException) {
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagTechnicalException) {

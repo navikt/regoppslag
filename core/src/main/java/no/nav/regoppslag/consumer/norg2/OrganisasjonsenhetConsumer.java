@@ -38,7 +38,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_NAVN, key = "#enhetNr")
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public EnhetNavn hentEnhetNavn(String enhetNr) {
 
@@ -51,7 +51,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_KONTAKTINFO, key = "#enhetNr")
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public EnhetKontaktinformasjon hentEnhetKontaktinformasjon(String enhetNr) {
 

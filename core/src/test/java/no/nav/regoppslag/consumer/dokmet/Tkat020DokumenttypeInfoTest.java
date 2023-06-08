@@ -57,6 +57,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {Tkat020DokumenttypeInfo.class,
@@ -89,7 +93,7 @@ public class Tkat020DokumenttypeInfoTest {
 	@Test
 	public void shouldHentSpraakinfo() {
 		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
-				.thenReturn(new ResponseEntity<>(defaultResponse(Arrays.asList(LANG1, LANG2)), HttpStatus.OK));
+				.thenReturn(new ResponseEntity<>(defaultResponse(Arrays.asList(LANG1, LANG2)), OK));
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
@@ -101,16 +105,19 @@ public class Tkat020DokumenttypeInfoTest {
 	@Test
 	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
 		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
-				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+				.thenThrow(new HttpClientErrorException(NOT_FOUND));
+
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
+
 		assertThat(e.getMessage(), containsString("TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
+		verify(restTemplate, times(1)).exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class));
 	}
 
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerErrorAndRetry() {
 		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
-				.thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+				.thenThrow(new HttpServerErrorException(INTERNAL_SERVER_ERROR));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
@@ -122,7 +129,7 @@ public class Tkat020DokumenttypeInfoTest {
 	@Test
 	public void shouldThrowTechnicalExceptionWhenServerException() {
 		when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(DokumenttypeInfoTo.class)))
-				.thenThrow(new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE));
+				.thenThrow(new HttpServerErrorException(SERVICE_UNAVAILABLE));
 
 		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");

@@ -14,6 +14,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -33,6 +34,7 @@ import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
@@ -64,7 +66,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(value = HENT_DOKMET_SPRAAKINFO, key = "#dokumenttypeId")
-	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "HttpStatus.NOT_FOUND != getHttpStatus()", backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, exceptionExpression = "HttpStatusCode.valueOf(404) != getHttpStatusCode()", backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKMET_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		HttpHeaders headers = createHeaders();
@@ -81,6 +83,10 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
+			if (HttpStatusCode.valueOf(404) == e.getStatusCode()) {
+				throw new RegOppslagTechnicalException(String.format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
+						.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, NOT_FOUND);
+			}
 			throw new RegOppslagTechnicalException(String.format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
 					.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, INTERNAL_SERVER_ERROR);
 		} catch (HttpServerErrorException e) {

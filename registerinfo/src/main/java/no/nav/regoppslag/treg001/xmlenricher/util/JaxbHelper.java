@@ -1,5 +1,12 @@
 package no.nav.regoppslag.treg001.xmlenricher.util;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlType;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
@@ -8,14 +15,6 @@ import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,6 +23,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+
+import static javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD;
+import static javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET;
 
 @Slf4j
 public class JaxbHelper<T> {
@@ -88,8 +90,8 @@ public class JaxbHelper<T> {
 		try {
 			StringWriter writer = new StringWriter();
 			TransformerFactory factory = TransformerFactory.newInstance();
-			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+			factory.setAttribute(ACCESS_EXTERNAL_DTD, "");
+			factory.setAttribute(ACCESS_EXTERNAL_STYLESHEET, "");
 			factory.newTransformer().transform(new DOMSource(xmlDocument), new StreamResult(writer));
 			return writer.toString();
 		} catch (Exception e) {

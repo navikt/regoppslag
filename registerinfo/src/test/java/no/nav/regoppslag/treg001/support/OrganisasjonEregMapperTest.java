@@ -98,7 +98,7 @@ public class OrganisasjonEregMapperTest {
 		Organisasjon org = createOrganisasjon(ORGNAVN);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class OrganisasjonEregMapperTest {
 		settPostAdresse(org, "POSTADRESSE", -20000L);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class OrganisasjonEregMapperTest {
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class OrganisasjonEregMapperTest {
 
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test

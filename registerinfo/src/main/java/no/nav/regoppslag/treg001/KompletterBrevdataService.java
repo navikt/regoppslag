@@ -65,7 +65,7 @@ public class KompletterBrevdataService {
 		return writer.toString();
 	}
 
-	@Retryable(include = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
+	@Retryable(retryFor = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
@@ -89,17 +89,17 @@ public class KompletterBrevdataService {
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
 		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException
 				 | UkjentAdresseException | UkjentAdressePersonErDoed e) {
-			if (GONE.equals(e.getHttpStatus())) {
+			if (GONE.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 funksjonell feil : {}", e.getMessage());
-				throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", e.getHttpStatus());
-			} else if (NOT_FOUND.equals(e.getHttpStatus())) {
+				throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", e.getHttpStatusCode());
+			} else if (NOT_FOUND.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 				throw new RegOppslagIkkeFunnetException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-						.getMessage()), e, e.getMetricMessage(), e.getHttpStatus());
+						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
 			} else {
 				log.error("TREG001 Funksjonell feil: {}", e.getMessage());
 				throw new RegoppslagIllegalArgumentException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-						.getMessage()), e, e.getMetricMessage(), e.getHttpStatus());
+						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
 			}
 		} catch (RegOppslagSecurityException e) {
 			log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());

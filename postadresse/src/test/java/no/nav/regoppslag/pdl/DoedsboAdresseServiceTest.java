@@ -240,7 +240,7 @@ class DoedsboAdresseServiceTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
 				doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), TEMA));
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -257,7 +257,7 @@ class DoedsboAdresseServiceTest {
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
 				doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
 
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -273,7 +273,7 @@ class DoedsboAdresseServiceTest {
 
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
 
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -291,7 +291,7 @@ class DoedsboAdresseServiceTest {
 				.build();
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA),
 				"Mottaker er registrert som død og har ugyldig postadresse");
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 	}
 
 }
