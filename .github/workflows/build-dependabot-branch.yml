@@ -1,0 +1,15 @@
+name: Build Dependabot PR branch
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    uses: navikt/dok-workflows/.github/workflows/build-app.yml@main
+    secrets: inherit
