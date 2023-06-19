@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - main
       - master
+      - 'dependabot/**'
 
 jobs:
   build:
