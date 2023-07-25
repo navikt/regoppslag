@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.AdresseGyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.to.Endring;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
@@ -16,11 +17,13 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
@@ -70,18 +73,18 @@ public class MapPDLResponse {
 			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
 		}
 
+
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
 		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
-		boolean erBostedsadresseGyldigMedDatoFra = false;
+		boolean erBostedsadresseGyldig = false;
+		LocalDateTime bostedsadresseGyldigFraOgMed = null;
 		if (nonNull(bostedsadresse)) {
-			try {
-				bostedsadresseOptional = mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
-				if (bostedsadresseOptional.isPresent() && nonNull(bostedsadresse.getGyldigFraOgMed())) {
-					erBostedsadresseGyldigMedDatoFra = true;
-				}
-			} catch (UkjentAdresseException e) {
-				bostedsadresseOptional = Optional.empty();
+			bostedsadresseOptional = safeMapBostedsAdresse(hentPerson, serviceCode, bostedsadresse);
+			if (bostedsadresseOptional.isPresent()) {
+				LocalDateTime gyldigFraOgmed = bostedsadresse.getGyldigFraOgMed();
+				bostedsadresseGyldigFraOgMed = nonNull(gyldigFraOgmed) ? gyldigFraOgmed : finnSisteEndring(bostedsadresse.getMetadata().getEndringer());
+				erBostedsadresseGyldig = true;
 			}
 		}
 
@@ -92,9 +95,9 @@ public class MapPDLResponse {
 			Optional<PdlMottakerInfo> pdlMottakerInfo = mapKontaktadresse(hentPerson, kontaktadresse);
 			if (pdlMottakerInfo.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
-				if (erBostedsadresseGyldigMedDatoFra &&
-					kontaktadresse.getGyldigFraOgMed() != null &&
-					bostedsadresse.getGyldigFraOgMed().isAfter(kontaktadresse.getGyldigFraOgMed())) {
+				if (erBostedsadresseGyldig &&
+						kontaktadresse.getGyldigFraOgMed() != null &&
+						bostedsadresseGyldigFraOgMed.isAfter(kontaktadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
 				} else {
 					return pdlMottakerInfo.get();
@@ -111,9 +114,9 @@ public class MapPDLResponse {
 			Optional<PdlMottakerInfo> mottakerFraOppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode, oppholdsadresse);
 			if (mottakerFraOppholdsadresse.isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn oppholdsadresse
-				if (erBostedsadresseGyldigMedDatoFra &&
-					oppholdsadresse.getGyldigFraOgMed() != null &&
-					bostedsadresse.getGyldigFraOgMed().isAfter(oppholdsadresse.getGyldigFraOgMed())) {
+				if (erBostedsadresseGyldig &&
+						oppholdsadresse.getGyldigFraOgMed() != null &&
+						bostedsadresseGyldigFraOgMed.isAfter(oppholdsadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
 				} else {
 					return mottakerFraOppholdsadresse.get();
@@ -165,6 +168,19 @@ public class MapPDLResponse {
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
 						.build());
+	}
+
+	private LocalDateTime finnSisteEndring(List<Endring> endringer) {
+		endringer.sort(comparing(Endring::getRegistrert));
+		return endringer.get(endringer.size() - 1).getRegistrert();
+	}
+
+	private Optional<PdlMottakerInfo> safeMapBostedsAdresse(HentPerson hentPerson, String serviceCode, Bostedsadresse bostedsadresse) {
+		try {
+			return mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
+		} catch (UkjentAdresseException e) {
+			return Optional.empty();
+		}
 	}
 
 	private Optional<PdlMottakerInfo> mapBostedsadresse(HentPerson hentPerson, String serviceCode, Bostedsadresse bostedsadresse) {

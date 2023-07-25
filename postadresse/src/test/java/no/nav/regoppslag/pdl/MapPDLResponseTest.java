@@ -576,15 +576,16 @@ public class MapPDLResponseTest {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"1, 2, BOSTEDSADRESSE",
-			"2, 2, KONTAKTADRESSE",
-			"1, null, KONTAKTADRESSE",
-			"null, 2, KONTAKTADRESSE",
-			"null, null, KONTAKTADRESSE"
+			"1, 1, 2, BOSTEDSADRESSE",
+			"null, 1, 3, BOSTEDSADRESSE",
+			"2, 1, 2, KONTAKTADRESSE",
+			"1, 1, null, KONTAKTADRESSE",
+			"null, 3, 2, KONTAKTADRESSE",
+			"null, 3, null, KONTAKTADRESSE"
 	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseAlder, String kontaktadresseAlder, String adresseKilde) {
+	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseAlder, String bostedsadresseSisteEndring, String kontaktadresseAlder, String adresseKilde) {
 		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndKontaktadresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder, bostedsadresseSisteEndring),
 				createKontaktAdresseWithAntallDager(kontaktadresseAlder)
 		);
 
@@ -598,15 +599,16 @@ public class MapPDLResponseTest {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"1, 2, BOSTEDSADRESSE",
-			"2, 2, OPPHOLDSADRESSE",
-			"2, null, OPPHOLDSADRESSE",
-			"null, 2, OPPHOLDSADRESSE",
-			"null, null, OPPHOLDSADRESSE"
+			"1, 1, 2, BOSTEDSADRESSE",
+			"null, 1, 2, BOSTEDSADRESSE",
+			"2, 1, 2, OPPHOLDSADRESSE",
+			"2, 2, null, OPPHOLDSADRESSE",
+			"null, 3, 2, OPPHOLDSADRESSE",
+			"null, 3, null, OPPHOLDSADRESSE"
 	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseAlder, String oppholdsadresseAlder, String adresseKilde) {
+	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseAlder, String bostedsadresseSisteEndring, String oppholdsadresseAlder, String adresseKilde) {
 		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseAlder),
+				createBostedsAdresseWithAntallDager(bostedsadresseAlder, bostedsadresseSisteEndring),
 				createOppholdsAdresseWithAntallDager(oppholdsadresseAlder));
 
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);

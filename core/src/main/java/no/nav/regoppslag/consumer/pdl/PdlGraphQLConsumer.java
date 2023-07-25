@@ -388,6 +388,10 @@ public class PdlGraphQLConsumer {
 			      metadata{
 			        opplysningsId
 			        master
+			        endringer{
+			        	registrert
+			        	type
+			        }
 			      }
 			    }
 			    folkeregisterpersonstatus(historikk: false){
