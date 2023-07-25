@@ -73,18 +73,19 @@ public class MapPDLResponse {
 			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
 		}
 
-
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
 		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
-		boolean erBostedsadresseGyldig = false;
+		boolean erBostedsadresseGyldigMedDatoFra  = false;
 		LocalDateTime bostedsadresseGyldigFraOgMed = null;
 		if (nonNull(bostedsadresse)) {
 			bostedsadresseOptional = safeMapBostedsAdresse(hentPerson, serviceCode, bostedsadresse);
 			if (bostedsadresseOptional.isPresent()) {
 				LocalDateTime gyldigFraOgmed = bostedsadresse.getGyldigFraOgMed();
-				bostedsadresseGyldigFraOgMed = nonNull(gyldigFraOgmed) ? gyldigFraOgmed : finnSisteEndring(bostedsadresse.getMetadata().getEndringer());
-				erBostedsadresseGyldig = true;
+				bostedsadresseGyldigFraOgMed = nonNull(gyldigFraOgmed) ? gyldigFraOgmed : getDatoForSisteEndring(bostedsadresse.getMetadata().getEndringer());
+				if(bostedsadresseGyldigFraOgMed != null) {
+					erBostedsadresseGyldigMedDatoFra  = true;
+				}
 			}
 		}
 
@@ -95,7 +96,7 @@ public class MapPDLResponse {
 			Optional<PdlMottakerInfo> pdlMottakerInfo = mapKontaktadresse(hentPerson, kontaktadresse);
 			if (pdlMottakerInfo.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
-				if (erBostedsadresseGyldig &&
+				if (erBostedsadresseGyldigMedDatoFra  &&
 						kontaktadresse.getGyldigFraOgMed() != null &&
 						bostedsadresseGyldigFraOgMed.isAfter(kontaktadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
@@ -114,7 +115,7 @@ public class MapPDLResponse {
 			Optional<PdlMottakerInfo> mottakerFraOppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode, oppholdsadresse);
 			if (mottakerFraOppholdsadresse.isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn oppholdsadresse
-				if (erBostedsadresseGyldig &&
+				if (erBostedsadresseGyldigMedDatoFra  &&
 						oppholdsadresse.getGyldigFraOgMed() != null &&
 						bostedsadresseGyldigFraOgMed.isAfter(oppholdsadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
@@ -170,9 +171,11 @@ public class MapPDLResponse {
 						.build());
 	}
 
-	private LocalDateTime finnSisteEndring(List<Endring> endringer) {
+	private LocalDateTime getDatoForSisteEndring(List<Endring> endringer) {
 		endringer.sort(comparing(Endring::getRegistrert));
-		return endringer.get(endringer.size() - 1).getRegistrert();
+		int antallEndringer = endringer.size();
+		return antallEndringer > 0 ? endringer.get(antallEndringer - 1).getRegistrert() : null;
+
 	}
 
 	private Optional<PdlMottakerInfo> safeMapBostedsAdresse(HentPerson hentPerson, String serviceCode, Bostedsadresse bostedsadresse) {
