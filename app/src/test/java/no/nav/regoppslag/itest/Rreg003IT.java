@@ -3,6 +3,7 @@ package no.nav.regoppslag.itest;
 import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
+import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,8 +21,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
+import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.PDLResponseUtil.postPdlDigdir;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
+import static no.nav.regoppslag.util.PDLResponseUtil.stubGetEnhetKontaktInfo;
+import static no.nav.regoppslag.util.PDLResponseUtil.stubGetEnhetNavn;
+import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -90,6 +96,23 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
 		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
 		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
+	public void shouldMapAndGetKomplettBrevdataForBostedsadresseWithNullGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/bosattadresse_with_null_gyldigFraOgMed.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("ALLEE DE NARCASTET");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("LOTISSEMENT NARCASTET");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("60000 NARCASTET");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("FR");
+		assertThat(actualAdresse.getLand()).isEqualTo("FRANKRIKE");
 	}
 
 	@Test

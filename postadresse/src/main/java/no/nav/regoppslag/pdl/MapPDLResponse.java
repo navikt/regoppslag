@@ -81,9 +81,8 @@ public class MapPDLResponse {
 		if (nonNull(bostedsadresse)) {
 			bostedsadresseOptional = safeMapBostedsAdresse(hentPerson, serviceCode, bostedsadresse);
 			if (bostedsadresseOptional.isPresent()) {
-				LocalDateTime gyldigFraOgmed = bostedsadresse.getGyldigFraOgMed();
-				bostedsadresseGyldigFraOgMed = nonNull(gyldigFraOgmed) ? gyldigFraOgmed : getDatoForSisteEndring(bostedsadresse.getMetadata().getEndringer());
-				if(bostedsadresseGyldigFraOgMed != null) {
+				if(bostedsadresse.getGyldigFraOgMed() != null) {
+					bostedsadresseGyldigFraOgMed = bostedsadresse.getGyldigFraOgMed();
 					erBostedsadresseGyldigMedDatoFra  = true;
 				}
 			}
@@ -93,15 +92,15 @@ public class MapPDLResponse {
 		// prøver å bruke kontaktadresse - regel 1 og 2
 		if (kontaktadresseOptional.isPresent()) {
 			Kontaktadresse kontaktadresse = kontaktadresseOptional.get();
-			Optional<PdlMottakerInfo> pdlMottakerInfo = mapKontaktadresse(hentPerson, kontaktadresse);
-			if (pdlMottakerInfo.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
+			Optional<PdlMottakerInfo> mottakerFraKontaktAdresse = mapKontaktadresse(hentPerson, kontaktadresse);
+			if (mottakerFraKontaktAdresse.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
 				if (erBostedsadresseGyldigMedDatoFra  &&
 						kontaktadresse.getGyldigFraOgMed() != null &&
 						bostedsadresseGyldigFraOgMed.isAfter(kontaktadresse.getGyldigFraOgMed())) {
 					return bostedsadresseOptional.get();
 				} else {
-					return pdlMottakerInfo.get();
+					return mottakerFraKontaktAdresse.get();
 				}
 			} else {
 				log.info("Fant ikke kontaktadresse og søker etter oppholdsadresse for personen i PDL data");
@@ -171,12 +170,7 @@ public class MapPDLResponse {
 						.build());
 	}
 
-	private LocalDateTime getDatoForSisteEndring(List<Endring> endringer) {
-		endringer.sort(comparing(Endring::getRegistrert));
-		int antallEndringer = endringer.size();
-		return antallEndringer > 0 ? endringer.get(antallEndringer - 1).getRegistrert() : null;
 
-	}
 
 	private Optional<PdlMottakerInfo> safeMapBostedsAdresse(HentPerson hentPerson, String serviceCode, Bostedsadresse bostedsadresse) {
 		try {

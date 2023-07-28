@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Endring {
 
-	public enum endringsType {
+	public enum EndringsType {
 		OPPRETT, KORRIGER, OPPHOER, ANNULLER
 	}
 
@@ -18,5 +18,5 @@ public class Endring {
 	LocalDateTime registrert;
 
 	@Getter
-	endringsType type;
+	EndringsType type;
 }
