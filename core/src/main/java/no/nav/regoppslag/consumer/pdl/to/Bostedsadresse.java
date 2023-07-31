@@ -9,6 +9,7 @@ import java.util.List;
 
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
+import static no.nav.regoppslag.util.AdresseUtils.getDatoForSisteEndring;
 
 @Data
 @Builder
@@ -25,12 +26,5 @@ public class Bostedsadresse {
 
     public LocalDateTime getGyldigFraOgMed(){
         return  nonNull(gyldigFraOgMed) ? gyldigFraOgMed : getDatoForSisteEndring(getMetadata().getEndringer());
-    }
-
-    private LocalDateTime getDatoForSisteEndring(List<Endring> endringer) {
-        endringer.sort(comparing(Endring::getRegistrert));
-        int antallEndringer = endringer.size();
-        return antallEndringer > 0 ? endringer.get(antallEndringer - 1).getRegistrert() : null;
-
     }
 }

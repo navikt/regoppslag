@@ -196,6 +196,45 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
 	}
 
+	@Test
+	void shouldGetGyldigKontaktadresseWhenLastEndringAfterBostedsadresseGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_endring_after_bostedsadresse.json");
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("KONTAKTADRESSE");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Polengata 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("01-001 LODZ");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+	}
+
+
+	@Test
+	void shouldGetGyldigoppholdsadresseWhenLastEndringAfterBostedsadresseGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/Oppholdsadresse_with_endring_after_bostedsadresse.json");
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isEqualTo("AREMARK TESTFAMILIEN");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("OPPHOLDSADRESSE");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("1KOLEJOWA 6/5");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+	}
+
 	private PostadresseResponse hentPostadresse() {
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
 

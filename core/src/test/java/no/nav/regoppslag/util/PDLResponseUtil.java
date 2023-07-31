@@ -347,12 +347,18 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(String antallDager){
+	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(String antallDager, String oppholdsadresseSisteEndring){
 		return Oppholdsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.vegadresse(createVegadresse())
-				.metadata(Metadata.builder().master(PDL.name()).build())
+				.metadata(Metadata.builder()
+						.master(PDL.name())
+						.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(Integer.parseInt(oppholdsadresseSisteEndring)))
+								.type(OPPRETT)
+								.build()))
+						.build())
 				.build();
 	}
 
@@ -372,13 +378,19 @@ public class PDLResponseUtil {
 	}
 
 
-	public static Kontaktadresse createKontaktAdresseWithAntallDager(String antallDager){
+	public static Kontaktadresse createKontaktAdresseWithAntallDager(String antallDager, String kontaktadresseSisteEndring){
 		return Kontaktadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.vegadresse(createVegadresse())
-				.metadata(Metadata.builder().master(InformasjonKilde.PDL.name()).build())
+				.metadata(Metadata.builder()
+					.master(InformasjonKilde.PDL.name())
+						.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(Integer.parseInt(kontaktadresseSisteEndring)))
+								.type(OPPRETT)
+								.build()))
+						.build())
 				.build();
 	}
 

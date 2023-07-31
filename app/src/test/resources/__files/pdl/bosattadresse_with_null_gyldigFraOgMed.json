@@ -55,7 +55,7 @@
       ],
       "kontaktadresse": [
         {
-          "gyldigFraOgMed": "2023-05-23T09:16:26",
+          "gyldigFraOgMed": null,
           "gyldigTilOgMed": null,
           "type": "Utland",
           "coAdressenavn": null,
