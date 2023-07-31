@@ -290,9 +290,10 @@ public class PdlGraphQLConsumer {
 			        opplysningsId
 			        master
 			        endringer{
-			        	registrert
-			        	type
+			          type
+			          registrert
 			        }
+			      }
 			      matrikkeladresse{
 			        matrikkelId
 			        bruksenhetsnummer
@@ -396,8 +397,8 @@ public class PdlGraphQLConsumer {
 			        opplysningsId
 			        master
 			        endringer{
-			        	registrert
-			        	type
+			          type
+			          registrert
 			        }
 			      }
 			    }
