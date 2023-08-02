@@ -29,7 +29,7 @@ public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 			return 0;
 		}
 
-		return getGyldigFraOgMedOrSisteEndring().compareTo(o.getGyldigFraOgMedOrSisteEndring());
+		return getGyldigFraOgMed().compareTo(o.getGyldigFraOgMed());
 	}
 
 	default LocalDateTime getGyldigFraOgMedOrSisteEndring() {
