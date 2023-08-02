@@ -5,9 +5,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-import static java.util.Objects.nonNull;
-import static no.nav.regoppslag.util.AdresseUtils.getDatoForSisteEndring;
-
 @Data
 @Builder
 public class Kontaktadresse implements AdresseGyldigKilde {
@@ -34,11 +31,6 @@ public class Kontaktadresse implements AdresseGyldigKilde {
 		}
 
 		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg();
-	}
-
-
-	public LocalDateTime getGyldigFraOgMed(){
-		return  nonNull(gyldigFraOgMed) ? gyldigFraOgMed : getDatoForSisteEndring(getMetadata().getEndringer());
 	}
 
 	@Data

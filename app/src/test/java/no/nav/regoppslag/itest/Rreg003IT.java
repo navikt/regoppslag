@@ -3,7 +3,6 @@ package no.nav.regoppslag.itest;
 import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
-import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,13 +20,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
-import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.util.PDLResponseUtil.postPdlDigdir;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
-import static no.nav.regoppslag.util.PDLResponseUtil.stubGetEnhetKontaktInfo;
-import static no.nav.regoppslag.util.PDLResponseUtil.stubGetEnhetNavn;
-import static no.nav.regoppslag.util.TestUtil.classpathToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -214,7 +208,6 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
 		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
 	}
-
 
 	@Test
 	void shouldGetGyldigoppholdsadresseWhenLastEndringAfterBostedsadresseGyldigFraOgMed() {
