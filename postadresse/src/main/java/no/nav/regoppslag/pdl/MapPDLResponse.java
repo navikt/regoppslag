@@ -27,6 +27,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.function.Predicate.not;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
@@ -71,6 +72,8 @@ public class MapPDLResponse {
 			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
 		}
 
+		String debugLog = "";
+
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
 		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
@@ -82,6 +85,7 @@ public class MapPDLResponse {
 				if (bostedsadresse.getGyldigFraOgMedOrSisteEndring() != null) {
 					bostedsadresseGyldigFraOgMedOrSisteEndring = bostedsadresse.getGyldigFraOgMedOrSisteEndring();
 					erBostedsadresseGyldigMedDatoFra = true;
+					debugLog += generateDebugLog(BOSTEDSADRESSE.name(), bostedsadresse.getGyldigFraOgMed());
 				}
 			}
 		}
@@ -96,8 +100,10 @@ public class MapPDLResponse {
 				if (erBostedsadresseGyldigMedDatoFra &&
 						kontaktadresse.getGyldigFraOgMedOrSisteEndring() != null &&
 						bostedsadresseGyldigFraOgMedOrSisteEndring.isAfter(kontaktadresse.getGyldigFraOgMedOrSisteEndring())) {
+					generateAndLogDebugLog(KONTAKTADRESSE.name(), kontaktadresse.getGyldigFraOgMed(), debugLog, BOSTEDSADRESSE.name());
 					return bostedsadresseOptional.get();
 				} else {
+					generateAndLogDebugLog(KONTAKTADRESSE.name(), kontaktadresse.getGyldigFraOgMed(), debugLog, KONTAKTADRESSE.name());
 					return mottakerFraKontaktAdresse.get();
 				}
 			} else {
@@ -115,8 +121,10 @@ public class MapPDLResponse {
 				if (erBostedsadresseGyldigMedDatoFra &&
 						oppholdsadresse.getGyldigFraOgMedOrSisteEndring() != null &&
 						bostedsadresseGyldigFraOgMedOrSisteEndring.isAfter(oppholdsadresse.getGyldigFraOgMedOrSisteEndring())) {
+					generateAndLogDebugLog(OPPHOLDSADRESSE.name(), oppholdsadresse.getGyldigFraOgMed(), debugLog, BOSTEDSADRESSE.name());
 					return bostedsadresseOptional.get();
 				} else {
+					generateAndLogDebugLog(OPPHOLDSADRESSE.name(), oppholdsadresse.getGyldigFraOgMed(), debugLog, OPPHOLDSADRESSE.name());
 					return mottakerFraOppholdsadresse.get();
 				}
 			} else {
@@ -139,6 +147,21 @@ public class MapPDLResponse {
 		}
 
 		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", NOT_FOUND);
+	}
+
+	private void generateAndLogDebugLog(String adresseType, LocalDateTime gyldigFraOgMed, String debugLog, String nyesteAdresseType) {
+		//Ønsker bare å logge info hvis erBostedsadresseGyldigMedDatoFra != false.
+		//Sjekker det implisitt her ved å sjekke om stringen er tom da denne bare får en verdi om erBostedsadresseGyldigMedDatoFra == true.
+		if(!debugLog.isBlank()) {
+			debugLog += generateDebugLog(adresseType, gyldigFraOgMed);
+			debugLog += nyesteAdresseType + " er den sist oppdaterte adressen. Returnerer adresseType " + nyesteAdresseType;
+			log.debug(debugLog);
+		}
+	}
+
+	private String generateDebugLog(String adresseType, LocalDateTime gyldigFraOgMed) {
+		return adresseType + (gyldigFraOgMed == null ?  " har ingen gyldigFraOgMed. Bruker siste endring som gyldigFraOgMed\n" :
+				" har satt gyldigFraOgMed. Bruker gyldigFraOgMed\n");
 	}
 
 	// Implementerer regler 1,2 (eller 3 og 4)
