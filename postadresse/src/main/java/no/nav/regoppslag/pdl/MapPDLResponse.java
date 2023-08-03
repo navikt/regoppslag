@@ -155,7 +155,7 @@ public class MapPDLResponse {
 		if(!debugLog.isBlank()) {
 			debugLog += generateDebugLog(adresseType, gyldigFraOgMed);
 			debugLog += nyesteAdresseType + " er den sist oppdaterte adressen. Returnerer adresseType " + nyesteAdresseType;
-			log.debug(debugLog);
+			log.info(debugLog);
 		}
 	}
 
