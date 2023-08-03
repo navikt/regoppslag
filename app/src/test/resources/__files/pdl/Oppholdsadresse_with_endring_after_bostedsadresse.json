@@ -1,0 +1,97 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1966,
+          "foedselsdato": "1966-05-05"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "AREMARK",
+          "mellomnavn": "",
+          "etternavn": "TESTFAMILIEN",
+          "forkortetNavn": ""
+        }
+      ],
+      "kontaktadresse": [],
+      "oppholdsadresse": [
+        {
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "1KOLEJOWA 6/5",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": null,
+            "bySted": null,
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "oppholdAnnetSted": null,
+          "metadata": {
+            "opplysningsId": "8f2c745f-1276-45a2-8527-19e206de7573",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2021-04-05T03:11:10",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              }]
+          }
+        }
+      ],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "45056649992",
+          "type": "DNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "2020-03-01",
+          "gyldigFraOgMed": "2020-03-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": 275433480,
+            "husnummer": "45",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "ikkeBosatt",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "Dolly"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1980,
+          "foedselsdato": "1980-01-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BJARNE BETJENT"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "",
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "ALLEE DE NARCASTET",
+            "bygningEtasjeLeilighet": "LOTISSEMENT NARCASTET",
+            "postboksNummerNavn": null,
+            "postkode": "60000",
+            "bySted": "NARCASTET",
+            "regionDistriktOmraade": "",
+            "landkode": "FRA"
+          },
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "4ab6f309-3a0b-447c-a911-ea03a20ba47f",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2023-06-23T09:16:26",
+                "registrertAv": "Z123456",
+                "systemkilde": "pdl-web",
+                "kilde": "PENSION INSURANCE FUND AND HEALTH AT WORK OF MIDI, FRANKRIKE",
+                "hendelseId": "4ab6f309-3a0b-447c-a911-ea03a20ba47f"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "100 AV.DU MARSEILLE",
+            "adresselinje2": "F- 001 01 MARSEILLE",
+            "adresselinje3": "FRANKRIKE",
+            "postkode": null,
+            "byEllerStedsnavn": null,
+            "landkode": "FRA"
+          },
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": null,
+            "gyldighetstidspunkt": null,
+            "opphoerstidspunkt": null,
+            "kilde": "KILDE_DSF",
+            "aarsak": null,
+            "sekvens": 0
+          },
+          "metadata": {
+            "opplysningsId": "af8f0db2-a9c5-448b-8300-be5abe2c50b4",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-04T02:56:52",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "9a07c2f8-952f-43e6-86c3-905306953d42"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2020-12-21T03:41:27",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "af8f0db2-a9c5-448b-8300-be5abe2c50b4"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utland",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -286,6 +286,14 @@ public class PdlGraphQLConsumer {
 			        tilleggsnavn
 			        postnummer
 			      }
+			      metadata{
+			        opplysningsId
+			        master
+			        endringer{
+			          type
+			          registrert
+			        }
+			      }
 			      matrikkeladresse{
 			        matrikkelId
 			        bruksenhetsnummer
@@ -388,6 +396,10 @@ public class PdlGraphQLConsumer {
 			      metadata{
 			        opplysningsId
 			        master
+			        endringer{
+			          type
+			          registrert
+			        }
 			      }
 			    }
 			    folkeregisterpersonstatus(historikk: false){

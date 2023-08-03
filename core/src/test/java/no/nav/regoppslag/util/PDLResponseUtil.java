@@ -1,6 +1,7 @@
 package no.nav.regoppslag.util;
 
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.to.Endring;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
@@ -26,6 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Collections.singletonList;
+import static no.nav.regoppslag.consumer.pdl.to.Endring.EndringsType.OPPRETT;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
@@ -263,6 +265,12 @@ public class PDLResponseUtil {
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.vegadresse(createVegadresse())
+						.metadata(Metadata.builder()
+								.endringer(singletonList(Endring.builder()
+										.registrert(LocalDateTime.now().minusDays(2))
+										.type(OPPRETT)
+										.build()))
+								.build())
 						.build()))
 				.sikkerhetstiltak(Collections.emptyList())
 				.folkeregisteridentifikator(singletonList(HentPerson.Folkeregisteridentifikator.builder()
@@ -339,32 +347,50 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(String antallDager){
+	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(String antallDager, String oppholdsadresseSisteEndring){
 		return Oppholdsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.vegadresse(createVegadresse())
-				.metadata(Metadata.builder().master(PDL.name()).build())
+				.metadata(Metadata.builder()
+						.master(PDL.name())
+						.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(Integer.parseInt(oppholdsadresseSisteEndring)))
+								.type(OPPRETT)
+								.build()))
+						.build())
 				.build();
 	}
 
-	public static Bostedsadresse createBostedsAdresseWithAntallDager(String antallDager){
+	public static Bostedsadresse createBostedsAdresseWithAntallDager(String antallDager, String bostedsadresseSisteEndring){
 		return Bostedsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.vegadresse(createVegadresse())
-				.metadata(Metadata.builder().master(PDL.name()).build())
+				.metadata(Metadata.builder()
+						.master(PDL.name())
+						.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(Integer.parseInt(bostedsadresseSisteEndring)))
+								.type(OPPRETT)
+								.build()))
+						.build())
 				.build();
 	}
 
 
-	public static Kontaktadresse createKontaktAdresseWithAntallDager(String antallDager){
+	public static Kontaktadresse createKontaktAdresseWithAntallDager(String antallDager, String kontaktadresseSisteEndring){
 		return Kontaktadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(Integer.parseInt(antallDager)))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.vegadresse(createVegadresse())
-				.metadata(Metadata.builder().master(InformasjonKilde.PDL.name()).build())
+				.metadata(Metadata.builder()
+					.master(InformasjonKilde.PDL.name())
+						.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(Integer.parseInt(kontaktadresseSisteEndring)))
+								.type(OPPRETT)
+								.build()))
+						.build())
 				.build();
 	}
 
@@ -385,6 +411,12 @@ public class PDLResponseUtil {
 						.etternavn(ETTERNAVN)
 						.build()))
 				.bostedsadresse(singletonList(Bostedsadresse.builder()
+						.metadata(Metadata.builder()
+								.endringer(singletonList(Endring.builder()
+								.registrert(LocalDateTime.now().minusDays(2))
+								.type(OPPRETT)
+								.build()))
+								.build())
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 						.ukjentBosted(UkjentBosted.builder().bostedskommune(POSTSTED_OSLO).build())

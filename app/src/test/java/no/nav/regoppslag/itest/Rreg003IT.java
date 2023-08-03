@@ -93,6 +93,23 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldMapAndGetKomplettBrevdataForBostedsadresseWithNullGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/bosattadresse_with_null_gyldigFraOgMed.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("ALLEE DE NARCASTET");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("LOTISSEMENT NARCASTET");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("60000 NARCASTET");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("FR");
+		assertThat(actualAdresse.getLand()).isEqualTo("FRANKRIKE");
+	}
+
+	@Test
 	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
@@ -167,6 +184,44 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Polengata 1");
 		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("01-001 LODZ");
 		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+	}
+
+	@Test
+	void shouldGetGyldigKontaktadresseWhenLastEndringAfterBostedsadresseGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_endring_after_bostedsadresse.json");
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("KONTAKTADRESSE");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Polengata 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("01-001 LODZ");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+	}
+
+	@Test
+	void shouldGetGyldigoppholdsadresseWhenLastEndringAfterBostedsadresseGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/Oppholdsadresse_with_endring_after_bostedsadresse.json");
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isEqualTo("AREMARK TESTFAMILIEN");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("OPPHOLDSADRESSE");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("1KOLEJOWA 6/5");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
 		assertThat(actualAdresse.getPostnummer()).isNull();
 		assertThat(actualAdresse.getPoststed()).isNull();
 		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");

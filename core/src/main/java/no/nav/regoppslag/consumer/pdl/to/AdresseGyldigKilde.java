@@ -2,7 +2,12 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import java.time.LocalDateTime;
 
+import static java.util.Objects.nonNull;
+
 public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
+	LocalDateTime getGyldigFraOgMed();
+
+	Metadata getMetadata();
 
 	default boolean isGyldigPdlKilde() {
 		if (getMetadata() == null) {
@@ -27,7 +32,7 @@ public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 		return getGyldigFraOgMed().compareTo(o.getGyldigFraOgMed());
 	}
 
-	Metadata getMetadata();
-
-	LocalDateTime getGyldigFraOgMed();
+	default LocalDateTime getGyldigFraOgMedOrSisteEndring() {
+		return nonNull(getGyldigFraOgMed()) ? getGyldigFraOgMed() : getMetadata().getDatoForSisteEndring();
+	}
 }
