@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN;
-import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -52,7 +51,6 @@ public class AzureTokenConsumer {
 
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
-	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN, key = "#token.subject")
 	public String getOnBehalfOfToken(String scope, JwtToken token) {
 		// Caches på #token.subject som er "sub" claim i JWT. Skal være trygt å cache på denne key på tvers av app/scopes
 		// https://learn.microsoft.com/en-us/azure/active-directory/develop/access-tokens#payload-claims
@@ -98,7 +96,7 @@ public class AzureTokenConsumer {
 					error);
 		} else {
 			throw new AzureTokenException(
-					String.format("Kall mot Azure feilet med feilmelding=%s, responseBody=%s", error.getMessage()),
+					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
 					error);
 		}
 	}
