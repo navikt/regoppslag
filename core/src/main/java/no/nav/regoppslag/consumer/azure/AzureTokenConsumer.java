@@ -51,6 +51,7 @@ public class AzureTokenConsumer {
 
 	@Retry(name = AZURE_TOKEN_INSTANCE)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
+	//@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN, key = "#token.subject")
 	public String getOnBehalfOfToken(String scope, JwtToken token) {
 		// Caches på #token.subject som er "sub" claim i JWT. Skal være trygt å cache på denne key på tvers av app/scopes
 		// https://learn.microsoft.com/en-us/azure/active-directory/develop/access-tokens#payload-claims
@@ -96,8 +97,7 @@ public class AzureTokenConsumer {
 					error);
 		} else {
 			throw new AzureTokenException(
-					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
-					error);
+					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()), error);
 		}
 	}
 }
