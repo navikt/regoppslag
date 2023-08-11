@@ -28,12 +28,14 @@ public class CacheConfig extends CachingConfigurerSupport {
 	public static final String HENT_BRUKER_NAVN = "hentBrukerNavn";
 	public static final String HENT_DOKMET_SPRAAKINFO = "hentDokumenttypeInfoSpraak";
 	public static final String AZURE_CLIENT_CREDENTIAL_TOKEN = "AzureClientCredentialToken";
+	public static final String AZURE_ON_BEHALF_OF_TOKEN = "AzureOnBehalfOfToken";
 
 	static final Duration DEFAULT_CACHE_EXPIRATION_TIME = Duration.ofDays(1L);
 	static final Duration HENT_NAVN_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration HENT_PERSON_CACHE_EXPIRATION_TIME = Duration.ofSeconds(30L);
 	static final Duration STS_CACHE_EXPIRATION_TIME = Duration.ofMinutes(50L);
 	static final Duration AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(50L);
+	static final Duration AZURE_ON_BEHALF_OF_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(20L);
 
 	@Bean
 	public CacheManager inMemoryCacheManager() {
@@ -69,6 +71,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(AZURE_CLIENT_CREDENTIAL_TOKEN_EXPIRATION_TIME)
+						.recordStats()
+						.build()),
+				new CaffeineCache(AZURE_ON_BEHALF_OF_TOKEN, Caffeine.newBuilder()
+						.expireAfterWrite(AZURE_ON_BEHALF_OF_TOKEN_EXPIRATION_TIME)
+						.maximumSize(1000L)
 						.recordStats()
 						.build())));
 		return cacheManager;

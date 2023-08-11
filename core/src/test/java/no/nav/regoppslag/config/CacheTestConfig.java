@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN;
+import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ENHET_KONTAKTINFO;
@@ -63,7 +64,11 @@ public class CacheTestConfig {
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_TOKEN, Caffeine.newBuilder()
 						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
-						.build())));
+						.build()),
+				new CaffeineCache(AZURE_ON_BEHALF_OF_TOKEN, Caffeine.newBuilder()
+						.expireAfterWrite(DEFAULT_CACHE_EXPIRATION_TIME)
+						.build())
+		));
 		return cacheManager;
 
 	}
