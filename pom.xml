@@ -28,7 +28,7 @@
 
 		<resilience4j.version>2.1.0</resilience4j.version>
 		<rxjava.version>3.1.6</rxjava.version>
-		<microsoft-graph.version>5.64.0</microsoft-graph.version>
+		<microsoft-graph.version>5.67.0</microsoft-graph.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
