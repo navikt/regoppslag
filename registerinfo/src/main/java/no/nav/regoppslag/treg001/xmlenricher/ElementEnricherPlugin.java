@@ -25,11 +25,7 @@ public interface ElementEnricherPlugin {
 	 *
 	 * @param content        is a complex element node of some specific type.
 	 *                       Element must contain a key subelement to be used for lookup of registry data.
-	 * @param dokumentTypeId is the DokumentType for the content to be produced.
 	 * @return Element of the same type as the input, but enriched with registry data.
-	 * @throws InvalidElementException            if element is not of correct type
-	 * @throws MissingKeyValueException           if lookup key subelement is empty or missing
-	 * @throws RegistryServiceFunctionalException if the registry data lookupservice fails with a functional exception. Exception cause will contain the root exception.
 	 * @NOTE If the element is already pre-populated, this method should not attempt to overwrite existing contents.
 	 */
 	Node processElement(Node content, Map<String, Object> propertyMap, String tema) throws RegOppslagSecurityException;
