@@ -87,15 +87,15 @@ public class Norg2Mapper {
 
 		if (nonNull(adresse) && STEDSADRESSE.equals(adresse.getType())) {
 			return getNorskPostadresse(postadresse, adresse.getGatenavn(), adresse.getHusnummer(), adresse.getHusbokstav(),
-					adresse.getPostnummer(), adresse.getPoststed(), adresse);
+					adresse.getPostnummer(), adresse.getPoststed());
 		} else if (nonNull(besoeksadresse)) {
 			return getNorskPostadresse(postadresse, besoeksadresse.getGatenavn(), besoeksadresse.getHusnummer(),
-					besoeksadresse.getHusbokstav(), besoeksadresse.getPostnummer(), besoeksadresse.getPoststed(), adresse);
+					besoeksadresse.getHusbokstav(), besoeksadresse.getPostnummer(), besoeksadresse.getPoststed());
 		}
 		return null;
 	}
 
-	private NorskPostadresse getNorskPostadresse(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav, String postnummer, String poststed, Adresse adresse) {
+	private NorskPostadresse getNorskPostadresse(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav, String postnummer, String poststed) {
 		postadresse.setAdresselinje1(ofNullable(gatenavn)
 				.orElse("") + " " + ofNullable(husnummer).orElse("") + ofNullable(husbokstav).orElse(""));
 		if (isNotBlank(postnummer)) {
