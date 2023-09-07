@@ -84,7 +84,7 @@ public class MapPDLResponse {
 			if (bostedsadresseOptional.isPresent()) {
 				if (bostedsadresse.getGyldigFraOgMedOrSisteEndring() != null) {
 					bostedsadresseGyldigFraOgMedOrSisteEndring = bostedsadresse.getGyldigFraOgMedOrSisteEndring();
-					erBostedsadresseGyldigMedDatoFra = true;
+					erBostedsadresseGyldigMedDatoFra = bostedsadresseOptional.get().getPostadresse().getAdresseType().equalsIgnoreCase("utland");
 					debugLog += generateDebugLog(BOSTEDSADRESSE.name(), bostedsadresse.getGyldigFraOgMed());
 				}
 			}
