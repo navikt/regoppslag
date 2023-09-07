@@ -200,24 +200,6 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldMapFromBostedsadresseWhenNewerThanOppholdsadresse() {
-		postPdlGraphql(OK.value(), "pdl/Oppholdsadresse_new_bostedsadresse.json");
-
-		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
-
-		assertEquals(PERSON_IDENT, response.getIdentifikator());
-		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
-		assertEquals(FULLT_NAVN2, response.getNavn());
-		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
-		assertNull(response.getAdresse().getAdresselinje2());
-		assertNull(response.getAdresse().getAdresselinje3());
-		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
-		assertEquals(POSTSTED, response.getAdresse().getPoststed());
-
-		verify(1, postRequestedFor(urlMatching("/graphql")));
-	}
-
-	@Test
 	public void shouldGetMottakerAndAdresseFraBostedsadresseWhenPostnummerInKontaktadresseIsNull() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postnummer.json");
 
@@ -236,19 +218,19 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldMapFromBostedsadresseWhenNewerThanKontaktadresse() {
+	public void shouldNotMapFromNorwegianBostedsadresseWhenNewerThanKontaktadresse() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_new_bostedadresse.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
 		assertEquals(PERSON_IDENT, response.getIdentifikator());
-		assertEquals(ADRESSENAVN_1, response.getAdresse().getAdresselinje1());
+		assertEquals(UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje1());
 		assertEquals(FULLT_NAVN2, response.getNavn());
-		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());
-		assertNull(response.getAdresse().getAdresselinje2());
-		assertNull(response.getAdresse().getAdresselinje3());
-		assertEquals(POSTNUMMER, response.getAdresse().getPostnummer());
-		assertEquals(POSTSTED, response.getAdresse().getPoststed());
+		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
+		assertEquals(UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje2());
+		assertEquals(UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
+		assertNull(response.getAdresse().getPostnummer());
+		assertNull(response.getAdresse().getPoststed());
 
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 	}

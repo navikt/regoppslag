@@ -1,0 +1,104 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 1975,
+          "foedselsdato": "1975-01-01"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BETJENT BJARNE"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2022-09-20T15:36:18",
+          "gyldigTilOgMed": null,
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": {
+            "postbokseier": null,
+            "postboks": "001",
+            "postnummer": "0306"
+          },
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "7d6eb85d-2a1f-4b3e-be82-31b51f7b9c06",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-09-20T15:36:22",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "2023-04-14",
+          "gyldigFraOgMed": "2023-04-14T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "1",
+            "husbokstav": "A",
+            "bruksenhetsnummer": "H0101",
+            "adressenavn": "Brumunddalsvegen",
+            "kommunenummer": "3411",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "2382"
+          },
+          "utenlandskAdresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "7f28937d-6bcd-4cab-8e75-632ed1ca2ae9",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2023-04-14T14:54:14"
+              }
+            ]
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

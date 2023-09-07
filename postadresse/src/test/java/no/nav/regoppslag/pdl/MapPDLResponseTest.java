@@ -2,6 +2,7 @@ package no.nav.regoppslag.pdl;
 
 import lombok.SneakyThrows;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
@@ -19,13 +20,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.util.Collections.singletonList;
@@ -77,6 +80,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVega
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
+import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskBostedsAdresseWithAntallDager;
 import static no.nav.regoppslag.util.PDLResponseUtil.createVegadresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -574,48 +578,98 @@ public class MapPDLResponseTest {
 		assertEquals(POSTSTED, response.getPoststed());
 	}
 
-	@ParameterizedTest
-	@CsvSource(value = {
-			"1, 1, 2, 2, BOSTEDSADRESSE",
-			"null, 1, 3, 3, BOSTEDSADRESSE",
-			"2, 1, 2, 2, KONTAKTADRESSE",
-			"2, 2, null, 1, KONTAKTADRESSE",
-			"null, 3, 2, 2, KONTAKTADRESSE",
-			"null, 3, null, 2, KONTAKTADRESSE"
-	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(String bostedsadresseAlder, String bostedsadresseSisteEndring, String kontaktadresseAlder, String kontaktadresseSisteEndring, String adresseKilde) {
-		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndKontaktadresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseAlder, bostedsadresseSisteEndring),
-				createKontaktAdresseWithAntallDager(kontaktadresseAlder, kontaktadresseSisteEndring)
+	static Stream<Arguments> shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse() {
+		return Stream.of(
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(1, 1),
+						createKontaktAdresseWithAntallDager(2, 2)
+				), KONTAKTADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(null, 1),
+						createKontaktAdresseWithAntallDager(3, 3)
+				), KONTAKTADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createUtenlandskBostedsAdresseWithAntallDager(1, 1),
+						createKontaktAdresseWithAntallDager(2, 2)
+				), BOSTEDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createUtenlandskBostedsAdresseWithAntallDager(null, 1),
+						createKontaktAdresseWithAntallDager(3, 3)
+				), BOSTEDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(2, 1),
+						createKontaktAdresseWithAntallDager(2, 2)
+				), KONTAKTADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(2, 2),
+						createKontaktAdresseWithAntallDager(null, 1)
+				), KONTAKTADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(null, 3),
+						createKontaktAdresseWithAntallDager(2, 2)
+				), KONTAKTADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndKontaktadresse(
+						createBostedsAdresseWithAntallDager(null, 3),
+						createKontaktAdresseWithAntallDager(null, 2)
+				), KONTAKTADRESSE)
 		);
-
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
-
-		PostadresseTo response = mottakerInfo.getPostadresse();
-
-		assertEquals(adresseKilde, response.getAdressekilde().name());
 	}
 
-
 	@ParameterizedTest
-	@CsvSource(value = {
-			"1, 1, 2, 2, BOSTEDSADRESSE",
-			"null, 1, 2, 2, BOSTEDSADRESSE",
-			"2, 1, 2, 2, OPPHOLDSADRESSE",
-			"2, 2, null, 1, OPPHOLDSADRESSE",
-			"null, 3, 2, 2, OPPHOLDSADRESSE",
-			"null, 3, null, 2, OPPHOLDSADRESSE"
-	}, nullValues={"null"})
-	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(String bostedsadresseAlder, String bostedsadresseSisteEndring, String oppholdsadresseAlder, String oppholdsadresseSisteEndring, String adresseKilde) {
-		HentPerson hentPerson = createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-				createBostedsAdresseWithAntallDager(bostedsadresseAlder, bostedsadresseSisteEndring),
-				createOppholdsAdresseWithAntallDager(oppholdsadresseAlder, oppholdsadresseSisteEndring));
-
+	@MethodSource
+	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(adresseKilde, response.getAdressekilde().name());
+		assertEquals(adresseKilde, response.getAdressekilde());
+	}
+
+	static Stream<Arguments> shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse() {
+		return Stream.of(
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(1, 1),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), OPPHOLDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(null, 1),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), OPPHOLDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createUtenlandskBostedsAdresseWithAntallDager(1, 1),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), BOSTEDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createUtenlandskBostedsAdresseWithAntallDager(null, 1),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), BOSTEDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(2, 1),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), OPPHOLDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(2, 2),
+								createOppholdsAdresseWithAntallDager(null, 1)
+						), OPPHOLDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(null, 3),
+								createOppholdsAdresseWithAntallDager(2, 2)
+						), OPPHOLDSADRESSE),
+				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
+								createBostedsAdresseWithAntallDager(null, 3),
+								createOppholdsAdresseWithAntallDager(null, 2)
+						), OPPHOLDSADRESSE)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null, TEMA);
+
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(adresseKilde, response.getAdressekilde());
 	}
 
 }

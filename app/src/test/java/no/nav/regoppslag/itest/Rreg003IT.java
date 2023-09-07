@@ -19,8 +19,12 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
+import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -100,6 +104,8 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
 
 		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(BOSTEDSADRESSE);
 		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("ALLEE DE NARCASTET");
 		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("LOTISSEMENT NARCASTET");
 		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("60000 NARCASTET");
@@ -107,6 +113,25 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getPoststed()).isNull();
 		assertThat(actualAdresse.getLandkode()).isEqualTo("FR");
 		assertThat(actualAdresse.getLand()).isEqualTo("FRANKRIKE");
+	}
+
+	@Test
+	public void shouldChooseKontaktadresseOverBostedsadresseDespiteNewerGyldigFraOgMed() {
+		postPdlGraphql(OK.value(), "pdl/kontaktadresse_registrert_foer_bostedsadresse.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(NORSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualToIgnoringCase("Postboks 001");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("0306");
+		assertThat(actualAdresse.getPoststed()).isEqualToIgnoringCase("OSLO");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
 	}
 
 	@Test
