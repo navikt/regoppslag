@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import no.nav.regoppslag.config.AppVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,7 +18,7 @@ public class SpringDoc {
 	public static final String jwtTokenInfo = "<p>Denne tjenesten krever STS token som authorization header.</p>";
 
 	@Bean
-	public OpenAPI api(AppVersion appVersion) {
+	public OpenAPI api() {
 		return new OpenAPI().info(new Info()
 						.title("Regoppslag APIer")
 						.version("1.0.0")

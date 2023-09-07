@@ -8,5 +8,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
     uses: navikt/dok-workflows/.github/workflows/build-deploy-main.yml@main
     secrets: inherit
