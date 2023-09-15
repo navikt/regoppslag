@@ -21,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
@@ -135,6 +136,25 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldChooseNorskBostedsadresseWhenKontaktadresseHasExpired() {
+		postPdlGraphql(OK.value(), "pdl/norsk_bosattadresse_kontaktadresse_gyldigTilOgMed_passert.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE B. TJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(NORSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(BOSTEDSADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualToIgnoringCase("Finnesveien 45B");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualToIgnoringCase("FANNREM");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+	}
+
+	@Test
 	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
@@ -224,7 +244,7 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(response.getNavn()).isEqualTo("BJARNE BETJENT");
 
 		Adresse actualAdresse = response.getAdresse();
-		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("KONTAKTADRESSE");
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
 		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Polengata 1");
 		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("01-001 LODZ");
 		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("POLEN");
@@ -243,7 +263,7 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(response.getNavn()).isEqualTo("AREMARK TESTFAMILIEN");
 
 		Adresse actualAdresse = response.getAdresse();
-		assertThat(actualAdresse.getAdresseKilde().name()).isEqualTo("OPPHOLDSADRESSE");
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(OPPHOLDSADRESSE);
 		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("1KOLEJOWA 6/5");
 		assertThat(actualAdresse.getAdresselinje2()).isNull();
 		assertThat(actualAdresse.getAdresselinje3()).isNull();

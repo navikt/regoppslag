@@ -20,7 +20,7 @@
       "kontaktadresse": [
         {
           "gyldigFraOgMed": "2022-05-25T00:00",
-          "gyldigTilOgMed": "2023-05-25T23:59:59",
+          "gyldigTilOgMed": null,
           "type": "Utland",
           "coAdressenavn": "Herr Andersen",
           "postboksadresse": null,
@@ -53,7 +53,7 @@
         },
         {
           "gyldigFraOgMed": "2022-02-03T15:25:51",
-          "gyldigTilOgMed": null,
+          "gyldigTilOgMed": "2023-05-25T23:59:59",
           "type": "Utland",
           "coAdressenavn": null,
           "postboksadresse": null,

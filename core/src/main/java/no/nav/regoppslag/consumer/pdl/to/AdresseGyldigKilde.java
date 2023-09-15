@@ -6,6 +6,7 @@ import static java.util.Objects.nonNull;
 
 public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 	LocalDateTime getGyldigFraOgMed();
+	LocalDateTime getGyldigTilOgMed();
 
 	Metadata getMetadata();
 
@@ -13,14 +14,14 @@ public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 		if (getMetadata() == null) {
 			return false;
 		}
-		return getMetadata().isKildePdl();
+		return getMetadata().isKildePdl() && isNotExpired();
 	}
 
 	default boolean isGyldigFregKilde() {
 		if (getMetadata() == null) {
 			return false;
 		}
-		return getMetadata().isKildeFreg();
+		return getMetadata().isKildeFreg() && isNotExpired();
 	}
 
 	@Override
@@ -29,10 +30,15 @@ public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 			return 0;
 		}
 
-		return getGyldigFraOgMed().compareTo(o.getGyldigFraOgMed());
+		return getGyldigFraOgMedOrSisteEndring().compareTo(o.getGyldigFraOgMedOrSisteEndring());
 	}
 
 	default LocalDateTime getGyldigFraOgMedOrSisteEndring() {
 		return nonNull(getGyldigFraOgMed()) ? getGyldigFraOgMed() : getMetadata().getDatoForSisteEndring();
 	}
+
+	default boolean isNotExpired() {
+		return getGyldigTilOgMed() == null || LocalDateTime.now().isBefore(getGyldigTilOgMed());
+	}
+
 }

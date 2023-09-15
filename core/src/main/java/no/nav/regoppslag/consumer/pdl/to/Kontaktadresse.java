@@ -30,7 +30,7 @@ public class Kontaktadresse implements AdresseGyldigKilde {
 			return metadata.isKildeFreg();
 		}
 
-		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg();
+		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg() && isNotExpired();
 	}
 
 	@Data

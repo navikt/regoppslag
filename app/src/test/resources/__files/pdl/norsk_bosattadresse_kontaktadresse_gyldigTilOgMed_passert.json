@@ -1,0 +1,232 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "foedsel": [
+        {
+          "foedselsaar": 2017,
+          "foedselsdato": "2017-02-04"
+        }
+      ],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": "B.",
+          "etternavn": "TJENT",
+          "forkortetNavn": "TJENT BJARNE B."
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2017-08-31T00:00",
+          "gyldigTilOgMed": "2023-08-03T00:00",
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "ALLEE DE NARCASTET",
+            "adresselinje2": "LOTISSEMENT NARCASTET",
+            "adresselinje3": null,
+            "postkode": "60000",
+            "byEllerStedsnavn": "NARCASTET",
+            "landkode": "FRA"
+          },
+          "metadata": {
+            "opplysningsId": "2345037e-61c4-4625-afe5-37c16d9ad8d5",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-04T20:49",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2020-12-21T06:28:11",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF"
+              }
+            ],
+            "historisk": false
+          }
+        },
+        {
+          "gyldigFraOgMed": "2022-12-09T00:00",
+          "gyldigTilOgMed": "2023-08-29T23:59:59",
+          "type": "Utland",
+          "coAdressenavn": "",
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "ALL. D. NARCASTET",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "",
+            "bySted": "NARCASTET 60000",
+            "regionDistriktOmraade": "",
+            "landkode": "FRA"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "a73b90fa-17a4-4327-9f8f-709abce921cf",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-12-09T13:29:47",
+                "registrertAv": "O114633",
+                "systemkilde": "pdl-web",
+                "kilde": "Bruker selv"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "04021798342",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": "2017-02-04T00:00:00",
+          "gyldigTilOgMed": "2017-08-31T00:00:00",
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "45",
+            "husbokstav": "B",
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "tilleggsnavn": null,
+            "postnummer": "7320",
+            "bydelsnummer": null,
+            "koordinater": null
+          },
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": null,
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2021-09-17T20:31:18.871",
+            "gyldighetstidspunkt": "2017-02-04T00:00:00",
+            "opphoerstidspunkt": "2017-08-31T00:00:00",
+            "kilde": "KILDE_DSF",
+            "aarsak": "Fødsel",
+            "sekvens": {
+              "$numberInt": "0"
+            }
+          },
+          "metadata": {
+            "opplysningsId": "81dea66a-4afd-4387-ac2c-dc6f27b6a725",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-04T20:49:00.725",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "1598bc0d-c3ae-482f-849c-a74f2293cd4d"
+              },
+              {
+                "type": "OPPHOER",
+                "registrert": "2020-12-21T06:28:11.434",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "94ad0061-0f4f-4c7d-bff6-383c67a630ca"
+              },
+              {
+                "type": "OPPHOER",
+                "registrert": "2021-09-17T20:31:39.859",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "81dea66a-4afd-4387-ac2c-dc6f27b6a725"
+              }
+            ],
+            "historisk": true
+          }
+        },
+        {
+          "angittFlyttedato": "2023-08-01",
+          "gyldigFraOgMed": "2023-08-03T00:00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "husnummer": "45",
+            "husbokstav": "B",
+            "bruksenhetsnummer": "H0101",
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "tilleggsnavn": null,
+            "postnummer": "7320",
+            "bydelsnummer": null
+          },
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": null,
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2023-08-04T10:20:35.325",
+            "gyldighetstidspunkt": "2023-08-03T00:00:00",
+            "opphoerstidspunkt": null,
+            "kilde": "folkeregistermyndigheten",
+            "aarsak": "Innflytting",
+            "sekvens": null
+          },
+          "metadata": {
+            "opplysningsId": "f3bc246b-7168-4256-86f0-1b6a35a7dbb1",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2023-08-04T10:20:45.642",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "folkeregistermyndigheten",
+                "hendelseId": "f3bc246b-7168-4256-86f0-1b6a35a7dbb1"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "warnings": [
+      {
+        "query": "hentPerson",
+        "id": "tilgangsstyring",
+        "code": "behandlingsnummer_header_missing",
+        "message": "header for 'behandlingsnummer' mangler",
+        "details": null
+      }
+    ]
+  }
+}

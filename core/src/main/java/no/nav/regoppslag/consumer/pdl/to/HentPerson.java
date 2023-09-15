@@ -9,6 +9,8 @@ import lombok.ToString;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -235,7 +237,9 @@ public class HentPerson {
 		}
 		return bostedsadresse.stream()
 				.filter(Objects::nonNull)
-				.findAny().orElse(null);
+				.filter(Bostedsadresse::isNotExpired)
+				.findAny()
+				.orElse(null);
 	}
 
 	public String getFolkeregistermetadataKilde() {
