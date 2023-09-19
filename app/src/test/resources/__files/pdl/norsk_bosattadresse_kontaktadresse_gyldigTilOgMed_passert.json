@@ -19,8 +19,8 @@
       ],
       "kontaktadresse": [
         {
-          "gyldigFraOgMed": "2017-08-31T00:00",
-          "gyldigTilOgMed": "2023-08-03T00:00",
+          "gyldigFraOgMed": "2017-08-31T00:00:00",
+          "gyldigTilOgMed": "2023-08-03T00:00:00",
           "type": "Utland",
           "coAdressenavn": null,
           "postboksadresse": null,
@@ -35,31 +35,51 @@
             "byEllerStedsnavn": "NARCASTET",
             "landkode": "FRA"
           },
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2023-08-04T10:20:35.325",
+            "gyldighetstidspunkt": "2017-08-31T00:00:00",
+            "opphoerstidspunkt": "2023-08-03T00:00:00",
+            "kilde": "KILDE_DSF",
+            "aarsak": null,
+            "sekvens": {
+              "$numberInt": "0"
+            }
+          },
           "metadata": {
-            "opplysningsId": "2345037e-61c4-4625-afe5-37c16d9ad8d5",
-            "master": "Freg",
+            "opplysningsId": "cd07ec31-65fa-4c15-aca0-7ffe7439ff8c",
+            "master": "FREG",
             "endringer": [
               {
                 "type": "OPPRETT",
-                "registrert": "2020-04-04T20:49",
+                "registrert": "2020-04-04T20:49:00.725",
                 "registrertAv": "Folkeregisteret",
                 "systemkilde": "FREG",
-                "kilde": "KILDE_DSF"
+                "kilde": "KILDE_DSF",
+                "hendelseId": "0d0001f7-0540-4832-81f7-260466881871"
               },
               {
                 "type": "KORRIGER",
-                "registrert": "2020-12-21T06:28:11",
+                "registrert": "2020-12-21T06:28:11.435",
                 "registrertAv": "Folkeregisteret",
                 "systemkilde": "FREG",
-                "kilde": "KILDE_DSF"
+                "kilde": "KILDE_DSF",
+                "hendelseId": "2345037e-61c4-4625-afe5-37c16d9ad8d5"
+              },
+              {
+                "type": "OPPHOER",
+                "registrert": "2023-08-04T10:20:45.607",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "KILDE_DSF",
+                "hendelseId": "cd07ec31-65fa-4c15-aca0-7ffe7439ff8c"
               }
             ],
-            "historisk": false
+            "historisk": true
           }
         },
         {
-          "gyldigFraOgMed": "2022-12-09T00:00",
-          "gyldigTilOgMed": "2023-08-29T23:59:59",
+          "gyldigFraOgMed": "2022-12-09T00:00:00",
+          "gyldigTilOgMed": "2023-08-29T23:59:59.999",
           "type": "Utland",
           "coAdressenavn": "",
           "postboksadresse": null,
@@ -75,19 +95,29 @@
             "landkode": "FRA"
           },
           "utenlandskAdresseIFrittFormat": null,
+          "folkeregistermetadata": null,
           "metadata": {
-            "opplysningsId": "a73b90fa-17a4-4327-9f8f-709abce921cf",
+            "opplysningsId": "6b408a08-ba8b-4d40-bd9e-ea932297a72b",
             "master": "PDL",
             "endringer": [
               {
                 "type": "OPPRETT",
-                "registrert": "2022-12-09T13:29:47",
+                "registrert": "2022-12-09T13:29:47.827",
                 "registrertAv": "O114633",
                 "systemkilde": "pdl-web",
-                "kilde": "Bruker selv"
+                "kilde": "Bruker selv",
+                "hendelseId": "a73b90fa-17a4-4327-9f8f-709abce921cf"
+              },
+              {
+                "type": "OPPHOER",
+                "registrert": "2023-08-30T13:14:23.853",
+                "registrertAv": "R124100",
+                "systemkilde": "pdl-web",
+                "kilde": "Bruker selv",
+                "hendelseId": "6b408a08-ba8b-4d40-bd9e-ea932297a72b"
               }
             ],
-            "historisk": false
+            "historisk": true
           }
         }
       ],
@@ -96,7 +126,7 @@
       "sikkerhetstiltak": [],
       "folkeregisteridentifikator": [
         {
-          "identifikasjonsnummer": "04021798342",
+          "identifikasjonsnummer": "04021701234",
           "type": "FNR",
           "status": "I_BRUK"
         }
@@ -159,6 +189,39 @@
                 "systemkilde": "FREG",
                 "kilde": "KILDE_DSF",
                 "hendelseId": "81dea66a-4afd-4387-ac2c-dc6f27b6a725"
+              }
+            ],
+            "historisk": true
+          }
+        },
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "",
+          "vegadresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "ALL D. NARC.",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "",
+            "bySted": "NARCASTET GRAND VILLE",
+            "regionDistriktOmraade": "",
+            "landkode": "FRA"
+          },
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "a349e690-cb6a-4906-a248-d11f171c71e4",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-12-09T13:30:12.389",
+                "registrertAv": "O114633",
+                "systemkilde": "pdl-web",
+                "kilde": "PARENTS, LA FRANCE",
+                "hendelseId": "a349e690-cb6a-4906-a248-d11f171c71e4"
               }
             ],
             "historisk": true

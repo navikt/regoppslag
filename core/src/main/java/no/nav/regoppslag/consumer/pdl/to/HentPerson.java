@@ -231,14 +231,15 @@ public class HentPerson {
 				PERSONSTATUS_DOED.equals(this.getFolkeregisterstatus());
 	}
 
-	public Bostedsadresse getBostedsadresse() {
+	public Bostedsadresse getBostedsadresse(LocalDateTime now) {
 		if (bostedsadresse == null) {
 			return null;
 		}
 		return bostedsadresse.stream()
 				.filter(Objects::nonNull)
 				.filter(Bostedsadresse::isNotExpired)
-				.findAny()
+				.sorted(Comparator.reverseOrder())
+				.findFirst()
 				.orElse(null);
 	}
 

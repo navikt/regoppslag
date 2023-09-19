@@ -21,7 +21,7 @@ public class Kontaktadresse implements AdresseGyldigKilde {
 	private Metadata metadata;
 
 	@Override
-	public boolean isGyldigFregKilde() {
+	public boolean isGyldigFregKilde(LocalDateTime atTime) {
 		if (gyldigFraOgMed == null && metadata == null) {
 			return false;
 		}
@@ -30,7 +30,7 @@ public class Kontaktadresse implements AdresseGyldigKilde {
 			return metadata.isKildeFreg();
 		}
 
-		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg() && isNotExpired();
+		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg() && isNotExpired(atTime);
 	}
 
 	@Data
