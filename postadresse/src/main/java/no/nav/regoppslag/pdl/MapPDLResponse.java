@@ -16,6 +16,7 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -59,11 +60,13 @@ public class MapPDLResponse {
 
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
+	private final Clock clock;
 
 	public MapPDLResponse(DoedsboAdresseService doedsboAdresseService,
-						  NorskAdresseService norskAdresseService) {
+						  NorskAdresseService norskAdresseService, Clock clock) {
 		this.doedsboAdresseService = doedsboAdresseService;
 		this.norskAdresseService = norskAdresseService;
+		this.clock = clock;
 	}
 
 	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode, String tema) {
@@ -73,9 +76,10 @@ public class MapPDLResponse {
 		}
 
 		String debugLog = "";
+		LocalDateTime now = LocalDateTime.now(clock);
 
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
-		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
+		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse(now);
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
 		boolean erBostedsadresseGyldigOgTypeUtland = false;
 		LocalDateTime bostedsadresseGyldigFraOgMedOrSisteEndring = null;
@@ -90,7 +94,7 @@ public class MapPDLResponse {
 			}
 		}
 
-		Optional<Kontaktadresse> kontaktadresseOptional = getBestFitGyldigAdresse(hentPerson.getKontaktadresse());
+		Optional<Kontaktadresse> kontaktadresseOptional = getBestFitGyldigAdresse(hentPerson.getKontaktadresse(), now);
 		// prøver å bruke kontaktadresse - regel 1 og 2
 		if (kontaktadresseOptional.isPresent()) {
 			Kontaktadresse kontaktadresse = kontaktadresseOptional.get();
@@ -111,7 +115,7 @@ public class MapPDLResponse {
 			}
 		}
 
-		Optional<Oppholdsadresse> oppholdsadresseOptional = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse());
+		Optional<Oppholdsadresse> oppholdsadresseOptional = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse(), now);
 		// prøver å bruke oppholdsadresse - regel 3 og 4
 		if (oppholdsadresseOptional.isPresent()) {
 			Oppholdsadresse oppholdsadresse = oppholdsadresseOptional.get();
@@ -165,16 +169,16 @@ public class MapPDLResponse {
 	}
 
 	// Implementerer regler 1,2 (eller 3 og 4)
-	private static <T extends AdresseGyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> adresse) {
+	private static <T extends AdresseGyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> adresse, LocalDateTime now) {
 		if (isNull(adresse)) {
 			return empty();
 		}
 		return adresse.stream()
 				// Regel 1. Kontaktadresse med master PDL
-				.filter(AdresseGyldigKilde::isGyldigPdlKilde)
+				.filter(adresseKandidat -> adresseKandidat.isGyldigPdlKilde(now))
 				.findFirst()
 				.or(() -> adresse.stream()
-						.filter(AdresseGyldigKilde::isGyldigFregKilde)
+						.filter(adresseKandidat -> adresseKandidat.isGyldigFregKilde(now))
 						// Regel 2. Kontaktadresse fra Freg med nyeste registreringsdato (det er mulig med to)
 						// Sorteres naturlig etter kontaktadresse.gyldigFraOgMed
 						.max(Comparator.naturalOrder()));

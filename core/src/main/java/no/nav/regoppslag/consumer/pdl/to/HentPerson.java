@@ -237,9 +237,8 @@ public class HentPerson {
 		}
 		return bostedsadresse.stream()
 				.filter(Objects::nonNull)
-				.filter(Bostedsadresse::isNotExpired)
-				.sorted(Comparator.reverseOrder())
-				.findFirst()
+				.filter(adresseKandidat -> adresseKandidat.isNotExpired(now))
+				.max(Comparator.naturalOrder())
 				.orElse(null);
 	}
 

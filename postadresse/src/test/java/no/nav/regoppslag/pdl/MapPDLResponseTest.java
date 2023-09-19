@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -112,7 +113,7 @@ public class MapPDLResponseTest {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 
 		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer));
-		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService));
+		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService), Clock.systemDefaultZone());
 	}
 
 	@Test

@@ -2,16 +2,21 @@ package no.nav.regoppslag.itest;
 
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseRequest;
 import no.nav.regoppslag.treg002.HentMottakerOgAdresseResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -60,6 +65,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
@@ -71,9 +77,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class Treg002MotPDLIT extends AbstractIT {
 
+	private static final Instant TIMECRITICAL_TESTDATA_ADDED_TIME = Instant.parse("2022-08-10T09:00:00.000Z");
 	private static final String TEMA = "PEN";
 	private static final String TYPE_PERSON = "PERSON";
 	private static final String TYPE_ORGANISASJON = "ORGANISASJON";
+
+	@MockBean
+	private Clock mockClock;
+
+	@BeforeEach
+	void setMockClock() {
+		when(mockClock.instant()).thenReturn(TIMECRITICAL_TESTDATA_ADDED_TIME);
+		when(mockClock.getZone()).thenReturn(ZoneId.systemDefault());
+	}
 
 	@Test
 	public void shouldGetMottakerAndAdresseForPersonWhenLandIsNull() {
