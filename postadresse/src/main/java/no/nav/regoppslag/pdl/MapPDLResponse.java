@@ -16,6 +16,7 @@ import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -59,11 +60,13 @@ public class MapPDLResponse {
 
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
+	private final Clock clock;
 
 	public MapPDLResponse(DoedsboAdresseService doedsboAdresseService,
-						  NorskAdresseService norskAdresseService) {
+						  NorskAdresseService norskAdresseService, Clock clock) {
 		this.doedsboAdresseService = doedsboAdresseService;
 		this.norskAdresseService = norskAdresseService;
+		this.clock = clock;
 	}
 
 	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode, String tema) {
@@ -73,31 +76,32 @@ public class MapPDLResponse {
 		}
 
 		String debugLog = "";
+		LocalDateTime now = LocalDateTime.now(clock);
 
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
-		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse();
+		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse(now);
 		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
-		boolean erBostedsadresseGyldigMedDatoFra = false;
+		boolean erBostedsadresseGyldigOgTypeUtland = false;
 		LocalDateTime bostedsadresseGyldigFraOgMedOrSisteEndring = null;
 		if (nonNull(bostedsadresse)) {
 			bostedsadresseOptional = safeMapBostedsAdresse(hentPerson, serviceCode, bostedsadresse);
 			if (bostedsadresseOptional.isPresent()) {
 				if (bostedsadresse.getGyldigFraOgMedOrSisteEndring() != null) {
 					bostedsadresseGyldigFraOgMedOrSisteEndring = bostedsadresse.getGyldigFraOgMedOrSisteEndring();
-					erBostedsadresseGyldigMedDatoFra = bostedsadresseOptional.get().getPostadresse().getAdresseType().equalsIgnoreCase("utland");
+					erBostedsadresseGyldigOgTypeUtland = bostedsadresseOptional.get().getPostadresse().getAdresseType().equalsIgnoreCase("utland");
 					debugLog += generateDebugLog(BOSTEDSADRESSE.name(), bostedsadresse.getGyldigFraOgMed());
 				}
 			}
 		}
 
-		Optional<Kontaktadresse> kontaktadresseOptional = getBestFitGyldigAdresse(hentPerson.getKontaktadresse());
+		Optional<Kontaktadresse> kontaktadresseOptional = getBestFitGyldigAdresse(hentPerson.getKontaktadresse(), now);
 		// prøver å bruke kontaktadresse - regel 1 og 2
 		if (kontaktadresseOptional.isPresent()) {
 			Kontaktadresse kontaktadresse = kontaktadresseOptional.get();
 			Optional<PdlMottakerInfo> mottakerFraKontaktAdresse = mapKontaktadresse(hentPerson, kontaktadresse);
 			if (mottakerFraKontaktAdresse.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
-				if (erBostedsadresseGyldigMedDatoFra &&
+				if (erBostedsadresseGyldigOgTypeUtland &&
 						kontaktadresse.getGyldigFraOgMedOrSisteEndring() != null &&
 						bostedsadresseGyldigFraOgMedOrSisteEndring.isAfter(kontaktadresse.getGyldigFraOgMedOrSisteEndring())) {
 					generateAndLogDebugLog(KONTAKTADRESSE.name(), kontaktadresse.getGyldigFraOgMed(), debugLog, BOSTEDSADRESSE.name());
@@ -111,14 +115,14 @@ public class MapPDLResponse {
 			}
 		}
 
-		Optional<Oppholdsadresse> oppholdsadresseOptional = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse());
+		Optional<Oppholdsadresse> oppholdsadresseOptional = getBestFitGyldigAdresse(hentPerson.getOppholdsadresse(), now);
 		// prøver å bruke oppholdsadresse - regel 3 og 4
 		if (oppholdsadresseOptional.isPresent()) {
 			Oppholdsadresse oppholdsadresse = oppholdsadresseOptional.get();
 			Optional<PdlMottakerInfo> mottakerFraOppholdsadresse = mapOppholdsadresse(hentPerson, serviceCode, oppholdsadresse);
 			if (mottakerFraOppholdsadresse.isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn oppholdsadresse
-				if (erBostedsadresseGyldigMedDatoFra &&
+				if (erBostedsadresseGyldigOgTypeUtland &&
 						oppholdsadresse.getGyldigFraOgMedOrSisteEndring() != null &&
 						bostedsadresseGyldigFraOgMedOrSisteEndring.isAfter(oppholdsadresse.getGyldigFraOgMedOrSisteEndring())) {
 					generateAndLogDebugLog(OPPHOLDSADRESSE.name(), oppholdsadresse.getGyldigFraOgMed(), debugLog, BOSTEDSADRESSE.name());
@@ -165,16 +169,16 @@ public class MapPDLResponse {
 	}
 
 	// Implementerer regler 1,2 (eller 3 og 4)
-	private static <T extends AdresseGyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> kontaktadresse) {
-		if (isNull(kontaktadresse)) {
+	private static <T extends AdresseGyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> adresse, LocalDateTime now) {
+		if (isNull(adresse)) {
 			return empty();
 		}
-		return kontaktadresse.stream()
+		return adresse.stream()
 				// Regel 1. Kontaktadresse med master PDL
-				.filter(AdresseGyldigKilde::isGyldigPdlKilde)
+				.filter(adresseKandidat -> adresseKandidat.isGyldigPdlKilde(now))
 				.findFirst()
-				.or(() -> kontaktadresse.stream()
-						.filter(AdresseGyldigKilde::isGyldigFregKilde)
+				.or(() -> adresse.stream()
+						.filter(adresseKandidat -> adresseKandidat.isGyldigFregKilde(now))
 						// Regel 2. Kontaktadresse fra Freg med nyeste registreringsdato (det er mulig med to)
 						// Sorteres naturlig etter kontaktadresse.gyldigFraOgMed
 						.max(Comparator.naturalOrder()));

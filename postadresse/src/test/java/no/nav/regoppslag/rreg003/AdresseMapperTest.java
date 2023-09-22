@@ -21,7 +21,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.Clock;
 
+import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETFORRETNINGSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETPOSTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
@@ -70,7 +72,7 @@ public class AdresseMapperTest {
 	public void setUp() throws IOException {
 		PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		LandkodeServiceNorsk landkodeServiceNorsk = new LandkodeServiceNorsk();
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService));
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
 		adresseMapper = new AdresseMapper(metrics, landkodeServiceNorsk);
 	}
 
