@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.util.Collections.singletonList;
+import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
@@ -113,7 +114,7 @@ public class MapPDLResponseTest {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 
 		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer));
-		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService), Clock.systemDefaultZone());
+		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
 	}
 
 	@Test

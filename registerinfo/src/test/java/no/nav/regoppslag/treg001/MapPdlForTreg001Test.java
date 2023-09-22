@@ -31,6 +31,7 @@ import java.util.Collections;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NB;
+import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
@@ -77,7 +78,7 @@ class MapPdlForTreg001Test {
 	public void setUp() throws IOException {
 		PostnummerService postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.systemDefaultZone());
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		eregConsumer = mock(EregConsumer.class);
