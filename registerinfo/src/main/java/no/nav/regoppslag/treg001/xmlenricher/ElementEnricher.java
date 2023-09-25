@@ -65,7 +65,7 @@ public class ElementEnricher {
 				log.warn("Kunne ikke fullføre flow, sannsynligvis pga tilgang til ressurs", e);
 				return;
 			}
-			if ((e instanceof IOException) || (e instanceof SocketException)) {
+			if (e instanceof IOException) {
 				// Nettverksproblem
 				return;
 			}

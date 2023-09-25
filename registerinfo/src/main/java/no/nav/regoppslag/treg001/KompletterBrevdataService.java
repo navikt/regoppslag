@@ -43,6 +43,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Service
 public class KompletterBrevdataService {
 
+	private static final String FEATURES_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
+
 	private final ElementEnricher elementEnricher;
 
 	@Autowired
@@ -52,6 +54,7 @@ public class KompletterBrevdataService {
 
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+		builderFactory.setFeature(FEATURES_DISALLOW_DOCTYPE_DECL, true);
 		builderFactory.setNamespaceAware(true);
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
 		StringReader str = new StringReader(xml);

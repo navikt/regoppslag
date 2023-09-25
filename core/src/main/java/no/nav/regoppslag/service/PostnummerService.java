@@ -34,8 +34,8 @@ public class PostnummerService {
 	}
 
 	void init() throws IOException {
-		try (InputStream in = getClass().getResourceAsStream(FILENAME)) {
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		try (InputStream in = getClass().getResourceAsStream(FILENAME);
+			 BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 
 			String line;
 			String csvSplitBy = "\t";

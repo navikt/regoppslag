@@ -107,7 +107,7 @@ public class NorskAdresseService {
 				.poststed(postnummerService.finnPoststed(postboksadresse.getPostnummer()))
 				.landkode(LANDKODE_NORGE);
 
-		if (isNotBlank(postboksadresse.getPostbokseier()) & isNotBlank(postboksadresse.getPostboks())) {
+		if (isNotBlank(postboksadresse.getPostbokseier()) && isNotBlank(postboksadresse.getPostboks())) {
 			return builder
 					.adresselinje1(CARE_OF + postboksadresse.getPostbokseier())
 					.adresselinje2(mapPostboks(postboksadresse.getPostboks()))
