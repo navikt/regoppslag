@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -53,9 +54,14 @@ public class EregConsumer {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(NAV_CALL_ID, getCallId());
 
+		var uri = UriComponentsBuilder.fromHttpUrl(eregUrl)
+				.path(organisasjonsNummer)
+				.build()
+				.toUri();
+
 		try {
 			HttpEntity<Object> httpEntity = new HttpEntity<>(headers);
-			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(this.eregUrl + organisasjonsNummer, GET, httpEntity, Organisasjon.class);
+			ResponseEntity<Organisasjon> organisasjonResponseEntity = this.restTemplate.exchange(uri, GET, httpEntity, Organisasjon.class);
 			return organisasjonResponseEntity.getBody();
 		} catch (HttpClientErrorException.NotFound e) {
 			throw new RegOppslagIkkeFunnetException("Fant ikke Organisasjon med organisasjonsnummer=" + organisasjonsNummer, e.getStatusCode());
