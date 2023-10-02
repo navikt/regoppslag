@@ -53,7 +53,6 @@ public class DoedsboAdresseService {
 				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 				.navn(hentPerson.getFulltnavn())
 				.kortNavn(hentPerson.getForkortetNavn())
-				.foedselsdato(hentPerson.getFoedselsdato())
 				.doedsdato(hentPerson.getDoedsdato().orElse(null))
 				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson), tema))
 				.build();

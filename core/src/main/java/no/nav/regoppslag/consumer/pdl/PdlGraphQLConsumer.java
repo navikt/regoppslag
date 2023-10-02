@@ -195,10 +195,6 @@ public class PdlGraphQLConsumer {
 			    doedsfall{
 			      doedsdato
 			    }
-			    foedsel{
-			      foedselsaar
-			      foedselsdato
-			    }
 			    navn(historikk: false){
 			      fornavn
 			      mellomnavn
@@ -348,10 +344,6 @@ public class PdlGraphQLConsumer {
 			        opplysningsId
 			        master
 			      }
-			    }
-			    sikkerhetstiltak{
-			      tiltakstype
-			      beskrivelse
 			    }
 			    folkeregisteridentifikator(historikk: false){
 			      identifikasjonsnummer

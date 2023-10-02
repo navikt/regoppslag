@@ -189,7 +189,6 @@ public class MapPDLResponse {
 				.map(postadresse -> PdlMottakerInfo.builder().identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 						.navn(hentPerson.getFulltnavn())
 						.kortNavn(hentPerson.getForkortetNavn())
-						.foedselsdato(hentPerson.getFoedselsdato())
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
 						.build());
@@ -208,7 +207,6 @@ public class MapPDLResponse {
 				.map(adresse -> PdlMottakerInfo.builder()
 						.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 						.navn(hentPerson.getFulltnavn())
-						.foedselsdato(hentPerson.getFoedselsdato())
 						.kortNavn(hentPerson.getForkortetNavn())
 						.postadresse(adresse)
 						.build());
@@ -221,7 +219,6 @@ public class MapPDLResponse {
 								.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 								.navn(hentPerson.getFulltnavn())
 								.kortNavn(hentPerson.getForkortetNavn())
-								.foedselsdato(hentPerson.getFoedselsdato())
 								.postadresse(adresse)
 								.build());
 	}

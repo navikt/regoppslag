@@ -74,7 +74,6 @@ class DoedsboAdresseServiceTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), TEMA);
 
-		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
 		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
 		assertEquals(V_ADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
