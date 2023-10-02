@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -14,9 +16,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class HentMottakerOgAdresseRequest {
 	
-	@Schema(example = "889640782", description = "Fnr eller org nr som brukes som oppslagsnøkkel mot TPS_WS eller Ereg.", required = true)
+	@Schema(example = "889640782", description = "Fnr eller org nr som brukes som oppslagsnøkkel mot TPS_WS eller Ereg.", requiredMode = REQUIRED)
 	private String identifikator;
-	@Schema(example = "ORGANISASJON", description = "Sier om identifikatoren er et fnr eller et orgnr. Gyldige verdier er PERSON og ORGANISASJON", required = true, allowableValues = "PERSON, ORGANISASJON")
+	@Schema(example = "ORGANISASJON", description = "Sier om identifikatoren er et fnr eller et orgnr. Gyldige verdier er PERSON og ORGANISASJON", requiredMode = REQUIRED, allowableValues = "PERSON, ORGANISASJON")
 	private String type;
 	@Schema(example = "FOR", description = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", allowableValues = "DAG, FOR, PEN, FRI ....")
 	private String tema;

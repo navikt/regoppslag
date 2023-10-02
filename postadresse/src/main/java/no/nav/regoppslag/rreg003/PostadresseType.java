@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum PostadresseType {
+
 	NORSKPOSTADRESSE("NorskPostadresse"),
 	UTENLANDSKPOSTADRESSE("UtenlandskPostadresse");
 
