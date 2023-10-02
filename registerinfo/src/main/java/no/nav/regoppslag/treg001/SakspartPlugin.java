@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
+import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -45,6 +46,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 						  EregConsumer eregConsumer,
 						  OrganisasjonEregMapper organisasjonEregMapper) {
 		super(Sakspart.class);
+
 		this.metrics = metrics;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.eregConsumer = eregConsumer;
@@ -68,7 +70,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			if (sakspart.isBerik()) {
 				validateMottaker(sakspart);
 
-				if (AktoerType.PERSON.equals(sakspart.getTypeKode())) {
+				if (PERSON.equals(sakspart.getTypeKode())) {
 					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
 					sakspart.setNavn(navn);
 

@@ -1,6 +1,5 @@
 package no.nav.regoppslag.pdl;
 
-
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
