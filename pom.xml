@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.15</version>
+		<version>2.7.16</version>
 	</parent>
 
 	<properties>
@@ -27,12 +27,12 @@
 		<argLine>-Dfile.encoding=UTF8</argLine>
 
 		<resilience4j.version>2.1.0</resilience4j.version>
-		<rxjava.version>3.1.7</rxjava.version>
-		<microsoft-graph.version>5.69.0</microsoft-graph.version>
+		<rxjava.version>3.1.8</rxjava.version>
+		<microsoft-graph.version>5.72.0</microsoft-graph.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
-		<token-support.version>2.1.4</token-support.version>
+		<token-support.version>2.1.9</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>13-5459a4f</dokmet-api.version>
