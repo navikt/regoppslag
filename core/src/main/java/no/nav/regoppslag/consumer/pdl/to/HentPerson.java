@@ -35,13 +35,11 @@ public class HentPerson {
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
 
 	private List<Adressebeskyttelse> adressebeskyttelse;
-	private List<Foedsel> foedsel;
 	private List<Doedsfall> doedsfall;
 	private List<PersonNavn> navn;
 	private List<Kontaktadresse> kontaktadresse;
 	private List<Oppholdsadresse> oppholdsadresse;
 	private List<Bostedsadresse> bostedsadresse;
-	private List<Sikkerhetstiltak> sikkerhetstiltak;
 	private List<Folkeregisteridentifikator> folkeregisteridentifikator;
 	private List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsbo;
 	private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
@@ -83,26 +81,6 @@ public class HentPerson {
 	@NoArgsConstructor
 	public static class Doedsfall {
 		private LocalDate doedsdato;
-	}
-
-	@Getter
-	@Setter
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Foedsel {
-		private int foedselsaar;
-		private LocalDate foedselsdato;
-	}
-
-	@Getter
-	@Setter
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Sikkerhetstiltak {
-		private String tiltakstype;
-		private String beskrivelse;
 	}
 
 	@Getter
@@ -189,14 +167,6 @@ public class HentPerson {
 				.map(PersonNavn::getForkortetNavn)
 				.filter(Objects::nonNull)
 				.findFirst().orElse(null);
-	}
-
-	public LocalDate getFoedselsdato() {
-		return getFoedsel().stream()
-				.map(Foedsel::getFoedselsdato)
-				.filter(Objects::nonNull)
-				.findAny()
-				.orElse(null);
 	}
 
 	public String getIdentifikasjonsnummer() {

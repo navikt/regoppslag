@@ -131,7 +131,6 @@ public class MapPDLResponseTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithVegadresse(), SERVICE_CODE_TREG002, TEMA);
 
-		assertEquals(FOEDSELDATO, mottakerInfo.getFoedselsdato());
 		assertNull(mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
 		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje1());

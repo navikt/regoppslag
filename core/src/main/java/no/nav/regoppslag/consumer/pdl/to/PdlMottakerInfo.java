@@ -10,7 +10,6 @@ import java.time.LocalDate;
 public class PdlMottakerInfo {
     private String identifikasjonsnummer;
     private LocalDate doedsdato;
-    private LocalDate foedselsdato;
     private String navn;
     private String kortNavn;
     private PostadresseTo postadresse;
