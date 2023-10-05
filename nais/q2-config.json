@@ -50,6 +50,11 @@
 			"app": "ida",
 			"namespace": "traktor",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "brev-administrasjon-q2",
+			"namespace": "isa",
+			"cluster": "dev-gcp"
 		}
 	]
 }
