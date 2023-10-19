@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1986,
-          "foedselsdato": "1986-08-01"
-        }
-      ],
       "navn": [
         {
           "fornavn": "FLERE",

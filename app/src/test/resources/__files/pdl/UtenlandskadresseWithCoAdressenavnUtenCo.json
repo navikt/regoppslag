@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1969,
-          "foedselsdato": "1969-09-20"
-        }
-      ],
       "navn": [
         {
           "fornavn": "GYNGEHEST",

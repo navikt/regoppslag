@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1989,
-          "foedselsdato": "1989-06-27"
-        }
-      ],
       "navn": [
         {
           "fornavn": "ØVRIG",

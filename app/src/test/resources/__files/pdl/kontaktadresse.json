@@ -3,16 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1985,
-          "foedselsdato": "1985-12-02"
-        },
-        {
-          "foedselsaar": 1985,
-          "foedselsdato": "1985-12-02"
-        }
-      ],
       "navn": [
         {
           "fornavn": "TRIVIELL",

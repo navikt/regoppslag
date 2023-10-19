@@ -21,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
@@ -152,6 +153,25 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getPoststed()).isEqualToIgnoringCase("FANNREM");
 		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
 		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+	}
+
+	@Test
+	void shouldChooseUtenlandskKontaktadresseWhenGyldigAndUkjentNorskPostnummer() {
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse_ugyldig_norsk_postnummer.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Prahagata 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("10000 PRAHA");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("CZ");
+		assertThat(actualAdresse.getLand()).isEqualTo("TSJEKKIA");
 	}
 
 	@Test
@@ -287,36 +307,57 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldGetPersonMedUtenlandskPostadresse() {
 		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse.json");
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		PostadresseResponse response = hentPostadresse();
 
-		assertNotNull(response);
-		assertEquals(OK, response.getStatusCode());
-		assertNotNull(response.getBody().getNavn());
-		assertNotNull(response.getBody().getAdresse());
+		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Trousis 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("11111 Kalamaka");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("HELLAS");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("GR");
 	}
 
 	@Test
 	public void shouldGetUtenlandskPostadresseForDoedsbo() {
 		postPdlGraphql(OK.value(), "pdl/pdl_utenlandsk_doedsbo_adresse.json");
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		PostadresseResponse response = hentPostadresse();
 
-		assertNotNull(response);
-		assertEquals(OK, response.getStatusCode());
-		assertNotNull(response.getBody().getNavn());
-		assertNotNull(response.getBody().getAdresse());
+		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("v/ TORIA AB Pdl");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Tysklandsveien 89");
+		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("12345 Berlin");
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLand()).isEqualTo("TYSKLAND");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("DE");
 	}
 
 	@Test
-	public void shouldGetDoedPerson() {
+	public void shouldGetNorskPostadresseForDoedsbo() {
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");
 
-		ResponseEntity<PostadresseResponse> actualResponse = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		PostadresseResponse response = hentPostadresse();
 
-		assertNotNull(actualResponse);
-		assertEquals(OK, actualResponse.getStatusCode());
-		assertNotNull(actualResponse.getBody().getNavn());
-		assertNotNull(actualResponse.getBody().getAdresse());
+		assertThat(response.getNavn()).isEqualTo("GUL MÅPENDE KAKE");
+
+		Adresse actualAdresse = response.getAdresse();
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("v/ Herr Andersen");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 15");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
 	}
 
 	@Test

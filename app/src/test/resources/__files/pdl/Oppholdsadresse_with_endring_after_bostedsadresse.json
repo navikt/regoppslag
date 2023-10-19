@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1966,
-          "foedselsdato": "1966-05-05"
-        }
-      ],
       "navn": [
         {
           "fornavn": "AREMARK",

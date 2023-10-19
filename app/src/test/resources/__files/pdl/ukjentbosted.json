@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 1987,
-          "foedselsdato": "1987-01-17"
-        }
-      ],
       "navn": [
         {
           "fornavn": "KRAFTIG",

@@ -3,12 +3,6 @@
     "hentPerson": {
       "adressebeskyttelse": [],
       "doedsfall": [],
-      "foedsel": [
-        {
-          "foedselsaar": 2017,
-          "foedselsdato": "2017-02-04"
-        }
-      ],
       "navn": [
         {
           "fornavn": "BJARNE",
