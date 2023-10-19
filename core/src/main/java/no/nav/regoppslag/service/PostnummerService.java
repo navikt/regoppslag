@@ -46,16 +46,9 @@ public class PostnummerService {
 				PostData data = new PostData(postArray[0], postArray[1]);
 				postalCodeTable.put(data.getPostnummer(), data);
 			}
-			workaround();
 		} finally {
 			log.info("Har importert postnummer kodeverk fra fil={}, antall={}", FILENAME, postalCodeTable.size());
 		}
-	}
-
-	private void workaround() {
-		// Workaround for postnummer som ikke er i postnummerregister.txt
-		postalCodeTable.put("0025", new PostData("0025", "OSLO"));
-		postalCodeTable.put("6485", new PostData("6485", "HARØY"));
 	}
 
 	@Setter
@@ -68,8 +61,8 @@ public class PostnummerService {
 
 	public String finnPoststed(String postnr) {
 		if (postalCodeTable.get(postnr) == null) {
-			log.error("Finner ikke poststed for postnummer={}. Sjekk om ny postnummerregister.txt må lastes ned eller om postnummer er gammelt og har fått en endring. Se https://www.bring.no/tjenester/adressetjenester/postnummer", postnr);
-			return null;
+			log.warn("Finner ikke poststed for postnummer={}. Returnerer postnummer som poststed. Postnummer kan være utgått eller nytt. Sjekk om ny postnummerregister.txt må lastes ned eller om postnummer er gammelt og har fått en endring. Se https://www.bring.no/tjenester/adressetjenester/postnummer", postnr);
+			return postnr;
 		} else {
 			return postalCodeTable.get(postnr).getPoststed();
 		}

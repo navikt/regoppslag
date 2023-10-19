@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostnummerServiceTest {
 
@@ -22,30 +20,21 @@ public class PostnummerServiceTest {
 	public void shouldFinnPoststed() {
 		String poststed = postnummerService.finnPoststed("1400");
 
-		assertThat(poststed, is("SKI"));
+		assertThat(poststed).isEqualTo("SKI");
 	}
 
 	@Test
 	public void shouldReturnNullWhenNullPostnummer() {
-		String landNavn = postnummerService.finnPoststed(null);
+		String poststed = postnummerService.finnPoststed(null);
 
-		assertNull(landNavn);
+		assertThat(poststed).isNull();
 	}
 
 	@Test
-	public void shouldReturnNullWhenUkjentPostnummer() {
+	public void shouldReturnPostnummerWhenUkjentPostnummer() {
 		String poststed = postnummerService.finnPoststed("111111");
 
-		assertNull(poststed);
-	}
-
-	// workaround for å få gjennom brev som skal til endrede poststeder
-	@Test
-	void shouldFinnWorkaroundPoststeder() {
-		String haroy = postnummerService.finnPoststed("6485");
-		assertThat(haroy, is("HARØY"));
-		String oslo = postnummerService.finnPoststed("0025");
-		assertThat(oslo, is("OSLO"));
+		assertThat(poststed).isEqualTo("111111");
 	}
 }
 

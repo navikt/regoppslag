@@ -156,6 +156,25 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	void shouldChooseUtenlandskKontaktadresseWhenGyldigAndUkjentNorskPostnummer() {
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse_ugyldig_norsk_postnummer.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("Prahagata 1");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("10000 PRAHA");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("CZ");
+		assertThat(actualAdresse.getLand()).isEqualTo("TSJEKKIA");
+	}
+
+	@Test
 	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
