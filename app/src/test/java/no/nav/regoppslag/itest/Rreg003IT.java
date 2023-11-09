@@ -46,10 +46,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class Rreg003IT extends AbstractIT {
 
 	private static final String VALID_IDENT = "01020304051";
+	private static final String INVALID_IDENT_TOO_SHORT = "123";
+	private static final String INVALID_IDENT_NOT_NUMERIC = "123456abc";
 	private static final String VALID_TEMA = "PEN";
-	private static final String INVALID_IDENT = "123";
-	private static final String INVALID_TEMA = "testetest";
-	private final String ORG_IDENT = "889640782";
+	private static final String INVALID_TEMA_TOO_LONG = "PENX";
+	private static final String INVALID_TEMA_NOT_UPPER_CASE = "pen";
+	private static final String ORG_IDENT = "889640782";
 
 	@Test
 	public void shouldThrowUnauthorizedWithoutValidToken() {
@@ -65,18 +67,22 @@ public class Rreg003IT extends AbstractIT {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldThrowWhenBadRequestWithInvalidInput(String ident, String tema) {
+	public void shouldReturnBadRequestForInvalidInput(String ident, String tema, String feilmelding) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, tema), PostadresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, tema), PostadresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
+		assertThat(e.getMessage()).contains(feilmelding);
 	}
 
-	private static Stream<Arguments> shouldThrowWhenBadRequestWithInvalidInput() {
+	private static Stream<Arguments> shouldReturnBadRequestForInvalidInput() {
 		return Stream.of(
-				Arguments.of(VALID_IDENT, INVALID_TEMA),
-				Arguments.of(INVALID_IDENT, VALID_TEMA)
+				Arguments.of(null, VALID_TEMA, "Ident kan ikke være null"),
+				Arguments.of(INVALID_IDENT_TOO_SHORT, VALID_TEMA, "Ident må ha lengde på 9, 11 eller 13 siffer"),
+				Arguments.of(INVALID_IDENT_NOT_NUMERIC, VALID_TEMA, "Ident kan kun bestå av tall"),
+				Arguments.of(VALID_IDENT, null, "Tema kan ikke være null"),
+				Arguments.of(VALID_IDENT, INVALID_TEMA_NOT_UPPER_CASE, "Tema kan kun bestå av store bokstaver"),
+				Arguments.of(VALID_IDENT, INVALID_TEMA_TOO_LONG, "Tema må ha lengde på 3 bokstaver")
 		);
 	}
 

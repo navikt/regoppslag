@@ -2,6 +2,7 @@ package no.nav.regoppslag.rreg003;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
+import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -14,17 +15,15 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
 import no.nav.regoppslag.pdl.MapPDLResponse;
-import no.nav.regoppslag.consumer.ereg.MottakerTo;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
+import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -40,8 +39,8 @@ public class PostadresseService {
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 
-	@Autowired
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,
@@ -96,26 +95,32 @@ public class PostadresseService {
 	private void validateInput(PostadresseRequest request) {
 
 		if (request == null) {
-			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Request body er tom.", BAD_REQUEST);
 		}
 
 		if (request.getIdent() == null) {
-			throw new RegoppslagIllegalArgumentException("Ident kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan ikke være null.", BAD_REQUEST);
+		}
+
+		if (!NUMBER_PATTERN.matcher(request.getIdent()).matches()) {
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan kun bestå av tall.", BAD_REQUEST);
+		}
+
+		if (!asList(9, 11, 13).contains(request.getIdent().length())) {
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
 		}
 
 		if (request.getTema() == null) {
-			throw new RegoppslagIllegalArgumentException("Tema kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan ikke være null.", BAD_REQUEST);
 		}
 
-		if (!StringUtils.isAllUpperCase(request.getTema()) && request.getTema().length() != 3) {
-			throw new RegoppslagIllegalArgumentException("Tema må være 3 store bokstaver. " + UGYLDIG_INPUT, BAD_REQUEST);
+		if (!isAllUpperCase(request.getTema())) {
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan kun bestå av store bokstaver.", BAD_REQUEST);
 		}
 
-		//Identifikator må være 9, 11 eller 13 karakterer lang for å være en gyldig ident
-		if (!Arrays.asList(9, 11, 13).contains(request.getIdent().length()) || !StringUtils.isNumeric(request.getIdent())) {
-			throw new RegoppslagIllegalArgumentException("Identifikator er feilformatert. " + UGYLDIG_INPUT, BAD_REQUEST);
+		if (request.getTema().length() != 3) {
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema må ha lengde på 3 bokstaver.", BAD_REQUEST);
 		}
-
 	}
 
 

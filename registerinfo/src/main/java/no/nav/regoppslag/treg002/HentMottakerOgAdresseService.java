@@ -17,6 +17,8 @@ import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Pattern;
+
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
@@ -38,6 +40,7 @@ public class HentMottakerOgAdresseService {
 
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 
 	public HentMottakerOgAdresseService(AdresseMapper adresseMapper,
 										PdlGraphQLConsumer pdlGraphQLConsumer,
@@ -92,6 +95,10 @@ public class HentMottakerOgAdresseService {
 
 		if (request.getIdentifikator() == null) {
 			throw new RegoppslagIllegalArgumentException("Identifikator kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
+		}
+
+		if (!NUMBER_PATTERN.matcher(request.getIdentifikator()).matches()) {
+			throw new RegoppslagIllegalArgumentException("Identifikator kan kun bestå av tall. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
 		if (request.getType() == null) {

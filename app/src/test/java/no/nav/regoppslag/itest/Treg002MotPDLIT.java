@@ -16,7 +16,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -549,6 +548,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		return Stream.of(
 				Arguments.of(PERSON_IDENT, "FESDASd", "Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON."),
 				Arguments.of(null, TYPE_PERSON, "Identifikator kan ikke være null"),
+				Arguments.of(ORGANISASJONNUMMER + "abc", TYPE_PERSON, "Identifikator kan kun bestå av tall"),
 				Arguments.of(PERSON_IDENT, null, "Mottakertype kan ikke være null")
 		);
 	}
