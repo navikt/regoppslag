@@ -26,7 +26,6 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
-import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
@@ -238,7 +237,7 @@ class DoedsboAdresseServiceTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()));
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
 				doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), TEMA));
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -255,7 +254,7 @@ class DoedsboAdresseServiceTest {
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () ->
 				doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
 
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -271,7 +270,7 @@ class DoedsboAdresseServiceTest {
 
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
 
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
 	}
 
@@ -289,7 +288,7 @@ class DoedsboAdresseServiceTest {
 				.build();
 		UkjentAdressePersonErDoed e = assertThrows(UkjentAdressePersonErDoed.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA),
 				"Mottaker er registrert som død og har ugyldig postadresse");
-		assertEquals(GONE, e.getHttpStatus());
+		assertEquals(GONE, e.getHttpStatusCode());
 	}
 
 }

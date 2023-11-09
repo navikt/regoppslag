@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.16</version>
+		<version>3.1.5</version>
 	</parent>
 
 	<properties>
@@ -30,17 +30,17 @@
 		<rxjava.version>3.1.8</rxjava.version>
 		<microsoft-graph.version>5.75.0</microsoft-graph.version>
 		<azure-identity.version>1.2.5</azure-identity.version>
-		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.2.0</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
-		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
-		<token-support.version>2.1.9</token-support.version>
+		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+		<token-support.version>3.1.8</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>13-5459a4f</dokmet-api.version>
-		<brevdata-felles.version>5-2a6c16b</brevdata-felles.version>
+		<brevdata-felles.version>29-af3d66d</brevdata-felles.version>
 
 		<!-- Test -->
-		<spring-cloud-contract-wiremock.version>3.1.8</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
@@ -76,13 +76,13 @@
 			</dependency>
 			<dependency>
 				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-spring-boot2</artifactId>
+				<artifactId>resilience4j-spring-boot3</artifactId>
 				<version>${resilience4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-ui</artifactId>
-				<version>${springdoc-openapi-ui.version}</version>
+				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+				<version>${springdoc-openapi-starter-webmvc-ui.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.reactivex.rxjava3</groupId>

@@ -50,7 +50,6 @@ import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
-import static no.nav.regoppslag.util.PDLResponseUtil.FOEDSELDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_FRA_MED_DATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.GYLDIG_TIL_MED_DATO;
@@ -477,7 +476,7 @@ public class MapPDLResponseTest {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPerson(null));
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
 				mapPDLResponse.mapHentPerson(createPdlHentPerson(null), SERVICE_CODE_TREG002, TEMA));
-		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals(BAD_REQUEST, e.getHttpStatusCode());
 		assertEquals("Feltet Personnavn kan ikke være null eller tomt", e.getMessage());
 	}
 
@@ -487,7 +486,7 @@ public class MapPDLResponseTest {
 		personNavn.setFornavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
 				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002, TEMA));
-		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals(BAD_REQUEST, e.getHttpStatusCode());
 		assertEquals("Feltet Fornavn kan ikke være null eller tomt", e.getMessage());
 	}
 
@@ -497,7 +496,7 @@ public class MapPDLResponseTest {
 		personNavn.setEtternavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
 				mapPDLResponse.mapHentPerson(createPdlHentPerson(personNavn), SERVICE_CODE_TREG002, TEMA));
-		assertEquals(BAD_REQUEST, e.getHttpStatus());
+		assertEquals(BAD_REQUEST, e.getHttpStatusCode());
 		assertEquals("Feltet Etternavn kan ikke være null eller tomt", e.getMessage());
 	}
 
@@ -507,7 +506,7 @@ public class MapPDLResponseTest {
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 		assertEquals("Fant ikke bostedsadresse for personen i PDL", e.getMessage());
 	}
 
@@ -517,7 +516,7 @@ public class MapPDLResponseTest {
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getMessage());
 	}
 

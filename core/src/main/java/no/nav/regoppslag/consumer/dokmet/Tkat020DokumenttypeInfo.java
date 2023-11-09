@@ -64,7 +64,7 @@ public class Tkat020DokumenttypeInfo {
 	}
 
 	@Cacheable(value = HENT_DOKMET_SPRAAKINFO, key = "#dokumenttypeId")
-	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "HttpStatus.NOT_FOUND != getHttpStatus()", backoff = @Backoff(delay = 200))
+	@Retryable(include = RegOppslagTechnicalException.class, exceptionExpression = "T(org.springframework.http.HttpStatus).NOT_FOUND != getHttpStatusCode()", backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKMET_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		HttpHeaders headers = createHeaders();

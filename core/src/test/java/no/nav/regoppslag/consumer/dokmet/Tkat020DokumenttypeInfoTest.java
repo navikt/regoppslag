@@ -79,7 +79,6 @@ public class Tkat020DokumenttypeInfoTest {
 	@Mock
 	private MicrometerMetrics metrics;
 
-
 	@BeforeEach
 	public void setUp() {
 		reset(restTemplate);
