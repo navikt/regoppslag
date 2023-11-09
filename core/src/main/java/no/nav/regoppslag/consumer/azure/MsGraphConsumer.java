@@ -2,6 +2,7 @@ package no.nav.regoppslag.consumer.azure;
 
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
+import com.microsoft.graph.core.ClientException;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.QueryOption;
@@ -42,13 +43,13 @@ public class MsGraphConsumer {
 						.build()))
 				.buildClient();
 		String overrideMsGraphUrl = regoppslagProperties.getEndpoints().getOverrideMsGraphUrl();
-		if(overrideMsGraphUrl != null) {
+		if (overrideMsGraphUrl != null) {
 			this.graphClient.setServiceRoot(overrideMsGraphUrl);
 		}
 	}
 
 	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
-	@Retryable(include = Exception.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(include = ClientException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		if (!NAVIDENT_PATTERN.matcher(navIdent).matches()) {
 			throw new RegoppslagIllegalArgumentException("navIdent=" + navIdent + " matcher ikke gyldig pattern for NAV ident.", BAD_REQUEST);
