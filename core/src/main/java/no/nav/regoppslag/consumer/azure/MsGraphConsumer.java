@@ -68,6 +68,10 @@ public class MsGraphConsumer {
 			throw new RegOppslagIkkeFunnetException(format("Microsoft Entra finner ikke NAV ansatt med navIdent=%s", navIdent), NOT_FOUND);
 		}
 
+		return fulltNavn(res);
+	}
+
+	private static String fulltNavn(List<User> res) {
 		return res.get(0).givenName + " " + res.get(0).surname;
 	}
 }
