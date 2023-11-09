@@ -38,7 +38,7 @@ public class AzureTokenConsumer {
 		this.objectMapper = objectMapper;
 		this.webClient = webClient.mutate()
 				.defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-				.baseUrl(azureProperties.getOpenidConfigTokenEndpoint())
+				.baseUrl(azureProperties.openidConfigTokenEndpoint())
 				.build();
 	}
 
@@ -61,8 +61,8 @@ public class AzureTokenConsumer {
 
 	private String getAzureToken(String scope, String token) {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-		formData.add("client_id", azureProperties.getAppClientId());
-		formData.add("client_secret", azureProperties.getAppClientSecret());
+		formData.add("client_id", azureProperties.appClientId());
+		formData.add("client_secret", azureProperties.appClientSecret());
 		formData.add("scope", scope);
 
 		if (token != null) {

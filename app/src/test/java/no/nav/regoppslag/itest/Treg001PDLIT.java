@@ -46,8 +46,8 @@ public class Treg001PDLIT extends AbstractIT {
 
 	@BeforeEach
 	public void runBefore() {
+		stubMsGraphGetUser("Z991006");
 		stubDokmetResponse();
-
 		stubAzureToken();
 		this.token = token("subject1");
 	}

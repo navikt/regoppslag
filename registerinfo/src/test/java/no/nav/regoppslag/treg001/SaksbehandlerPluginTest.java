@@ -3,7 +3,7 @@ package no.nav.regoppslag.treg001;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import no.nav.regoppslag.consumer.azure.AzureAdGraphService;
+import no.nav.regoppslag.consumer.azure.MsGraphConsumer;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
@@ -45,7 +45,7 @@ public class SaksbehandlerPluginTest {
 	private Map<String, Object> valueMap;
 
 	@Autowired
-	private AzureAdGraphService azureAdGraphService;
+	private MsGraphConsumer msGraphConsumer;
 
 	@Autowired
 	private SaksbehandlerPlugin saksbehandlerPlugin;
@@ -59,7 +59,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPlugin() throws Exception {
-		when(azureAdGraphService.hentFulltNavn(anyString())).thenReturn("Test Testesen");
+		when(msGraphConsumer.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -80,7 +80,7 @@ public class SaksbehandlerPluginTest {
 
 	@Test
 	public void testSaksbehandlerPluginIkkeBerik() throws Exception {
-		when(azureAdGraphService.hentFulltNavn(anyString())).thenReturn("Test Testesen");
+		when(msGraphConsumer.hentFulltNavn(anyString())).thenReturn("Test Testesen");
 
 		File xmlFile = new File(BREVDATA_IKKE_BERIK);
 		Document document = loadDocument(xmlFile);
@@ -107,8 +107,8 @@ public class SaksbehandlerPluginTest {
 		}
 
 		@Bean
-		AzureAdGraphService azureAdGraphService() {
-			return mock(AzureAdGraphService.class);
+		MsGraphConsumer msGraphConsumer() {
+			return mock(MsGraphConsumer.class);
 		}
 
 		@Bean

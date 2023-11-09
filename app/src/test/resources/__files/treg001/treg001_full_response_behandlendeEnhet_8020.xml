@@ -20,7 +20,7 @@
 			<navAnsatt xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 				<ns1:ansattId>Z991006</ns1:ansattId>
-				<ns1:navn>en vilkaarlig saksbehandler</ns1:navn>
+				<ns1:navn>Bjarne Betjent</ns1:navn>
 			</navAnsatt>
 			<navEnhet xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					  xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
@@ -32,7 +32,7 @@
 			<navAnsatt xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					   xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">
 				<ns1:ansattId>Z991006</ns1:ansattId>
-				<ns1:navn>en vilkaarlig saksbehandler</ns1:navn>
+				<ns1:navn>Bjarne Betjent</ns1:navn>
 			</navAnsatt>
 			<navEnhet xmlns="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 					  xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles">

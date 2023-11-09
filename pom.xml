@@ -29,6 +29,7 @@
 		<resilience4j.version>2.1.0</resilience4j.version>
 		<rxjava.version>3.1.8</rxjava.version>
 		<microsoft-graph.version>5.75.0</microsoft-graph.version>
+		<azure-identity.version>1.2.5</azure-identity.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
@@ -109,10 +110,14 @@
 				<version>${brevdata-felles.version}</version>
 			</dependency>
 			<dependency>
-				<!-- Include the sdk as a dependency -->
 				<groupId>com.microsoft.graph</groupId>
 				<artifactId>microsoft-graph</artifactId>
 				<version>${microsoft-graph.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.azure</groupId>
+				<artifactId>azure-identity</artifactId>
+				<version>${azure-identity.version}</version>
 			</dependency>
 
 			<!-- Test dependencies -->
