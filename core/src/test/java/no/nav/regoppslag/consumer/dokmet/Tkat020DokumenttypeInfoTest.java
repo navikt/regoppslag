@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -185,8 +184,7 @@ public class Tkat020DokumenttypeInfoTest {
 
 		@Bean
 		public AzureTokenConsumer azureTokenConsumer(WebClient webClient) {
-			AzureProperties azureProperties = new AzureProperties();
-			azureProperties.setOpenidConfigTokenEndpoint("https://azuredummy");
+			AzureProperties azureProperties = new AzureProperties("", "", "", "https://azuredummy");
 			return new AzureTokenConsumer(azureProperties, null, webClient) {
 				@Override
 				public String getClientCredentialToken(String scope) {
@@ -198,15 +196,6 @@ public class Tkat020DokumenttypeInfoTest {
 					return "token";
 				}
 			};
-		}
-
-		@Bean
-		public AzureProperties azureProperties() {
-			AzureProperties azureproperties = new AzureProperties();
-			azureproperties.setAppClientId("clientId");
-			azureproperties.setAppClientSecret("secret");
-			azureproperties.setOpenidConfigTokenEndpoint("url");
-			return azureproperties;
 		}
 
 		@Bean

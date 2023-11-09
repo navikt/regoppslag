@@ -27,6 +27,7 @@ public class RegoppslagProperties {
 		private Oauth2SecuredEndpoint dokmet;
 		@NotNull
 		private Oauth2SecuredEndpoint digdirkrrproxy;
+		private String overrideMsGraphUrl;
 	}
 
 	@Data

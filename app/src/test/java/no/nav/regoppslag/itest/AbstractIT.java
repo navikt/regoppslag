@@ -16,11 +16,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.nimbusds.jose.JOSEObjectType.JWT;
 import static java.util.Collections.emptyMap;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,7 +52,6 @@ public abstract class AbstractIT {
 	@BeforeEach
 	public void setUp() {
 		clearCachene();
-		cacheManager.getCache(HENT_NAV_ANSATT_NAVN).put("Z991006", "en vilkaarlig saksbehandler");
 	}
 
 	private void clearCachene() {
@@ -77,11 +76,18 @@ public abstract class AbstractIT {
 		).serialize();
 	}
 
-	protected void stubAzureToken() {
+	protected static void stubAzureToken() {
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("azure/token_response_dummy.json")));
+	}
+
+	protected static void stubMsGraphGetUser(String navIdent) {
+		stubFor(get("/msgraph/users?%24filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&%24count=true&%24select=givenName%2Csurname")
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("msgraph/msgraph-users.json")));
 	}
 }

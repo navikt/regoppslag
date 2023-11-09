@@ -2,7 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
-import no.nav.regoppslag.consumer.azure.AzureAdGraphService;
+import no.nav.regoppslag.consumer.azure.MsGraphConsumer;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
@@ -36,7 +36,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	}
 
 	@Autowired
-	private AzureAdGraphService azureAdGraphService;
+	private MsGraphConsumer msGraphConsumer;
 
 	@Autowired
 	private SaksbehandlerMapper saksbehandlerMapper;
@@ -58,7 +58,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			//Skal elementet berikes?
 			if (navAnsatt.isBerik()) {
 				validateSaksbehandler(navAnsatt);
-				String saksbehandlerNavn = azureAdGraphService.hentFulltNavn(navAnsatt.getAnsattId());
+				String saksbehandlerNavn = msGraphConsumer.hentFulltNavn(navAnsatt.getAnsattId());
 				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
 			}
 

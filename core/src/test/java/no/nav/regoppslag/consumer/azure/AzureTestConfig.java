@@ -25,14 +25,4 @@ public class AzureTestConfig {
 			}
 		};
 	}
-
-	@Bean
-	public AzureProperties azureProperties() {
-		AzureProperties azureproperties = new AzureProperties();
-		azureproperties.setAppClientId("clientId");
-		azureproperties.setAppClientSecret("secret");
-		azureproperties.setOpenidConfigTokenEndpoint("url");
-		return azureproperties;
-	}
-
 }

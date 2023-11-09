@@ -85,7 +85,6 @@
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-spring-boot2</artifactId>
 		</dependency>
-
 		<!-- grensesnitt/kontrakter -->
 		<dependency>
 			<groupId>no.nav.dokmet</groupId>
@@ -98,6 +97,10 @@
 		<dependency>
 			<groupId>com.microsoft.graph</groupId>
 			<artifactId>microsoft-graph</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-identity</artifactId>
 		</dependency>
 
 		<!-- test -->
