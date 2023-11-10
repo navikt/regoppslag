@@ -443,6 +443,12 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldThrowBadRequestWhenOrganisasjonIkke() {
+		assertThrows(HttpClientErrorException.BadRequest.class,
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest("999999999a", VALID_TEMA), PostadresseResponse.class));
+	}
+
+	@Test
 	public void shouldThrowWhenTekniskFeilFraEreg() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse()
