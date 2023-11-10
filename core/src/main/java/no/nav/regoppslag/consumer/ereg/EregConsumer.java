@@ -47,7 +47,7 @@ public class EregConsumer {
 				.build();
 	}
 
-	@Retryable(include = HttpServerErrorException.class, exclude = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = HttpServerErrorException.class, noRetryFor = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(String organisasjonsNummer) {
 

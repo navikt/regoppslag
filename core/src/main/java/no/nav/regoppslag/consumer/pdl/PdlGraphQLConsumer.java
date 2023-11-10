@@ -78,7 +78,7 @@ public class PdlGraphQLConsumer {
 		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}
 
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_PERSONDATA}, percentiles = {0.5, 0.95}, histogram = true)
 	public HentPerson hentPerson(final String aktoerId, final String tema) {
 		try {
@@ -98,7 +98,7 @@ public class PdlGraphQLConsumer {
 		return requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
 	}
 
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentNavn(final String aktoerId, final String tema) {
 		try {
@@ -112,7 +112,7 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, "hentDoedsBoKontaktPersonnavn"}, percentiles = {0.5, 0.95}, histogram = true)
 	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId, final String tema) {
 		try {

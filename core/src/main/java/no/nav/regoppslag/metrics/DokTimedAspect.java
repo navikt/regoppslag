@@ -1,16 +1,12 @@
 package no.nav.regoppslag.metrics;
 
-import static java.util.Arrays.asList;
-import static no.nav.regoppslag.metrics.MetricLabels.CONSUMER;
-import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
-
+import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.core.annotation.Incubating;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import org.aspectj.lang.JoinPoint;
@@ -24,6 +20,10 @@ import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
+
+import static java.util.Arrays.asList;
+import static no.nav.regoppslag.metrics.MetricLabels.CONSUMER;
+import static no.nav.regoppslag.metrics.MicrometerMetrics.getConsumerId;
 
 @Aspect
 @NonNullApi

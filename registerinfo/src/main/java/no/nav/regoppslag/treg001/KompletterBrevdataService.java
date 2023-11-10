@@ -68,7 +68,7 @@ public class KompletterBrevdataService {
 		return writer.toString();
 	}
 
-	@Retryable(include = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
+	@Retryable(retryFor = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
