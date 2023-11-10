@@ -58,14 +58,13 @@ public class PostAdresseController {
 	})
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_RREG003, COMPONENT, "postadresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
-	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(
-			@RequestBody PostadresseRequest requestBody,
-			@RequestHeader(value = NAV_CALLID, required = false) String navCallid)
-			throws RegOppslagSecurityException {
+	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(@RequestBody PostadresseRequest requestBody) throws RegOppslagSecurityException {
 		try {
 			log.info("RREG003 Henter postaddresse.");
+
 			PostadresseResponse response = postadresseService.postadresseInfo(requestBody);
 			log.info("RREG003 Har hentet postadresse.");
+
 			return ResponseEntity.ok(response);
 		} finally {
 			SecurityContextHolder.clearContext();
