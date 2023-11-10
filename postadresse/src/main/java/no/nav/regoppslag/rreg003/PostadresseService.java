@@ -13,7 +13,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,6 @@ import static java.util.Arrays.asList;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
 import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -125,9 +124,9 @@ public class PostadresseService {
 
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-			log.warn(format("RREG003 Funksjonell feil: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatusCode());
+		if (e instanceof UkjentAdressePersonErDoedException) {
+			log.info(format("RREG003: %s", e.getMessage()), e);
+			throw new UkjentAdressePersonErDoedException(e.getMessage(), ((UkjentAdressePersonErDoedException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;

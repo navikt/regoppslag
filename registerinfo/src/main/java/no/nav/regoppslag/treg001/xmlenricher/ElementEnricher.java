@@ -11,7 +11,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.treg001.xmlenricher.util.Aggregate;
 import no.nav.regoppslag.treg001.xmlenricher.util.AttributeValueNamespaceResolver;
@@ -41,7 +41,6 @@ import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTY
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
-import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
@@ -157,8 +156,8 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-			throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
+		if (e instanceof UkjentAdressePersonErDoedException) {
+			throw new UkjentAdressePersonErDoedException(e.getLocalizedMessage(), e, TREG001, ((UkjentAdressePersonErDoedException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagIngenTilgangException) {
 			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {

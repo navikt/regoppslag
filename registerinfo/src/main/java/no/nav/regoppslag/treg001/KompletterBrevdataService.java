@@ -8,7 +8,7 @@ import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
@@ -36,7 +36,6 @@ import java.io.StringWriter;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
@@ -90,12 +89,11 @@ public class KompletterBrevdataService {
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
-		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException
-				 | UkjentAdresseException | UkjentAdressePersonErDoed e) {
-			if (GONE.equals(e.getHttpStatusCode())) {
-				log.warn("TREG001 funksjonell feil : {}", e.getMessage());
-				throw new UkjentAdressePersonErDoed(e.getLocalizedMessage(), e, "TREG001", e.getHttpStatusCode());
-			} else if (NOT_FOUND.equals(e.getHttpStatusCode())) {
+		} catch (UkjentAdressePersonErDoedException e) {
+			log.info("TREG001: {}", e.getMessage());
+			throw new UkjentAdressePersonErDoedException(e.getMessage(), e, "TREG001", e.getHttpStatusCode());
+		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException | UkjentAdresseException e) {
+			if (NOT_FOUND.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 				throw new RegOppslagIkkeFunnetException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());

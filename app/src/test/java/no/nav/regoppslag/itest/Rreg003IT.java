@@ -371,8 +371,7 @@ public class Rreg003IT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/doedpersonutenadresse.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class));
 
 		assertEquals(GONE, e.getStatusCode());
 	}
@@ -382,8 +381,7 @@ public class Rreg003IT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class));
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
 	}

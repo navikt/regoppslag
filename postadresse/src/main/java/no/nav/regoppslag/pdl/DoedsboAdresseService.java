@@ -10,7 +10,7 @@ import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.Organisasj
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.PersonSomKontakt;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
@@ -62,11 +62,7 @@ public class DoedsboAdresseService {
 		return kontaktinformasjon
 				.filter(DoedsboAdresseService::isDoedPersonValidKontaktAdresse)
 				.map(kontaktinfo -> mapAndValidateKontaktinformasjonForDoeds(kontaktinfo, tema))
-				.orElseThrow(
-						() -> {
-							log.warn(MOTTAKER_DOED);
-							return new UkjentAdressePersonErDoed(MOTTAKER_DOED, GONE);
-						});
+				.orElseThrow(() -> new UkjentAdressePersonErDoedException(MOTTAKER_DOED, GONE));
 	}
 
 	private static boolean isDoedPersonValidKontaktAdresse(KontaktinformasjonForDoedsbo kontaktinformasjon) {

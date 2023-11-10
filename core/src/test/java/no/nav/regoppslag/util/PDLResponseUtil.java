@@ -30,6 +30,7 @@ import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.consumer.pdl.to.Endring.EndringsType.OPPRETT;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
+import static no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo.Skifteform.ANNET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
@@ -559,7 +560,7 @@ public class PDLResponseUtil {
 	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsbo() {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
-				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.skifteform(ANNET)
 				.adresse(createAdvokatKontaktAdresse())
 				.advokatSomKontakt(KontaktinformasjonForDoedsbo.AdvokatSomKontakt.builder()
 						.personnavn(createKontaktPersonnavn())
@@ -572,7 +573,7 @@ public class PDLResponseUtil {
 	public static KontaktinformasjonForDoedsbo.KontaktinformasjonForDoedsboBuilder createKontaktinformasjonForDoeds() {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
-				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.skifteform(ANNET)
 				.adresse(createDoedsboKontaktAdresseForUtenland())
 				.personSomKontakt(KontaktinformasjonForDoedsbo.PersonSomKontakt.builder()
 						.personnavn(createKontaktPersonnavn())
@@ -583,7 +584,7 @@ public class PDLResponseUtil {
 	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithPerson() {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
-				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.skifteform(ANNET)
 				.adresse(createPersonKontaktAdresse())
 				.personSomKontakt(KontaktinformasjonForDoedsbo.PersonSomKontakt.builder()
 						.personnavn(createNavnForPersonSomKontakt())
@@ -592,11 +593,11 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithOrginasjon(KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt,
-																								KontaktinformasjonForDoedsbo.KontaktAdresse adresse) {
+	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithOrganisasjon(KontaktinformasjonForDoedsbo.OrganisasjonSomKontakt organisasjonSomKontakt,
+																								  KontaktinformasjonForDoedsbo.KontaktAdresse adresse) {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
-				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.skifteform(ANNET)
 				.adresse(adresse)
 				.organisasjonSomKontakt(organisasjonSomKontakt)
 				.build();
@@ -605,7 +606,7 @@ public class PDLResponseUtil {
 	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithNoContact(KontaktinformasjonForDoedsbo.KontaktAdresse adresse) {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
-				.skifteform(KontaktinformasjonForDoedsbo.Skifteform.ANNET)
+				.skifteform(ANNET)
 				.adresse(adresse)
 				.build();
 	}
