@@ -49,7 +49,7 @@ public class MsGraphConsumer {
 	}
 
 	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
-	@Retryable(include = ClientException.class, exclude = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = ClientException.class, noRetryFor = {RegOppslagFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		if (!NAVIDENT_PATTERN.matcher(navIdent).matches()) {
 			throw new RegoppslagIllegalArgumentException("navIdent=" + navIdent + " matcher ikke gyldig pattern for NAV ident.", BAD_REQUEST);

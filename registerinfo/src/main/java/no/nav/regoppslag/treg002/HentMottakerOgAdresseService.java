@@ -110,18 +110,18 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
 			log.error(format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatus());
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
 			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()

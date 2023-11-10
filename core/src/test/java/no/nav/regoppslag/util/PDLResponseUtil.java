@@ -116,7 +116,7 @@ public class PDLResponseUtil {
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
 	public static final String IDENTTYPE_FNR = "FNR";
 	public static final String STATUS = "I_BRUK";
-	public static final String ORGANISASJONNUMMER = "1234567";
+	public static final String ORGANISASJONNUMMER = "912345678";
 	public static final String ORGANISASJONNAVN = "Fred Advokat AS";
 	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
 	public static final String COADRESSENAVN = "C/O Herr Andersen";

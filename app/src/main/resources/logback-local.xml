@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="false" debug="false">
+<included>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -14,5 +15,4 @@
 	<logger name="no.nav.regoppslag" level="DEBUG" additivity="false">
 		<appender-ref ref="CONSOLE"/>
 	</logger>
-
-</configuration>
+</included>

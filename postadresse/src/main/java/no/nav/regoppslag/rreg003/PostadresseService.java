@@ -125,9 +125,9 @@ public class PostadresseService {
 
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
+		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
 			log.warn(format("RREG003 Funksjonell feil: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
@@ -136,10 +136,10 @@ public class PostadresseService {
 			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatus())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatus());
+			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatus());
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
 			log.error(String.format("RREG003 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()

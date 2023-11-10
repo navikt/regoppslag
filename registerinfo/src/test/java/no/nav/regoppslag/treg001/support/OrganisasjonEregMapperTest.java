@@ -10,7 +10,6 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.metrics.MicrometerMetrics;
-import no.nav.regoppslag.service.LandkodeService;
 import no.nav.regoppslag.service.PostnummerService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +97,7 @@ public class OrganisasjonEregMapperTest {
 		Organisasjon org = createOrganisasjon(ORGNAVN);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -107,7 +106,7 @@ public class OrganisasjonEregMapperTest {
 		settPostAdresse(org, "POSTADRESSE", -20000L);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -118,7 +117,7 @@ public class OrganisasjonEregMapperTest {
 		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Ingen gyldige adresser funnet");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test
@@ -128,7 +127,7 @@ public class OrganisasjonEregMapperTest {
 
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org, SERVICECODE), "Organisasjon har opphørt");
-		assertEquals(NOT_FOUND, e.getHttpStatus());
+		assertEquals(NOT_FOUND, e.getHttpStatusCode());
 	}
 
 	@Test

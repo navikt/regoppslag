@@ -8,7 +8,6 @@ import no.nav.regoppslag.exceptions.Norg2FunctionalException;
 import no.nav.regoppslag.exceptions.Norg2TechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.metrics.Metrics;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -38,7 +37,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_NAVN, key = "#enhetNr")
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public EnhetNavn hentEnhetNavn(String enhetNr) {
 
@@ -51,7 +50,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_KONTAKTINFO, key = "#enhetNr")
-	@Retryable(include = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ENHET_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public EnhetKontaktinformasjon hentEnhetKontaktinformasjon(String enhetNr) {
 
@@ -66,12 +65,12 @@ public class OrganisasjonsenhetConsumer {
 	private void handleError(Throwable error) {
 		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 			throw new Norg2FunctionalException(error,
-					String.format("Kall mot norg2 feilet funksjonelt med status: %s, feilmelding: %s",
-							response.getRawStatusCode(),
+					String.format("Kall mot norg2 feilet funksjonelt med status=%s, feilmelding=%s",
+							response.getStatusCode(),
 							response.getMessage()), response.getStatusCode());
 		} else {
 			throw new Norg2TechnicalException(
-					String.format("Kall mot norg2 feilet feilet teknisk med feilmelding: %s", error.getMessage()),
+					String.format("Kall mot norg2 feilet feilet teknisk med feilmelding=%s", error.getMessage()),
 					error) {
 			};
 		}

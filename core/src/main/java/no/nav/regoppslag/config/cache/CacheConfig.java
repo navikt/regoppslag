@@ -3,7 +3,7 @@ package no.nav.regoppslag.config.cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.SimpleCacheManager;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 @Configuration
 @EnableCaching
 @Slf4j
-public class CacheConfig extends CachingConfigurerSupport {
+public class CacheConfig implements CachingConfigurer {
 
 	public static final String HENT_NAV_ANSATT_NAVN = "hentNAVAnsattNavn";
 	public static final String HENT_ENHET_NAVN = "hentEnhetNavn";
