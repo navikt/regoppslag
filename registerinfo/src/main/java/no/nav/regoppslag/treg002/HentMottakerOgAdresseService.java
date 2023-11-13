@@ -122,8 +122,8 @@ public class HentMottakerOgAdresseService {
 			}
 			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
-			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
+			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
 		}
 	}
 }
