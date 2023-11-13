@@ -7,6 +7,7 @@ import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
+import no.nav.regoppslag.service.PostnummerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
-import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGINASJON_NAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGANISASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
@@ -41,14 +42,17 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonFor
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithNoContact;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithOrganisasjon;
 import static no.nav.regoppslag.util.PDLResponseUtil.createKontaktinformasjonForDoedsboWithPerson;
-import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrginasjonSomKontakt;
+import static no.nav.regoppslag.util.PDLResponseUtil.createNavnForOrganisasjonSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonKontaktAdresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createPersonKontaktAdresseUtenPoststed;
 import static no.nav.regoppslag.util.PDLResponseUtil.organisasjonSomKontakt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.GONE;
 
@@ -57,6 +61,8 @@ class DoedsboAdresseServiceTest {
 
 	private static final String FEILMELDING_PERSON_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 
+	@Mock
+	private PostnummerService postnummerService;
 	@Mock
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	@InjectMocks
@@ -151,7 +157,7 @@ class DoedsboAdresseServiceTest {
 
 	@Test
 	public void shouldMapKontaktinformasjonForDoedsboWithOrganisasjonSomKontakt() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), createPersonKontaktAdresse());
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrganisasjonSomKontakt()), createPersonKontaktAdresse());
 		HentPerson hentPerson = createHentePersonBuilder()
 				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
@@ -161,7 +167,7 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
+		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -169,6 +175,30 @@ class DoedsboAdresseServiceTest {
 		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
+	}
+
+	@Test
+	public void shouldMapKontaktinformasjonUtenPoststedForDoedsboWithOrganisasjonSomKontakt() {
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrganisasjonSomKontakt()), createPersonKontaktAdresseUtenPoststed());
+		HentPerson hentPerson = createHentePersonBuilder()
+				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
+				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
+				.build();
+		when(postnummerService.finnPoststed(POSTNUMMER)).thenReturn(POSTSTED);
+
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PostadresseTo response = mottakerInfo.getPostadresse();
+
+		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
+		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
+		assertNull(response.getAdresselinje3());
+		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
+		assertEquals(LANDKODE_NORGE, response.getLandkode());
+		assertEquals(kontaktinformasjon.getAdresse().getPostnummer(), response.getPostnummer());
+		assertEquals(POSTSTED, response.getPoststed());
+		assertEquals(KONTAKTINFORMASJONFORDØDSBO, response.getAdressekilde());
+		verify(postnummerService, times(1)).finnPoststed(POSTNUMMER);
 	}
 
 	@Test
@@ -195,7 +225,7 @@ class DoedsboAdresseServiceTest {
 
 	@Test
 	public void shouldMapKontaktinformasjonForDoedsboWithKontaktPersonNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), createPersonKontaktAdresse());
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrganisasjonSomKontakt()), createPersonKontaktAdresse());
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
@@ -207,7 +237,7 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(CO_ORGINASJON_NAVN, response.getAdresselinje1());
+		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -229,7 +259,7 @@ class DoedsboAdresseServiceTest {
 
 	@Test
 	public void shouldThrowUkjentAdressePersonErDoedExceptionWhenKontaktAdresseForDoedsboIsNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrginasjonSomKontakt()), null);
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrganisasjonSomKontakt()), null);
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))

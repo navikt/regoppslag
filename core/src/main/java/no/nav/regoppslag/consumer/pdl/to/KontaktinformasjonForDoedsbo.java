@@ -24,7 +24,8 @@ public class KontaktinformasjonForDoedsbo {
 	private Metadata metadata;
 
 	public enum Skifteform {
-		OFFENTLIG, ANNET
+		OFFENTLIG,
+		ANNET
 	}
 
 	@Data

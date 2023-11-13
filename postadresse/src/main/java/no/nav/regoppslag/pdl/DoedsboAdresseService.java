@@ -117,8 +117,7 @@ public class DoedsboAdresseService {
 					.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
 					.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
 					.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-					.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer())
-							: adresse.getPoststedsnavn())
+					.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer()) : adresse.getPoststedsnavn())
 					.landkode(ALPHA2_NORGE_LANDKODE)
 					.build();
 		}
