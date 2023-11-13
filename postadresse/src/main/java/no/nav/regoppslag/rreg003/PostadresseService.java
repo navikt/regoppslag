@@ -125,7 +125,7 @@ public class PostadresseService {
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof UkjentAdressePersonErDoedException) {
-			log.info(format("RREG003: %s", e.getMessage()), e);
+			log.info("RREG003: {}", e.getMessage());
 			throw (UkjentAdressePersonErDoedException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
