@@ -8,13 +8,13 @@ import static org.springframework.http.HttpStatus.GONE;
 
 @Getter
 @ResponseStatus(value = GONE)
-public class UkjentAdressePersonErDoed extends RegOppslagFunctionalException {
+public class UkjentAdressePersonErDoedException extends RegOppslagFunctionalException {
 
-	public UkjentAdressePersonErDoed(String message, HttpStatusCode httpStatusCode) {
+	public UkjentAdressePersonErDoedException(String message, HttpStatusCode httpStatusCode) {
 		super(message, httpStatusCode);
 	}
 
-	public UkjentAdressePersonErDoed(String message, Throwable cause, String metricMessage, HttpStatusCode httpStatusCode) {
+	public UkjentAdressePersonErDoedException(String message, Throwable cause, String metricMessage, HttpStatusCode httpStatusCode) {
 		super(message, cause, metricMessage, httpStatusCode);
 	}
 }

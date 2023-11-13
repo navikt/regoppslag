@@ -12,7 +12,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoed;
+import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,6 @@ import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -110,9 +109,9 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof RegOppslagFunctionalException && GONE.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-			log.error(format("TREG002 Funksjonell feil: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoed(e.getMessage(), ((RegOppslagFunctionalException) e).getHttpStatusCode());
+		if (e instanceof UkjentAdressePersonErDoedException) {
+			log.info("TREG002: {}", e.getMessage());
+			throw (UkjentAdressePersonErDoedException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
@@ -123,9 +122,8 @@ public class HentMottakerOgAdresseService {
 			}
 			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
-			log.error(String.format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()
-					.getSimpleName());
+			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
 		}
 	}
 }
