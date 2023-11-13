@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -91,22 +92,22 @@ public class KompletterBrevdataService {
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
 		} catch (UkjentAdressePersonErDoedException e) {
 			log.info("TREG001: {}", e.getMessage());
-			throw new UkjentAdressePersonErDoedException(e.getMessage(), e, "TREG001", e.getHttpStatusCode());
+			throw e;
 		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException | UkjentAdresseException e) {
 			if (NOT_FOUND.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
-				throw new RegOppslagIkkeFunnetException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+				throw new RegOppslagIkkeFunnetException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
 			} else {
 				log.error("TREG001 Funksjonell feil: {}", e.getMessage());
-				throw new RegoppslagIllegalArgumentException(String.format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+				throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
 			}
 		} catch (RegOppslagSecurityException e) {
 			log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());
-			throw new RegOppslagSecurityException(String.format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
+			throw new RegOppslagSecurityException(format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
-		} catch(RegOppslagIngenTilgangException e) {
+		} catch (RegOppslagIngenTilgangException e) {
 			log.warn("TREG001 Ingen tilgang til ressurs: " + e.getMessage());
 			throw e;
 		}

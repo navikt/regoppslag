@@ -126,11 +126,11 @@ public class PostadresseService {
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof UkjentAdressePersonErDoedException) {
 			log.info(format("RREG003: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoedException(e.getMessage(), ((UkjentAdressePersonErDoedException) e).getHttpStatusCode());
+			throw (UkjentAdressePersonErDoedException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
-		} else if(e instanceof RegOppslagIngenTilgangException) {
+		} else if (e instanceof RegOppslagIngenTilgangException) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {
@@ -140,9 +140,8 @@ public class PostadresseService {
 			}
 			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
-			log.error(String.format("RREG003 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(String.format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass()
-					.getSimpleName());
+			log.error(format("RREG003 Teknisk feil: %s", e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
 		}
 	}
 }

@@ -157,7 +157,7 @@ public class ElementEnricher {
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
 		if (e instanceof UkjentAdressePersonErDoedException) {
-			throw new UkjentAdressePersonErDoedException(e.getLocalizedMessage(), e, TREG001, ((UkjentAdressePersonErDoedException) e).getHttpStatusCode());
+			throw (UkjentAdressePersonErDoedException) e;
 		} else if (e instanceof RegOppslagIngenTilgangException) {
 			throw (RegOppslagIngenTilgangException) e;
 		} else if (e instanceof RegOppslagFunctionalException) {

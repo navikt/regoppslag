@@ -122,7 +122,7 @@ public class PDLResponseUtil {
 	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
 	public static final String COADRESSENAVN = "C/O Herr Andersen";
 	public static final String V_ADRESSENAVN = "v/ Herr Andersen";
-	public static final String CO_ORGINASJON_NAVN = "v/ Fred Advokat AS";
+	public static final String CO_ORGANISASJON_NAVN = "v/ Fred Advokat AS";
 
 	public static final String TEMA = "DAG";
 	public static final String POSTSTED_OSLO = "OSLO";
@@ -619,7 +619,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static KontaktinformasjonForDoedsbo.Personnavn createNavnForOrginasjonSomKontakt() {
+	public static KontaktinformasjonForDoedsbo.Personnavn createNavnForOrganisasjonSomKontakt() {
 		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
 		personnavn.setFornavn(ORGANISASJONNAVN);
 		return personnavn;
@@ -639,6 +639,13 @@ public class PDLResponseUtil {
 		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
 		kontaktAdresse.setPostnummer(POSTNUMMER);
 		kontaktAdresse.setPoststedsnavn(POSTSTED);
+		return kontaktAdresse;
+	}
+
+	public static KontaktinformasjonForDoedsbo.KontaktAdresse createPersonKontaktAdresseUtenPoststed() {
+		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
+		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
+		kontaktAdresse.setPostnummer(POSTNUMMER);
 		return kontaktAdresse;
 	}
 

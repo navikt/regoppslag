@@ -111,7 +111,7 @@ public class HentMottakerOgAdresseService {
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof UkjentAdressePersonErDoedException) {
 			log.info(format("TREG002: %s", e.getMessage()), e);
-			throw new UkjentAdressePersonErDoedException(e.getMessage(), ((UkjentAdressePersonErDoedException) e).getHttpStatusCode());
+			throw (UkjentAdressePersonErDoedException) e;
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
