@@ -30,13 +30,13 @@ import static java.util.function.Predicate.not;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.ERROR_REASON_CODE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * Implementasjon av reglene i
@@ -57,7 +57,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Component
 public class MapPDLResponse {
-
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 	private final Clock clock;
@@ -141,22 +140,22 @@ public class MapPDLResponse {
 			if (bostedsadresseOptional.isPresent()) {
 				return bostedsadresseOptional.get();
 			} else {
-				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", NOT_FOUND);
+				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", ERROR_REASON_CODE);
 			}
 		}
 
 		if (PERSONSTATUS_UTFLYTTET.equalsIgnoreCase(hentPerson.getFolkeregisterstatus())) {
 			throw new UkjentAdresseException(format("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=%s",
-					hentPerson.getFolkeregistermetadataKilde()), NOT_FOUND);
+					hentPerson.getFolkeregistermetadataKilde()), ERROR_REASON_CODE);
 		}
 
-		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", NOT_FOUND);
+		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", ERROR_REASON_CODE);
 	}
 
 	private void generateAndLogDebugLog(String adresseType, LocalDateTime gyldigFraOgMed, String debugLog, String nyesteAdresseType) {
 		//Ønsker bare å logge info hvis erBostedsadresseGyldigMedDatoFra != false.
 		//Sjekker det implisitt her ved å sjekke om stringen er tom da denne bare får en verdi om erBostedsadresseGyldigMedDatoFra == true.
-		if(!debugLog.isBlank()) {
+		if (!debugLog.isBlank()) {
 			debugLog += generateDebugLog(adresseType, gyldigFraOgMed);
 			debugLog += nyesteAdresseType + " er den sist oppdaterte adressen. Returnerer adresseType " + nyesteAdresseType;
 			log.info(debugLog);
@@ -164,7 +163,7 @@ public class MapPDLResponse {
 	}
 
 	private String generateDebugLog(String adresseType, LocalDateTime gyldigFraOgMed) {
-		return adresseType + (gyldigFraOgMed == null ?  " har ingen gyldigFraOgMed. Bruker siste endring som gyldigFraOgMed\n" :
+		return adresseType + (gyldigFraOgMed == null ? " har ingen gyldigFraOgMed. Bruker siste endring som gyldigFraOgMed\n" :
 				" har satt gyldigFraOgMed. Bruker gyldigFraOgMed\n");
 	}
 
@@ -270,7 +269,7 @@ public class MapPDLResponse {
 		} else if (nonNull(matrikkeladresse)) {
 			return Optional.of(norskAdresseService.mapMatrikkeladresse(matrikkeladresse, adresseKilde));
 		} else if (nonNull(ukjentBosted)) {
-			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", NOT_FOUND);
+			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", ERROR_REASON_CODE);
 		}
 
 		return empty();

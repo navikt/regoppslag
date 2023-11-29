@@ -93,7 +93,7 @@ public class KompletterBrevdataService {
 		} catch (UkjentAdressePersonErDoedException e) {
 			log.info("TREG001: {}", e.getMessage());
 			throw e;
-		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException | UkjentAdresseException e) {
+		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException e) {
 			if (NOT_FOUND.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 				throw new RegOppslagIkkeFunnetException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
@@ -103,6 +103,9 @@ public class KompletterBrevdataService {
 				throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
 			}
+		} catch (UkjentAdresseException e) {
+			log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
+			throw e;
 		} catch (RegOppslagSecurityException e) {
 			log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());
 			throw new RegOppslagSecurityException(format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e

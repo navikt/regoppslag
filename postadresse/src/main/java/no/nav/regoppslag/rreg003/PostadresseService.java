@@ -13,6 +13,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import org.springframework.stereotype.Component;
@@ -124,19 +125,22 @@ public class PostadresseService {
 
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof UkjentAdressePersonErDoedException) {
+		if (e instanceof UkjentAdressePersonErDoedException err) {
 			log.info("RREG003: {}", e.getMessage());
-			throw (UkjentAdressePersonErDoedException) e;
-		} else if (e instanceof RegOppslagSecurityException) {
+			throw err;
+		} else if (e instanceof UkjentAdresseException err) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			throw (RegOppslagSecurityException) e;
-		} else if (e instanceof RegOppslagIngenTilgangException) {
+			throw err;
+		} else if (e instanceof RegOppslagSecurityException err) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			throw (RegOppslagIngenTilgangException) e;
-		} else if (e instanceof RegOppslagFunctionalException) {
+			throw err;
+		} else if (e instanceof RegOppslagIngenTilgangException err) {
+			log.warn(RREG003_FUNK_FEIL, e.getMessage());
+			throw err;
+		} else if (e instanceof RegOppslagFunctionalException err) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
+				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, "RREG003", err.getHttpStatusCode());
 			}
 			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {

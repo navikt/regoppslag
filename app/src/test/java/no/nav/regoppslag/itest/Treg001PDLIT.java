@@ -21,8 +21,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.ERROR_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlDigdir;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
@@ -247,7 +249,8 @@ public class Treg001PDLIT extends AbstractIT {
 
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertThat(e.getResponseBodyAsString()).contains("Funksjonell feil: dokumenttypeId=123 feilmelding=Fant ikke bostedsadresse for personen i PDL");
+		assertThat(e.getResponseBodyAsString()).contains("Fant ikke bostedsadresse for personen i PDL");
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE).get(0)).isEqualTo(ERROR_REASON_CODE);
 	}
 
 	@Test

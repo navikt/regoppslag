@@ -39,6 +39,7 @@ import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.ERROR_REASON_CODE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_MIDLERTIDIG;
@@ -506,8 +507,9 @@ public class MapPDLResponseTest {
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
-		assertEquals(NOT_FOUND, e.getHttpStatusCode());
-		assertEquals("Fant ikke bostedsadresse for personen i PDL", e.getMessage());
+		assertEquals(NOT_FOUND, e.getStatusCode());
+		assertEquals("Fant ikke bostedsadresse for personen i PDL", e.getReason());
+		assertEquals(ERROR_REASON_CODE, e.getReasonCode());
 	}
 
 	@Test
@@ -516,8 +518,9 @@ public class MapPDLResponseTest {
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
-		assertEquals(NOT_FOUND, e.getHttpStatusCode());
-		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getMessage());
+		assertEquals(NOT_FOUND, e.getStatusCode());
+		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getReason());
+		assertEquals(ERROR_REASON_CODE, e.getReasonCode());
 	}
 
 	@Test
@@ -628,37 +631,37 @@ public class MapPDLResponseTest {
 	static Stream<Arguments> shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse() {
 		return Stream.of(
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(1, 1),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), OPPHOLDSADRESSE),
+						createBostedsAdresseWithAntallDager(1, 1),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), OPPHOLDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(null, 1),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), OPPHOLDSADRESSE),
+						createBostedsAdresseWithAntallDager(null, 1),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), OPPHOLDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createUtenlandskBostedsAdresseWithAntallDager(1, 1),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), BOSTEDSADRESSE),
+						createUtenlandskBostedsAdresseWithAntallDager(1, 1),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), BOSTEDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createUtenlandskBostedsAdresseWithAntallDager(null, 1),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), BOSTEDSADRESSE),
+						createUtenlandskBostedsAdresseWithAntallDager(null, 1),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), BOSTEDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(2, 1),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), OPPHOLDSADRESSE),
+						createBostedsAdresseWithAntallDager(2, 1),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), OPPHOLDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(2, 2),
-								createOppholdsAdresseWithAntallDager(null, 1)
-						), OPPHOLDSADRESSE),
+						createBostedsAdresseWithAntallDager(2, 2),
+						createOppholdsAdresseWithAntallDager(null, 1)
+				), OPPHOLDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(null, 3),
-								createOppholdsAdresseWithAntallDager(2, 2)
-						), OPPHOLDSADRESSE),
+						createBostedsAdresseWithAntallDager(null, 3),
+						createOppholdsAdresseWithAntallDager(2, 2)
+				), OPPHOLDSADRESSE),
 				Arguments.of(createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(
-								createBostedsAdresseWithAntallDager(null, 3),
-								createOppholdsAdresseWithAntallDager(null, 2)
-						), OPPHOLDSADRESSE)
+						createBostedsAdresseWithAntallDager(null, 3),
+						createOppholdsAdresseWithAntallDager(null, 2)
+				), OPPHOLDSADRESSE)
 		);
 	}
 
