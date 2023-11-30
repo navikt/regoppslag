@@ -57,7 +57,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Component
 public class MapPDLResponse {
 
-	public static final String ERROR_REASON_CODE = "ukjent_adresse";
+	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner og
+	// ikke endrer innholdet i UKJENT_ADRESSE_REASON_CODE.
+	public static final String UKJENT_ADRESSE_REASON_CODE = "ukjent_adresse";
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 	private final Clock clock;
@@ -141,16 +143,16 @@ public class MapPDLResponse {
 			if (bostedsadresseOptional.isPresent()) {
 				return bostedsadresseOptional.get();
 			} else {
-				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", ERROR_REASON_CODE);
+				throw new UkjentAdresseException("Fant ikke bostedsadresse for personen i PDL", UKJENT_ADRESSE_REASON_CODE);
 			}
 		}
 
 		if (PERSONSTATUS_UTFLYTTET.equalsIgnoreCase(hentPerson.getFolkeregisterstatus())) {
 			throw new UkjentAdresseException(format("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=%s",
-					hentPerson.getFolkeregistermetadataKilde()), ERROR_REASON_CODE);
+					hentPerson.getFolkeregistermetadataKilde()), UKJENT_ADRESSE_REASON_CODE);
 		}
 
-		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", ERROR_REASON_CODE);
+		throw new UkjentAdresseException("Fant ikke adresse for personen i PDL", UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	private void generateAndLogDebugLog(String adresseType, LocalDateTime gyldigFraOgMed, String debugLog, String nyesteAdresseType) {
@@ -270,7 +272,7 @@ public class MapPDLResponse {
 		} else if (nonNull(matrikkeladresse)) {
 			return Optional.of(norskAdresseService.mapMatrikkeladresse(matrikkeladresse, adresseKilde));
 		} else if (nonNull(ukjentBosted)) {
-			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", ERROR_REASON_CODE);
+			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", UKJENT_ADRESSE_REASON_CODE);
 		}
 
 		return empty();

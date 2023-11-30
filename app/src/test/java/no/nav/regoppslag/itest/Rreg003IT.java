@@ -23,7 +23,7 @@ import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
-import static no.nav.regoppslag.pdl.MapPDLResponse.ERROR_REASON_CODE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
@@ -207,7 +207,7 @@ public class Rreg003IT extends AbstractIT {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
 
 		assertThat(e.getMessage()).contains("Fant ikke adresse for personen i PDL");
-		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(ERROR_REASON_CODE);
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	@Test

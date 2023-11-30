@@ -47,7 +47,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
-import static no.nav.regoppslag.pdl.MapPDLResponse.ERROR_REASON_CODE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
@@ -509,7 +509,7 @@ public class MapPDLResponseTest {
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
 		assertEquals(NOT_FOUND, e.getStatusCode());
 		assertEquals("Fant ikke bostedsadresse for personen i PDL", e.getReason());
-		assertEquals(ERROR_REASON_CODE, e.getReasonCode());
+		assertEquals(UKJENT_ADRESSE_REASON_CODE, e.getReasonCode());
 	}
 
 	@Test
@@ -520,7 +520,7 @@ public class MapPDLResponseTest {
 				mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002, TEMA));
 		assertEquals(NOT_FOUND, e.getStatusCode());
 		assertEquals("Fant ikke adresse for personen i PDL, med status=utflyttet og kilde=KILDE_DSF", e.getReason());
-		assertEquals(ERROR_REASON_CODE, e.getReasonCode());
+		assertEquals(UKJENT_ADRESSE_REASON_CODE, e.getReasonCode());
 	}
 
 	@Test

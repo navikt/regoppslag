@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
-import static no.nav.regoppslag.pdl.MapPDLResponse.ERROR_REASON_CODE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
@@ -513,7 +513,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 				"Test did not throw exception");
 
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(ERROR_REASON_CODE);
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	@Test
