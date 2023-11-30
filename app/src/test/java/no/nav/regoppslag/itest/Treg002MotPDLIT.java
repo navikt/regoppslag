@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
-import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.ERROR_REASON_CODE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.ERROR_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
@@ -62,6 +62,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE3;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -511,8 +512,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class),
 				"Test did not throw exception");
 
-		assertEquals(NOT_FOUND, e.getStatusCode());
-		assertEquals(ERROR_REASON_CODE, e.getResponseHeaders().get(NAV_REASON_CODE).get(0));
+		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(ERROR_REASON_CODE);
 	}
 
 	@Test

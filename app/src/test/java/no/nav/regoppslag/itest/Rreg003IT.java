@@ -23,10 +23,12 @@ import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.ERROR_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
+import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -199,12 +201,13 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionPDLAdresseWhichNullPostboks() {
+	public void shoudThrowUkjentAdresseExceptionWhenPostboksAdresseIsNull() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postboks.json");
 
-		HttpClientErrorException errorException = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
 
-		assertThat(errorException.getMessage()).contains("Fant ikke adresse for personen i PDL");
+		assertThat(e.getMessage()).contains("Fant ikke adresse for personen i PDL");
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(ERROR_REASON_CODE);
 	}
 
 	@Test
