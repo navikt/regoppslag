@@ -57,8 +57,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Component
 public class MapPDLResponse {
 
-	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner og
-	// ikke endrer innholdet i UKJENT_ADRESSE_REASON_CODE.
+	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner, så innholdet i UKJENT_ADRESSE_REASON_CODE må ikke endres!
 	public static final String UKJENT_ADRESSE_REASON_CODE = "ukjent_adresse";
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;

@@ -228,8 +228,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class));
 
 		verify(getRequestedFor(urlEqualTo("/v1/organisasjon/111111111")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -261,8 +260,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(e.getResponseBodyAsString()).contains("Funksjonell feil: dokumenttypeId=123 feilmelding=Funksjonell feil ved kall mot Digdir KRR. Feilmelding=400 Bad Request");
@@ -275,8 +273,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
 	}
@@ -289,8 +286,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -303,8 +299,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(NOT_FOUND.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_norg2_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_norg2_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(getRequestedFor(urlEqualTo("/norg2/enhet/0136")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -318,8 +313,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
@@ -333,8 +327,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_request_orgv4.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/v1/organisasjon/111111111")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -347,8 +340,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_norg2_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_norg2_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 5), getRequestedFor(urlEqualTo("/norg2/enhet/0136")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -363,8 +355,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -379,8 +370,7 @@ public class Treg001PDLIT extends AbstractIT {
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
-						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
-				"Test did not throw exception");
+						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
 		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
