@@ -18,11 +18,11 @@ import static no.nav.regoppslag.metrics.MetricLabels.ADRESSETYPE;
 import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.metrics.MetricLabels.TREG002_ADRESSE_MAPPER;
 import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static no.nav.regoppslag.service.LandkodeService.finnLandkode;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
@@ -103,7 +103,7 @@ public class AdresseMapper {
 					.build();
 		}
 
-		throw new UkjentAdresseException("RREG003: Kunne ikke mappe postadresse for postadresseType", NOT_FOUND);
+		throw new UkjentAdresseException("RREG003: Kunne ikke mappe postadresse for postadresseType", UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	private String getLandkode(String land) {

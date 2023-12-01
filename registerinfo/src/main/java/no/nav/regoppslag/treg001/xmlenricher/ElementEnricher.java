@@ -11,6 +11,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import no.nav.regoppslag.treg001.xmlenricher.util.Aggregate;
@@ -156,19 +157,21 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
-		if (e instanceof UkjentAdressePersonErDoedException) {
-			throw (UkjentAdressePersonErDoedException) e;
-		} else if (e instanceof RegOppslagIngenTilgangException) {
-			throw (RegOppslagIngenTilgangException) e;
-		} else if (e instanceof RegOppslagFunctionalException) {
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
+		if (e instanceof UkjentAdressePersonErDoedException err) {
+			throw err;
+		} else if (e instanceof RegOppslagIngenTilgangException err) {
+			throw err;
+		} else if (e instanceof RegOppslagFunctionalException err) {
+			if (NOT_FOUND.equals(err.getHttpStatusCode())) {
+				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, TREG001, err.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getMessage(), e, TREG001, ((RegOppslagFunctionalException) e).getHttpStatusCode());
-		} else if (e instanceof RegOppslagSecurityException) {
-			throw (RegOppslagSecurityException) e;
-		} else if (e instanceof RegOppslagTechnicalException) {
-			throw (RegOppslagTechnicalException) e;
+			throw new RegoppslagIllegalArgumentException(err.getMessage(), err, TREG001, err.getHttpStatusCode());
+		} else if (e instanceof UkjentAdresseException exception) {
+			throw exception;
+		} else if (e instanceof RegOppslagSecurityException err) {
+			throw err;
+		} else if (e instanceof RegOppslagTechnicalException err) {
+			throw err;
 		} else {
 			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
 		}

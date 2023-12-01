@@ -12,6 +12,7 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
@@ -115,12 +116,15 @@ public class HentMottakerOgAdresseService {
 		} else if (e instanceof RegOppslagSecurityException) {
 			log.warn(TREG002_FUNK_FEIL, e.getMessage());
 			throw (RegOppslagSecurityException) e;
-		} else if (e instanceof RegOppslagFunctionalException) {
-			log.warn(TREG002_FUNK_FEIL, e.getMessage());
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
+		} else if (e instanceof RegOppslagFunctionalException funErr) {
+			log.warn(TREG002_FUNK_FEIL, funErr.getMessage());
+			if (NOT_FOUND.equals(funErr.getHttpStatusCode())) {
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", funErr.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", ((RegOppslagFunctionalException) e).getHttpStatusCode());
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", funErr.getHttpStatusCode());
+		} else if (e instanceof UkjentAdresseException err) {
+			log.warn(TREG002_FUNK_FEIL, err.getMessage());
+			throw err;
 		} else {
 			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
 			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());

@@ -27,8 +27,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.HENT_MOTTAKEROGADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE1_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE2_POSTBOKS;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSELINJE_POSTBOKS;
@@ -60,6 +62,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE3;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -443,8 +446,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 						.withBodyFile("treg002/ereg/ereg-ugyldiginput.json")));
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, TEMA, TYPE_ORGANISASJON), HentMottakerOgAdresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, TEMA, TYPE_ORGANISASJON), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
 	}
@@ -481,8 +483,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 						.withBodyFile("treg002/ereg/ereg-ikkefunnet.json")));
 
 		HttpStatusCodeException e = assertThrows(HttpStatusCodeException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, TEMA, TYPE_ORGANISASJON), HentMottakerOgAdresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ORGANISASJONNUMMER, TEMA, TYPE_ORGANISASJON), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
 	}
@@ -506,10 +507,10 @@ public class Treg002MotPDLIT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class));
 
-		assertEquals(NOT_FOUND, e.getStatusCode());
+		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	@Test
@@ -517,8 +518,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/unauthenticated-error-response.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequestNoToken(), HentMottakerOgAdresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplateNoHeader.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequestNoToken(), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(UNAUTHORIZED, e.getStatusCode());
 	}
@@ -528,8 +528,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		postPdlGraphqlWithErrorResponse(INTERNAL_SERVER_ERROR.value());
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class),
-				"Test did not throw exception");
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TEMA, TYPE_PERSON), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}

@@ -5,8 +5,8 @@ import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEnd
 import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException;
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
-import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
+import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class DigitalKontaktinformasjon {
 		HttpHeaders headers = createHeaders();
 
 		if (isBlank(personidentifikator)) {
-			throw new RegOppslagIkkeFunnetException("Personidentifikator kan ikke være null", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Personidentifikator kan ikke være null", BAD_REQUEST);
 		}
 
 		final String fnrTrimmed = personidentifikator.trim();
