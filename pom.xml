@@ -33,7 +33,7 @@
 		<springdoc-openapi-starter-webmvc-ui.version>2.2.0</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
-		<token-support.version>3.1.8</token-support.version>
+		<token-support.version>3.2.0</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>13-5459a4f</dokmet-api.version>
