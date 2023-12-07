@@ -8,7 +8,7 @@ public class PdlFunctionalException extends RegOppslagFunctionalException {
         super(message, httpStatusCode);
     }
 
-    public PdlFunctionalException(String message, Throwable cause, String metricMessage, HttpStatusCode httpStatusCode) {
-        super(message, cause, metricMessage, httpStatusCode);
+    public PdlFunctionalException(String message, Throwable cause, HttpStatusCode httpStatusCode) {
+        super(message, cause, httpStatusCode);
     }
 }

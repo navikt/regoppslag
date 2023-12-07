@@ -48,8 +48,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 public class ElementEnricher {
 
-	private static final String TREG001 = "TREG001";
-
 	private ElementEnricherPluginRegistry registry;
 	private final AttributeValueNamespaceResolver attributeValueNamespaceResolver;
 
@@ -163,9 +161,9 @@ public class ElementEnricher {
 			throw err;
 		} else if (e instanceof RegOppslagFunctionalException err) {
 			if (NOT_FOUND.equals(err.getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, TREG001, err.getHttpStatusCode());
+				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(err.getMessage(), err, TREG001, err.getHttpStatusCode());
+			throw new RegoppslagIllegalArgumentException(err.getMessage(), err, err.getHttpStatusCode());
 		} else if (e instanceof UkjentAdresseException exception) {
 			throw exception;
 		} else if (e instanceof RegOppslagSecurityException err) {
@@ -173,7 +171,7 @@ public class ElementEnricher {
 		} else if (e instanceof RegOppslagTechnicalException err) {
 			throw err;
 		} else {
-			throw new RegOppslagTechnicalException(e, e.getClass().getSimpleName());
+			throw new RegOppslagTechnicalException(e);
 		}
 	}
 

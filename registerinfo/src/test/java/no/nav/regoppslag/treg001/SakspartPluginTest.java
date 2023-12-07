@@ -11,7 +11,6 @@ import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
@@ -76,9 +75,8 @@ public class SakspartPluginTest {
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 
-		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService, metrics);
-		sakspartPlugin = new SakspartPlugin(metrics, pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService);
+		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(ORGNAVN));
 	}
 

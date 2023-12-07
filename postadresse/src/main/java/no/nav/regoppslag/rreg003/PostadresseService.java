@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_RREG003;
+import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
 import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -140,12 +140,12 @@ public class PostadresseService {
 		} else if (e instanceof RegOppslagFunctionalException err) {
 			log.warn(RREG003_FUNK_FEIL, e.getMessage());
 			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, "RREG003", err.getHttpStatusCode());
+				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "RREG003", ((RegOppslagFunctionalException) e).getHttpStatusCode());
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
 			log.error(format("RREG003 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 		}
 	}
 }

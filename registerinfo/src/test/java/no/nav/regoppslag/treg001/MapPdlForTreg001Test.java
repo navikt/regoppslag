@@ -10,7 +10,6 @@ import no.nav.regoppslag.consumer.dokmet.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.pdl.NorskAdresseService;
@@ -83,7 +82,7 @@ class MapPdlForTreg001Test {
 		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
 		eregConsumer = mock(EregConsumer.class);
 
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), mock(MicrometerMetrics.class));
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
 		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 	}
 

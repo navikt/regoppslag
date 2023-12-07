@@ -12,7 +12,6 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -47,7 +46,6 @@ public class KompletterBrevdataService {
 
 	private final ElementEnricher elementEnricher;
 
-	@Autowired
 	public KompletterBrevdataService(ElementEnricher elementEnricher) {
 		this.elementEnricher = elementEnricher;
 	}
@@ -83,10 +81,9 @@ public class KompletterBrevdataService {
 		} catch (MarshallerTechnicalException e) {
 			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
-		} catch (ParserConfigurationException | IOException | TransformerConfigurationException |
-				 MissingPluginException e) {
+		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
 			log.error("Teknisk feil ved parsing av brevdata: " + e.getMessage(), e);
-			throw new RegOppslagTechnicalException(e, "Teknisk feil ved parsing av brevdata");
+			throw new RegOppslagTechnicalException(e);
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
 			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
@@ -96,12 +93,10 @@ public class KompletterBrevdataService {
 		} catch (RegOppslagIkkeFunnetException | RegoppslagIllegalArgumentException e) {
 			if (NOT_FOUND.equals(e.getHttpStatusCode())) {
 				log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
-				throw new RegOppslagIkkeFunnetException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
+				throw new RegOppslagIkkeFunnetException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e.getMessage()), e, e.getHttpStatusCode());
 			} else {
 				log.error("TREG001 Funksjonell feil: {}", e.getMessage());
-				throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
-						.getMessage()), e, e.getMetricMessage(), e.getHttpStatusCode());
+				throw new RegoppslagIllegalArgumentException(format("Funksjonell feil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e.getMessage()), e, e.getHttpStatusCode());
 			}
 		} catch (UkjentAdresseException e) {
 			log.warn("TREG001 Funksjonell feil: {}", e.getMessage());

@@ -9,7 +9,6 @@ import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +21,9 @@ import org.w3c.dom.Node;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static java.lang.String.format;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
@@ -31,12 +31,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> implements ElementEnricherPlugin {
 
 	public static final String ELEMENT_LOCALNAME = "besoksadresse";
-	public static final String UGYLDIG_INPUT = "NavOrgenhetBesokAdressePlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetBesoksadressePlugin";
 
 	private OrganisasjonsenhetConsumer norg2Consumer;
 	private Norg2Mapper norg2Mapper;
-	private MicrometerMetrics metrics;
 
 	public NavOrgenhetBesoksadressePlugin() {
 		super(Besoksadresse.class);
@@ -44,26 +42,22 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 
 	@Autowired
 	public NavOrgenhetBesoksadressePlugin(OrganisasjonsenhetConsumer norg2Consumer,
-										  Norg2Mapper norg2Mapper,
-										  MicrometerMetrics metrics) {
+										  Norg2Mapper norg2Mapper) {
 		super(Besoksadresse.class);
 		this.norg2Consumer = norg2Consumer;
 		this.norg2Mapper = norg2Mapper;
-		this.metrics = metrics;
 	}
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
-		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
-
 		validateElementType(content);
 
 		try {
 			Besoksadresse adresse = unmarshal(content);
 
-			log.info(String.format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+			log.info(format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
 					.getEnhetsId()));
 
 			//Skal elementet berikes?
@@ -79,20 +73,20 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(String.format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
+			log.info(format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
 					.getEnhetsId()));
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(String.format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s med feilmelding=%s", PLUGIN_NAME, e.getMessage()), e);
 		} finally {
 			clearSecurityContext();
 		}
 	}
 
 	private void validateAdresse(Besoksadresse adresse) {
-		if (StringUtils.isEmpty(adresse.getEnhetsId())) {
-			throw new RegoppslagIllegalArgumentException(String.format("Feil i %s: Mangler enhetsId.", PLUGIN_NAME), BAD_REQUEST);
+		if (isEmpty(adresse.getEnhetsId())) {
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s med feilmelding=EnhetsId mangler.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 

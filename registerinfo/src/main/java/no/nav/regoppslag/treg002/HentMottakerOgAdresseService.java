@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
+import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG002;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -119,15 +119,15 @@ public class HentMottakerOgAdresseService {
 		} else if (e instanceof RegOppslagFunctionalException funErr) {
 			log.warn(TREG002_FUNK_FEIL, funErr.getMessage());
 			if (NOT_FOUND.equals(funErr.getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, "TREG002", funErr.getHttpStatusCode());
+				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, "TREG002", funErr.getHttpStatusCode());
+			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
 		} else if (e instanceof UkjentAdresseException err) {
 			log.warn(TREG002_FUNK_FEIL, err.getMessage());
 			throw err;
 		} else {
 			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
-			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e, e.getClass().getSimpleName());
+			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 		}
 	}
 }

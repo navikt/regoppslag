@@ -7,8 +7,6 @@ import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
 import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.Metrics;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,9 +24,8 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpMethod.GET;
@@ -39,18 +36,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class Tkat020DokumenttypeInfo {
 
-	private static final String TKAT020_TEKNISKFEIL = "TKAT020 - Teknisk feil";
-	private static final String TKAT020_INGEN_TREFF = "TKAT020 - Ingen treff";
-
 	private final RestTemplate restTemplate;
-	private final MicrometerMetrics metrics;
 	private final AzureTokenConsumer azureTokenConsumer;
 	private final Oauth2SecuredEndpoint dokmet;
 
 	public Tkat020DokumenttypeInfo(RestTemplateBuilder restTemplateBuilder,
 								   HttpComponentsClientHttpRequestFactory requestFactory,
 								   RegoppslagProperties regoppslagProperties,
-								   MicrometerMetrics metrics,
 								   AzureTokenConsumer azureTokenConsumer) {
 		this.azureTokenConsumer = azureTokenConsumer;
 		this.dokmet = regoppslagProperties.getEndpoints().getDokmet();
@@ -60,16 +52,13 @@ public class Tkat020DokumenttypeInfo {
 				.setConnectTimeout(Duration.ofSeconds(3))
 				.setReadTimeout(Duration.ofSeconds(10))
 				.build();
-		this.metrics = metrics;
 	}
 
 	@Cacheable(value = HENT_DOKMET_SPRAAKINFO, key = "#dokumenttypeId")
 	@Retryable(retryFor = RegOppslagTechnicalException.class, exceptionExpression = "T(org.springframework.http.HttpStatus).NOT_FOUND != getHttpStatusCode()", backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_DOKMET_SPRAAKINFO}, percentiles = {0.5, 0.95}, histogram = true)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		HttpHeaders headers = createHeaders();
 
-		metrics.cacheMiss(HENT_DOKMET_SPRAAKINFO);
 		try {
 			HttpEntity<String> request = new HttpEntity(headers);
 
@@ -81,11 +70,11 @@ public class Tkat020DokumenttypeInfo {
 			}
 		} catch (HttpClientErrorException e) {
 			//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
-			throw new RegOppslagTechnicalException(String.format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ", e
-					.getStatusCode(), dokumenttypeId), e, TKAT020_INGEN_TREFF, INTERNAL_SERVER_ERROR);
+			throw new RegOppslagTechnicalException(format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ",
+					e.getStatusCode(), dokumenttypeId), e, INTERNAL_SERVER_ERROR);
 		} catch (HttpServerErrorException e) {
-			throw new RegOppslagTechnicalException(String.format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s", e
-					.getStatusCode(), dokumenttypeId, e.getMessage()), e, TKAT020_TEKNISKFEIL, e.getStatusCode());
+			throw new RegOppslagTechnicalException(format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s",
+					e.getStatusCode(), dokumenttypeId, e.getMessage()), e, e.getStatusCode());
 		}
 	}
 

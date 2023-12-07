@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001.support;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
@@ -9,14 +7,12 @@ import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.LocalDate;
@@ -63,12 +59,9 @@ public class OrganisasjonEregMapperTest {
 
 	@BeforeEach
 	public void initTests() throws Exception {
-		MeterRegistry registry = new SimpleMeterRegistry();
-		MicrometerMetrics metrics = new MicrometerMetrics();
 		PostnummerService postnummerService = new PostnummerService();
-		ReflectionTestUtils.setField(metrics, "registry", registry);
 
-		mapper = new OrganisasjonEregMapper(postnummerService, metrics);
+		mapper = new OrganisasjonEregMapper(postnummerService);
 	}
 
 	@Test

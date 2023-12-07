@@ -1,11 +1,8 @@
 package no.nav.regoppslag.treg001;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.azure.MsGraphConsumer;
 import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,17 +117,5 @@ public class SaksbehandlerPluginTest {
 		SaksbehandlerMapper saksbehandlerMapper() {
 			return new SaksbehandlerMapper();
 		}
-
-		@Bean
-		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
-		}
-
-		@Bean
-		public MicrometerMetrics metrics() {
-			return new MicrometerMetrics();
-		}
-
-
 	}
 }

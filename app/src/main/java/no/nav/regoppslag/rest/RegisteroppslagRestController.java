@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.metrics.Metrics;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import no.nav.regoppslag.treg001.KompletterBrevdataService;
@@ -24,12 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static java.lang.String.format;
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
-import static no.nav.regoppslag.metrics.MetricLabels.COMPONENT;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_REQUEST;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -61,15 +56,14 @@ public class RegisteroppslagRestController {
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG001, COMPONENT, "kompletterBrevdata"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody
 	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody) throws RegOppslagSecurityException {
 
-		log.info(String.format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
+		log.info(format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 
 		try {
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			log.info(String.format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
+			log.info(format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
 			return response;
 		} catch (MarshallerTechnicalException e) {
 			//Logger error hvis retry ikke fungerer
@@ -91,14 +85,13 @@ public class RegisteroppslagRestController {
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	@Metrics(value = DOK_REQUEST, extraTags = {SERVICE, SERVICE_CODE_TREG002, COMPONENT, "hentMottakerOgAdresse"}, percentiles = {0.5, 0.95}, histogram = true, countExceptions = true)
 	public @ResponseBody
 	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
 
 		try {
-			log.info(String.format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
+			log.info(format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			log.info(String.format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody.getType()));
+			log.info(format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody.getType()));
 			return response;
 		} finally {
 			SecurityContextHolder.clearContext();

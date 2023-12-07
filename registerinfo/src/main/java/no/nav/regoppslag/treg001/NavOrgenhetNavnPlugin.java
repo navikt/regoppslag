@@ -8,11 +8,9 @@ import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,35 +20,29 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG001;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Component
 @Slf4j
 public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements ElementEnricherPlugin {
+
 	public static final String ELEMENT_LOCALNAME = "navEnhet";
 	public static final String ELEMENT_LOCALNAME_BEHANDLENDEENHET = "behandlendeEnhet";
-	public static final String UGYLDIG_INPUT = "NavOrgenhetNavnPlugin - Ugyldig input";
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
 
 	private final OrganisasjonsenhetConsumer norg2Consumer;
 	private final Norg2Mapper norg2Mapper;
-	private final MicrometerMetrics metrics;
-	
-	@Autowired
-	public NavOrgenhetNavnPlugin(OrganisasjonsenhetConsumer norg2Consumer, Norg2Mapper norg2Mapper,
-								 MicrometerMetrics metrics) {
+
+	public NavOrgenhetNavnPlugin(OrganisasjonsenhetConsumer norg2Consumer,
+								 Norg2Mapper norg2Mapper) {
 		super(NavEnhet.class);
 		this.norg2Consumer = norg2Consumer;
 		this.norg2Mapper = norg2Mapper;
-		this.metrics = metrics;
 	}
 	
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
-
-		metrics.pluginReceived(SERVICE_CODE_TREG001, PLUGIN_NAME);
-
 		validateElementType(content);
 		
 		try {
@@ -75,22 +67,21 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(format("Feil i %s: %s", PLUGIN_NAME, e.getMessage()), e, UGYLDIG_INPUT);
+			throw new RegOppslagTechnicalException(format("Feil i %s med feilmelding=%s", PLUGIN_NAME, e.getMessage()), e);
 		} finally {
 			clearSecurityContext();
 		}
 	}
 	
 	private void validateEnhet(NavEnhet navEnhet)  {
-		if (StringUtils.isEmpty(navEnhet.getEnhetsId())) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s: Mangler enhetdId.", PLUGIN_NAME), BAD_REQUEST);
+		if (isEmpty(navEnhet.getEnhetsId())) {
+			throw new RegoppslagIllegalArgumentException(format("Feil i %s med feilmelding=EnhetdId mangler.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
 	
 	private void validateElementType(Node element)  {
 		if (!(ELEMENT_LOCALNAME.equals(element.getLocalName()) || ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(element.getLocalName()))) {
-			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME
-					+ ". Found " + element.getLocalName(), BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME + ". Found " + element.getLocalName(), BAD_REQUEST);
 		}
 	}
 }
