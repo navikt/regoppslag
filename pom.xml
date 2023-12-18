@@ -26,7 +26,7 @@
 		<java.version>17</java.version>
 		<argLine>-Dfile.encoding=UTF8</argLine>
 
-		<resilience4j.version>2.1.0</resilience4j.version>
+		<resilience4j.version>2.2.0</resilience4j.version>
 		<rxjava.version>3.1.8</rxjava.version>
 		<microsoft-graph.version>5.77.0</microsoft-graph.version>
 		<azure-identity.version>1.11.1</azure-identity.version>
