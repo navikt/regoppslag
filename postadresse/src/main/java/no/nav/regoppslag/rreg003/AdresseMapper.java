@@ -11,7 +11,6 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
 import org.springframework.stereotype.Component;
 
-import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.domain.DomainConstants.UNKNOWN_LANDKODE;
@@ -98,7 +97,7 @@ public class AdresseMapper {
 		String landkode = finnLandkode(land);
 
 		if (landkode == null) {
-			log.info(format("TREG002 Mottaker har ingen landkode registert. Setter landkode til \"%s\"", UNKNOWN_LANDKODE));
+			log.info("TREG002 Mottaker har ingen landkode registert. Setter landkode til \"{}\"", UNKNOWN_LANDKODE);
 			return UNKNOWN_LANDKODE;
 		}
 

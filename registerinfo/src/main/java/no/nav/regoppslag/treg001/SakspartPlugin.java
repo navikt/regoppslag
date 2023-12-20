@@ -57,7 +57,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
 			}
 			Sakspart sakspart = unmarshal(content);
-			log.info(format("Henter sakspart info. dokumentTypeId=%s", dokumenttypeId));
+			log.info("Henter sakspart info. dokumentTypeId={}", dokumenttypeId);
 
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
@@ -76,7 +76,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			Document newNode = convertObjectToDocument(sakspart);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("Sakspart er beriket med data. dokumentTypeId=%s", dokumenttypeId));
+			log.info("Sakspart er beriket med data. dokumentTypeId={}", dokumenttypeId);
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {

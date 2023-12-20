@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
@@ -123,12 +122,12 @@ public class MapPdlForTreg001 {
 	}
 
 	private Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak) {
-		log.info(format("Henter språkinfo for mottaker. dokumentTypeId=%s", dokumenttypeId));
+		log.info("Henter språkinfo for mottaker. dokumentTypeId={}", dokumenttypeId);
 		//Sjekker språket på malen opp mot mottakers preferanser
 		List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
 
 		if (sprakinfos == null || sprakinfos.isEmpty()) {
-			log.warn(format("Finner ikke språkinfo i DOKMET for dokumenttypeid=%s.", dokumenttypeId));
+			log.warn("Finner ikke språkinfo i DOKMET for dokumenttypeid={}.", dokumenttypeId);
 		}
 
 		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);

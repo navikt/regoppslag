@@ -56,7 +56,7 @@ public class OrganisasjonEregMapper {
 		try {
 			postadresse = mapAdresse(orgNummer, orgDet);
 		} catch (RegOppslagFunctionalException e) {
-			log.info(format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrganisasjonsnummer()));
+			log.info("Mapping av adresse feilet for orgnummer: {}", wsOrganisasjon.getOrganisasjonsnummer());
 			throw e;
 		}
 

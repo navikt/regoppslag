@@ -10,7 +10,6 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +47,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 		try {
 			NavEnhet navEnhet = unmarshal(content);
 
-			log.info(format("Henter NavOrgenhetNavn. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info("Henter NavOrgenhetNavn. EnhetsId={}", navEnhet.getEnhetsId());
 
 			//Skal elementet berikes?
 			if (navEnhet.isBerik()) {
@@ -56,14 +55,14 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 				EnhetNavn rsEnhetNavn = norg2Consumer.hentEnhetNavn(navEnhet.getEnhetsId());
 				norg2Mapper.mapEnhetNavn(rsEnhetNavn, navEnhet);
 			} else {
-				log.info(format("TREG001 NavOrgEnhetPlugin: element-berik=%s. Hopper over beriking av element=%s med enhetsId=%s.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId()));
+				log.info("TREG001 NavOrgEnhetPlugin: element-berik={}. Hopper over beriking av element={} med enhetsId={}.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId());
 				return content;
 			}
 
 			Document newNode = convertObjectToDocument(navEnhet);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("NavOrgenhetNavn er beriket med data. EnhetsId=%s", navEnhet.getEnhetsId()));
+			log.info("NavOrgenhetNavn er beriket med data. EnhetsId={}", navEnhet.getEnhetsId());
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {

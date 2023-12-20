@@ -126,7 +126,7 @@ public class HentMottakerOgAdresseService {
 			log.warn(TREG002_FUNK_FEIL, err.getMessage());
 			throw err;
 		} else {
-			log.error(format("TREG002 Teknisk feil: %s", e.getMessage()), e);
+			log.error("TREG002 Teknisk feil: {}", e.getMessage(), e);
 			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 		}
 	}

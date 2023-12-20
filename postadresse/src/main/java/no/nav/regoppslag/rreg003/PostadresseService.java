@@ -144,7 +144,7 @@ public class PostadresseService {
 			}
 			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, ((RegOppslagFunctionalException) e).getHttpStatusCode());
 		} else {
-			log.error(format("RREG003 Teknisk feil: %s", e.getMessage()), e);
+			log.error("RREG003 Teknisk feil: {}", e.getMessage(), e);
 			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 		}
 	}

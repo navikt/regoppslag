@@ -51,7 +51,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = convertObjectToDocument(newMottaker);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("Mottaker er beriket med data. dokumentTypeId=%s", dokumenttypeId));
+			log.info("Mottaker er beriket med data. dokumentTypeId={}", dokumenttypeId);
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {

@@ -53,7 +53,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 		try {
 			Postadresse adresse = unmarshal(content);
-			log.info(format("Henter NavOrgenhet info. EnhetsId=%s", adresse.getEnhetsId()));
+			log.info("Henter NavOrgenhet info. EnhetsId={}", adresse.getEnhetsId());
 
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
@@ -67,7 +67,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("NavOrgenhet er beriket med data. EnhetsId=%s", adresse.getEnhetsId()));
+			log.info("NavOrgenhet er beriket med data. EnhetsId={}", adresse.getEnhetsId());
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 

@@ -11,7 +11,6 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -57,8 +56,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		try {
 			Besoksadresse adresse = unmarshal(content);
 
-			log.info(format("Henter NavOrgenhet info. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
-					.getEnhetsId()));
+			log.info("Henter NavOrgenhet info. DokumentTypeId={}, EnhetsId={}", dokumenttypeId, adresse.getEnhetsId());
 
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
@@ -73,8 +71,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("NavOrgenhet er beriket med data. DokumentTypeId=%s, EnhetsId=%s", dokumenttypeId, adresse
-					.getEnhetsId()));
+			log.info("NavOrgenhet er beriket med data. DokumentTypeId={}, EnhetsId={}", dokumenttypeId, adresse.getEnhetsId());
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {

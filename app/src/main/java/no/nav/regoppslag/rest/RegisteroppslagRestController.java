@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -59,11 +58,11 @@ public class RegisteroppslagRestController {
 	public @ResponseBody
 	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody) throws RegOppslagSecurityException {
 
-		log.info(format("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
+		log.info("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId={}", requestBody.getDokumentTypeId());
 
 		try {
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
-			log.info(format("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId=%s", requestBody.getDokumentTypeId()));
+			log.info("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId={}", requestBody.getDokumentTypeId());
 			return response;
 		} catch (MarshallerTechnicalException e) {
 			//Logger error hvis retry ikke fungerer
@@ -89,9 +88,9 @@ public class RegisteroppslagRestController {
 	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
 
 		try {
-			log.info(format("TREG002 Henter mottaker og addresse. MottakerType=%s", requestBody.getType()));
+			log.info("TREG002 Henter mottaker og addresse. MottakerType={}", requestBody.getType());
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
-			log.info(format("TREG002 Har hentet mottaker og adresse. MottakerType=%s", requestBody.getType()));
+			log.info("TREG002 Har hentet mottaker og adresse. MottakerType={}", requestBody.getType());
 			return response;
 		} finally {
 			SecurityContextHolder.clearContext();

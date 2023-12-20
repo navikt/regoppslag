@@ -47,7 +47,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 		try {
 			NavAnsatt navAnsatt = unmarshal(content);
 
-			log.info(format("Henter saksbehandler info. AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info("Henter saksbehandler info. AnsattId={}", navAnsatt.getAnsattId());
 
 			//Skal elementet berikes?
 			if (navAnsatt.isBerik()) {
@@ -59,7 +59,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			Document newNode = convertObjectToDocument(navAnsatt);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info(format("Saksbehandler er beriket med data.  AnsattId=%s", navAnsatt.getAnsattId()));
+			log.info("Saksbehandler er beriket med data.  AnsattId={}", navAnsatt.getAnsattId());
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
