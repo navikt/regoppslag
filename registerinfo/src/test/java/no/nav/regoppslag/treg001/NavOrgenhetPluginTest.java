@@ -5,7 +5,6 @@ import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
@@ -52,10 +51,9 @@ public class NavOrgenhetPluginTest {
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		PostnummerService postnummerService = new PostnummerService();
 
-		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper, metrics);
-		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper, metrics);
+		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper);
+		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper);
 
 		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 		when(norgConsumer.hentEnhetKontaktinformasjon(anyString())).thenReturn(EnhetKontaktinformasjon.builder().build());

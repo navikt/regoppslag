@@ -1,7 +1,5 @@
 package no.nav.regoppslag.consumer.dokmet;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
@@ -12,12 +10,10 @@ import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
 import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -75,9 +71,6 @@ public class Tkat020DokumenttypeInfoTest {
 
 	@Autowired
 	private Tkat020DokumenttypeInfo tkatConsumer;
-
-	@Mock
-	private MicrometerMetrics metrics;
 
 	@BeforeEach
 	public void setUp() {
@@ -169,16 +162,6 @@ public class Tkat020DokumenttypeInfoTest {
 			when(restTemplateBuilder.rootUri(anyString())).thenReturn(restTemplateBuilder);
 			when(restTemplateBuilder.build()).thenReturn(restTemplate);
 			return restTemplateBuilder;
-		}
-
-		@Bean
-		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
-		}
-
-		@Bean
-		public MicrometerMetrics metrics() {
-			return new MicrometerMetrics();
 		}
 
 		@Bean

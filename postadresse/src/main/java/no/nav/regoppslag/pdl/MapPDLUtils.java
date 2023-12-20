@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 
 import static com.neovisionaries.i18n.CountryCode.XK;
-import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
-import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static no.nav.regoppslag.domain.DomainConstants.KOSOVO_LANDKODE_NAV_REGISTRENE;
+import static no.nav.regoppslag.domain.DomainConstants.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.service.LandkodeService.finnLandkodeAlpha2FraAlpha3;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;

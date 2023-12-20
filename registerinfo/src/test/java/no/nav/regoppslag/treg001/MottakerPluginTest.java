@@ -1,7 +1,5 @@
 package no.nav.regoppslag.treg001;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
@@ -15,7 +13,6 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.pdl.NorskAdresseService;
@@ -30,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -119,14 +115,10 @@ public class MottakerPluginTest {
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 
-		MicrometerMetrics metrics = new MicrometerMetrics();
-		MeterRegistry registry = new SimpleMeterRegistry();
-		ReflectionTestUtils.setField(metrics, "registry", registry);
-
 		eregConsumer = mock(EregConsumer.class);
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService(), mock(MicrometerMetrics.class));
+		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
 		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
-		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001, metrics);
+		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001);
 	}
 
 	@Test
@@ -310,9 +302,8 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap, null),
-				"Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
-		assertEquals(exception.getMessage(), "Feil i MottakerPlugin: Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
+				() -> mottakerPlugin.processElement(node, valueMap, null));
+		assertEquals(exception.getMessage(), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
 
 	@Test
@@ -326,7 +317,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap, null), "Feil i MottakerPlugin: Mottakerdata mangler mottakerId");
+				() -> mottakerPlugin.processElement(node, valueMap, null), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 
 	}
 

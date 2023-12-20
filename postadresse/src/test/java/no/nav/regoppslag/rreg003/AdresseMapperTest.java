@@ -5,7 +5,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.pdl.NorskAdresseService;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -27,7 +25,7 @@ import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETFORRETNINGSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETPOSTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
+import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_ADRESSELINJE2;
 import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_POSTNUMMER;
@@ -62,8 +60,6 @@ import static org.mockito.Mockito.mock;
 public class AdresseMapperTest {
 
 	private MapPDLResponse mapPDLResponse;
-	@Mock
-	private MicrometerMetrics metrics;
 	private AdresseMapper adresseMapper;
 	@InjectMocks
 	private PostnummerService postnummerService;
@@ -73,7 +69,7 @@ public class AdresseMapperTest {
 		PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		LandkodeServiceNorsk landkodeServiceNorsk = new LandkodeServiceNorsk();
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
-		adresseMapper = new AdresseMapper(metrics, landkodeServiceNorsk);
+		adresseMapper = new AdresseMapper(landkodeServiceNorsk);
 	}
 
 	@Test

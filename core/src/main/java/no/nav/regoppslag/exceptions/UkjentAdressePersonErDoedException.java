@@ -13,8 +13,4 @@ public class UkjentAdressePersonErDoedException extends RegOppslagFunctionalExce
 	public UkjentAdressePersonErDoedException(String message, HttpStatusCode httpStatusCode) {
 		super(message, httpStatusCode);
 	}
-
-	public UkjentAdressePersonErDoedException(String message, Throwable cause, String metricMessage, HttpStatusCode httpStatusCode) {
-		super(message, cause, metricMessage, httpStatusCode);
-	}
 }

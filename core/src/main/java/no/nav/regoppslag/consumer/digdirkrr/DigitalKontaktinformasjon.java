@@ -7,9 +7,7 @@ import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,8 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -41,9 +37,6 @@ public class DigitalKontaktinformasjon {
 	private final AzureTokenConsumer azureTokenConsumer;
 	private final Oauth2SecuredEndpoint digdirkrrproxy;
 
-	public static final String HENT_SIKKER_DIGITAL_POSTADRESSE = "hentSikkerDigitalPostadresse";
-
-	@Autowired
 	public DigitalKontaktinformasjon(RestTemplateBuilder restTemplateBuilder,
 									 RegoppslagProperties regoppslagProperties,
 									 AzureTokenConsumer azureTokenConsumer) {
@@ -56,7 +49,6 @@ public class DigitalKontaktinformasjon {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_SIKKER_DIGITAL_POSTADRESSE}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentSpraak(final String personidentifikator, final boolean inkluderSikkerDigitalPost) throws DigitalKontaktinformasjonFunctionalException {
 		HttpHeaders headers = createHeaders();
 
@@ -76,8 +68,7 @@ public class DigitalKontaktinformasjon {
 			return isBlank(spraak) ? null : spraak.toUpperCase();
 
 		} catch (HttpClientErrorException e) {
-			throw new DigitalKontaktinformasjonFunctionalException(format("Funksjonell feil ved kall mot Digdir KRR. Feilmelding=%s", e
-					.getMessage()), e.getCause(), "DKIF", e.getStatusCode());
+			throw new DigitalKontaktinformasjonFunctionalException(format("Funksjonell feil ved kall mot Digdir KRR. Feilmelding=%s", e.getMessage()), e.getCause(), e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new DigitalKontaktinformasjonTechnicalException(format("Teknisk feil ved kall mot DigitalKontaktinformasjon.kontaktinformasjon. Feilmelding=%s", e.getMessage()), e);
 		}

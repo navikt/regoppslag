@@ -12,7 +12,7 @@ public class RegoppslagIllegalArgumentException extends RegOppslagFunctionalExce
 		super(message, httpStatusCode);
 	}
 
-	public RegoppslagIllegalArgumentException(String message, Throwable cause, String metricMessage, HttpStatusCode	httpStatusCode) {
-		super(message, cause, metricMessage, httpStatusCode);
+	public RegoppslagIllegalArgumentException(String message, Throwable cause, HttpStatusCode httpStatusCode) {
+		super(message, cause, httpStatusCode);
 	}
 }

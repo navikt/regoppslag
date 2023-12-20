@@ -16,7 +16,6 @@ import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -37,10 +36,6 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_NAVN;
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_BRUKER_PERSONDATA;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -79,7 +74,6 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_PERSONDATA}, percentiles = {0.5, 0.95}, histogram = true)
 	public HentPerson hentPerson(final String aktoerId, final String tema) {
 		try {
 			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentPerson);
@@ -87,7 +81,7 @@ public class PdlGraphQLConsumer {
 			handterPdlFunksjonellFeil(response);
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
+			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
@@ -99,21 +93,19 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_BRUKER_NAVN}, percentiles = {0.5, 0.95}, histogram = true)
 	public String hentNavn(final String aktoerId, final String tema) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
 			handterPdlFunksjonellFeil(response);
 			return mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, "PDL", e.getStatusCode());
+			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
 			throw new PdlHentPersonTechnicalException("Teknisk feil ved kall mot PDL.", e);
 		}
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, "hentDoedsBoKontaktPersonnavn"}, percentiles = {0.5, 0.95}, histogram = true)
 	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId, final String tema) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);

@@ -9,7 +9,6 @@ import no.nav.regoppslag.consumer.map.Postadresse;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +18,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToNorskPostadresse;
 import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPostadresseToUtenlandskPostadresse;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETFORRETNINGSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETPOSTADRESSE;
-import static no.nav.regoppslag.metrics.MetricLabels.EREG_MAPPER;
-import static no.nav.regoppslag.metrics.MetricLabels.LAND;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTNUMMER;
-import static no.nav.regoppslag.metrics.MetricLabels.UKJENT_POSTSTED;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -38,15 +33,12 @@ public class OrganisasjonEregMapper {
 
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE_NORGE = "NO";
-
-	private final PostnummerService postnummerService;
-	private final MicrometerMetrics metrics;
-
 	private static final String LAND_NORGE = "Norge";
 
-	public OrganisasjonEregMapper(PostnummerService postnummerService, MicrometerMetrics metrics) {
+	private final PostnummerService postnummerService;
+
+	public OrganisasjonEregMapper(PostnummerService postnummerService) {
 		this.postnummerService = postnummerService;
-		this.metrics = metrics;
 	}
 
 	public String getSakspartNavn(Organisasjon wsOrganisasjon) {
@@ -64,11 +56,9 @@ public class OrganisasjonEregMapper {
 		try {
 			postadresse = mapAdresse(orgNummer, orgDet);
 		} catch (RegOppslagFunctionalException e) {
-			log.info(String.format("Mapping av adresse feilet for orgnummer: %s", wsOrganisasjon.getOrganisasjonsnummer()));
+			log.info("Mapping av adresse feilet for orgnummer: {}", wsOrganisasjon.getOrganisasjonsnummer());
 			throw e;
 		}
-
-		incrementFunctionalMetrics(postadresse, serviceCode);
 
 		if (LAND_NORGE.equals(postadresse.getLand()) || postadresse.getLand() == null) {
 			NorskPostadresse norskPostadresse = mapPostadresseToNorskPostadresse(postadresse);
@@ -85,20 +75,10 @@ public class OrganisasjonEregMapper {
 				.build();
 	}
 
-	private void incrementFunctionalMetrics(no.nav.regoppslag.consumer.map.Postadresse postadresse, String serviceCode) {
-		if (isBlank(postadresse.getPoststed()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			metrics.meter(serviceCode, EREG_MAPPER, UKJENT_POSTSTED, UKJENT_POSTSTED);
-		}
-		if (isBlank(postadresse.getPostnummer()) && (LAND_NORGE.equals(postadresse.getLand()) || isBlank(postadresse.getLand()))) {
-			metrics.meter(serviceCode, EREG_MAPPER, UKJENT_POSTNUMMER, UKJENT_POSTNUMMER);
-		}
-		metrics.meter(serviceCode, EREG_MAPPER, LAND, postadresse.getLand() == null ? "Ukjent" : postadresse.getLand());
-	}
-
 	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
 		if (orgDet.getOpphoersdato() != null && LocalDate.now().isAfter(orgDet.getOpphoersdato())) {
-			String message = String.format("Organisasjon har opphørt, opphørsdato=%s, orgnr=%s", ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
-			throw new RegOppslagIkkeFunnetException(message, "Organisasjon har opphørt", NOT_FOUND);
+			String message = format("Organisasjon har opphørt, opphørsdato=%s, orgnr=%s", ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
+			throw new RegOppslagIkkeFunnetException(message, NOT_FOUND);
 		}
 
 		no.nav.regoppslag.consumer.ereg.support.Postadresse activeAddress = selectActiveAddress(orgDet.getPostadresser(), orgDet.getForretningsadresser())

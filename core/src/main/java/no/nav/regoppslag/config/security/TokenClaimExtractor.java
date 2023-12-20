@@ -17,7 +17,6 @@ public final class TokenClaimExtractor {
 	static final String AZURE_CLAIM_AZP = "azp";
 	static final String AZURE_CLAIM_OID = "oid";
 	static final String AZURE_CLAIM_SUB = "sub";
-	static final String AZURE_CLAIM_ROLES = "roles";
 	// NAV custom Azure claim. https://doc.nais.io/security/auth/azure-ad/configuration/#extra
 	static final String AZURE_NAV_CUSTOM_CLAIM_NAVIDENT = "NAVident";
 	static final String AZURE_NAV_CUSTOM_CLAIM_AZP_NAME = "azp_name";

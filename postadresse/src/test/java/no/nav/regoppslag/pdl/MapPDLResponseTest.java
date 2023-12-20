@@ -44,10 +44,10 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_MIDLERTIDIG;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.metrics.MetricLabels.KOSOVO_LANDKODE_NAV_REGISTRENE;
-import static no.nav.regoppslag.metrics.MetricLabels.SERVICE_CODE_TREG002;
-import static no.nav.regoppslag.metrics.MetricLabels.UNKNOWN_LANDKODE;
+import static no.nav.regoppslag.domain.DomainConstants.KOSOVO_LANDKODE_NAV_REGISTRENE;
+import static no.nav.regoppslag.domain.DomainConstants.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
+import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG002;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA2_LANDKODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.CANADA_ALPHA3_LANDKODE;
@@ -81,6 +81,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithPers
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithVegadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPostboksadresse;
+import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskAdresseIFrittFormat;
 import static no.nav.regoppslag.util.PDLResponseUtil.createUtenlandskBostedsAdresseWithAntallDager;
 import static no.nav.regoppslag.util.PDLResponseUtil.createVegadresse;
@@ -358,7 +359,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void ShouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
-		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
+		UtenlandskAdresse adresse = createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
@@ -387,7 +388,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void ShouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
-		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
+		UtenlandskAdresse adresse = createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
@@ -415,7 +416,7 @@ public class MapPDLResponseTest {
 
 	@Test
 	public void ShouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
-		UtenlandskAdresse adresse = PDLResponseUtil.createUtenlandskAdresse(null);
+		UtenlandskAdresse adresse = createUtenlandskAdresse(null);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)

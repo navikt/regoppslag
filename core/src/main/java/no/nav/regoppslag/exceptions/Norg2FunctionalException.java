@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatusCode;
 
 public class Norg2FunctionalException extends RegOppslagFunctionalException {
 
-	public Norg2FunctionalException(Throwable cause, String metricMessage, HttpStatusCode httpStatusCode) {
-		super(cause, metricMessage, httpStatusCode);
+	public Norg2FunctionalException(String message, Throwable cause, HttpStatusCode httpStatusCode) {
+		super(message, cause, httpStatusCode);
 	}
 }

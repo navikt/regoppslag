@@ -4,7 +4,6 @@ import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
 import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
-import no.nav.regoppslag.metrics.MicrometerMetrics;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
@@ -29,7 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -53,9 +51,8 @@ public class NavOrgenhetNavnPluginTest {
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 
-		MicrometerMetrics metrics = mock(MicrometerMetrics.class);
 		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper, metrics);
+		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
 		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
 	}
 

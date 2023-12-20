@@ -1,15 +1,12 @@
 package no.nav.regoppslag.config.security;
 
-import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.security.token.support.core.context.TokenValidationContext;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.security.token.support.core.jwt.JwtToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import no.nav.security.token.support.core.context.TokenValidationContext;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+ import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * Populerer spring security sin {@link org.springframework.security.core.context.SecurityContext}
@@ -26,7 +23,7 @@ public class SecurityContextHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(new BearerAuthenticationToken(tokenValidationContext));

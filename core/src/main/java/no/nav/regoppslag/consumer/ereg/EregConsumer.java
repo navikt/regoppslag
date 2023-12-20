@@ -6,7 +6,6 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -24,9 +23,6 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static no.nav.regoppslag.config.cache.CacheConfig.HENT_ORGANISASJON;
-import static no.nav.regoppslag.metrics.MetricLabels.DOK_CONSUMER;
-import static no.nav.regoppslag.metrics.MetricLabels.PROCESS_CODE;
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -36,7 +32,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Service
 public class EregConsumer {
-	static final Pattern ORGNUMMER_PATTERN = Pattern.compile("^\\d{9}$");
+
+	private static final Pattern ORGNUMMER_PATTERN = Pattern.compile("^\\d{9}$");
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 
@@ -50,7 +47,6 @@ public class EregConsumer {
 	}
 
 	@Retryable(retryFor = HttpServerErrorException.class, noRetryFor = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	@Metrics(value = DOK_CONSUMER, extraTags = {PROCESS_CODE, HENT_ORGANISASJON}, percentiles = {0.5, 0.95}, histogram = true)
 	public Organisasjon hentOrganisasjon(String organisasjonsnummer) {
 		if (organisasjonsnummer == null || !ORGNUMMER_PATTERN.matcher(organisasjonsnummer).matches()) {
 			throw new RegOppslagFunctionalException("Kan ikke slå opp i ereg. organisasjonsnummer='" + organisasjonsnummer + "' er ikke 9 siffer", BAD_REQUEST);
