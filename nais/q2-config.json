@@ -55,6 +55,11 @@
 			"app": "brev-administrasjon-q2",
 			"namespace": "isa",
 			"cluster": "dev-gcp"
+		},
+		{
+			"app": "familie-integrasjoner",
+			"namespace": "teamfamilie",
+			"cluster": "dev-fss"
 		}
 	]
 }
