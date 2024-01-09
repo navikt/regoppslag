@@ -46,6 +46,11 @@
 			"app": "pensjon-persondata",
 			"namespace": "pensjon-person",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "familie-integrasjoner",
+			"namespace": "teamfamilie",
+			"cluster": "prod-fss"
 		}
 	]
 }
