@@ -60,6 +60,11 @@
 			"app": "familie-integrasjoner",
 			"namespace": "teamfamilie",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "utenlandsadresser",
+			"namespace": "utenlandsadresser",
+			"cluster": "dev-gcp"
 		}
 	]
 }
