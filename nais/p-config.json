@@ -51,6 +51,11 @@
 			"app": "familie-integrasjoner",
 			"namespace": "teamfamilie",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "utenlandsadresser",
+			"namespace": "utenlandsadresser",
+			"cluster": "prod-gcp"
 		}
 	]
 }
