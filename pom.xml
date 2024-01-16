@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.5</version>
+		<version>3.2.0</version>
 	</parent>
 
 	<properties>
@@ -29,7 +29,7 @@
 		<resilience4j.version>2.2.0</resilience4j.version>
 		<rxjava.version>3.1.8</rxjava.version>
 		<microsoft-graph.version>5.77.0</microsoft-graph.version>
-		<azure-identity.version>1.11.0</azure-identity.version>
+		<azure-identity.version>1.11.1</azure-identity.version>
 		<springdoc-openapi-starter-webmvc-ui.version>2.3.0</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
@@ -55,12 +55,6 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.regoppslag</groupId>
-				<artifactId>core</artifactId>
-				<version>${project.version}</version>
-				<type>test-jar</type>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.regoppslag</groupId>
 				<artifactId>registerinfo</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -68,6 +62,16 @@
 				<groupId>no.nav.regoppslag</groupId>
 				<artifactId>postadresse</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokmet</groupId>
+				<artifactId>api</artifactId>
+				<version>${dokmet-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dok.metaforcemal</groupId>
+				<artifactId>dok-brevdata-felles</artifactId>
+				<version>${brevdata-felles.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
@@ -100,16 +104,6 @@
 				<version>${token-support.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>no.nav.dokmet</groupId>
-				<artifactId>api</artifactId>
-				<version>${dokmet-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dok.metaforcemal</groupId>
-				<artifactId>dok-brevdata-felles</artifactId>
-				<version>${brevdata-felles.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.microsoft.graph</groupId>
 				<artifactId>microsoft-graph</artifactId>
 				<version>${microsoft-graph.version}</version>
@@ -121,6 +115,12 @@
 			</dependency>
 
 			<!-- Test dependencies -->
+			<dependency>
+				<groupId>no.nav.regoppslag</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-wiremock</artifactId>
