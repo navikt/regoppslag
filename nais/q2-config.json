@@ -13,7 +13,8 @@
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
-		"https://regoppslag.dev.intern.nav.no"
+		"https://regoppslag.dev.intern.nav.no",
+		"https://regoppslag.dev-fss-pub.nais.io"
 	],
 	"AZURE_IAC_RULES": [
 		{
