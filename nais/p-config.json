@@ -39,6 +39,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "etterlatte-brev-api",
+			"namespace": "etterlatte",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "yrkesskade-saksbehandling-backend",
 			"namespace": "yrkesskade",
 			"cluster": "prod-gcp"
