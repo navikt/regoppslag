@@ -43,6 +43,11 @@
 			"cluster": "dev-fss"
 		},
 		{
+			"app": "etterlatte-brev-api",
+			"namespace": "etterlatte",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "pensjon-persondata-q2",
 			"namespace": "pensjon-person",
 			"cluster": "dev-fss"
