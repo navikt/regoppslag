@@ -176,7 +176,6 @@ public class PdlGraphQLConsumer {
 			      forkortetNavn
 			      gyldigFraOgMed
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -203,7 +202,6 @@ public class PdlGraphQLConsumer {
 			      forkortetNavn
 			      gyldigFraOgMed
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -256,7 +254,6 @@ public class PdlGraphQLConsumer {
 			        landkode
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -293,7 +290,6 @@ public class PdlGraphQLConsumer {
 			        postnummer
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -309,7 +305,6 @@ public class PdlGraphQLConsumer {
 			      }
 			      oppholdAnnetSted
 			      metadata{
-			        opplysningsId
 			        master
 			      }
 			    }
@@ -351,7 +346,6 @@ public class PdlGraphQLConsumer {
 			        landkode
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			      }
 			    }
@@ -396,7 +390,6 @@ public class PdlGraphQLConsumer {
 			        bostedskommune
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
