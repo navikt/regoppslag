@@ -1,0 +1,138 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "UBETJENT",
+          "forkortetNavn": "UBETJENT BJARNE",
+          "originaltNavn": null,
+          "gyldigFraOgMed": "2015-07-07",
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2015-07-07T08:18:03",
+            "gyldighetstidspunkt": "2015-07-07T00:00",
+            "opphoerstidspunkt": null,
+            "kilde": "KILDE_DSF",
+            "aarsak": "Melding om endring av navn",
+            "sekvens": 1
+          },
+          "metadata": {
+            "opplysningsId": "288602a0-7943-449f-a354-54d39837d93c",
+            "master": "Freg",
+            "historisk": false
+          }
+        },
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "STASJONSMESTER",
+          "forkortetNavn": null,
+          "originaltNavn": null,
+          "gyldigFraOgMed": "2023-10-10",
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "6282ad82-40b7-4d90-a0f0-9dccc5d5158b",
+            "master": "PDL",
+            "historisk": false
+          }
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2023-09-03T09:05:14",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "Prahagata 1",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "10000",
+            "bySted": "PRAHA",
+            "regionDistriktOmraade": "",
+            "landkode": "CZE"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "953a8700-eff3-40da-96a2-6cbbdc0a1dc4",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2021-09-03T09:05:22",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": "1990-09-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": null,
+            "husnummer": "20",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "STORGATA",
+            "kommunenummer": "0103",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "1600"
+          },
+          "utenlandskAdresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "4e766daf-679a-4f01-be68-0870f0bc436b",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-04-04T02:26:50"
+              },
+              {
+                "type": "OPPHOER",
+                "registrert": "2020-12-21T11:07:39"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2021-09-18T16:24:03"
+              }
+            ]
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

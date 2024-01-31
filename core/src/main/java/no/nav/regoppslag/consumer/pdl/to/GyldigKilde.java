@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import static java.util.Objects.nonNull;
 
-public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
+public interface GyldigKilde extends Comparable<GyldigKilde> {
 	LocalDateTime getGyldigFraOgMed();
 	LocalDateTime getGyldigTilOgMed();
 
@@ -25,7 +25,7 @@ public interface AdresseGyldigKilde extends Comparable<AdresseGyldigKilde> {
 	}
 
 	@Override
-	default int compareTo(AdresseGyldigKilde o) {
+	default int compareTo(GyldigKilde o) {
 		if (getGyldigFraOgMedOrSisteEndring() == null && o.getGyldigFraOgMedOrSisteEndring() == null) {
 			return 0;
 		} else if (getGyldigFraOgMedOrSisteEndring() == null) { // gyldigFraOgMed == null er alltid før alle andre tidspunkter

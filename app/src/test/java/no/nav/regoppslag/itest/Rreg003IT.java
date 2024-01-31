@@ -183,6 +183,14 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	void shouldChooseNewestNameWhenMultipleMastersWithDifferentNames() {
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse_flere_navn.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE STASJONSMESTER");
+	}
+
+	@Test
 	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Bostedsadresse implements AdresseGyldigKilde {
+public class Bostedsadresse implements GyldigKilde {
 	private LocalDate angittFlyttedato;
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;
