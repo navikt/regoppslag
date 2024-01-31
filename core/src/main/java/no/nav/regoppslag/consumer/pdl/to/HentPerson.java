@@ -77,7 +77,7 @@ public class HentPerson {
 
 		@Override
 		public LocalDateTime getGyldigFraOgMed() {
-			return gyldigFraOgMed.atStartOfDay();
+			return gyldigFraOgMed != null ? gyldigFraOgMed.atStartOfDay() : null;
 		}
 
 		@Override

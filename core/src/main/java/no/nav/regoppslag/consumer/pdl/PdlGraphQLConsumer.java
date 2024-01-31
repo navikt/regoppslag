@@ -174,6 +174,14 @@ public class PdlGraphQLConsumer {
 			      mellomnavn
 			      etternavn
 			      forkortetNavn
+			      gyldigFraOgMed
+			      metadata{
+			        master
+			        endringer{
+			          type
+			          registrert
+			        }
+			      }
 			    }
 			  }
 			}""";
@@ -192,6 +200,14 @@ public class PdlGraphQLConsumer {
 			      mellomnavn
 			      etternavn
 			      forkortetNavn
+			      gyldigFraOgMed
+			      metadata{
+			        master
+			        endringer{
+			          type
+			          registrert
+			        }
+			      }
 			    }
 			    kontaktadresse(historikk: false){
 			      gyldigFraOgMed
@@ -238,7 +254,6 @@ public class PdlGraphQLConsumer {
 			        landkode
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -275,7 +290,6 @@ public class PdlGraphQLConsumer {
 			        postnummer
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
@@ -291,7 +305,6 @@ public class PdlGraphQLConsumer {
 			      }
 			      oppholdAnnetSted
 			      metadata{
-			        opplysningsId
 			        master
 			      }
 			    }
@@ -333,7 +346,6 @@ public class PdlGraphQLConsumer {
 			        landkode
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			      }
 			    }
@@ -378,7 +390,6 @@ public class PdlGraphQLConsumer {
 			        bostedskommune
 			      }
 			      metadata{
-			        opplysningsId
 			        master
 			        endringer{
 			          type
