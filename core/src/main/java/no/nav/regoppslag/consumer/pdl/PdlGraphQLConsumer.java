@@ -174,6 +174,15 @@ public class PdlGraphQLConsumer {
 			      mellomnavn
 			      etternavn
 			      forkortetNavn
+			      gyldigFraOgMed
+			      metadata{
+			        opplysningsId
+			        master
+			        endringer{
+			          type
+			          registrert
+			        }
+			      }
 			    }
 			  }
 			}""";
@@ -192,6 +201,15 @@ public class PdlGraphQLConsumer {
 			      mellomnavn
 			      etternavn
 			      forkortetNavn
+			      gyldigFraOgMed
+			      metadata{
+			        opplysningsId
+			        master
+			        endringer{
+			          type
+			          registrert
+			        }
+			      }
 			    }
 			    kontaktadresse(historikk: false){
 			      gyldigFraOgMed
