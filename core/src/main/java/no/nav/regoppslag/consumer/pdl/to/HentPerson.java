@@ -63,7 +63,7 @@ public class HentPerson {
 	@Builder
 	@AllArgsConstructor
 	@NoArgsConstructor
-	public static class PersonNavn {
+	public static class PersonNavn implements GyldigKilde {
 		@ToString.Exclude
 		private String fornavn;
 		@ToString.Exclude
@@ -72,6 +72,19 @@ public class HentPerson {
 		private String etternavn;
 		@ToString.Exclude
 		private String forkortetNavn;
+		private LocalDate gyldigFraOgMed;
+		private Metadata metadata;
+
+		@Override
+		public LocalDateTime getGyldigFraOgMed() {
+			return gyldigFraOgMed.atStartOfDay();
+		}
+
+		@Override
+		public LocalDateTime getGyldigTilOgMed() {
+			return null;
+		}
+
 	}
 
 	@Getter
@@ -145,9 +158,11 @@ public class HentPerson {
 	}
 
 	public String getFulltnavn() {
-		return getNavn().stream().filter(Objects::nonNull)
+		return getNavn().stream()
+				.filter(Objects::nonNull)
+				.max(GyldigKilde::compareTo)
 				.map(HentPerson::mapPersonnavn)
-				.findFirst().orElseThrow(() -> new RegoppslagIllegalArgumentException(String.format(ERROR_MELDING, "Personnavn"), BAD_REQUEST));
+				.orElseThrow(() -> new RegoppslagIllegalArgumentException(String.format(ERROR_MELDING, "Personnavn"), BAD_REQUEST));
 
 	}
 

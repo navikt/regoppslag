@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Kontaktadresse implements AdresseGyldigKilde {
+public class Kontaktadresse implements GyldigKilde {
 
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;

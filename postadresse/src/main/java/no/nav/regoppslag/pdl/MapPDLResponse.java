@@ -1,7 +1,7 @@
 package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.consumer.pdl.to.AdresseGyldigKilde;
+import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
@@ -170,7 +170,7 @@ public class MapPDLResponse {
 	}
 
 	// Implementerer regler 1,2 (eller 3 og 4)
-	private static <T extends AdresseGyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> adresse, LocalDateTime now) {
+	private static <T extends GyldigKilde> Optional<T> getBestFitGyldigAdresse(List<T> adresse, LocalDateTime now) {
 		if (isNull(adresse)) {
 			return empty();
 		}

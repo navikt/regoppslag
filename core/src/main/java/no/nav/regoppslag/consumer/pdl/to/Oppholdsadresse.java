@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Oppholdsadresse implements AdresseGyldigKilde {
+public class Oppholdsadresse implements GyldigKilde {
 	private LocalDateTime gyldigFraOgMed;
 	private LocalDateTime gyldigTilOgMed;
 	private String coAdressenavn;
