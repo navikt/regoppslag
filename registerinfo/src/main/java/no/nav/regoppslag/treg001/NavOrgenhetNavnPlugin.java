@@ -41,7 +41,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	}
 	
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
+	public Node processElement(Node content, Map<String, Object> valueMap) {
 		validateElementType(content);
 		
 		try {

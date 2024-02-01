@@ -48,7 +48,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
+	public Node processElement(Node content, Map<String, Object> valueMap) {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
 		validateElementType(content);

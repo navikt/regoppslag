@@ -41,7 +41,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	private SaksbehandlerMapper saksbehandlerMapper;
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
+	public Node processElement(Node content, Map<String, Object> valueMap) {
 		validateElementType(content);
 
 		try {

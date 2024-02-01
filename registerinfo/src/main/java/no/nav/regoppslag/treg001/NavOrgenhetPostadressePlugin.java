@@ -48,7 +48,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) {
+	public Node processElement(Node content, Map<String, Object> valueMap) {
 		validateElementType(content);
 
 		try {

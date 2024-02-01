@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Getter
@@ -22,6 +23,6 @@ public class KompletterBrevdataRequest {
 	private String dokumentTypeId;
 	@Schema(example = exampleBrevdata, description = "Brevdata fra felles mastermal. XML'en kan være utfylt med data eller ikke.", requiredMode = REQUIRED)
 	private String brevdata;
-	@Schema(example = "FOR", description = "Temaet som forsendelsen tilhører, for eksempel \"FOR\" (foreldrepenger).", allowableValues = "DAG, FOR, PEN, FRI ....")
+	@Schema(description = "Legacy: Tema er ikke lenger i bruk og blir forkastet i regoppslag", requiredMode = NOT_REQUIRED)
 	private String tema;
 }

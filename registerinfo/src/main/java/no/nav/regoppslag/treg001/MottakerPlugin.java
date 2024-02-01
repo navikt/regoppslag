@@ -35,7 +35,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 		validateElementType(content);
 
@@ -46,7 +46,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		try {
 			Mottaker mottaker = unmarshal(content);
 			validateMottaker(mottaker);
-			Mottaker newMottaker = mapPdlForTreg001.getMottakerFraPdl(tema, mottaker, dokumenttypeId);
+			Mottaker newMottaker = mapPdlForTreg001.getMottakerFraPdl(mottaker, dokumenttypeId);
 
 			Document newNode = convertObjectToDocument(newMottaker);
 			Element documentElement = newNode.getDocumentElement();

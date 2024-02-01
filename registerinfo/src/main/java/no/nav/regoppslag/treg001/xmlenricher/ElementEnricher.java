@@ -86,7 +86,7 @@ public class ElementEnricher {
 		return (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
 	}
 
-	public Document process(Document document, String dokumentTypeId, String tema) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
+	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMER_ID);
@@ -120,7 +120,7 @@ public class ElementEnricher {
 							valueMap.put(DOKUMENTTYPEID.name(), dokumentTypeId);
 
 							return new Aggregate(payload.getPlugin()
-									.processElement(payload.getElement(), valueMap, tema), payload.getOrgNode());
+									.processElement(payload.getElement(), valueMap), payload.getOrgNode());
 						}
 				)
 				.doOnError(throwable -> SecurityContextHolder.clearContext())

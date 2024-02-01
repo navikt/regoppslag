@@ -66,9 +66,9 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
-		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema());
+		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator());
 
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002, request.getTema());
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002);
 
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
@@ -99,6 +99,10 @@ public class HentMottakerOgAdresseService {
 
 		if (!NUMBER_PATTERN.matcher(request.getIdentifikator()).matches()) {
 			throw new RegoppslagIllegalArgumentException("Identifikator kan kun bestå av tall. " + UGYLDIG_INPUT, BAD_REQUEST);
+		}
+
+		if(request.getTema() != null){
+			log.info("Obs! Til konsumenter av regoppslag: Requesten inneholder \"tema\" som ikke lenger er i bruk i regoppslag. Tema kan derfor fjernes fra requesten.");
 		}
 
 		if (request.getType() == null) {

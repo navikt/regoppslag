@@ -28,6 +28,6 @@ public interface ElementEnricherPlugin {
 	 * @return Element of the same type as the input, but enriched with registry data.
 	 * @NOTE If the element is already pre-populated, this method should not attempt to overwrite existing contents.
 	 */
-	Node processElement(Node content, Map<String, Object> propertyMap, String tema) throws RegOppslagSecurityException;
+	Node processElement(Node content, Map<String, Object> propertyMap) throws RegOppslagSecurityException;
 
 }

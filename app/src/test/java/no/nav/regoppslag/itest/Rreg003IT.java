@@ -1,11 +1,14 @@
 package no.nav.regoppslag.itest;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +22,8 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
@@ -50,16 +55,17 @@ public class Rreg003IT extends AbstractIT {
 	private static final String VALID_IDENT = "01020304051";
 	private static final String INVALID_IDENT_TOO_SHORT = "123";
 	private static final String INVALID_IDENT_NOT_NUMERIC = "123456abc";
-	private static final String VALID_TEMA = "PEN";
-	private static final String INVALID_TEMA_TOO_LONG = "PENX";
-	private static final String INVALID_TEMA_NOT_UPPER_CASE = "pen";
+	private static final String INVALID_BEHANDLINGSNUMMER_TOO_LONG = "B1234";
+	private static final String INVALID_BEHANDLINGSNUMMER_TOO_SHORT = "B12";
+	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER = "b123";
+	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS = "BB13";
 	private static final String ORG_IDENT = "889640782";
 
 	@Test
 	public void shouldThrowUnauthorizedWithoutValidToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth("Bearer combustible potato");
-		PostadresseRequest postadresseRequest = createPostadresseRequest(VALID_IDENT, VALID_TEMA);
+		PostadresseRequest postadresseRequest = createPostadresseRequest(VALID_IDENT, null);
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, new HttpEntity<>(postadresseRequest, headers), PostadresseResponse.class));
@@ -69,9 +75,9 @@ public class Rreg003IT extends AbstractIT {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldReturnBadRequestForInvalidInput(String ident, String tema, String feilmelding) {
+	public void shouldReturnBadRequestForInvalidInput(String ident, String behandlingsnummer, String feilmelding) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, tema), PostadresseResponse.class));
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, behandlingsnummer), PostadresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
 		assertThat(e.getMessage()).contains(feilmelding);
@@ -79,13 +85,23 @@ public class Rreg003IT extends AbstractIT {
 
 	private static Stream<Arguments> shouldReturnBadRequestForInvalidInput() {
 		return Stream.of(
-				Arguments.of(null, VALID_TEMA, "Ident kan ikke være null"),
-				Arguments.of(INVALID_IDENT_TOO_SHORT, VALID_TEMA, "Ident må ha lengde på 9, 11 eller 13 siffer"),
-				Arguments.of(INVALID_IDENT_NOT_NUMERIC, VALID_TEMA, "Ident kan kun bestå av tall"),
-				Arguments.of(VALID_IDENT, null, "Tema kan ikke være null"),
-				Arguments.of(VALID_IDENT, INVALID_TEMA_NOT_UPPER_CASE, "Tema kan kun bestå av store bokstaver"),
-				Arguments.of(VALID_IDENT, INVALID_TEMA_TOO_LONG, "Tema må ha lengde på 3 bokstaver")
+				Arguments.of(null, null, "Ident kan ikke være null"),
+				Arguments.of(INVALID_IDENT_TOO_SHORT, null, "Ident må ha lengde på 9, 11 eller 13 siffer"),
+				Arguments.of(INVALID_IDENT_NOT_NUMERIC, null, "Ident kan kun bestå av tall"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_LONG, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer."),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_SHORT, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer."),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer.")
 		);
+	}
+
+	@ParameterizedTest
+	@CsvSource(value={ "B123", "null"}, nullValues = {"null"})
+	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
+		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
+
+		assertEquals(OK, response.getStatusCode());
 	}
 
 	@Test
@@ -311,7 +327,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	private PostadresseResponse hentPostadresse() {
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT), PostadresseResponse.class);
 
 		assertEquals(OK, response.getStatusCode());
 		PostadresseResponse postadresseResponse = response.getBody();
@@ -382,7 +398,7 @@ public class Rreg003IT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/doedpersonutenadresse.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT), PostadresseResponse.class));
 
 		assertEquals(GONE, e.getStatusCode());
 	}
@@ -392,7 +408,7 @@ public class Rreg003IT extends AbstractIT {
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT), PostadresseResponse.class));
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
 	}
@@ -404,7 +420,7 @@ public class Rreg003IT extends AbstractIT {
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withBodyFile("treg002/ereg/ereg-happy.json")));
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT), PostadresseResponse.class);
 
 		var postadresse = response.getBody();
 		assertEquals("YARA INTERNATIONAL ASA", postadresse.getNavn());
@@ -424,7 +440,7 @@ public class Rreg003IT extends AbstractIT {
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withBodyFile("treg002/ereg/ereg-happy-utenlandsk-gb.json")));
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ORG_IDENT), PostadresseResponse.class);
 
 		var postadresse = response.getBody();
 		assertEquals("SUBSEA 7 (UK SERVICE COMPANY) LIMITED", postadresse.getNavn());
@@ -446,7 +462,7 @@ public class Rreg003IT extends AbstractIT {
 						.withBodyFile("treg002/ereg/ereg-ikkefunnet.json")));
 
 		NotFound e = assertThrows(NotFound.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT), PostadresseResponse.class));
 
 		assertEquals(NOT_FOUND, e.getStatusCode());
 	}
@@ -454,7 +470,7 @@ public class Rreg003IT extends AbstractIT {
 	@Test
 	public void shouldThrowBadRequestWhenOrganisasjonIkke() {
 		assertThrows(HttpClientErrorException.BadRequest.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest("999999999a", VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest("999999999a"), PostadresseResponse.class));
 	}
 
 	@Test
@@ -466,24 +482,27 @@ public class Rreg003IT extends AbstractIT {
 						.withBodyFile("treg002/ereg/ereg-tekniskfeil.json")));
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class,
-				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT, VALID_TEMA), PostadresseResponse.class));
+				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest(ORG_IDENT), PostadresseResponse.class));
 
 		assertEquals(INTERNAL_SERVER_ERROR, e.getStatusCode());
 	}
 
-	public HttpEntity<PostadresseRequest> createRequest(String ident, String tema) {
+	public HttpEntity<PostadresseRequest> createRequest(String ident) {
+		return createRequest(ident, null);
+	}
+
+	public HttpEntity<PostadresseRequest> createRequest(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
-		PostadresseRequest postadresseRequest = createPostadresseRequest(ident, tema);
+		PostadresseRequest postadresseRequest = createPostadresseRequest(ident, behandlingsnummer);
 
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
-	private PostadresseRequest createPostadresseRequest(String ident, String tema) {
+	private PostadresseRequest createPostadresseRequest(String ident, String behandlingsnummer) {
 		return PostadresseRequest.builder()
 				.ident(ident)
-				.tema(tema)
+				.behandlingsnummer(behandlingsnummer)
 				.build();
 	}
-
 }

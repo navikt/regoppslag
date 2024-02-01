@@ -30,7 +30,6 @@ import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
@@ -72,7 +71,7 @@ class DoedsboAdresseServiceTest {
 	public void shouldMapMottakerinfoForDoedsboWithAdvokatSomKontakt() {
 		List<KontaktinformasjonForDoedsbo> kontaktinformasjon = singletonList(createKontaktinformasjonForDoedsbo());
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
 
 		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
 		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
@@ -94,7 +93,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
@@ -116,7 +115,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(List.of(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
@@ -139,9 +138,9 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		when(pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(anyString(), anyString())).thenReturn(Optional.of(FULLT_NAVN));
+		when(pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(anyString())).thenReturn(Optional.of(FULLT_NAVN));
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals("v/ " + FULLT_NAVN, response.getAdresselinje1());
@@ -163,7 +162,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
@@ -186,7 +185,7 @@ class DoedsboAdresseServiceTest {
 				.build();
 		when(postnummerService.finnPoststed(POSTNUMMER)).thenReturn(POSTSTED);
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
@@ -209,7 +208,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
@@ -233,7 +232,7 @@ class DoedsboAdresseServiceTest {
 				.build();
 		kontaktinformasjon.getOrganisasjonSomKontakt().setKontaktperson(null);
 
-		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA);
+		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(CO_ORGANISASJON_NAVN, response.getAdresselinje1());
@@ -248,7 +247,7 @@ class DoedsboAdresseServiceTest {
 	@Test
 	public void shouldThrowUkjentAdressePersonErDoedExceptionIfPersonErDoedOgHarIngenAdresse() {
 		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () ->
-				doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList()), TEMA));
+				doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(emptyList())));
 
 		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
@@ -264,7 +263,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
+		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson));
 
 		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
@@ -280,7 +279,7 @@ class DoedsboAdresseServiceTest {
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
 
-		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
+		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson));
 
 		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());
@@ -299,7 +298,7 @@ class DoedsboAdresseServiceTest {
 						.build()))
 				.build();
 
-		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson, TEMA));
+		UkjentAdressePersonErDoedException e = assertThrows(UkjentAdressePersonErDoedException.class, () -> doedsboAdresseService.mapFoerDoedsbo(hentPerson));
 
 		assertEquals(GONE, e.getHttpStatusCode());
 		assertEquals(FEILMELDING_PERSON_DOED, e.getMessage());

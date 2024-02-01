@@ -124,7 +124,6 @@ public class PDLResponseUtil {
 	public static final String V_ADRESSENAVN = "v/ Herr Andersen";
 	public static final String CO_ORGANISASJON_NAVN = "v/ Fred Advokat AS";
 
-	public static final String TEMA = "DAG";
 	public static final String POSTSTED_OSLO = "OSLO";
 	public static final String ADRESSELINJE_POSTBOKS = "Postboks 15";
 	public static final String ADRESSELINJE_BYSTED = "K1A 0B1 Ottawa";

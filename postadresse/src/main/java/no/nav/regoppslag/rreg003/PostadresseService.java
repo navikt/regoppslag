@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
 import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -40,6 +41,7 @@ public class PostadresseService {
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+	private static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("[A-Z]\\d\\d\\d");
 
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
@@ -72,9 +74,10 @@ public class PostadresseService {
 	}
 
 	private PostadresseResponse postadresseForPerson(PostadresseRequest request) {
-		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), request.getTema());
+		String behandlingsnummer = request.getBehandlingsnummer() == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : request.getBehandlingsnummer();
+		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003, request.getTema());
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 
 		return PostadresseResponse.builder()
 				.navn(pdlMottakerInfo.getNavn())
@@ -110,16 +113,15 @@ public class PostadresseService {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
 		}
 
-		if (request.getTema() == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan ikke være null.", BAD_REQUEST);
+		if(request.getTema() != null){
+			log.info("Obs! Til konsumenter av regoppslag: Requesten inneholder \"tema\" som ikke lenger er i bruk i regoppslag. Tema kan derfor fjernes fra requesten.");
 		}
 
-		if (!isAllUpperCase(request.getTema())) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan kun bestå av store bokstaver.", BAD_REQUEST);
-		}
-
-		if (request.getTema().length() != 3) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema må ha lengde på 3 bokstaver.", BAD_REQUEST);
+		String behandlingsnummer = request.getBehandlingsnummer();
+		if(behandlingsnummer != null) {
+			if(behandlingsnummer.length() != 4 || !BEHANDLINGSNUMMER_PATTERN.matcher(behandlingsnummer).matches()){
+				throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer.", BAD_REQUEST);
+			}
 		}
 	}
 

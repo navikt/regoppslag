@@ -48,20 +48,20 @@ public class DoedsboAdresseService {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 	}
 
-	PdlMottakerInfo mapFoerDoedsbo(HentPerson hentPerson, String tema) {
+	PdlMottakerInfo mapFoerDoedsbo(HentPerson hentPerson) {
 		return PdlMottakerInfo.builder()
 				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 				.navn(hentPerson.getFulltnavn())
 				.kortNavn(hentPerson.getForkortetNavn())
 				.doedsdato(hentPerson.getDoedsdato().orElse(null))
-				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson), tema))
+				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson)))
 				.build();
 	}
 
-	private PostadresseTo mapKontaktinformasjonForDoedsbo(Optional<KontaktinformasjonForDoedsbo> kontaktinformasjon, String tema) {
+	private PostadresseTo mapKontaktinformasjonForDoedsbo(Optional<KontaktinformasjonForDoedsbo> kontaktinformasjon) {
 		return kontaktinformasjon
 				.filter(DoedsboAdresseService::isDoedPersonValidKontaktAdresse)
-				.map(kontaktinfo -> mapAndValidateKontaktinformasjonForDoeds(kontaktinfo, tema))
+				.map(this::mapAndValidateKontaktinformasjonForDoeds)
 				.orElseThrow(() -> new UkjentAdressePersonErDoedException(MOTTAKER_DOED, GONE));
 	}
 
@@ -70,7 +70,7 @@ public class DoedsboAdresseService {
 				nonNull(kontaktinformasjon.getAdvokatSomKontakt()) || nonNull(kontaktinformasjon.getPersonSomKontakt())));
 	}
 
-	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo, String tema) {
+	private PostadresseTo mapAndValidateKontaktinformasjonForDoeds(KontaktinformasjonForDoedsbo kontaktinformasjonForDoedsbo) {
 		KontaktAdresse kontaktAdresse = kontaktinformasjonForDoedsbo.getAdresse();
 
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
@@ -78,7 +78,7 @@ public class DoedsboAdresseService {
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(advokatSomKontakt.getPersonnavn(), advokatSomKontakt.getOrganisasjonsnavn()));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getPersonSomKontakt())) {
 			PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
-			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt, tema));
+			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt()) && nonNull(kontaktAdresse)) {
 			OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
 			return mapOrganisasjonSomKontaktAdresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn()));
@@ -144,7 +144,7 @@ public class DoedsboAdresseService {
 		return personnavn != null && isNotBlank(personnavn.getFulltnavn()) ? personnavn.getFulltnavn() : organisasjonsnavn;
 	}
 
-	private String getPersonSomKontaktNavn(PersonSomKontakt personSomKontakt, String tema) {
+	private String getPersonSomKontaktNavn(PersonSomKontakt personSomKontakt) {
 		if (nonNull(personSomKontakt.getPersonnavn()) && isNotBlank(personSomKontakt.getPersonnavn().getFulltnavn())) {
 			return personSomKontakt.getPersonnavn().getFulltnavn();
 		}
@@ -153,7 +153,7 @@ public class DoedsboAdresseService {
 			return null;
 		}
 
-		return pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(personSomKontakt.getIdentifikasjonsnummer(), tema).orElse(null);
+		return pdlGraphQLConsumer.hentDoedsBoKontaktPersonnavn(personSomKontakt.getIdentifikasjonsnummer()).orElse(null);
 	}
 
 	private String getAdresselinje(String adresselinje) {

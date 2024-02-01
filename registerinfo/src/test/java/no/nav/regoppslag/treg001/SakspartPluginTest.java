@@ -54,7 +54,6 @@ public class SakspartPluginTest {
 	private static final String BREVDATA_TYPE = "src/test/resources/brevdata/brevdata_type.xml";
 	private static final String BREVDATA_ID = "src/test/resources/brevdata/brevdata_id.xml";
 
-	private static final String TEMA = "PEN";
 	private static final String IKKE_BERIK_FORNAVN = "Ikke";
 	private static final String IKKE_BERIK_ETTERNAVN = "Berik";
 	private static final String ORGNAVN = "Firma AS";
@@ -83,7 +82,7 @@ public class SakspartPluginTest {
 	@Test
 	public void testSakspartPluginPDL() throws Exception {
 
-		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(FULLT_NAVN);
+		when(pdlGraphQLConsumer.hentNavn(anyString())).thenReturn(FULLT_NAVN);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -93,7 +92,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap, TEMA);
+		Node processed = sakspartPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
@@ -104,7 +103,7 @@ public class SakspartPluginTest {
 	@Test
 	public void testSakspartPluginPDLReturnNull() throws Exception {
 
-		when(pdlGraphQLConsumer.hentNavn(anyString(), anyString())).thenReturn(null);
+		when(pdlGraphQLConsumer.hentNavn(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -114,7 +113,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap, TEMA);
+		Node processed = sakspartPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
@@ -133,7 +132,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap, null);
+		Node processed = sakspartPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
@@ -152,7 +151,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = sakspartPlugin.processElement(node, valueMap, null);
+		Node processed = sakspartPlugin.processElement(node, valueMap);
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
@@ -171,7 +170,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
+				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
 	}
 
 	@Test
@@ -186,7 +185,7 @@ public class SakspartPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap, null), "Feil i SakspartPlugin: Sakspart mangler id");
+				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler id");
 
 	}
 
