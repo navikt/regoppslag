@@ -21,6 +21,8 @@ public class PostadresseRequest {
 	private String ident;
 	@Schema(example = "B123", description = "Behandlingsnummer som hjemmel til å hente adresseinformasjon for identifikator.", requiredMode = NOT_REQUIRED)
 	private String behandlingsnummer;
+
+	@Deprecated
 	@Schema(description = "Legacy: Tema er ikke lenger i bruk og blir forkastet i regoppslag", requiredMode = NOT_REQUIRED)
 	private String tema;
 }
