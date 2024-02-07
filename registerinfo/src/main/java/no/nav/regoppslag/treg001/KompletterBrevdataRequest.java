@@ -23,8 +23,4 @@ public class KompletterBrevdataRequest {
 	private String dokumentTypeId;
 	@Schema(example = exampleBrevdata, description = "Brevdata fra felles mastermal. XML'en kan være utfylt med data eller ikke.", requiredMode = REQUIRED)
 	private String brevdata;
-
-	@Deprecated
-	@Schema(description = "Legacy: Tema er ikke lenger i bruk og blir forkastet i regoppslag", requiredMode = NOT_REQUIRED)
-	private String tema;
 }

@@ -21,8 +21,4 @@ public class HentMottakerOgAdresseRequest {
 	private String identifikator;
 	@Schema(example = "ORGANISASJON", description = "Sier om identifikatoren er et fnr eller et orgnr. Gyldige verdier er PERSON og ORGANISASJON", requiredMode = REQUIRED, allowableValues = "PERSON, ORGANISASJON")
 	private String type;
-
-	@Deprecated
-	@Schema(description = "Legacy: Tema er ikke lenger i bruk og blir forkastet i regoppslag", requiredMode = NOT_REQUIRED)
-	private String tema;
 }

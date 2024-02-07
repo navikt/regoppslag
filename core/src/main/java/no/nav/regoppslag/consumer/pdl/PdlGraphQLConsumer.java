@@ -80,7 +80,7 @@ public class PdlGraphQLConsumer {
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public HentPerson hentPerson(final String aktoerId, String behandlingsnummer) {
 		try {
-			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentPerson, behandlingsnummer);
+			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentPersonQuery, behandlingsnummer);
 			final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
 			handterPdlFunksjonellFeil(response);
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
@@ -92,7 +92,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	public PDLHentNavnResponse hentPersonnavn(final String aktoerId) {
-		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentNavn, ARKIVPLEIE_BEHANDLINGSNUMMER);
+		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentNavnQuery, ARKIVPLEIE_BEHANDLINGSNUMMER);
 		return requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
 	}
 
@@ -169,7 +169,7 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	private final String hentNavn = """
+	private static final String hentNavnQuery = """
 			query hentPerson($ident: ID!){
 			  hentPerson(ident: $ident){
 			    navn(historikk: false){
@@ -189,7 +189,7 @@ public class PdlGraphQLConsumer {
 			  }
 			}""";
 
-	private final String hentPerson = """
+	private static final String hentPersonQuery = """
 			query hentPerson($ident: ID!){
 			  hentPerson(ident: $ident){
 			    adressebeskyttelse(historikk: false){

@@ -101,10 +101,6 @@ public class HentMottakerOgAdresseService {
 			throw new RegoppslagIllegalArgumentException("Identifikator kan kun bestå av tall. " + UGYLDIG_INPUT, BAD_REQUEST);
 		}
 
-		if(request.getTema() != null){
-			log.info("Obs! Til konsumenter av regoppslag: Requesten inneholder \"tema\" som ikke lenger er i bruk i regoppslag. Tema kan derfor fjernes fra requesten.");
-		}
-
 		if (request.getType() == null) {
 			throw new RegoppslagIllegalArgumentException("Mottakertype kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
 		} else if (!(PERSON.name().equals(request.getType()) || ORGANISASJON.name().equals(request.getType()))) {

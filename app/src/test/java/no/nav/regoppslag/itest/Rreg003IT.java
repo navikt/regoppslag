@@ -1,7 +1,5 @@
 package no.nav.regoppslag.itest;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
@@ -22,13 +20,12 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
+import static no.nav.regoppslag.rest.PostAdresseController.BEHANDLINGSNUMMER_HEADER;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
@@ -59,13 +56,14 @@ public class Rreg003IT extends AbstractIT {
 	private static final String INVALID_BEHANDLINGSNUMMER_TOO_SHORT = "B12";
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER = "b123";
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS = "BB13";
+	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS = "BB123";
 	private static final String ORG_IDENT = "889640782";
 
 	@Test
 	public void shouldThrowUnauthorizedWithoutValidToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth("Bearer combustible potato");
-		PostadresseRequest postadresseRequest = createPostadresseRequest(VALID_IDENT, null);
+		PostadresseRequest postadresseRequest = createPostadresseRequest(VALID_IDENT);
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, new HttpEntity<>(postadresseRequest, headers), PostadresseResponse.class));
@@ -88,10 +86,11 @@ public class Rreg003IT extends AbstractIT {
 				Arguments.of(null, null, "Ident kan ikke være null"),
 				Arguments.of(INVALID_IDENT_TOO_SHORT, null, "Ident må ha lengde på 9, 11 eller 13 siffer"),
 				Arguments.of(INVALID_IDENT_NOT_NUMERIC, null, "Ident kan kun bestå av tall"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_LONG, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer."),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_SHORT, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer."),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer.")
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_LONG, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_SHORT, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123")
 		);
 	}
 
@@ -494,15 +493,15 @@ public class Rreg003IT extends AbstractIT {
 	public HttpEntity<PostadresseRequest> createRequest(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
-		PostadresseRequest postadresseRequest = createPostadresseRequest(ident, behandlingsnummer);
+		headers.set(BEHANDLINGSNUMMER_HEADER, behandlingsnummer);
+		PostadresseRequest postadresseRequest = createPostadresseRequest(ident);
 
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
-	private PostadresseRequest createPostadresseRequest(String ident, String behandlingsnummer) {
+	private PostadresseRequest createPostadresseRequest(String ident) {
 		return PostadresseRequest.builder()
 				.ident(ident)
-				.behandlingsnummer(behandlingsnummer)
 				.build();
 	}
 }
