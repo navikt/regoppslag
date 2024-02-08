@@ -27,6 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Collections.singletonList;
+import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.consumer.pdl.to.Endring.EndringsType.OPPRETT;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
@@ -133,6 +134,8 @@ public class PDLResponseUtil {
 	public static final String BYGNING_ETASJE_LEILIGHET_BVH = "ESTLANDSHUSET";
 	public static final String BYSTED_BVH = "BEVERLY HILLS";
 	public static final String POSTKODE_BVH = "90210";
+
+	private static final String BEHANDLINGSNUMMER = "behandlingsnummer";
 
 	public static PDLHentPersonResponse pdlHentPersonResponse(HentPerson.PersonNavn personNavn) {
 		return PDLHentPersonResponse.builder()
@@ -787,6 +790,16 @@ public class PDLResponseUtil {
 		stubFor(post("/graphql").willReturn(aResponse()
 				.withStatus(status)
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader(BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER)
+				.withHeader("Connection", "close")
+				.withBodyFile(filePath)));
+	}
+
+	public static void postPdlGraphqlWithCustomBehandlingsnummer(int status, String filePath, String behandlingsnummer) {
+		stubFor(post("/graphql").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader(BEHANDLINGSNUMMER, behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : behandlingsnummer)
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}

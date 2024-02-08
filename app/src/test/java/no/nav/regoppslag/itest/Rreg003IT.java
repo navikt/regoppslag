@@ -32,6 +32,7 @@ import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
+import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithCustomBehandlingsnummer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -97,7 +98,7 @@ public class Rreg003IT extends AbstractIT {
 	@ParameterizedTest
 	@CsvSource(value={ "B123", "null"}, nullValues = {"null"})
 	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
-		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
+		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
 
 		assertEquals(OK, response.getStatusCode());
