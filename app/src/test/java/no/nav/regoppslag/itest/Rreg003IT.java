@@ -488,7 +488,11 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	public HttpEntity<PostadresseRequest> createRequest(String ident) {
-		return createRequest(ident, null);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token("Rreg003IT"));
+		PostadresseRequest postadresseRequest = createPostadresseRequest(ident);
+
+		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
 	public HttpEntity<PostadresseRequest> createRequest(String ident, String behandlingsnummer) {
