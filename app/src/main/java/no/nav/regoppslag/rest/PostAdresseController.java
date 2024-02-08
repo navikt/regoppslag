@@ -55,7 +55,7 @@ public class PostAdresseController {
 	})
 	@Parameter(in = HEADER, name = BEHANDLINGSNUMMER_HEADER, description = "Custom header for å kalle PDL med annet hjemmel enn arkivpleie. Må være på formatet Stor forbokstav etterfulgt av tre siffer, eks B123")
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(@RequestBody PostadresseRequest requestBody, @RequestHeader(BEHANDLINGSNUMMER_HEADER) String behandlingsnummer) throws RegOppslagSecurityException {
+	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(@RequestBody PostadresseRequest requestBody, @RequestHeader(value = BEHANDLINGSNUMMER_HEADER, required = false) String behandlingsnummer) throws RegOppslagSecurityException {
 		try {
 			log.info("RREG003 Henter postaddresse.");
 

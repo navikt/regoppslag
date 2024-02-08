@@ -76,7 +76,7 @@ public class Rreg003IT extends AbstractIT {
 	@MethodSource
 	public void shouldReturnBadRequestForInvalidInput(String ident, String behandlingsnummer, String feilmelding) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(ident, behandlingsnummer), PostadresseResponse.class));
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(ident, behandlingsnummer), PostadresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
 		assertThat(e.getMessage()).contains(feilmelding);
@@ -99,7 +99,7 @@ public class Rreg003IT extends AbstractIT {
 	@CsvSource(value={ "B123", "null"}, nullValues = {"null"})
 	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
 
 		assertEquals(OK, response.getStatusCode());
 	}
@@ -488,10 +488,14 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	public HttpEntity<PostadresseRequest> createRequest(String ident) {
-		return createRequest(ident, null);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token("Rreg003IT"));
+		PostadresseRequest postadresseRequest = createPostadresseRequest(ident);
+
+		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
-	public HttpEntity<PostadresseRequest> createRequest(String ident, String behandlingsnummer) {
+	public HttpEntity<PostadresseRequest> createRequestWithBehandlingsnummer(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
 		headers.set(BEHANDLINGSNUMMER_HEADER, behandlingsnummer);
