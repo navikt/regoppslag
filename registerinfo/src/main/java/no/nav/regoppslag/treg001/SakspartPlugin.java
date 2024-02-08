@@ -48,7 +48,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	}
 
 	@Override
-	public Node processElement(Node content, Map<String, Object> valueMap, String tema) throws RegOppslagSecurityException {
+	public Node processElement(Node content, Map<String, Object> valueMap) throws RegOppslagSecurityException {
 		String dokumenttypeId = (String) valueMap.get(DOKUMENTTYPEID.name());
 
 		validateElementType(content);
@@ -64,7 +64,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				validateMottaker(sakspart);
 
 				if (PERSON.equals(sakspart.getTypeKode())) {
-					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId(), tema);
+					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId());
 					sakspart.setNavn(navn);
 
 				} else {

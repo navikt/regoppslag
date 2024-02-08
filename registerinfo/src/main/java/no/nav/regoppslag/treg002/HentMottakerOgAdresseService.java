@@ -66,9 +66,9 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForPerson(HentMottakerOgAdresseRequest request) {
-		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator(), request.getTema());
+		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator());
 
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002, request.getTema());
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002);
 
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())

@@ -32,7 +32,6 @@ import static no.nav.regoppslag.util.PDLResponseUtil.FRITTFORMAT_POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTBOKSNUMMERNAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.TEMA;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPerson;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonUtenlandskAdresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.createPersonnavn;
@@ -109,7 +108,7 @@ public class AdresseMapperTest {
 
 	@Test
 	public void shouldMapPDLWithNorskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPerson(createPersonnavn()), SERVICE_CODE_TREG002, TEMA);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPerson(createPersonnavn()), SERVICE_CODE_TREG002);
 
 		Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 
@@ -125,7 +124,7 @@ public class AdresseMapperTest {
 	@SneakyThrows
 	@Test
 	public void shouldMapPDLWithUtenlandskPostAdresse() {
-		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002, TEMA);
+		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonUtenlandskAdresse(), SERVICE_CODE_TREG002);
 
 		Adresse adresse = adresseMapper.mapFraPdl(mottakerInfo);
 

@@ -62,12 +62,12 @@ public class MapPdlForTreg001 {
 		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
-	public Mottaker getMottakerFraPdl(String tema, Mottaker mottaker, String dokumenttypeId) {
+	public Mottaker getMottakerFraPdl(Mottaker mottaker, String dokumenttypeId) {
 		//Skal elementet berikes?
 		if (mottaker.isBerik()) {
 			if (PERSON.equals(mottaker.getTypeKode())) {
-				var person = pdlGraphQLConsumer.hentPerson(mottaker.getId(), tema);
-				PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG001, tema);
+				var person = pdlGraphQLConsumer.hentPerson(mottaker.getId());
+				PdlMottakerInfo hentPerson = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG001);
 
 				Mottaker mottakerFraPdl = mapAdresseFraPdl(hentPerson);
 				mottaker.setKortNavn(isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());

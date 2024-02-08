@@ -58,7 +58,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MapPdlForTreg001Test {
 
-	private static final String TEMA = "PEN";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
 	private static final String ORGNAVN = "Firma AS";
@@ -88,10 +87,10 @@ class MapPdlForTreg001Test {
 
 	@Test
 	public void shouldMapTreg001MottakerAdresseFraPdl() {
-		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonWithBostedsadresse());
+		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonWithBostedsadresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
-		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(PERSON_IDENT, mottaker.getId());
@@ -105,10 +104,10 @@ class MapPdlForTreg001Test {
 
 	@Test
 	public void shouldMapUtenlandskAdresseFraPdl() {
-		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT, TEMA)).thenReturn(createPdlHentPersonUtenlandskAdresse());
+		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
-		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createPersonMottaker(), DOKUMENTTYPEID);
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(PERSON_IDENT, mottaker.getId());
@@ -124,7 +123,7 @@ class MapPdlForTreg001Test {
 	void shouldMapNorskOrganisasjon() {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
-		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(TEMA, createOrganisasjonMottaker(), DOKUMENTTYPEID);
+		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createOrganisasjonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
 		assertEquals(ORGANISASJONNUMMER, mottaker.getId());

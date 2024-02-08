@@ -48,11 +48,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class PdlGraphQLConsumer {
 
-	private static final String HEADER_PDL_TEMA = "Tema";
 	// https://pdldocs-navno.msappproxy.net/ekstern/index.html#_dokumenter_hjemmel_vha_tema
 	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
 	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
-	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
+	public static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
 	private static final String PDL_ERROR_EXTENSION_CODE_NOT_FOUND = "not_found";
 	private static final String PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED = "unauthorized";
 
@@ -74,9 +73,14 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public HentPerson hentPerson(final String aktoerId, final String tema) {
+	public HentPerson hentPerson(final String aktoerId) {
+		return hentPerson(aktoerId, ARKIVPLEIE_BEHANDLINGSNUMMER);
+	}
+
+	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	public HentPerson hentPerson(final String aktoerId, String behandlingsnummer) {
 		try {
-			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentPerson);
+			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentPersonQuery, behandlingsnummer);
 			final PDLHentPersonResponse response = requireNonNull(restTemplate.exchange(requestEntity, PDLHentPersonResponse.class).getBody());
 			handterPdlFunksjonellFeil(response);
 			return nonNull(response.getData()) ? response.getData().getHentPerson() : null;
@@ -87,15 +91,15 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	public PDLHentNavnResponse hentPersonnavn(final String aktoerId, final String tema) {
-		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, tema, hentNavn);
+	public PDLHentNavnResponse hentPersonnavn(final String aktoerId) {
+		RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentNavnQuery, ARKIVPLEIE_BEHANDLINGSNUMMER);
 		return requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public String hentNavn(final String aktoerId, final String tema) {
+	public String hentNavn(final String aktoerId) {
 		try {
-			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
+			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);
 			handterPdlFunksjonellFeil(response);
 			return mapHentNavnResponse.mapNavn(response);
 		} catch (HttpClientErrorException e) {
@@ -106,9 +110,9 @@ public class PdlGraphQLConsumer {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId, final String tema) {
+	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId) {
 		try {
-			final PDLHentNavnResponse response = hentPersonnavn(aktoerId, tema);
+			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);
 			handterPdlFunksjonellFeil(response);
 			return Optional.ofNullable(mapHentNavnResponse.mapNavnForDoedsbo(response));
 		} catch (HttpClientErrorException e) {
@@ -118,13 +122,12 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	private RequestEntity<PDLRequest> createRequestEntity(String aktoerId, String tema, String query) {
+	private RequestEntity<PDLRequest> createRequestEntity(String aktoerId, String query, String behandlingsnummer) {
 		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdl.getUrl()).build();
 		return RequestEntity.post(uri.toUri())
 				.accept(APPLICATION_JSON)
 				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.header(HEADER_PDL_TEMA, tema)
-				.header(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER)
+				.header(HEADER_PDL_BEHANDLINGSNUMMER, behandlingsnummer)
 				.header(NAV_CALL_ID, MDC.get(CALL_ID))
 				.body(mapRequest(aktoerId, query));
 	}
@@ -166,7 +169,7 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	private final String hentNavn = """
+	private static final String hentNavnQuery = """
 			query hentPerson($ident: ID!){
 			  hentPerson(ident: $ident){
 			    navn(historikk: false){
@@ -186,7 +189,7 @@ public class PdlGraphQLConsumer {
 			  }
 			}""";
 
-	private final String hentPerson = """
+	private static final String hentPersonQuery = """
 			query hentPerson($ident: ID!){
 			  hentPerson(ident: $ident){
 			    adressebeskyttelse(historikk: false){

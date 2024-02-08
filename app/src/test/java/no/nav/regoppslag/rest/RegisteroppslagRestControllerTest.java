@@ -71,7 +71,6 @@ public class RegisteroppslagRestControllerTest {
 		return HentMottakerOgAdresseRequest.builder()
 				.identifikator("12345678901")
 				.type("PERSON")
-				.tema("FOR")
 				.build();
 	}
 

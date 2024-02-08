@@ -85,7 +85,6 @@ public class MottakerPluginTest {
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
 	private static final String MOTTAKER_ID = "30085849677";
-	private static final String TEMA = "PEN";
 
 	private EregConsumer eregConsumer;
 	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
@@ -125,7 +124,7 @@ public class MottakerPluginTest {
 	public void testMottakerPluginPerson() throws Exception {
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(hentPerson);
+		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -136,7 +135,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -148,7 +147,7 @@ public class MottakerPluginTest {
 	public void shouldUsePersonMaalform() throws Exception {
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(hentPerson);
+		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
@@ -161,7 +160,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, "FOR");
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -172,7 +171,7 @@ public class MottakerPluginTest {
 	public void shouldUseMottakerMaalform() throws Exception {
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(hentPerson);
+		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
 		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
@@ -185,7 +184,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, "GEN");
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -203,7 +202,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -216,7 +215,7 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldMapMottakerPluginPersonFraPdl() throws Exception {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithBostedsadresse());
+		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(createPdlHentPersonWithBostedsadresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -227,7 +226,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, TEMA);
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -242,7 +241,7 @@ public class MottakerPluginTest {
 
 	@Test
 	public void shouldMapUtenlandskAdresseFraPdl() throws Exception {
-		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonUtenlandskAdresse());
+		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -253,7 +252,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, TEMA);
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
@@ -280,7 +279,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = mottakerPlugin.processElement(node, valueMap, null);
+		Node processed = mottakerPlugin.processElement(node, valueMap);
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
@@ -302,7 +301,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap, null));
+				() -> mottakerPlugin.processElement(node, valueMap));
 		assertEquals(exception.getMessage(), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
 
@@ -317,7 +316,7 @@ public class MottakerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap, null), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
+				() -> mottakerPlugin.processElement(node, valueMap), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 
 	}
 

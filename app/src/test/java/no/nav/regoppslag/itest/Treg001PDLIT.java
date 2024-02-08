@@ -396,7 +396,6 @@ public class Treg001PDLIT extends AbstractIT {
 		KompletterBrevdataRequest kompletterBrevdataRequest = KompletterBrevdataRequest.builder()
 				.dokumentTypeId(DOKUMENTTYPEID)
 				.brevdata(classpathToString(path))
-				.tema("FRI")
 				.build();
 
 		return new HttpEntity<>(kompletterBrevdataRequest, headers);

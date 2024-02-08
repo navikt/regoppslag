@@ -55,12 +55,12 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldKompletterBrevdata() throws XPathExpressionException, MissingPluginException, IOException, SAXException, ParserConfigurationException, RegOppslagSecurityException {
-		when(elementEnricher.process(any(), any(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
+		when(elementEnricher.process(any(), anyString())).thenReturn(stringToDocument(brevdataUtfylt));
 
 		KompletterBrevdataResponse actualResponse = kompletterBrevdataService.hentBrevdataFraRegistre(request);
 
 		assertNotNull(actualResponse.getBrevdata());
-		verify(elementEnricher, times(1)).process(any(), any(), any());
+		verify(elementEnricher, times(1)).process(any(), any());
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldHandleMissingPluginException() throws XPathExpressionException, MissingPluginException, RegOppslagFunctionalException, RegOppslagTechnicalException, RegOppslagSecurityException {
-		when(elementEnricher.process(any(), any(), anyString())).thenThrow(MissingPluginException.class);
+		when(elementEnricher.process(any(), anyString())).thenThrow(MissingPluginException.class);
 
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
@@ -79,7 +79,7 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldHandleXPathExpressionException() throws RegOppslagFunctionalException, RegOppslagTechnicalException, XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
-		when(elementEnricher.process(any(), any(), anyString())).thenThrow(XPathExpressionException.class);
+		when(elementEnricher.process(any(), anyString())).thenThrow(XPathExpressionException.class);
 
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest));
@@ -91,7 +91,7 @@ public class KompletterBrevdataServiceTest {
 	@Test
 	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
 		Document document = null;
-		when(elementEnricher.process(any(), any(), anyString())).thenReturn(document);
+		when(elementEnricher.process(any(), anyString())).thenReturn(document);
 
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest), "org.xml.sax.SAXParseException");

@@ -22,8 +22,10 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
 import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -40,6 +42,7 @@ public class PostadresseService {
 	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+	private static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("^[A-Z]\\d{3}$");
 
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
@@ -53,15 +56,14 @@ public class PostadresseService {
 		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
-	public PostadresseResponse postadresseInfo(PostadresseRequest request) throws RegOppslagSecurityException {
-
+	public PostadresseResponse postadresseInfo(PostadresseRequest request, String behandlingsnummer) throws RegOppslagSecurityException {
 		try {
-			validateInput(request);
+			validateInput(request, behandlingsnummer);
 
 			if (request.getIdent().length() == 9) { //organisasjon har alltid ident lengde 9
 				return postadresseForOrg(request);
 			} else {
-				return postadresseForPerson(request);
+				return postadresseForPerson(request, behandlingsnummer);
 			}
 
 		} catch (Exception e) {
@@ -71,10 +73,11 @@ public class PostadresseService {
 		return null;
 	}
 
-	private PostadresseResponse postadresseForPerson(PostadresseRequest request) {
-		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), request.getTema());
+	private PostadresseResponse postadresseForPerson(PostadresseRequest request, String input_behandlingsnummer) {
+		String behandlingsnummer = input_behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : input_behandlingsnummer;
+		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
-		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003, request.getTema());
+		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 
 		return PostadresseResponse.builder()
 				.navn(pdlMottakerInfo.getNavn())
@@ -92,7 +95,7 @@ public class PostadresseService {
 				.build();
 	}
 
-	private void validateInput(PostadresseRequest request) {
+	private void validateInput(PostadresseRequest request, String behandlingsnummer) {
 
 		if (request == null) {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Request body er tom.", BAD_REQUEST);
@@ -110,19 +113,10 @@ public class PostadresseService {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
 		}
 
-		if (request.getTema() == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan ikke være null.", BAD_REQUEST);
-		}
-
-		if (!isAllUpperCase(request.getTema())) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema kan kun bestå av store bokstaver.", BAD_REQUEST);
-		}
-
-		if (request.getTema().length() != 3) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Tema må ha lengde på 3 bokstaver.", BAD_REQUEST);
+		if (!isEmpty(behandlingsnummer) && !BEHANDLINGSNUMMER_PATTERN.matcher(behandlingsnummer).matches()) {
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123 ", BAD_REQUEST);
 		}
 	}
-
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
 		if (e instanceof UkjentAdressePersonErDoedException err) {

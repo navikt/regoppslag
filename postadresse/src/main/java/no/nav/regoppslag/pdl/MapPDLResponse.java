@@ -70,10 +70,10 @@ public class MapPDLResponse {
 		this.clock = clock;
 	}
 
-	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode, String tema) {
+	public PdlMottakerInfo mapHentPerson(HentPerson hentPerson, String serviceCode) {
 		// sjekk at personen ikke er død
 		if (hentPerson.isDoed()) {
-			return doedsboAdresseService.mapFoerDoedsbo(hentPerson, tema);
+			return doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		}
 
 		String debugLog = "";

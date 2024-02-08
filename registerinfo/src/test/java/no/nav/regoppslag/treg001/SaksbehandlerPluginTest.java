@@ -67,7 +67,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
@@ -88,7 +88,7 @@ public class SaksbehandlerPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = saksbehandlerPlugin.processElement(node, valueMap, null);
+		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);

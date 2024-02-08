@@ -70,7 +70,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
@@ -89,7 +89,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
@@ -109,7 +109,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
@@ -128,7 +128,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgPostadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
@@ -148,7 +148,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgBesoksadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
@@ -165,7 +165,7 @@ public class NavOrgenhetPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		Node processed = norgBesoksadressePlugin.processElement(node, valueMap, null);
+		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
 		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));

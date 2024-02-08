@@ -70,12 +70,9 @@ public class KompletterBrevdataService {
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {
-			if (isBlank(request.getTema())) {
-				log.error("Tema er ikke satt.");
-			}
 
 			Document brevdata = stringToDocument(request.getBrevdata());
-			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId(), request.getTema());
+			Document brevdataUtfylt = elementEnricher.process(brevdata, request.getDokumentTypeId());
 
 			return KompletterBrevdataResponse.builder().brevdata(documentToString(brevdataUtfylt)).build();
 		} catch (MarshallerTechnicalException e) {

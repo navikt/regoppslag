@@ -67,7 +67,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap, null);
+		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -86,7 +86,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap, null);
+		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -105,7 +105,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap, null);
+		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
@@ -124,7 +124,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 
-		Node processed = norgPlugin.processElement(node, valueMap, null);
+		Node processed = norgPlugin.processElement(node, valueMap);
 
 		JaxbHelper<NavEnhet> enhetJaxbHelper = new JaxbHelper<>(NavEnhet.class);
 		NavEnhet navEnhet = enhetJaxbHelper.unmarshal(processed);
