@@ -55,6 +55,11 @@
 			"app": "ida",
 			"namespace": "traktor",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "kabal-api",
+			"namespace": "klage",
+			"cluster": "dev-gcp"
 		}
 	]
 }

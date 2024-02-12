@@ -62,6 +62,11 @@
 			"app": "utenlandsadresser",
 			"namespace": "utenlandsadresser",
 			"cluster": "prod-gcp"
+		},
+		{
+			"app": "kabal-api",
+			"namespace": "klage",
+			"cluster": "prod-gcp"
 		}
 	]
 }
