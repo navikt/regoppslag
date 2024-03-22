@@ -176,7 +176,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_US, response.getAdresse().getLandkode());
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje2());
-		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2 + ", " + CONAVN_UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
+		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2 + " " + CONAVN_UTENLANDSK_ADRESSELINJE3, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
 
@@ -335,7 +335,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void should_dothething_GetMottakerAndAdresseForUtenlandskKontakadresee() {
+	public void should_dothething_GetMottakerAndAdresseForUtenlandskKontakadresse() {
 		postPdlGraphql(OK.value(), "pdl/utenlandsk_uten_postboksadressenavnnummer.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
@@ -343,7 +343,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertNotNull(response);
 		assertNotNull(response.getAdresse());
 		assertEquals(BYGNING_ETASJE_LEILIGHET_BVH, response.getAdresse().getAdresselinje1());
-		assertEquals(POSTKODE_BVH + " " + BYSTED_BVH, response.getAdresse().getAdresselinje2());
+		assertEquals(BYSTED_BVH + " " + POSTKODE_BVH, response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(LANDKODE_US, response.getAdresse().getLandkode());
 

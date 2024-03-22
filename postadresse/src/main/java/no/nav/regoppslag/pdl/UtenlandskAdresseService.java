@@ -9,11 +9,12 @@ import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -22,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
+	private static final String USA_LANDKODE = "USA";
 
 	static Optional<PostadresseTo> mapUtenlandskPostadresse(Kontaktadresse kontaktadresse) {
 		String coAdressenavn = kontaktadresse.getCoAdressenavn();
@@ -123,19 +125,32 @@ public class UtenlandskAdresseService {
 
 		if (hasPostKode) {
 			if (hasBySted && hasRegionDistriktOmr) {
-				return format("%s %s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
+				if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
+					return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade(), utenlandskAdresse.getPostkode());
+				}
+				return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
 			} else {
 				if (!hasBySted && hasRegionDistriktOmr) {
-					return format("%s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getRegionDistriktOmraade());
+					if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
+						return joinAdresseUtenKomma(utenlandskAdresse.getRegionDistriktOmraade(), utenlandskAdresse.getPostkode(), "");
+					}
+					return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), "", utenlandskAdresse.getRegionDistriktOmraade());
+
 				} else if (hasBySted) {
-					return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
+					if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
+						return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getPostkode(), "");
+					}
+					return joinAdresseUtenKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), "");
 				} else {
 					return utenlandskAdresse.getPostkode();
 				}
 			}
 		} else if (hasBySted) {
 			if (hasRegionDistriktOmr) {
-				return format("%s, %s", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
+				if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
+					return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade(), "");
+				}
+				return joinAdresseMedKomma("", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
 			} else {
 				return utenlandskAdresse.getBySted();
 			}
@@ -152,4 +167,13 @@ public class UtenlandskAdresseService {
 	private static String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
 	}
+
+	private static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
+		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll(" ,", ",");
+	}
+
+	private static String joinAdresseUtenKomma(String adresse1, String adresse2, String adresse3) {
+		return join(" ", adresse1, adresse2, adresse3).strip();
+	}
+
 }

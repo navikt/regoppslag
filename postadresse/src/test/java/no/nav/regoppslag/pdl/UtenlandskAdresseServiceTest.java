@@ -45,7 +45,7 @@ class UtenlandskAdresseServiceTest {
 		PostadresseTo response = mottakerInfo.get();
 
 		assertEquals(BYGNING_ETASJE_LEILIGHET_BVH, response.getAdresselinje1());
-		assertEquals(POSTKODE_BVH + " " + BYSTED_BVH, response.getAdresselinje2());
+		assertEquals(BYSTED_BVH + " " + POSTKODE_BVH, response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());

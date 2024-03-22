@@ -96,7 +96,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@ParameterizedTest
-	@CsvSource(value={ "B123", "null"}, nullValues = {"null"})
+	@CsvSource(value = {"B123", "null"}, nullValues = {"null"})
 	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
@@ -334,6 +334,63 @@ public class Rreg003IT extends AbstractIT {
 		assertNotNull(postadresseResponse);
 
 		return postadresseResponse;
+	}
+
+	@Test
+	void shouldUtenlandskAdresseMedBystedOgPostkode() {
+		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_bysted_postkode.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("799 E Dragram Suite 5A");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("85705 Southampton");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("GB");
+		assertThat(actualAdresse.getLand()).isEqualTo("STORBRITANNIA");
+	}
+
+	@Test
+	void shouldUtenlandskAdresseMedUsaLandkode() {
+		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_usa_landkode.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("799 E Dragram Suite 5A");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Tucson AZ 85705");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("US");
+		assertThat(actualAdresse.getLand()).isEqualTo("USA");
+	}
+
+	@Test
+	void shouldUtenlandskAdresseMedPostkodeOgDistrikt() {
+		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_postkode_distrikt.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("799 E Dragram Suite 5A");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("85705, SO53 5PD");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("GB");
+		assertThat(actualAdresse.getLand()).isEqualTo("STORBRITANNIA");
 	}
 
 	@Test
