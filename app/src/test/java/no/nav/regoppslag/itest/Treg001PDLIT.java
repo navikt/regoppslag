@@ -5,12 +5,15 @@ import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+
+import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.CountMatchingStrategy.GREATER_THAN_OR_EQUAL;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -66,6 +69,26 @@ public class Treg001PDLIT extends AbstractIT {
 		KompletterBrevdataResponse actualResponse = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class);
 
 		assertThat(actualResponse.getBrevdata()).isEqualTo(classpathToString("__files/treg001pdl/treg001pdl_full_response.xml"));
+	}
+
+	/**
+	 * Fjern denne når man finner ut av det
+	 *
+	 * Funn:
+	 * Det behøver ikke være utbetalingsmelding. Det er volum som trigger dette (feiler på litt forskjellige plugins)
+	 * Siden feilen kan reproduseres i regoppslag så behøver man ikke analysere dokprod etter feilkilder
+	 * Ser ut som Plugin sannsynligvis ikke er feilkilden men noe høyere oppe, i f.eks ElementEnricher
+	 */
+	@Test
+	@Disabled
+	void shouldReprodusereMMA7369() {
+		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
+		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
+		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
+		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
+		IntStream.range(0, 10000).parallel().forEach(intc -> {
+			restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request_mma-7369.xml"), KompletterBrevdataResponse.class);
+		});
 	}
 
 	@Test

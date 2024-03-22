@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns3:brevdata xmlns:ns3="http://nav.no/dok/urbrev/000093" xmlns:ns1="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
+			  xmlns:ns2="http://nav.no/dok/urbrev/felles/ur_felles">
+	<ns3:NAVFelles>
+		<sakspart xmlns="http://nav.no/dok/urbrev/felles/ur_felles">
+			<ns1:id>11111111111</ns1:id>
+			<ns1:typeKode>PERSON</ns1:typeKode>
+			<ns1:navn>BEN FRANKLIN CHANG</ns1:navn>
+		</sakspart>
+		<mottaker xmlns="http://nav.no/dok/urbrev/felles/ur_felles"
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:Person">
+			<ns1:id>11111111111</ns1:id>
+			<ns1:typeKode>PERSON</ns1:typeKode>
+			<ns1:navn>BEN FRANKLIN CHANG</ns1:navn>
+			<ns1:kortNavn>SENOR CHANG</ns1:kortNavn>
+			<ns1:spraakkode>NB</ns1:spraakkode>
+			<ns1:mottakeradresse xsi:type="ns1:NorskPostadresse">
+				<ns1:adresselinje1>Adressen 1</ns1:adresselinje1>
+				<ns1:postnummer>3800</ns1:postnummer>
+				<ns1:poststed>BØ</ns1:poststed>
+				<ns1:land>Norge</ns1:land>
+			</ns1:mottakeradresse>
+		</mottaker>
+		<ns2:behandlendeEnhet ns1:berik="false">
+			<ns1:enhetsId>8020</ns1:enhetsId>
+			<ns1:enhetsNavn>NAV Økonomi Stønad</ns1:enhetsNavn>
+		</ns2:behandlendeEnhet>
+	</ns3:NAVFelles>
+	<ns3:fag>
+		<ns3:utbetalingsMelding>
+			<ns3:fDato>1969-01-01</ns3:fDato>
+			<ns3:belopUtbetalt>1000.00</ns3:belopUtbetalt>
+			<ns3:datoUtbetalt>2024-03-22</ns3:datoUtbetalt>
+			<ns3:tekstFelt>Du kan lese om hvordan NAV regner ut feriepenger på nav.no/Feriepenger., Du kan klage på
+				vedtaket om sykepenger. Les mer på nav.no/Klage.
+			</ns3:tekstFelt>
+			<ns3:fastTekst>Du finner utbetalingene dine på www.nav.no/dittnav. Informasjon om når utbetaling skjer, ser
+				du på www.nav.no/datoer. Har du spøsmål, ring 55 55 33 33 / pensjon: 55 55 33 34.
+			</ns3:fastTekst>
+			<ns3:oppgaveType>SYKEPENGEUTBETALINGSMELDING</ns3:oppgaveType>
+			<ns3:kontonr>12345678</ns3:kontonr>
+			<ns3:utbetalingsMnd>Mars 03</ns3:utbetalingsMnd>
+			<ns3:navRefId>12345678</ns3:navRefId>
+			<ns3:kontering>
+				<ns3:kontoTekst>Sykepenger</ns3:kontoTekst>
+				<ns3:belop>1000.00</ns3:belop>
+				<ns3:periode>
+					<ns3:periodeFom>010324</ns3:periodeFom>
+					<ns3:periodeTom>150324</ns3:periodeTom>
+				</ns3:periode>
+			</ns3:kontering>
+			<ns3:kontering>
+				<ns3:kontoTekst>Forskuddstrekk skatt</ns3:kontoTekst>
+				<ns3:belop>-100.00</ns3:belop>
+				<ns3:periode>
+					<ns3:periodeFom>010324</ns3:periodeFom>
+					<ns3:periodeTom>150324</ns3:periodeTom>
+				</ns3:periode>
+			</ns3:kontering>
+		</ns3:utbetalingsMelding>
+	</ns3:fag>
+</ns3:brevdata>
