@@ -335,7 +335,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	}
 
 	@Test
-	public void should_dothething_GetMottakerAndAdresseForUtenlandskKontakadresse() {
+	public void shouldGetMottakerAndAdresseForUtenlandskKontakadresse() {
 		postPdlGraphql(OK.value(), "pdl/utenlandsk_uten_postboksadressenavnnummer.json");
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TYPE_PERSON), HentMottakerOgAdresseResponse.class);

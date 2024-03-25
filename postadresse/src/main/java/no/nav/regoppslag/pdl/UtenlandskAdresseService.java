@@ -169,7 +169,7 @@ public class UtenlandskAdresseService {
 	}
 
 	private static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
-		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll(" ,", ",");
+		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll("\\s*,",",");
 	}
 
 	private static String joinAdresseUtenKomma(String adresse1, String adresse2, String adresse3) {
