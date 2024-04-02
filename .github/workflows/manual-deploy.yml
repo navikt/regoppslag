@@ -1,0 +1,33 @@
+name: Manual deployment of ref to environment
+# run-name kan kun referere til github og inputs kontekstene
+run-name: Manual deploy of ${{(contains(fromJson('["tag", "branch"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}} to ${{inputs.environment}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'q2'
+        type: choice
+        options:
+          - p
+          - q0
+          - q1
+          - q2
+          - q4
+          - q5
+      ref_name:
+        description: 'Git ref_name. branch or tag'
+        required: true
+        type: string
+        default: 'Replace with tag or branch'
+
+jobs:
+  deploy-env:
+    uses: navikt/dok-workflows/.github/workflows/deploy-nais-app-with-custom-checkout-gar.yml@main
+    secrets: inherit
+    with:
+      build-tag: ${{(contains(fromJson('["tag", "branch"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}}
+      nav-cluster: ${{inputs.environment == 'p' && 'prod-fss' || 'dev-fss'}}
+      nav-environment: ${{inputs.environment}}
