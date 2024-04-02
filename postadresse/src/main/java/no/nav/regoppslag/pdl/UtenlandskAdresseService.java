@@ -9,7 +9,6 @@ import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
@@ -102,7 +101,7 @@ public class UtenlandskAdresseService {
 
 	private static String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
-		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		final String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
 		if (isNotBlank(coAdressenavn)) {
@@ -119,44 +118,11 @@ public class UtenlandskAdresseService {
 	}
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
-		boolean hasPostKode = isNotBlank(utenlandskAdresse.getPostkode());
-		boolean hasBySted = isNotBlank(utenlandskAdresse.getBySted());
-		boolean hasRegionDistriktOmr = isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
-
-		if (hasPostKode) {
-			if (hasBySted && hasRegionDistriktOmr) {
-				if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
-					return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade(), utenlandskAdresse.getPostkode());
-				}
-				return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else {
-				if (!hasBySted && hasRegionDistriktOmr) {
-					if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
-						return joinAdresseUtenKomma(utenlandskAdresse.getRegionDistriktOmraade(), utenlandskAdresse.getPostkode(), "");
-					}
-					return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), "", utenlandskAdresse.getRegionDistriktOmraade());
-
-				} else if (hasBySted) {
-					if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
-						return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getPostkode(), "");
-					}
-					return joinAdresseUtenKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), "");
-				} else {
-					return utenlandskAdresse.getPostkode();
-				}
-			}
-		} else if (hasBySted) {
-			if (hasRegionDistriktOmr) {
-				if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
-					return joinAdresseUtenKomma(utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade(), "");
-				}
-				return joinAdresseMedKomma("", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else {
-				return utenlandskAdresse.getBySted();
-			}
-		} else {
-			return utenlandskAdresse.getRegionDistriktOmraade();
+		MapPostkodeBystedAndOmraadeByLand utenlandskAdresselinje3ByLand = new MapPostkodeStedAndOmraadeByLandService();
+		if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
+			return utenlandskAdresselinje3ByLand.mapUsaPostkodeStedAndOmraade(utenlandskAdresse);
 		}
+		return utenlandskAdresselinje3ByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
 	}
 
 	private static String getPostboksOrAdressenavnNummer(UtenlandskAdresse utenlandskAdresse) {
@@ -166,14 +132,6 @@ public class UtenlandskAdresseService {
 
 	private static String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
-	}
-
-	private static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
-		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll("\\s*,",",");
-	}
-
-	private static String joinAdresseUtenKomma(String adresse1, String adresse2, String adresse3) {
-		return join(" ", adresse1, adresse2, adresse3).strip();
 	}
 
 }

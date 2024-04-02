@@ -337,7 +337,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	void shouldUtenlandskAdresseMedBystedOgPostkode() {
+	void shouldGetUtenlandskAdresseMedBystedOgPostkode() {
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_bysted_postkode.json");
 		PostadresseResponse reponse = hentPostadresse();
 
@@ -356,7 +356,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	void shouldUtenlandskAdresseMedUsaLandkode() {
+	void shouldGetUtenlandskAdresseMedUsaLandkode() {
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_usa_landkode.json");
 		PostadresseResponse reponse = hentPostadresse();
 
