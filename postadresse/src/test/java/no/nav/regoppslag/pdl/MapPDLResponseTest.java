@@ -375,7 +375,7 @@ public class MapPDLResponseTest {
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
 		assertEquals(adresse.getPostboksNummerNavn(), response.getAdresselinje1());
-		assertEquals(adresse.getPostkode() + " " + adresse.getBySted(), response.getAdresselinje2());
+		assertEquals(adresse.getBySted() + " " + adresse.getPostkode(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());

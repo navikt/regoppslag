@@ -18,6 +18,10 @@ public class UtenlandskAdresseUtil {
 	public static boolean hasRegionDistriktOmr(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
 	}
+
+	/**
+	 * regex fjernes ekstra mellomrom for komma hvis adresse2 er null eller tomt.
+	 */
 	public static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
 		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll("\\s*,",",");
 	}

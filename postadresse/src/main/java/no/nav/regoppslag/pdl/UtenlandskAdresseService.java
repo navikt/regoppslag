@@ -7,6 +7,7 @@ import no.nav.regoppslag.consumer.pdl.to.PostadresseTo.PostadresseToBuilder;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -22,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
-	private static final String USA_LANDKODE = "USA";
+	private static final Set<String> USA_CANADA_LANDKODE = Set.of("USA", "CAN");
 
 	static Optional<PostadresseTo> mapUtenlandskPostadresse(Kontaktadresse kontaktadresse) {
 		String coAdressenavn = kontaktadresse.getCoAdressenavn();
@@ -119,8 +120,8 @@ public class UtenlandskAdresseService {
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
 		MapPostkodeBystedAndOmraadeByLand utenlandskAdresselinje3ByLand = new MapPostkodeStedAndOmraadeByLandService();
-		if (USA_LANDKODE.equals(utenlandskAdresse.getLandkode())) {
-			return utenlandskAdresselinje3ByLand.mapUsaPostkodeStedAndOmraade(utenlandskAdresse);
+		if (isNotBlank(utenlandskAdresse.getLandkode()) && USA_CANADA_LANDKODE.contains(utenlandskAdresse.getLandkode())) {
+			return utenlandskAdresselinje3ByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 		}
 		return utenlandskAdresselinje3ByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
 	}

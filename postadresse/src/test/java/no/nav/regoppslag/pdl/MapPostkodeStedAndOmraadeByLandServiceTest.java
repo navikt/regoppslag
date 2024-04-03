@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSE_NAVN_NUMMER;
 import static no.nav.regoppslag.util.TestDataUtil.ARIZONA_STATE;
 import static no.nav.regoppslag.util.TestDataUtil.BERLIN_REGION;
@@ -27,9 +28,9 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUsaPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
-		Assertions.assertThat(adresselinje3).isEqualTo(String.join(" ", TUCSON_CITY, ARIZONA_STATE, USA_POSTKODE));
+		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", TUCSON_CITY, ARIZONA_STATE, USA_POSTKODE));
 	}
 
 	@Test
@@ -39,9 +40,9 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUsaPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
-		Assertions.assertThat(adresselinje3).isEqualTo(String.join(" ", ARIZONA_STATE, USA_POSTKODE));
+		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", ARIZONA_STATE, USA_POSTKODE));
 	}
 
 	@Test
@@ -50,9 +51,9 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUsaPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
-		Assertions.assertThat(adresselinje3).isEqualTo(String.join(" ", TUCSON_CITY, ARIZONA_STATE));
+		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", TUCSON_CITY, ARIZONA_STATE));
 	}
 
 	@Test
@@ -93,7 +94,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 	}
 
 	@Test
-	void shouldGetDefaultUtenlandskAdresselinje3FromPostkodeAndOmraad() {
+	void shouldGetDefaultUtenlandskAdresselinje3FraPostkodeAndOmraadOgFjerneEkstraMellomromForanKomma() {
 		UtenlandskAdresse utenlandskAdresse = createDefaultUtenlandskadresse()
 				.postkode(POSTNUMMER)
 				.regionDistriktOmraade(BERLIN_REGION)

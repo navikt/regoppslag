@@ -10,7 +10,7 @@ import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.joinAdresseUtenKomma;
 
 public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBystedAndOmraadeByLand {
 	@Override
-	public String mapUsaPostkodeStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+	public String mapUSAandCanadaPostkodeBystedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
 
 		if (hasPostKode(utenlandskAdresse)) {
 			if (hasBySted(utenlandskAdresse) && hasRegionDistriktOmr(utenlandskAdresse)) {
