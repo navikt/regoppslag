@@ -15,7 +15,7 @@ public class UtenlandskAdresseUtil {
 		return isNotBlank(utenlandskAdresse.getBySted());
 	}
 
-	public static boolean hasRegionDistriktOmr(UtenlandskAdresse utenlandskAdresse) {
+	public static boolean hasRegionDistriktOmraade(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
 	}
 

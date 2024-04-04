@@ -28,7 +28,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandKanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", TUCSON_CITY, ARIZONA_STATE, USA_POSTKODE));
 	}
@@ -40,7 +40,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandKanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", ARIZONA_STATE, USA_POSTKODE));
 	}
@@ -51,7 +51,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(ARIZONA_STATE)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapUSAandKanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(join(" ", TUCSON_CITY, ARIZONA_STATE));
 	}
@@ -64,7 +64,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(BERLIN_REGION)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(format("%s %s, %s", POSTNUMMER, BYSTED_BERLIN, BERLIN_REGION));
 	}
@@ -76,7 +76,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(BERLIN_REGION)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(format("%s, %s", BYSTED_BERLIN, BERLIN_REGION));
 	}
@@ -88,7 +88,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.bySted(BYSTED_BERLIN)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(format("%s %s", POSTNUMMER, BYSTED_BERLIN));
 	}
@@ -100,7 +100,7 @@ class MapPostkodeStedAndOmraadeByLandServiceTest {
 				.regionDistriktOmraade(BERLIN_REGION)
 				.build();
 
-		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
+		String adresselinje3 = mapPostkodeStedAndOmraadeByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 
 		Assertions.assertThat(adresselinje3).isEqualTo(format("%s, %s", POSTNUMMER, BERLIN_REGION));
 	}

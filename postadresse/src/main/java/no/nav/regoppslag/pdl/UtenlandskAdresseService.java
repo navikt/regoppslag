@@ -23,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
-	private static final Set<String> USA_CANADA_LANDKODE = Set.of("USA", "CAN");
+	private static final Set<String> USA_KANADA_LANDKODE = Set.of("USA", "CAN");
 
 	static Optional<PostadresseTo> mapUtenlandskPostadresse(Kontaktadresse kontaktadresse) {
 		String coAdressenavn = kontaktadresse.getCoAdressenavn();
@@ -120,10 +120,10 @@ public class UtenlandskAdresseService {
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
 		MapPostkodeBystedAndOmraadeByLand utenlandskAdresselinje3ByLand = new MapPostkodeStedAndOmraadeByLandService();
-		if (isNotBlank(utenlandskAdresse.getLandkode()) && USA_CANADA_LANDKODE.contains(utenlandskAdresse.getLandkode())) {
-			return utenlandskAdresselinje3ByLand.mapUSAandCanadaPostkodeBystedAndOmraade(utenlandskAdresse);
+		if (isNotBlank(utenlandskAdresse.getLandkode()) && USA_KANADA_LANDKODE.contains(utenlandskAdresse.getLandkode())) {
+			return utenlandskAdresselinje3ByLand.mapUSAandKanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 		}
-		return utenlandskAdresselinje3ByLand.mapDefaultPostkodeStedAndOmraade(utenlandskAdresse);
+		return utenlandskAdresselinje3ByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 	}
 
 	private static String getPostboksOrAdressenavnNummer(UtenlandskAdresse utenlandskAdresse) {
