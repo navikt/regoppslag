@@ -357,7 +357,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
+	public void shouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
@@ -386,7 +386,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
+	public void shouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
@@ -414,7 +414,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
+	public void shouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(null);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.UtenlandskAdresse(adresse)
@@ -434,7 +434,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldMapKontaktadresseForUtlandWithUtenlandskAdresseIFrittFormat() {
+	public void shouldMapKontaktadresseForUtlandWithUtenlandskAdresseIFrittFormat() {
 		Kontaktadresse.UtenlandskAdresseIFrittFormat adresse = createUtenlandskAdresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.gyldigFraOgMed(GYLDIG_FRA_MED_DATO)
