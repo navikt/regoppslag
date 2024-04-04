@@ -7,13 +7,14 @@ import no.nav.regoppslag.consumer.pdl.to.PostadresseTo.PostadresseToBuilder;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.getAlpha2Landkode;
+import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
 import static no.nav.regoppslag.pdl.MapPDLUtils.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -22,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class UtenlandskAdresseService {
 
 	private static final String ERROR_UTENLANDSKADRESSE = "Feltet %s kan ikke være null eller tomt for utenlandskAdresse";
+	private static final Set<String> USA_KANADA_LANDKODE = Set.of("USA", "CAN");
 
 	static Optional<PostadresseTo> mapUtenlandskPostadresse(Kontaktadresse kontaktadresse) {
 		String coAdressenavn = kontaktadresse.getCoAdressenavn();
@@ -100,7 +102,7 @@ public class UtenlandskAdresseService {
 
 	private static String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
-		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		final String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
 		if (isNotBlank(coAdressenavn)) {
@@ -117,31 +119,11 @@ public class UtenlandskAdresseService {
 	}
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
-		boolean hasPostKode = isNotBlank(utenlandskAdresse.getPostkode());
-		boolean hasBySted = isNotBlank(utenlandskAdresse.getBySted());
-		boolean hasRegionDistriktOmr = isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
-
-		if (hasPostKode) {
-			if (hasBySted && hasRegionDistriktOmr) {
-				return format("%s %s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else {
-				if (!hasBySted && hasRegionDistriktOmr) {
-					return format("%s, %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getRegionDistriktOmraade());
-				} else if (hasBySted) {
-					return format("%s %s", utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted());
-				} else {
-					return utenlandskAdresse.getPostkode();
-				}
-			}
-		} else if (hasBySted) {
-			if (hasRegionDistriktOmr) {
-				return format("%s, %s", utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
-			} else {
-				return utenlandskAdresse.getBySted();
-			}
-		} else {
-			return utenlandskAdresse.getRegionDistriktOmraade();
+		MapPostkodeBystedAndOmraadeByLand utenlandskAdresselinje3ByLand = new MapPostkodeStedAndOmraadeByLandService();
+		if (isNotBlank(utenlandskAdresse.getLandkode()) && USA_KANADA_LANDKODE.contains(utenlandskAdresse.getLandkode())) {
+			return utenlandskAdresselinje3ByLand.mapUSAandKanadaPostkodeBystedAndOmraade(utenlandskAdresse);
 		}
+		return utenlandskAdresselinje3ByLand.mapDefaultPostkodeBystedAndOmraade(utenlandskAdresse);
 	}
 
 	private static String getPostboksOrAdressenavnNummer(UtenlandskAdresse utenlandskAdresse) {
@@ -152,4 +134,5 @@ public class UtenlandskAdresseService {
 	private static String mapBygningEtasjeLeilighet(UtenlandskAdresse utenlandskAdresse) {
 		return isNotBlank(utenlandskAdresse.getBygningEtasjeLeilighet()) ? utenlandskAdresse.getBygningEtasjeLeilighet() : null;
 	}
+
 }

@@ -26,6 +26,14 @@ public class TestDataUtil {
 	public static final String UTENLANDSK_ADRESSELINJE2 = "SE 567 31 VAGGERYD";
 	public static final String UTENLANDSK_ADRESSELINJE3 = "SWEDEN";
 	public static final String SVENSK_LANDKODE = "SE";
+	public static final String USA_LANDKODE = "USA";
+	public static final String ARIZONA_STATE = "AZ";
+	public static final String TUCSON_CITY = "Tucson";
+	public static final String USA_POSTKODE = "85705";
+	public static final String ADRESSE_NAVN_NUMMER = "799 E Dragram Suite 5A";
+	public static final String BYSTED_BERLIN = "Berlin";
+	public static final String BERLIN_REGION = "Berlin Region";
+	public static final String TYSKLAND_LANDKODE = "DEU";
 	public static final String SVENSK_LAND = "Sweden";
 	public static final String SVERIGE = "SVERIGE";
 	public static final String POSTNUMMER = "3000";
