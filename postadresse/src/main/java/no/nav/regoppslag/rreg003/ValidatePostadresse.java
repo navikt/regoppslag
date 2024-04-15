@@ -76,8 +76,8 @@ public class ValidatePostadresse {
 					.filter(gradering -> !isValidEnumIgnoreCase(Gradering.class, gradering))
 					.collect(Collectors.joining(","));
 
-			return format("%s {%s} og filtrerAdressebeskyttelse må være en av {%s}", UGYLDIG_INPUT, invalidInput, Arrays.stream(values())
-					.map(Enum::name)
+			return format("%s [%s] og filtrerAdressebeskyttelse må være en av [%s]", UGYLDIG_INPUT, invalidInput, Arrays.stream(values())
+					.map(v -> v.name().toLowerCase())
 					.collect(Collectors.joining(",")));
 		}
 		return null;

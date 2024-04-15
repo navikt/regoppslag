@@ -516,7 +516,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAreSetAndPdlHarInCommonFortroligGradering() {
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHarInCommonFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
 		Set<String> gradering = of(FORTROLIG.name(), STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
@@ -529,7 +529,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAreSetAndPdlHarInCommonStrengtFortroligGradering() {
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHarInCommonStrengtFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
 
 		Set<String> gradering = of(FORTROLIG.name(), STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
@@ -542,7 +542,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlHarInCommonStrengtFortroligUtlandGradering() {
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHarInCommonStrengtFortroligUtlandGradering() {
 
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
 
@@ -559,13 +559,13 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldThrowExceptionWhenFilterAdressebeskyttelseInputErInvalid() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
-		Set<String> gradering = of("FORTROLI", STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
+		Set<String> gradering = of("Strengt", STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(e.getMessage()).contains("Ugyldig input {FORTROLI} og filtrerAdressebeskyttelse må være en av {STRENGT_FORTROLIG_UTLAND,STRENGT_FORTROLIG,FORTROLIG}");
+		assertThat(e.getMessage()).contains("Ugyldig input [Strengt] og filtrerAdressebeskyttelse må være en av [strengt_fortrolig_utland,strengt_fortrolig,fortrolig]");
 	}
 
 	@Test
