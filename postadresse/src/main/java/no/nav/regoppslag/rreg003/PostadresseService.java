@@ -18,15 +18,11 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
+import static no.nav.regoppslag.rreg003.ValidatePostadresse.validateFiltrerAdressebeskyttelse;
+import static no.nav.regoppslag.rreg003.ValidatePostadresse.validateInput;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
-import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -39,10 +35,7 @@ public class PostadresseService {
 	private final MapPDLResponse mapPDLResponse;
 	private final OrganisasjonEregMapper organisasjonEregMapper;
 
-	private static final String UGYLDIG_INPUT = "Ugyldig input";
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
-	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
-	private static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("^[A-Z]\\d{3}$");
 
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
@@ -79,6 +72,8 @@ public class PostadresseService {
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 
+		validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo.getAdressebeskyttelseGradering());
+
 		return PostadresseResponse.builder()
 				.navn(pdlMottakerInfo.getNavn())
 				.adresse(adresseMapper.mapFraPdl(pdlMottakerInfo))
@@ -93,29 +88,6 @@ public class PostadresseService {
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo))
 				.build();
-	}
-
-	private void validateInput(PostadresseRequest request, String behandlingsnummer) {
-
-		if (request == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Request body er tom.", BAD_REQUEST);
-		}
-
-		if (request.getIdent() == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan ikke være null.", BAD_REQUEST);
-		}
-
-		if (!NUMBER_PATTERN.matcher(request.getIdent()).matches()) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan kun bestå av tall.", BAD_REQUEST);
-		}
-
-		if (!asList(9, 11, 13).contains(request.getIdent().length())) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
-		}
-
-		if (!isEmpty(behandlingsnummer) && !BEHANDLINGSNUMMER_PATTERN.matcher(behandlingsnummer).matches()) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123 ", BAD_REQUEST);
-		}
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {

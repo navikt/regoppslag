@@ -53,11 +53,6 @@ public class HentPerson {
 		private Gradering gradering;
 	}
 
-	public enum Gradering {
-		STRENGT_FORTROLIG_UTLAND, STRENGT_FORTROLIG,
-		FORTROLIG, UGRADERT
-	}
-
 	@Getter
 	@Setter
 	@Builder

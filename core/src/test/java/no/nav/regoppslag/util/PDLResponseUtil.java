@@ -2,6 +2,7 @@ package no.nav.regoppslag.util;
 
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.Endring;
+import no.nav.regoppslag.consumer.pdl.to.Gradering;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
@@ -148,7 +149,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPerson(HentPerson.PersonNavn personNavn) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(personNavn))
@@ -174,7 +175,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithVegadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -206,7 +207,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithOppholdsadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -236,7 +237,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -271,7 +272,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresseAndKontaktadresse(Bostedsadresse bostedsadresse, Kontaktadresse kontaktadresse) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -297,7 +298,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(Bostedsadresse bostedsadresse, Oppholdsadresse oppholdsadresse) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -384,9 +385,6 @@ public class PDLResponseUtil {
 
 	public static HentPerson createBostedsadresseWithUkjentBosted() {
 		return HentPerson.builder()
-				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
-						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -420,7 +418,7 @@ public class PDLResponseUtil {
 	public static HentPerson.HentPersonBuilder createHentePersonBuilder() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -454,7 +452,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithNoAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -477,9 +475,6 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsboList) {
 		return HentPerson.builder()
-				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
-						.build()))
 				.doedsfall(singletonList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -503,7 +498,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonStatusUtflyttet() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -530,7 +525,6 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonUtenlandskAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()

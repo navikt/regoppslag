@@ -1,9 +1,10 @@
 package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.to.Gradering;
+import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
@@ -36,6 +37,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Implementasjon av reglene i
@@ -192,6 +194,7 @@ public class MapPDLResponse {
 						.kortNavn(hentPerson.getForkortetNavn())
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
+						.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
 						.build());
 	}
 
@@ -210,6 +213,7 @@ public class MapPDLResponse {
 						.navn(hentPerson.getFulltnavn())
 						.kortNavn(hentPerson.getForkortetNavn())
 						.postadresse(adresse)
+						.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
 						.build());
 	}
 
@@ -221,6 +225,7 @@ public class MapPDLResponse {
 								.navn(hentPerson.getFulltnavn())
 								.kortNavn(hentPerson.getForkortetNavn())
 								.postadresse(adresse)
+								.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
 								.build());
 	}
 
@@ -281,4 +286,14 @@ public class MapPDLResponse {
 		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
+	private Optional<Gradering> mapAdressebeskyttelse(HentPerson hentPerson) {
+		if (isEmpty(hentPerson.getAdressebeskyttelse())) {
+			return Optional.empty();
+		}
+
+		return hentPerson.getAdressebeskyttelse().stream()
+				.filter(adressebeskyttelse -> nonNull(adressebeskyttelse.getGradering()))
+				.map(adressebeskyttelse -> adressebeskyttelse.getGradering())
+				.findAny();
+	}
 }

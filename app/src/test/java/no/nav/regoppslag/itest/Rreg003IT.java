@@ -15,15 +15,20 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static java.util.Set.of;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
+import static no.nav.regoppslag.consumer.pdl.to.Gradering.FORTROLIG;
+import static no.nav.regoppslag.consumer.pdl.to.Gradering.STRENGT_FORTROLIG;
+import static no.nav.regoppslag.consumer.pdl.to.Gradering.STRENGT_FORTROLIG_UTLAND;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.BEHANDLINGSNUMMER_HEADER;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
@@ -511,6 +516,59 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAreSetAndPdlHarInCommonFortroligGradering() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = of(FORTROLIG.name(), STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getMessage()).contains("Adresse finnes ikke");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAreSetAndPdlHarInCommonStrengtFortroligGradering() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
+
+		Set<String> gradering = of(FORTROLIG.name(), STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getMessage()).contains("Adresse finnes ikke");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlHarInCommonStrengtFortroligUtlandGradering() {
+
+		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
+
+		Set<String> gradering = of(FORTROLIG.name(), STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getMessage()).contains("Adresse finnes ikke");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseInputErInvalid() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = of("FORTROLI", STRENGT_FORTROLIG.name(), STRENGT_FORTROLIG_UTLAND.name());
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(e.getMessage()).contains("Ugyldig input {FORTROLI} og filtrerAdressebeskyttelse må være en av {STRENGT_FORTROLIG_UTLAND,STRENGT_FORTROLIG,FORTROLIG}");
+	}
+
+	@Test
 	public void shouldThrowWhenOrganisasjonIkkeFinnes() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse()
@@ -552,6 +610,14 @@ public class Rreg003IT extends AbstractIT {
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
+	public HttpEntity<PostadresseRequest> createRequestMedFilterAdressebeskyttelse(String ident, Set<String> gradering) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token("Rreg003IT"));
+		PostadresseRequest postadresseRequest = createPostadresseRequestMedGradering(ident, gradering);
+
+		return new HttpEntity<>(postadresseRequest, headers);
+	}
+
 	public HttpEntity<PostadresseRequest> createRequestWithBehandlingsnummer(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
@@ -564,6 +630,13 @@ public class Rreg003IT extends AbstractIT {
 	private PostadresseRequest createPostadresseRequest(String ident) {
 		return PostadresseRequest.builder()
 				.ident(ident)
+				.build();
+	}
+
+	private PostadresseRequest createPostadresseRequestMedGradering(String ident, Set<String> gradering) {
+		return PostadresseRequest.builder()
+				.ident(ident)
+				.filtrerAdressebeskyttelse(gradering)
 				.build();
 	}
 }
