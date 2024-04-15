@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -292,8 +293,8 @@ public class MapPDLResponse {
 		}
 
 		return hentPerson.getAdressebeskyttelse().stream()
-				.filter(adressebeskyttelse -> nonNull(adressebeskyttelse.getGradering()))
-				.map(adressebeskyttelse -> adressebeskyttelse.getGradering())
+				.map(HentPerson.Adressebeskyttelse::getGradering)
+				.filter(Objects::nonNull)
 				.findAny();
 	}
 }
