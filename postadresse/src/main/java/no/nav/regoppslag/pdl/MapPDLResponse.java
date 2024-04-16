@@ -3,7 +3,6 @@ package no.nav.regoppslag.pdl;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
-import no.nav.regoppslag.consumer.pdl.to.Gradering;
 import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
@@ -195,7 +194,7 @@ public class MapPDLResponse {
 						.kortNavn(hentPerson.getForkortetNavn())
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
-						.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
 						.build());
 	}
 
@@ -214,7 +213,7 @@ public class MapPDLResponse {
 						.navn(hentPerson.getFulltnavn())
 						.kortNavn(hentPerson.getForkortetNavn())
 						.postadresse(adresse)
-						.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
 						.build());
 	}
 
@@ -226,7 +225,7 @@ public class MapPDLResponse {
 								.navn(hentPerson.getFulltnavn())
 								.kortNavn(hentPerson.getForkortetNavn())
 								.postadresse(adresse)
-								.adressebeskyttelseGradering(mapAdressebeskyttelse(hentPerson).orElse(null))
+								.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
 								.build());
 	}
 
@@ -287,14 +286,15 @@ public class MapPDLResponse {
 		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
-	private Optional<Gradering> mapAdressebeskyttelse(HentPerson hentPerson) {
+	private Optional<String> mapAdressebeskyttelse(HentPerson hentPerson) {
 		if (isEmpty(hentPerson.getAdressebeskyttelse())) {
 			return Optional.empty();
 		}
 
 		return hentPerson.getAdressebeskyttelse().stream()
-				.map(HentPerson.Adressebeskyttelse::getGradering)
+				.map(adressebeskyttelse -> adressebeskyttelse.getGradering())
 				.filter(Objects::nonNull)
+				.map(beskyttelseGradering -> beskyttelseGradering.name().toLowerCase())
 				.findAny();
 	}
 }

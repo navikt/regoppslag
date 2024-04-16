@@ -19,4 +19,6 @@ public class PostadresseResponse {
 
 	private Adresse adresse;
 
+	private String adressebeskyttelseType;
+
 }

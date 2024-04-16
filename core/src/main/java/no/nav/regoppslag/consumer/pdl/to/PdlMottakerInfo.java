@@ -13,5 +13,5 @@ public class PdlMottakerInfo {
 	private String navn;
 	private String kortNavn;
 	private PostadresseTo postadresse;
-	private Gradering adressebeskyttelseGradering;
+	private String adressebeskyttelseType;
 }
