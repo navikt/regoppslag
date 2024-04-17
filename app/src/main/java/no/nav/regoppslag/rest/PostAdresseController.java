@@ -61,12 +61,13 @@ public class PostAdresseController {
 			log.info("RREG003 Henter postaddresse.");
 
 			PostadresseResponse response = postadresseService.postadresseInfo(requestBody, behandlingsnummer);
-			log.info("RREG003 Har hentet postadresse.");
 
-			if (validateFiltrerAdressebeskyttelse(requestBody, response)) {
+			if (response == null) {
 				return ResponseEntity.noContent()
 						.build();
 			}
+
+			log.info("RREG003 Har hentet postadresse.");
 
 			return ResponseEntity.ok(response);
 		} finally {

@@ -27,6 +27,9 @@ import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG_UTLAND;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.BEHANDLINGSNUMMER_HEADER;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
@@ -64,10 +67,6 @@ public class Rreg003IT extends AbstractIT {
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS = "BB13";
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS = "BB123";
 	private static final String ORG_IDENT = "889640782";
-	private static final String FORTROLIG = "fortrolig";
-	private static final String STRENGT_FORTROLIG = "strengt_fortrolig";
-	private static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
-
 
 	@Test
 	public void shouldThrowUnauthorizedWithoutValidToken() {

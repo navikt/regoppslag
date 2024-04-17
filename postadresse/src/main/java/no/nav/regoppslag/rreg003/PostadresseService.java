@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
 import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateInput;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -71,10 +72,13 @@ public class PostadresseService {
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 
+		if (validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)) {
+			return null;
+		}
+
 		return PostadresseResponse.builder()
 				.navn(pdlMottakerInfo.getNavn())
 				.adresse(adresseMapper.mapFraPdl(pdlMottakerInfo))
-				.adressebeskyttelseType(pdlMottakerInfo.getAdressebeskyttelseType() == null ? null : pdlMottakerInfo.getAdressebeskyttelseType())
 				.build();
 	}
 

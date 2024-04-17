@@ -1,5 +1,6 @@
 package no.nav.regoppslag.rreg003;
 
+import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 
 import java.util.Set;
@@ -8,6 +9,9 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static no.nav.regoppslag.pdl.MapPDLResponse.FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG_UTLAND;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -15,9 +19,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class PostadresseServiceValidator {
 
-	private static final String FORTROLIG = "fortrolig";
-	private static final String STRENGT_FORTROLIG = "strengt_fortrolig";
-	private static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
 	public static final Set<String> ADRESSEBESKYTTELSE_TYPE = Set.of(FORTROLIG, STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
 	public static final String UGYLDIG_INPUT = "Ugyldig input";
 	public static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
@@ -50,12 +51,12 @@ public class PostadresseServiceValidator {
 		}
 	}
 
-	public static boolean validateFiltrerAdressebeskyttelse(PostadresseRequest postadresseRequest, PostadresseResponse response) {
-		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isBlank(response.getAdressebeskyttelseType())) {
+	public static boolean validateFiltrerAdressebeskyttelse(PostadresseRequest postadresseRequest, PdlMottakerInfo pdlMottakerInfo) {
+		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isBlank(pdlMottakerInfo.getAdressebeskyttelseType())) {
 			return false;
 		}
 		Set<String> adressebeskyttelse = postadresseRequest.getFiltrerAdressebeskyttelse();
-		return adressebeskyttelse.contains(response.getAdressebeskyttelseType());
+		return adressebeskyttelse.contains(pdlMottakerInfo.getAdressebeskyttelseType());
 	}
 
 	private static boolean validateAdressebeskyttelseInput(PostadresseRequest request) {

@@ -61,6 +61,10 @@ public class MapPDLResponse {
 
 	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner, så innholdet i UKJENT_ADRESSE_REASON_CODE må ikke endres!
 	public static final String UKJENT_ADRESSE_REASON_CODE = "ukjent_adresse";
+	public static final String FORTROLIG = "fortrolig";
+	public static final String STRENGT_FORTROLIG = "strengt_fortrolig";
+	public static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
+
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 	private final Clock clock;
@@ -292,9 +296,13 @@ public class MapPDLResponse {
 		}
 
 		return hentPerson.getAdressebeskyttelse().stream()
-				.map(adressebeskyttelse -> adressebeskyttelse.getGradering())
+				.map(HentPerson.Adressebeskyttelse::getGradering)
 				.filter(Objects::nonNull)
-				.map(beskyttelseGradering -> beskyttelseGradering.name().toLowerCase())
+				.map(beskyttelseGradering -> switch (beskyttelseGradering) {
+					case STRENGT_FORTROLIG_UTLAND -> STRENGT_FORTROLIG_UTLAND;
+					case STRENGT_FORTROLIG -> STRENGT_FORTROLIG;
+					case FORTROLIG -> FORTROLIG;
+				})
 				.findAny();
 	}
 }
