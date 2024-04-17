@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 import static no.nav.regoppslag.config.springdoc.SpringDoc.jwtTokenInfo;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController

@@ -73,6 +73,6 @@ public class PostadresseServiceValidator {
 
 	public static boolean isValidAdressebeskyttelseGradering(PostadresseRequest request) {
 		return request.getFiltrerAdressebeskyttelse().stream()
-				.allMatch(adressebeskyttelse -> ADRESSEBESKYTTELSE_TYPE.contains(adressebeskyttelse));
+				.allMatch(ADRESSEBESKYTTELSE_TYPE::contains);
 	}
 }
