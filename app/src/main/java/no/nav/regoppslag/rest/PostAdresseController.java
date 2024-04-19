@@ -46,10 +46,11 @@ public class PostAdresseController {
 	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "202", description = "Adresse til adressebeskyttet bruker er filtrert bort."),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene.", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten.", content = @Content),
 			@ApiResponse(responseCode = "403", description = "Tilgang til å hente postadresse avvist", content = @Content),
-			@ApiResponse(responseCode = "404", description = "Adresse til adressebeskyttet bruker er filtrert bort eller person / organisasjon har ukjent adresse.", content = @Content),
+			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.", content = @Content)
 	})
@@ -61,12 +62,12 @@ public class PostAdresseController {
 
 			PostadresseResponse response = postadresseService.postadresseInfo(requestBody, behandlingsnummer);
 
+			log.info("RREG003 Har hentet postadresse.");
+
 			if (response == null) {
 				return ResponseEntity.noContent()
 						.build();
 			}
-
-			log.info("RREG003 Har hentet postadresse.");
 
 			return ResponseEntity.ok(response);
 		} finally {
