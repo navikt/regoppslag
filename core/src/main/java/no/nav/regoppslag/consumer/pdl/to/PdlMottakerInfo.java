@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -13,5 +14,5 @@ public class PdlMottakerInfo {
 	private String navn;
 	private String kortNavn;
 	private PostadresseTo postadresse;
-	private String adressebeskyttelseType;
+	private Set<String> adressebeskyttelseType;
 }

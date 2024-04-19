@@ -4,6 +4,9 @@
       "adressebeskyttelse": [
         {
           "gradering": "FORTROLIG"
+        },
+        {
+          "gradering": "STRENGT_FORTROLIG"
         }
       ],
       "doedsfall": [],

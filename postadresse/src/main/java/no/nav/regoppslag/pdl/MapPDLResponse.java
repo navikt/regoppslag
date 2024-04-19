@@ -22,6 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -198,7 +200,7 @@ public class MapPDLResponse {
 						.kortNavn(hentPerson.getForkortetNavn())
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
-						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 						.build());
 	}
 
@@ -217,7 +219,7 @@ public class MapPDLResponse {
 						.navn(hentPerson.getFulltnavn())
 						.kortNavn(hentPerson.getForkortetNavn())
 						.postadresse(adresse)
-						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 						.build());
 	}
 
@@ -229,7 +231,7 @@ public class MapPDLResponse {
 								.navn(hentPerson.getFulltnavn())
 								.kortNavn(hentPerson.getForkortetNavn())
 								.postadresse(adresse)
-								.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson).orElse(null))
+								.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 								.build());
 	}
 
@@ -290,9 +292,9 @@ public class MapPDLResponse {
 		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
-	private Optional<String> mapAdressebeskyttelse(HentPerson hentPerson) {
+	private Set<String> mapAdressebeskyttelse(HentPerson hentPerson) {
 		if (isEmpty(hentPerson.getAdressebeskyttelse())) {
-			return Optional.empty();
+			return Set.of();
 		}
 
 		return hentPerson.getAdressebeskyttelse().stream()
@@ -303,6 +305,6 @@ public class MapPDLResponse {
 					case STRENGT_FORTROLIG -> STRENGT_FORTROLIG;
 					case FORTROLIG -> FORTROLIG;
 				})
-				.findAny();
+				.collect(Collectors.toSet());
 	}
 }

@@ -12,7 +12,6 @@ import static java.util.Arrays.asList;
 import static no.nav.regoppslag.pdl.MapPDLResponse.FORTROLIG;
 import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG;
 import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG_UTLAND;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -52,11 +51,12 @@ public class PostadresseServiceValidator {
 	}
 
 	public static boolean validateFiltrerAdressebeskyttelse(PostadresseRequest postadresseRequest, PdlMottakerInfo pdlMottakerInfo) {
-		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isBlank(pdlMottakerInfo.getAdressebeskyttelseType())) {
+		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isEmpty(pdlMottakerInfo.getAdressebeskyttelseType())) {
 			return false;
 		}
 		Set<String> adressebeskyttelse = postadresseRequest.getFiltrerAdressebeskyttelse();
-		return adressebeskyttelse.contains(pdlMottakerInfo.getAdressebeskyttelseType());
+		return pdlMottakerInfo.getAdressebeskyttelseType().stream()
+				.anyMatch(a -> adressebeskyttelse.contains(a));
 	}
 
 	private static boolean validateAdressebeskyttelseInput(PostadresseRequest request) {
