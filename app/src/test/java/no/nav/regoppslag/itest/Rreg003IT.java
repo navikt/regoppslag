@@ -236,7 +236,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldThrowUkjentAdresseExceptionWhenPostboksAdresseIsNull() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postboks.json");
 
-		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, this::hentPostadresse);
 
 		assertThat(e.getMessage()).contains("Fant ikke adresse for personen i PDL");
 		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);

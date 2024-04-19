@@ -56,7 +56,7 @@ public class PostadresseServiceValidator {
 		}
 		Set<String> adressebeskyttelse = postadresseRequest.getFiltrerAdressebeskyttelse();
 		return pdlMottakerInfo.getAdressebeskyttelseType().stream()
-				.anyMatch(a -> adressebeskyttelse.contains(a));
+				.anyMatch(adressebeskyttelse::contains);
 	}
 
 	private static boolean validateAdressebeskyttelseInput(PostadresseRequest request) {
