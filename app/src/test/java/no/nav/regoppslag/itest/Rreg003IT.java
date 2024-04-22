@@ -15,19 +15,26 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static java.util.Set.of;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
+import static no.nav.regoppslag.pdl.MapPDLResponse.FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG;
+import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG_UTLAND;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.BEHANDLINGSNUMMER_HEADER;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.ADRESSEBESKYTTELSE_TYPE;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
@@ -44,6 +51,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -228,7 +236,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldThrowUkjentAdresseExceptionWhenPostboksAdresseIsNull() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postboks.json");
 
-		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () -> hentPostadresse());
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, this::hentPostadresse);
 
 		assertThat(e.getMessage()).contains("Fant ikke adresse for personen i PDL");
 		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);
@@ -511,6 +519,81 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonFortroligGradering() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = of(FORTROLIG, STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), PostadresseResponse.class);
+		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
+	}
+
+	@Test
+	public void shouldReturnPostadresseResponseWhenFilterAdressebeskyttelseAndPdlResponseDoNotHaveInCommon() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = Set.of(STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), PostadresseResponse.class);
+		assertThat(response.getStatusCode()).isEqualTo(OK);
+
+		Adresse actualAdresse = response.getBody().getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Finnesveien 27");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 7320");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
+	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligGradering() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_TYPE), PostadresseResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
+	}
+
+	@Test
+	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligUtlandGradering() {
+
+		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_TYPE), PostadresseResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseInputErInvalid() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = of("Strengt", STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(e.getMessage()).contains("Fikk ugyldig filtrerAdressebeskyttelse=[Strengt]");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFilterAdressebeskyttelseErOverThreeInput() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
+
+		Set<String> gradering = new HashSet<>(ADRESSEBESKYTTELSE_TYPE);
+		gradering.add("ugradert");
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
+				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
+
+		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(e.getMessage()).contains("Fikk ugyldig filtrerAdressebeskyttelse=[ugradert]");
+	}
+
+	@Test
 	public void shouldThrowWhenOrganisasjonIkkeFinnes() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse()
@@ -552,6 +635,14 @@ public class Rreg003IT extends AbstractIT {
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
+	public HttpEntity<PostadresseRequest> createRequestMedFilterAdressebeskyttelse(String ident, Set<String> gradering) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token("Rreg003IT"));
+		PostadresseRequest postadresseRequest = createPostadresseRequestMedGradering(ident, gradering);
+
+		return new HttpEntity<>(postadresseRequest, headers);
+	}
+
 	public HttpEntity<PostadresseRequest> createRequestWithBehandlingsnummer(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
@@ -564,6 +655,13 @@ public class Rreg003IT extends AbstractIT {
 	private PostadresseRequest createPostadresseRequest(String ident) {
 		return PostadresseRequest.builder()
 				.ident(ident)
+				.build();
+	}
+
+	private PostadresseRequest createPostadresseRequestMedGradering(String ident, Set<String> gradering) {
+		return PostadresseRequest.builder()
+				.ident(ident)
+				.filtrerAdressebeskyttelse(gradering)
 				.build();
 	}
 }

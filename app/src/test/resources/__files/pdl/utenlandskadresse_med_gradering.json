@@ -1,0 +1,75 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [
+        {
+          "gradering": "STRENGT_FORTROLIG_UTLAND"
+        }
+      ],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BJARNE BETJENT"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2021-09-03T09:05:14",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "799 E Dragram Suite 5A",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "85705",
+            "bySted": "Tucson",
+            "regionDistriktOmraade": "AZ",
+            "landkode": "USA"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "953a8700-eff3-40da-96a2-6cbbdc0a1dc4",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2021-09-03T09:05:22",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "innbygger"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "01234567891",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}

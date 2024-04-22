@@ -18,5 +18,4 @@ public class PostadresseResponse {
 	private String navn;
 
 	private Adresse adresse;
-
 }

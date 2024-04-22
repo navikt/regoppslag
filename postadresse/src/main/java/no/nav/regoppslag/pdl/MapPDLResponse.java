@@ -1,9 +1,9 @@
 package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode;
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
+import no.nav.regoppslag.consumer.pdl.to.GyldigKilde;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
@@ -20,7 +20,10 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -36,6 +39,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Implementasjon av reglene i
@@ -59,6 +63,10 @@ public class MapPDLResponse {
 
 	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner, så innholdet i UKJENT_ADRESSE_REASON_CODE må ikke endres!
 	public static final String UKJENT_ADRESSE_REASON_CODE = "ukjent_adresse";
+	public static final String FORTROLIG = "fortrolig";
+	public static final String STRENGT_FORTROLIG = "strengt_fortrolig";
+	public static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
+
 	private final DoedsboAdresseService doedsboAdresseService;
 	private final NorskAdresseService norskAdresseService;
 	private final Clock clock;
@@ -192,6 +200,7 @@ public class MapPDLResponse {
 						.kortNavn(hentPerson.getForkortetNavn())
 						.doedsdato(hentPerson.getDoedsdato().orElse(null))
 						.postadresse(postadresse)
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 						.build());
 	}
 
@@ -210,6 +219,7 @@ public class MapPDLResponse {
 						.navn(hentPerson.getFulltnavn())
 						.kortNavn(hentPerson.getForkortetNavn())
 						.postadresse(adresse)
+						.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 						.build());
 	}
 
@@ -221,6 +231,7 @@ public class MapPDLResponse {
 								.navn(hentPerson.getFulltnavn())
 								.kortNavn(hentPerson.getForkortetNavn())
 								.postadresse(adresse)
+								.adressebeskyttelseType(mapAdressebeskyttelse(hentPerson))
 								.build());
 	}
 
@@ -281,4 +292,19 @@ public class MapPDLResponse {
 		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
 	}
 
+	private Set<String> mapAdressebeskyttelse(HentPerson hentPerson) {
+		if (isEmpty(hentPerson.getAdressebeskyttelse())) {
+			return Set.of();
+		}
+
+		return hentPerson.getAdressebeskyttelse().stream()
+				.map(HentPerson.Adressebeskyttelse::getGradering)
+				.filter(Objects::nonNull)
+				.map(beskyttelseGradering -> switch (beskyttelseGradering) {
+					case STRENGT_FORTROLIG_UTLAND -> STRENGT_FORTROLIG_UTLAND;
+					case STRENGT_FORTROLIG -> STRENGT_FORTROLIG;
+					case FORTROLIG -> FORTROLIG;
+				})
+				.collect(Collectors.toSet());
+	}
 }

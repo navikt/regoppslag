@@ -2,22 +2,20 @@ package no.nav.regoppslag.util;
 
 import no.nav.regoppslag.consumer.pdl.to.Bostedsadresse;
 import no.nav.regoppslag.consumer.pdl.to.Endring;
+import no.nav.regoppslag.consumer.pdl.to.Gradering;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.InformasjonKilde;
 import no.nav.regoppslag.consumer.pdl.to.Kontaktadresse;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
-import no.nav.regoppslag.consumer.pdl.to.Matrikkeladresse;
 import no.nav.regoppslag.consumer.pdl.to.Metadata;
 import no.nav.regoppslag.consumer.pdl.to.Oppholdsadresse;
 import no.nav.regoppslag.consumer.pdl.to.PDLConstant;
-import no.nav.regoppslag.consumer.pdl.to.PDLHentPersonResponse;
 import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,8 +45,6 @@ public class PDLResponseUtil {
 	public static final String UTENLANDSK_POSTBOKSNUMMERNAVN = "2701, promenade Riverside";
 	public static final String CANADA_ALPHA3_LANDKODE = "CAN";
 	public static final String CANADA_ALPHA2_LANDKODE = "CA";
-	public static final String CANADA = "Canada";
-
 	public static final String UTENLANDSK_ADRESSELINJE1 = "1KOLEJOWA 6/5";
 	public static final String UTENLANDSK_ADRESSELINJE2 = "18-500 KOLNO";
 	public static final String UTENLANDSK_ADRESSELINJE3 = "CAPITAL WEST 3000";
@@ -66,9 +62,6 @@ public class PDLResponseUtil {
 	public static final String PERSON_MELLOMNAVN = "Andersen";
 
 	public static final String ADRESSENAVN_1 = "Finnesveien 45";
-
-	public static final int FOEDSELSAAR = 1984;
-	public static final LocalDate FOEDSELDATO = LocalDate.of(1984, Month.APRIL, 24);
 	public static final LocalDate DOEDSDATO = LocalDate.now();
 	public static final String KORT_NAVN = "GYNGEHEST ÅPENHJERTIG";
 	public static final String FULLT_NAVN = "GYNGEHEST A. ÅPENHJERTIG";
@@ -78,14 +71,10 @@ public class PDLResponseUtil {
 	public static final String ETTERNAVN = "ÅPENHJERTIG";
 	public static final Long MATRIKKEL_ID = 123456789L;
 	public static final String HUSNUMMER = "45";
-	public static final String HUSBOKSTAV = "B";
-	public static final String BRUKSENETSNUMMER = "H0101";
 	public static final String ADRESSELINJE1_POSTBOKS = "C/O Finnesveien 27";
 	public static final String ADRESSELINJE2_POSTBOKS = "Postboks 7320";
 	public static final String ADRESSENAVN = "Finnesveien";
 	public static final String KOMMUNENUMMER = "5432";
-	public static final String BYDERLSNUMMER = "030110";
-	public static final String TILLEGGSNAVN = "Storgården";
 	public static final String POSTNUMMER = "7320";
 	public static final String FRITTFORMAT_ADRESSELINJE1 = "C/O Kari Hansen";
 	public static final String FRITTFORMAT_ADRESSELINJE2 = "Kirkegata 12";
@@ -107,12 +96,10 @@ public class PDLResponseUtil {
 	public static final String LAND_UTENLANDSK = "SVERIGE";
 	public static final String SWEDEN_UTENLANDSK = "Sweden";
 	public static final String GREECE_LANDKODE = "GR";
-	public static final String GREECE = "Greece";
 	public static final String LANDKODE_NORGE = "NO";
 	public static final String LANDKODE_POLAND = "PL";
 	public static final String LANDKODE_USA = "USA";
 	public static final String LANDKODE_US = "US";
-	public static final String POLAND = "Poland";
 	public static final String PERSON_IDENT = "0102030405";
 	public static final String D_NUMMER = "0102030405";
 	public static final String IDENTIFIKASJONSNUMMER = "01038401226";
@@ -127,7 +114,6 @@ public class PDLResponseUtil {
 
 	public static final String POSTSTED_OSLO = "OSLO";
 	public static final String ADRESSELINJE_POSTBOKS = "Postboks 15";
-	public static final String ADRESSELINJE_BYSTED = "K1A 0B1 Ottawa";
 
 	public static final LocalDateTime GYLDIG_TIL_MED_DATO = LocalDateTime.now().plusMonths(10L);
 	public static final LocalDateTime GYLDIG_FRA_MED_DATO = LocalDateTime.now().minusDays(2L);
@@ -137,18 +123,10 @@ public class PDLResponseUtil {
 
 	private static final String BEHANDLINGSNUMMER = "behandlingsnummer";
 
-	public static PDLHentPersonResponse pdlHentPersonResponse(HentPerson.PersonNavn personNavn) {
-		return PDLHentPersonResponse.builder()
-				.data(PDLHentPersonResponse.PDLHentPerson.builder()
-						.hentPerson(createPdlHentPerson(personNavn))
-						.build())
-				.build();
-	}
-
 	public static HentPerson createPdlHentPerson(HentPerson.PersonNavn personNavn) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(personNavn))
@@ -174,7 +152,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithVegadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -206,7 +184,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithOppholdsadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -236,7 +214,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -271,7 +249,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresseAndKontaktadresse(Bostedsadresse bostedsadresse, Kontaktadresse kontaktadresse) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -297,7 +275,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithBostedsadresseAndOppholdsAdresse(Bostedsadresse bostedsadresse, Oppholdsadresse oppholdsadresse) {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -320,7 +298,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(Integer antallDager, Integer oppholdsadresseSisteEndring){
+	public static Oppholdsadresse createOppholdsAdresseWithAntallDager(Integer antallDager, Integer oppholdsadresseSisteEndring) {
 		return Oppholdsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(antallDager))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
@@ -335,7 +313,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Bostedsadresse createBostedsAdresseWithAntallDager(Integer antallDager, Integer bostedsadresseSisteEndring){
+	public static Bostedsadresse createBostedsAdresseWithAntallDager(Integer antallDager, Integer bostedsadresseSisteEndring) {
 		return Bostedsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(antallDager))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
@@ -350,7 +328,7 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	public static Bostedsadresse createUtenlandskBostedsAdresseWithAntallDager(Integer antallDager, Integer bostedsadresseSisteEndring){
+	public static Bostedsadresse createUtenlandskBostedsAdresseWithAntallDager(Integer antallDager, Integer bostedsadresseSisteEndring) {
 		return Bostedsadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(antallDager))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
@@ -366,14 +344,14 @@ public class PDLResponseUtil {
 	}
 
 
-	public static Kontaktadresse createKontaktAdresseWithAntallDager(Integer antallDager, Integer kontaktadresseSisteEndring){
+	public static Kontaktadresse createKontaktAdresseWithAntallDager(Integer antallDager, Integer kontaktadresseSisteEndring) {
 		return Kontaktadresse.builder()
 				.gyldigFraOgMed(antallDager == null ? null : LocalDateTime.now().minusDays(antallDager))
 				.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
 				.type(PDLConstant.POSTADRESSE_INNLAND)
 				.vegadresse(createVegadresse())
 				.metadata(Metadata.builder()
-					.master(InformasjonKilde.PDL.name())
+						.master(InformasjonKilde.PDL.name())
 						.endringer(singletonList(Endring.builder()
 								.registrert(LocalDateTime.now().minusDays(kontaktadresseSisteEndring))
 								.type(OPPRETT)
@@ -384,9 +362,6 @@ public class PDLResponseUtil {
 
 	public static HentPerson createBostedsadresseWithUkjentBosted() {
 		return HentPerson.builder()
-				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
-						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -397,9 +372,9 @@ public class PDLResponseUtil {
 				.bostedsadresse(singletonList(Bostedsadresse.builder()
 						.metadata(Metadata.builder()
 								.endringer(singletonList(Endring.builder()
-								.registrert(LocalDateTime.now().minusDays(2))
-								.type(OPPRETT)
-								.build()))
+										.registrert(LocalDateTime.now().minusDays(2))
+										.type(OPPRETT)
+										.build()))
 								.build())
 						.gyldigFraOgMed(LocalDateTime.now().minusDays(2))
 						.gyldigTilOgMed(LocalDateTime.now().plusYears(10))
@@ -420,7 +395,7 @@ public class PDLResponseUtil {
 	public static HentPerson.HentPersonBuilder createHentePersonBuilder() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -454,7 +429,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonWithNoAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -477,9 +452,6 @@ public class PDLResponseUtil {
 
 	public static HentPerson createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsboList) {
 		return HentPerson.builder()
-				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
-						.build()))
 				.doedsfall(singletonList(HentPerson.Doedsfall.builder().doedsdato(DOEDSDATO).build()))
 				.navn(singletonList(HentPerson.PersonNavn.builder()
 						.forkortetNavn(KORT_NAVN)
@@ -503,7 +475,7 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonStatusUtflyttet() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
+						.gradering(Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -530,7 +502,6 @@ public class PDLResponseUtil {
 	public static HentPerson createPdlHentPersonUtenlandskAdresse() {
 		return HentPerson.builder()
 				.adressebeskyttelse(singletonList(HentPerson.Adressebeskyttelse.builder()
-						.gradering(HentPerson.Gradering.FORTROLIG)
 						.build()))
 				.doedsfall(Collections.emptyList())
 				.navn(singletonList(HentPerson.PersonNavn.builder()
@@ -682,16 +653,6 @@ public class PDLResponseUtil {
 				.build();
 	}
 
-	private static Bostedsadresse createBostedsadresse() {
-		return Bostedsadresse.builder()
-				.angittFlyttedato(LocalDate.of(1984, Month.MARCH, 1))
-				.gyldigFraOgMed(LocalDateTime.now().minusYears(3))
-				.gyldigTilOgMed(LocalDateTime.now().plusYears(3))
-				.coAdressenavn(null)
-				.vegadresse(createVegadresse())
-				.build();
-	}
-
 	public static Vegadresse createVegadresse() {
 		return Vegadresse.builder()
 				.matrikkelId(MATRIKKEL_ID)
@@ -702,31 +663,6 @@ public class PDLResponseUtil {
 				.kommunenummer(KOMMUNENUMMER)
 				.bydelsnummer(null)
 				.tilleggsnavn(null)
-				.postnummer(POSTNUMMER)
-				.build();
-	}
-
-	private static Vegadresse createVegadresseWithAllValues() {
-		return Vegadresse.builder()
-				.matrikkelId(MATRIKKEL_ID)
-				.husnummer(HUSNUMMER)
-				.husbokstav(HUSBOKSTAV)
-				.bruksenhetsnummer(BRUKSENETSNUMMER)
-				.adressenavn(ADRESSENAVN)
-				.kommunenummer(KOMMUNENUMMER)
-				.bydelsnummer(BYDERLSNUMMER)
-				.tilleggsnavn(TILLEGGSNAVN)
-				.postnummer(POSTNUMMER)
-				.build();
-	}
-
-
-	private static Matrikkeladresse createMatrikkeladresse() {
-		return Matrikkeladresse.builder()
-				.matrikkelId(MATRIKKEL_ID)
-				.bruksenhetsnummer(BRUKSENETSNUMMER)
-				.kommunenummer(KOMMUNENUMMER)
-				.tilleggsnavn(TILLEGGSNAVN)
 				.postnummer(POSTNUMMER)
 				.build();
 	}
@@ -826,6 +762,7 @@ public class PDLResponseUtil {
 				.withHeader("Connection", "close")
 				.withBodyFile(filePath)));
 	}
+
 	public static void postPdlGraphqlWithErrorResponse(int status) {
 		stubFor(post("/graphql").willReturn(aResponse()
 				.withStatus(status)
