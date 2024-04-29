@@ -11,7 +11,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
-import no.nav.regoppslag.exceptions.MottakerManglerException;
+import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
@@ -301,7 +301,7 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		MottakerManglerException exception = assertThrows(MottakerManglerException.class,
+		MottakerManglerWorkaroundException exception = assertThrows(MottakerManglerWorkaroundException.class,
 				() -> mottakerPlugin.processElement(node, valueMap));
 		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
@@ -316,7 +316,7 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		MottakerManglerException exception = assertThrows(MottakerManglerException.class, () -> mottakerPlugin.processElement(node, valueMap));
+		MottakerManglerWorkaroundException exception = assertThrows(MottakerManglerWorkaroundException.class, () -> mottakerPlugin.processElement(node, valueMap));
 		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 
 	}
