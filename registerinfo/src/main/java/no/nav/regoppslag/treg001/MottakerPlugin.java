@@ -3,6 +3,7 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.regoppslag.exceptions.MarshallerException;
+import no.nav.regoppslag.exceptions.MottakerManglerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -27,6 +28,8 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	private static final String ELEMENT_LOCALNAME = "mottaker";
 	private static final String PLUGIN_NAME = "MottakerPlugin";
+	public static final String MOTTAKER_MANGLER_REASON_CODE = "mottaker mangler";
+
 	private final MapPdlForTreg001 mapPdlForTreg001;
 
 	public MottakerPlugin(MapPdlForTreg001 mapPdlForTreg001) {
@@ -64,11 +67,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	private void validateMottaker(Mottaker mottaker) {
 		if (mottaker.getTypeKode() == null) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), BAD_REQUEST);
+			throw new MottakerManglerException(format("Feil i %s med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
 		}
 
 		if (isBlank(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s med feilmelding=Mottakerdata mangler mottakerId", PLUGIN_NAME), BAD_REQUEST);
+			throw new MottakerManglerException(format("Feil i %s med feilmelding=Mottakerdata mangler mottakerId", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
 		}
 	}
 

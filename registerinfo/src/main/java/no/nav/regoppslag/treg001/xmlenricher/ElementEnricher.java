@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.exceptions.UndeliverableException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.regoppslag.exceptions.MottakerManglerException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
@@ -166,6 +167,8 @@ public class ElementEnricher {
 			throw new RegoppslagIllegalArgumentException(err.getMessage(), err, err.getHttpStatusCode());
 		} else if (e instanceof UkjentAdresseException exception) {
 			throw exception;
+		} else if (e instanceof MottakerManglerException ex) {
+			throw ex;
 		} else if (e instanceof RegOppslagSecurityException err) {
 			throw err;
 		} else if (e instanceof RegOppslagTechnicalException err) {

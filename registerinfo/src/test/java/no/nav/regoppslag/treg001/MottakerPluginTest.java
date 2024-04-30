@@ -11,7 +11,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.MottakerManglerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
@@ -22,6 +22,7 @@ import no.nav.regoppslag.treg001.util.CreateStubs;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.regoppslag.util.TestDataUtil;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -300,9 +301,9 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		RegOppslagFunctionalException exception = assertThrows(RegOppslagFunctionalException.class,
+		MottakerManglerException exception = assertThrows(MottakerManglerException.class,
 				() -> mottakerPlugin.processElement(node, valueMap));
-		assertEquals(exception.getMessage(), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
+		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
 
 	@Test
@@ -315,8 +316,8 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThrows(RegOppslagFunctionalException.class,
-				() -> mottakerPlugin.processElement(node, valueMap), "Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
+		MottakerManglerException exception = assertThrows(MottakerManglerException.class, () -> mottakerPlugin.processElement(node, valueMap));
+		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 
 	}
 
