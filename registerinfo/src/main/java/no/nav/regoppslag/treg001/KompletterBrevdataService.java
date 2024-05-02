@@ -1,7 +1,7 @@
 package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.exceptions.MottakerManglerException;
+import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagParsingException;
@@ -35,7 +35,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -99,7 +98,7 @@ public class KompletterBrevdataService {
 		} catch (UkjentAdresseException e) {
 			log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 			throw e;
-		} catch (MottakerManglerException e) {
+		} catch (MottakerManglerWorkaroundException e) {
 			log.warn("TREG001: {}", e.getMessage());
 			throw e;
 		} catch (RegOppslagSecurityException e) {
