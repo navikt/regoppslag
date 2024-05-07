@@ -1,6 +1,5 @@
 {
   "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users",
-  "@odata.count": 1,
   "value": [
     {
       "givenName": "Bjarne",
