@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
+import static no.nav.regoppslag.config.security.SecurityContextHandlerInterceptor.AUTH_ERRORMESSAGE;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_CONSUMER_ID;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.UKJENT_USER_ID;
 import static no.nav.regoppslag.config.security.TokenClaimExtractor.getConsumerId;
@@ -35,8 +36,11 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 
-		JwtToken jwtToken = tokenValidationContext.getFirstValidToken()
-				.orElseThrow(() -> new RegOppslagSecurityException(SecurityContextHandlerInterceptor.AUTH_ERRORMESSAGE));
+		JwtToken jwtToken = tokenValidationContext.getFirstValidToken();
+
+		if (jwtToken == null) {
+			throw new RegOppslagSecurityException(AUTH_ERRORMESSAGE);
+		}
 
 		populateCallId(request);
 		populateConsumerId(tokenValidationContext, jwtToken);
