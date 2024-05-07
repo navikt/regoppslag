@@ -85,7 +85,7 @@ public abstract class AbstractIT {
 	}
 
 	protected static void stubMsGraphGetUser(String navIdent) {
-		stubFor(get("/msgraph/users?$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=givenName,surname")
+		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=givenName,surname")
 				.willReturn(aResponse()
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)

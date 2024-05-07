@@ -59,8 +59,10 @@ public class MsGraphConsumer {
 		List<User> users = graphClient
 				.users()
 				.get(requestConfiguration -> {
+					requestConfiguration.headers.add("ConsistencyLevel", "eventual");
 					requestConfiguration.queryParameters.filter = "onPremisesSamAccountName eq '" + navIdent + "'";
 					requestConfiguration.queryParameters.select = new String[]{"givenName", "surname"};
+					requestConfiguration.queryParameters.count = true;
 				})
 				.getValue();
 
