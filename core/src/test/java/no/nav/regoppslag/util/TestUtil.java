@@ -1,10 +1,10 @@
 package no.nav.regoppslag.util;
 
-import com.google.common.io.Resources;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import wiremock.com.google.common.io.Resources;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

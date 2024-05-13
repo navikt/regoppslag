@@ -21,8 +21,14 @@ public class BearerAuthenticationToken extends AbstractAuthenticationToken {
 
 	public BearerAuthenticationToken(TokenValidationContext tokenValidationContext) {
 		super(List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED_REQUEST")));
-		this.authenticatedJwtToken = tokenValidationContext.getFirstValidToken()
-				.orElseThrow(() -> new RegOppslagSecurityException(AUTH_ERRORMESSAGE));
+		var authenticatedJwtToken = tokenValidationContext.getFirstValidToken();
+
+		if (authenticatedJwtToken == null) {
+			throw new RegOppslagSecurityException(AUTH_ERRORMESSAGE);
+		} else {
+			this.authenticatedJwtToken = authenticatedJwtToken;
+		}
+
 		this.principal = getUserId(tokenValidationContext, authenticatedJwtToken);
 		setAuthenticated(true);
 	}

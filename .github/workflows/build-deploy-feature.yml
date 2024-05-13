@@ -15,3 +15,5 @@ jobs:
       id-token: write
     uses: navikt/dok-workflows/.github/workflows/build-deploy-feature-gar.yml@main
     secrets: inherit
+    with:
+      java-version: '21'

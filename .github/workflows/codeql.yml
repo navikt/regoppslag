@@ -12,3 +12,5 @@ jobs:
       security-events: write
     uses: navikt/dok-workflows/.github/workflows/codeql.yml@main
     secrets: inherit
+    with:
+      java-version: '21'
