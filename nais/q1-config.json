@@ -22,6 +22,11 @@
 			"cluster": "dev-fss"
 		},
 		{
+			"app": "dokdistsentralprint-q1",
+			"namespace": "teamdokumenthandtering",
+			"cluster": "dev-fss"
+		},
+		{
 			"app": "salesforce",
 			"namespace": "teamcrm",
 			"cluster": "dev-external"
