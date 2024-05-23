@@ -14,5 +14,12 @@
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
 		"https://regoppslag-q5.dev.intern.nav.no"
+	],
+	"AZURE_IAC_RULES": [
+		{
+			"app": "dokprod-q5",
+			"namespace": "teamdokumenthandtering",
+			"cluster": "dev-fss"
+		}
 	]
 }
