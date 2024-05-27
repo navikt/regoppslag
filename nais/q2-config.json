@@ -81,6 +81,11 @@
 			"app": "kabal-api",
 			"namespace": "klage",
 			"cluster": "dev-gcp"
+		},
+		{
+			"app": "dokprod",
+			"namespace": "teamdokumenthandtering",
+			"cluster": "dev-fss"
 		}
 	]
 }
