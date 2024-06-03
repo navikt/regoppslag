@@ -9,7 +9,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
@@ -166,7 +166,7 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
 				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.");
 	}
@@ -182,7 +182,7 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
 				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler id");
 	}
