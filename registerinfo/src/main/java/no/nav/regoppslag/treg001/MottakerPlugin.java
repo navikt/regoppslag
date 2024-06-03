@@ -27,7 +27,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 
 	private static final String ELEMENT_LOCALNAME = "mottaker";
-	private static final String PLUGIN_NAME = "MottakerPlugin";
 	public static final String MOTTAKER_MANGLER_REASON_CODE = "mottaker-mangler-workaround";
 
 	private final MapPdlForTreg001 mapPdlForTreg001;
@@ -43,7 +42,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		validateElementType(content);
 
 		if (dokumenttypeId == null) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Feil i MottakerPlugin, dokumentTypeId kan ikke være tom", BAD_REQUEST);
 		}
 
 		try {
@@ -58,7 +57,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(format("Feil i %s med feilmelding=%s", PLUGIN_NAME, e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Feil i MottakerPlugin med feilmelding=%s", e.getMessage()), e);
 		} finally {
 			clearSecurityContext();
 		}
@@ -67,11 +66,11 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 	private void validateMottaker(Mottaker mottaker) {
 		if (mottaker.getTypeKode() == null) {
-			throw new MottakerManglerWorkaroundException(format("Feil i %s med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
+			throw new MottakerManglerWorkaroundException("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", MOTTAKER_MANGLER_REASON_CODE);
 		}
 
 		if (isBlank(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
-			throw new MottakerManglerWorkaroundException(format("Feil i %s med feilmelding=Mottakerdata mangler mottakerId", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
+			throw new MottakerManglerWorkaroundException("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId", MOTTAKER_MANGLER_REASON_CODE);
 		}
 	}
 
