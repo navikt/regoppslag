@@ -29,18 +29,15 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -97,7 +94,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertEquals(FULLT_NAVN, sakspart.getNavn());
+		assertThat(sakspart.getNavn()).isEqualTo(FULLT_NAVN);
 	}
 
 	@Test
@@ -118,7 +115,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertNull(sakspart.getNavn());
+		assertThat(sakspart.getNavn()).isNull();
 	}
 
 	@Test
@@ -137,7 +134,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertThat(sakspart.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
+		assertThat(sakspart.getNavn()).isEqualTo(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN);
 	}
 
 	@Test
@@ -155,7 +152,7 @@ public class SakspartPluginTest {
 		JaxbHelper<Sakspart> sakspartJaxbHelper = new JaxbHelper<>(Sakspart.class);
 		Sakspart sakspart = sakspartJaxbHelper.unmarshal(processed);
 
-		assertThat(sakspart.getNavn(), is(ORGNAVN));
+		assertThat(sakspart.getNavn()).isEqualTo(ORGNAVN);
 	}
 
 	@Test
@@ -169,8 +166,9 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler AktoerTypeKode.");
+		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
+				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.");
 	}
 
 	@Test
@@ -184,9 +182,9 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThrows(RegOppslagFunctionalException.class,
-				() -> sakspartPlugin.processElement(node, valueMap), "Feil i SakspartPlugin: Sakspart mangler id");
-
+		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
+				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler id");
 	}
 
 	public static Organisasjon createOrganisasjon(String navn) {
@@ -206,7 +204,7 @@ public class SakspartPluginTest {
 		Gyldighetsperiode gyldighetsperiode = new Gyldighetsperiode();
 		gyldighetsperiode.setFom(LocalDate.now().minusDays(1));
 		organisasjonsnavn.setGyldighetsperiode(gyldighetsperiode);
-		organisasjonsDetaljer.setNavn(Collections.singletonList(organisasjonsnavn));
+		organisasjonsDetaljer.setNavn(singletonList(organisasjonsnavn));
 
 		organisasjonsDetaljer.setMaalform("NB");
 		organisasjonsDetaljer.setOpphoersdato(LocalDate.now().plusDays(10));
