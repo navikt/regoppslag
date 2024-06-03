@@ -3,7 +3,6 @@ package no.nav.regoppslag.treg001;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
-import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokmet.Tkat020DokumenttypeInfo;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
@@ -11,6 +10,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
+import no.nav.regoppslag.consumer.pdl.to.HentPerson.PersonNavn;
 import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
@@ -18,11 +18,9 @@ import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
-import no.nav.regoppslag.treg001.util.CreateStubs;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import no.nav.regoppslag.util.TestDataUtil;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,13 +36,15 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Clock;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
+import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NN;
 import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
+import static no.nav.regoppslag.treg001.util.CreateStubs.createTkatResponse;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.KORT_NAVN;
@@ -59,10 +59,8 @@ import static no.nav.regoppslag.util.PDLResponseUtil.createPdlHentPersonWithBost
 import static no.nav.regoppslag.util.TestDataUtil.settPostAdresse;
 import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -141,7 +139,7 @@ public class MottakerPluginTest {
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		assertThat(mottaker.getNavn(), is(FORNAVN + " " + ETTERNAVN));
+		assertThat(mottaker.getNavn()).isEqualTo(FORNAVN + " " + ETTERNAVN);
 	}
 
 	@Test
@@ -150,7 +148,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -165,7 +163,7 @@ public class MottakerPluginTest {
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		assertThat(mottaker.getSpraakkode().value(), is("EN"));
+		assertThat(mottaker.getSpraakkode().value()).isEqualTo("EN");
 	}
 
 	@Test
@@ -174,7 +172,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
 		Document document = loadDocument(xmlFile);
@@ -189,7 +187,7 @@ public class MottakerPluginTest {
 
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
-		assertThat(mottaker.getSpraakkode().value(), is("EN"));
+		assertThat(mottaker.getSpraakkode().value()).isEqualTo("EN");
 	}
 
 	@Test
@@ -208,10 +206,10 @@ public class MottakerPluginTest {
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		assertThat(mottaker.getNavn(), is(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN));
-		assertThat(mottaker.getId(), is(MOTTAKER_ID));
-		assertThat(mottaker.getTypeKode(), is(PERSON));
-		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1(), is("ikkeberiket linje1"));
+		assertThat(mottaker.getNavn()).isEqualTo(IKKE_BERIK_FORNAVN + " " + IKKE_BERIK_ETTERNAVN);
+		assertThat(mottaker.getId()).isEqualTo(MOTTAKER_ID);
+		assertThat(mottaker.getTypeKode()).isEqualTo(PERSON);
+		assertThat(((NorskPostadresse) mottaker.getMottakeradresse()).getAdresselinje1()).isEqualTo("ikkeberiket linje1");
 	}
 
 	@Test
@@ -233,11 +231,11 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
-		assertEquals(KORT_NAVN, mottaker.getKortNavn());
-		assertEquals(FULLT_NAVN, mottaker.getNavn());
-		assertEquals(ADRESSENAVN_1, adresse.getAdresselinje1());
-		assertEquals(POSTSTED, adresse.getPoststed());
-		assertEquals(POSTNUMMER, adresse.getPostnummer());
+		assertThat(mottaker.getKortNavn()).isEqualTo(KORT_NAVN);
+		assertThat(mottaker.getNavn()).isEqualTo(FULLT_NAVN);
+		assertThat(adresse.getAdresselinje1()).isEqualTo(ADRESSENAVN_1);
+		assertThat(adresse.getPoststed()).isEqualTo(POSTSTED);
+		assertThat(adresse.getPostnummer()).isEqualTo(POSTNUMMER);
 	}
 
 	@Test
@@ -259,17 +257,17 @@ public class MottakerPluginTest {
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
-		assertEquals(KORT_NAVN, mottaker.getKortNavn());
-		assertEquals(FULLT_NAVN, mottaker.getNavn());
-		assertEquals(POSTBOKSNUMMERNAVN, adresse.getAdresselinje1());
-		assertEquals(POSTKODE_AND_BYSTED + ", " + STATE, adresse.getAdresselinje2());
+		assertThat(mottaker.getKortNavn()).isEqualTo(KORT_NAVN);
+		assertThat(mottaker.getNavn()).isEqualTo(FULLT_NAVN);
+		assertThat(adresse.getAdresselinje1()).isEqualTo(POSTBOKSNUMMERNAVN);
+		assertThat(adresse.getAdresselinje2()).isEqualTo(POSTKODE_AND_BYSTED + ", " + STATE);
 	}
 
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList("NN")));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList(SPRAAK_NB)));
+		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList("NN")));
 
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);
@@ -284,11 +282,11 @@ public class MottakerPluginTest {
 		JaxbHelper<Mottaker> mottakerJaxbHelper = new JaxbHelper<>(Mottaker.class);
 		Mottaker mottaker = mottakerJaxbHelper.unmarshal(processed);
 
-		assertThat(mottaker.getNavn(), is(ORGNAVN));
-		assertThat(mottaker.getTypeKode(), is(ORGANISASJON));
-		assertThat(mottaker.getId(), is("974727854"));
-		assertThat(mottaker.getKortNavn(), is(ORGNAVN));
-		assertThat(mottaker.getSpraakkode(), is(Spraakkode.NN));
+		assertThat(mottaker.getNavn()).isEqualTo(ORGNAVN);
+		assertThat(mottaker.getTypeKode()).isEqualTo(ORGANISASJON);
+		assertThat(mottaker.getId()).isEqualTo("974727854");
+		assertThat(mottaker.getKortNavn()).isEqualTo(ORGNAVN);
+		assertThat(mottaker.getSpraakkode()).isEqualTo(NN);
 	}
 
 	@Test
@@ -301,9 +299,9 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		MottakerManglerWorkaroundException exception = assertThrows(MottakerManglerWorkaroundException.class,
-				() -> mottakerPlugin.processElement(node, valueMap));
-		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
+		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
+				.isThrownBy(() -> mottakerPlugin.processElement(node, valueMap))
+				.withMessageContaining("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
 
 	@Test
@@ -316,9 +314,9 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		MottakerManglerWorkaroundException exception = assertThrows(MottakerManglerWorkaroundException.class, () -> mottakerPlugin.processElement(node, valueMap));
-		Assertions.assertThat(exception.getMessage()).contains("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
-
+		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
+				.isThrownBy(() -> mottakerPlugin.processElement(node, valueMap))
+				.withMessageContaining("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 	}
 
 	private static Organisasjon createOrganisasjon() {
@@ -327,7 +325,10 @@ public class MottakerPluginTest {
 		return org;
 	}
 
-	private HentPerson.PersonNavn createPersonNavn() {
-		return HentPerson.PersonNavn.builder().fornavn(FORNAVN).etternavn(ETTERNAVN).build();
+	private PersonNavn createPersonNavn() {
+		return PersonNavn.builder()
+				.fornavn(FORNAVN)
+				.etternavn(ETTERNAVN)
+				.build();
 	}
 }
