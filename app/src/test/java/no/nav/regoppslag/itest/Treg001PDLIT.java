@@ -24,7 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.treg001.MottakerPlugin.MOTTAKER_MANGLER_REASON_CODE;
+import static no.nav.regoppslag.treg001.MottakerPlugin.FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlDigdir;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
@@ -245,7 +245,7 @@ public class Treg001PDLIT extends AbstractIT {
 		HttpClientErrorException ex = assertThrows(HttpClientErrorException.class, () -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_mangler_mottaker_request.xml"), KompletterBrevdataResponse.class));
 
 		assertThat(ex.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(ex.getResponseHeaders().get(NAV_REASON_CODE).contains(MOTTAKER_MANGLER_REASON_CODE));
+		assertThat(ex.getResponseHeaders().get(NAV_REASON_CODE).contains(FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE));
 	}
 
 	@Test

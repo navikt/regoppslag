@@ -11,7 +11,7 @@ import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson.PersonNavn;
-import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
+import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
@@ -290,7 +290,7 @@ public class MottakerPluginTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
+	public void shouldThrowExceptionWhenMottakerManglerAktoerType() throws Exception {
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
 
@@ -299,13 +299,13 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
+		assertThatExceptionOfType(FeilGrunnetHoeytVolumWorkaroundException.class)
 				.isThrownBy(() -> mottakerPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.");
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
+	public void shouldThrowExceptionWhenMottakerManglerMottakerId() throws Exception {
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
 
@@ -314,7 +314,7 @@ public class MottakerPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(MottakerManglerWorkaroundException.class)
+		assertThatExceptionOfType(FeilGrunnetHoeytVolumWorkaroundException.class)
 				.isThrownBy(() -> mottakerPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId");
 	}

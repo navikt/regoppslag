@@ -7,12 +7,12 @@ import org.springframework.web.server.ResponseStatusException;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-public class MottakerManglerWorkaroundException extends ResponseStatusException {
+public class FeilGrunnetHoeytVolumWorkaroundException extends ResponseStatusException {
 
 	@Getter
 	private final String reasonCode;
 
-	public MottakerManglerWorkaroundException(String message, String reasonCode) {
+	public FeilGrunnetHoeytVolumWorkaroundException(String message, String reasonCode) {
 		super(BAD_REQUEST, message);
 		this.reasonCode = reasonCode;
 	}

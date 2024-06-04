@@ -7,7 +7,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
+import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
-import static no.nav.regoppslag.treg001.MottakerPlugin.MOTTAKER_MANGLER_REASON_CODE;
+import static no.nav.regoppslag.treg001.MottakerPlugin.FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -87,13 +87,15 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		}
 	}
 
+	// Høyt volum av kall fra dokprod kan resultere i sporadiske feil i SakspartPlugin. Meldinger havner da på QDOK001_FUNKSJONELL_FEIL i dokprod.
+	// Ved å returnere bad request med reason code kan dokprod fange opp dette, og heller gjøre kompletterBrevdata-kallet på nytt slik at melding ikke går til feilkø.
 	private void validateSakspart(Sakspart sakspart) {
 		if (sakspart.getTypeKode() == null) {
-			throw new MottakerManglerWorkaroundException("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.", MOTTAKER_MANGLER_REASON_CODE);
+			throw new FeilGrunnetHoeytVolumWorkaroundException("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.", FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE);
 		}
 
 		if (isEmpty(sakspart.getId())) {
-			throw new MottakerManglerWorkaroundException("Feil i SakspartPlugin med feilmelding=Sakspart mangler id", MOTTAKER_MANGLER_REASON_CODE);
+			throw new FeilGrunnetHoeytVolumWorkaroundException("Feil i SakspartPlugin med feilmelding=Sakspart mangler id", FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE);
 		}
 	}
 
