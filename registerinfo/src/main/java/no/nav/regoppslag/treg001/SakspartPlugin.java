@@ -62,7 +62,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
-				validateMottaker(sakspart);
+				validateSakspart(sakspart);
 
 				if (PERSON.equals(sakspart.getTypeKode())) {
 					String navn = pdlGraphQLConsumer.hentNavn(sakspart.getId());
@@ -87,7 +87,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 		}
 	}
 
-	private void validateMottaker(Sakspart sakspart) {
+	private void validateSakspart(Sakspart sakspart) {
 		if (sakspart.getTypeKode() == null) {
 			throw new MottakerManglerWorkaroundException("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.", MOTTAKER_MANGLER_REASON_CODE);
 		}
