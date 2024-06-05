@@ -1,7 +1,7 @@
 package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
+import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagParsingException;
@@ -98,7 +98,7 @@ public class KompletterBrevdataService {
 		} catch (UkjentAdresseException e) {
 			log.warn("TREG001 Funksjonell feil: {}", e.getMessage());
 			throw e;
-		} catch (MottakerManglerWorkaroundException e) {
+		} catch (FeilGrunnetHoeytVolumWorkaroundException e) {
 			log.warn("TREG001: {}", e.getMessage());
 			throw e;
 		} catch (RegOppslagSecurityException e) {

@@ -3,7 +3,7 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.regoppslag.exceptions.MarshallerException;
-import no.nav.regoppslag.exceptions.MottakerManglerWorkaroundException;
+import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -27,8 +27,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnricherPlugin {
 
 	private static final String ELEMENT_LOCALNAME = "mottaker";
-	private static final String PLUGIN_NAME = "MottakerPlugin";
-	public static final String MOTTAKER_MANGLER_REASON_CODE = "mottaker-mangler-workaround";
+	public static final String FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE = "feil-grunnet-hoeyt-volum-workaround";
 
 	private final MapPdlForTreg001 mapPdlForTreg001;
 
@@ -43,7 +42,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 		validateElementType(content);
 
 		if (dokumenttypeId == null) {
-			throw new RegoppslagIllegalArgumentException(format("Feil i %s, dokumentTypeId kan ikke være tom", PLUGIN_NAME), BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException("Feil i MottakerPlugin, dokumentTypeId kan ikke være tom", BAD_REQUEST);
 		}
 
 		try {
@@ -58,20 +57,22 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {
-			throw new RegOppslagTechnicalException(format("Feil i %s med feilmelding=%s", PLUGIN_NAME, e.getMessage()), e);
+			throw new RegOppslagTechnicalException(format("Feil i MottakerPlugin med feilmelding=%s", e.getMessage()), e);
 		} finally {
 			clearSecurityContext();
 		}
 
 	}
 
+	// Høyt volum av kall fra dokprod kan resultere i sporadiske feil i MottakerPlugin. Meldinger havner da på QDOK001_FUNKSJONELL_FEIL i dokprod.
+	// Ved å returnere bad request med reason code kan dokprod fange opp dette, og heller gjøre kompletterBrevdata-kallet på nytt slik at melding ikke går til feilkø.
 	private void validateMottaker(Mottaker mottaker) {
 		if (mottaker.getTypeKode() == null) {
-			throw new MottakerManglerWorkaroundException(format("Feil i %s med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
+			throw new FeilGrunnetHoeytVolumWorkaroundException("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler AktoerType. AktoerType kan ikke være null.", FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE);
 		}
 
 		if (isBlank(mottaker.getId()) || mottaker.getId().trim().isEmpty()) {
-			throw new MottakerManglerWorkaroundException(format("Feil i %s med feilmelding=Mottakerdata mangler mottakerId", PLUGIN_NAME), MOTTAKER_MANGLER_REASON_CODE);
+			throw new FeilGrunnetHoeytVolumWorkaroundException("Feil i MottakerPlugin med feilmelding=Mottakerdata mangler mottakerId", FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE);
 		}
 	}
 

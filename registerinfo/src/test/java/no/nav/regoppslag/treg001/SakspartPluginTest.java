@@ -9,7 +9,7 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
+import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
@@ -156,7 +156,7 @@ public class SakspartPluginTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenMottakerManglerType() throws Exception {
+	public void shouldThrowExceptionWhenSakspartManglerAktoerTypeKode() throws Exception {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_TYPE);
 		Document document = loadDocument(xmlFile);
@@ -166,13 +166,13 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+		assertThatExceptionOfType(FeilGrunnetHoeytVolumWorkaroundException.class)
 				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler AktoerTypeKode.");
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenMottakerManglerId() throws Exception {
+	public void shouldThrowExceptionWhenSakspartManglerId() throws Exception {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(null);
 		File xmlFile = new File(BREVDATA_ID);
 		Document document = loadDocument(xmlFile);
@@ -182,7 +182,7 @@ public class SakspartPluginTest {
 		XPathExpression xPathExpression = xPath.compile(expression1);
 
 		Node node = findSingleNode(xPathExpression, document);
-		assertThatExceptionOfType(RegOppslagFunctionalException.class)
+		assertThatExceptionOfType(FeilGrunnetHoeytVolumWorkaroundException.class)
 				.isThrownBy(() -> sakspartPlugin.processElement(node, valueMap))
 				.withMessageContaining("Feil i SakspartPlugin med feilmelding=Sakspart mangler id");
 	}
