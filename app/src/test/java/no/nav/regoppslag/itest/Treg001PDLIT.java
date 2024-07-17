@@ -2,6 +2,8 @@ package no.nav.regoppslag.itest;
 
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
+import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
+import no.nav.regoppslag.consumer.dokmet.DokmetConsumerTest;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -363,14 +365,14 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldReturnInternalServerErrorWhenNotFoundFromDokmet() {
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse().withStatus(NOT_FOUND.value())));
+		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(NOT_FOUND.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
-		verify(getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
+		verify(getRequestedFor(urlEqualTo(DokmetConsumer.DOKUMENTTYPE_INFO_URI + DOKUMENTTYPEID)));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
@@ -378,14 +380,14 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldReturnInternalServerErrorIfTechnicalExceptionFromDokmet() {
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
+		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
-		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo("/DOKUMENTTYPEINFO_V4/123")));
+		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo(DokmetConsumer.DOKUMENTTYPE_INFO_URI + DOKUMENTTYPEID)));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
@@ -415,7 +417,7 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	protected void stubDokmetResponse() {
-		stubFor(get(urlPathMatching("/DOKUMENTTYPEINFO_V4(.*)")).willReturn(aResponse()
+		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withBodyFile("treg001/dokmet/dokmet_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak

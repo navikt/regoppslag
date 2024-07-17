@@ -4,7 +4,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
 import no.nav.dok.brevdata.felles.v1.navfelles.NorskPostadresse;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
-import no.nav.regoppslag.consumer.dokmet.Tkat020DokumenttypeInfo;
+import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
@@ -86,7 +86,7 @@ public class MottakerPluginTest {
 	private static final String MOTTAKER_ID = "30085849677";
 
 	private EregConsumer eregConsumer;
-	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
+	private DokmetConsumer dokmetConsumer;
 	private Map<String, Object> valueMap;
 	private MottakerPlugin mottakerPlugin;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
@@ -105,7 +105,7 @@ public class MottakerPluginTest {
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
-		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+		dokmetConsumer = mock(DokmetConsumer.class);
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
 		postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
@@ -115,7 +115,7 @@ public class MottakerPluginTest {
 
 		eregConsumer = mock(EregConsumer.class);
 		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
-		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001);
 	}
 
@@ -148,7 +148,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
@@ -172,7 +172,7 @@ public class MottakerPluginTest {
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
 		Document document = loadDocument(xmlFile);
@@ -266,8 +266,8 @@ public class MottakerPluginTest {
 	@Test
 	public void testMottakerPluginOrganisasjon() throws Exception {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList(SPRAAK_NB)));
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList("NN")));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList(SPRAAK_NB)));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(singletonList("NN")));
 
 		File xmlFile = new File(BREVDATA_ORG);
 		Document document = loadDocument(xmlFile);

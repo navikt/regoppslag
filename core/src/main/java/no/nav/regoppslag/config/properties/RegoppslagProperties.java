@@ -18,13 +18,13 @@ public class RegoppslagProperties {
 	@Validated
 	public static class Endpoints {
 		@NotNull
-		private Endpoint norg2;
+		private Endpoint dokmet;
 		@NotNull
 		private Endpoint ereg;
 		@NotNull
-		private Oauth2SecuredEndpoint pdl;
+		private Endpoint norg2;
 		@NotNull
-		private Oauth2SecuredEndpoint dokmet;
+		private Oauth2SecuredEndpoint pdl;
 		@NotNull
 		private Oauth2SecuredEndpoint digdirkrrproxy;
 		private String overrideMsGraphUrl;

@@ -9,7 +9,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
-import no.nav.regoppslag.consumer.dokmet.Tkat020DokumenttypeInfo;
+import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
@@ -40,7 +40,7 @@ public class MapPdlForTreg001 {
 
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
-	private final Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
+	private final DokmetConsumer dokmetConsumer;
 	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private final SpraakKodeMapper spraakKodeMapper;
 	private final EregConsumer eregConsumer;
@@ -49,13 +49,13 @@ public class MapPdlForTreg001 {
 	private static final String LAND_NORGE = "Norge";
 
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
-							Tkat020DokumenttypeInfo tkat020DokumenttypeInfo,
+							DokmetConsumer dokmetConsumer,
 							DigitalKontaktinformasjon digitalKontaktinformasjon,
 							EregConsumer eregConsumer,
 							OrganisasjonEregMapper organisasjonEregMapper) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
-		this.tkat020DokumenttypeInfo = tkat020DokumenttypeInfo;
+		this.dokmetConsumer = dokmetConsumer;
 		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
 		this.spraakKodeMapper = new SpraakKodeMapper();
 		this.eregConsumer = eregConsumer;
@@ -124,7 +124,7 @@ public class MapPdlForTreg001 {
 	private Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak) {
 		log.info("Henter språkinfo for mottaker. dokumentTypeId={}", dokumenttypeId);
 		//Sjekker språket på malen opp mot mottakers preferanser
-		List<SpraakInfoTo> sprakinfos = tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(dokumenttypeId);
+		List<SpraakInfoTo> sprakinfos = dokmetConsumer.hentDokumenttypeInfoSpraak(dokumenttypeId);
 
 		if (sprakinfos == null || sprakinfos.isEmpty()) {
 			log.warn("Finner ikke språkinfo i DOKMET for dokumenttypeid={}.", dokumenttypeId);
