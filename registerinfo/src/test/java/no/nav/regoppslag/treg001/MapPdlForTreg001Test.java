@@ -6,7 +6,7 @@ import no.nav.dok.brevdata.felles.v1.navfelles.Person;
 import no.nav.dok.brevdata.felles.v1.navfelles.UtenlandskPostadresse;
 import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
-import no.nav.regoppslag.consumer.dokmet.Tkat020DokumenttypeInfo;
+import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
@@ -65,7 +65,7 @@ class MapPdlForTreg001Test {
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 	private EregConsumer eregConsumer;
 	private DigitalKontaktinformasjon digitalKontaktinformasjon;
-	private Tkat020DokumenttypeInfo tkat020DokumenttypeInfo;
+	private DokmetConsumer dokmetConsumer;
 
 	@InjectMocks
 	private MapPDLResponse mapPDLResponse;
@@ -78,18 +78,18 @@ class MapPdlForTreg001Test {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
-		tkat020DokumenttypeInfo = mock(Tkat020DokumenttypeInfo.class);
+		dokmetConsumer = mock(DokmetConsumer.class);
 		eregConsumer = mock(EregConsumer.class);
 
 		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
-		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, tkat020DokumenttypeInfo, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
 	}
 
 	@Test
 	public void shouldMapTreg001MottakerAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonWithBostedsadresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 
@@ -106,7 +106,7 @@ class MapPdlForTreg001Test {
 	public void shouldMapUtenlandskAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonUtenlandskAdresse());
 		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
 
@@ -122,7 +122,7 @@ class MapPdlForTreg001Test {
 	@Test
 	void shouldMapNorskOrganisasjon() {
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon());
-		when(tkat020DokumenttypeInfo.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
+		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Collections.singletonList(SPRAAK_NB)));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createOrganisasjonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
 

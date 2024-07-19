@@ -6,7 +6,6 @@
 	"REGOPPSLAG_ENDPOINTS_PDL_URL": "https://pdl-api.intern.nav.no/graphql",
 	"REGOPPSLAG_ENDPOINTS_PDL_SCOPE": "api://prod-fss.pdl.pdl-api/.default",
 	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "https://dokmet.intern.nav.no/rest/dokumenttypeinfo",
-	"REGOPPSLAG_ENDPOINTS_DOKMET_SCOPE": "api://prod-fss.teamdokumenthandtering.dokmet/.default",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.intern.nav.no",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE": "api://prod-gcp.team-rocket.digdir-krr-proxy/.default",
 	"APP_NAME": "regoppslag",
