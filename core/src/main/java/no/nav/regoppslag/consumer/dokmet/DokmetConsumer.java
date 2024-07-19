@@ -27,9 +27,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Service
 @Slf4j
 public class DokmetConsumer {
-	public static final String DOKUMENTTYPE_INFO_URI = "/rest/dokumenttypeinfo/";
-	private static final String DOKUMENTTYPE_INFO_URI_DOKUMENTTYPEID = DOKUMENTTYPE_INFO_URI + "{dokumenttypeId}";
-
 	private final WebClient webClient;
 
 	public DokmetConsumer(WebClient webClient,
@@ -46,7 +43,7 @@ public class DokmetConsumer {
 	@Retryable(retryFor = RegOppslagTechnicalException.class, exceptionExpression = "isRetryable()", backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		return webClient.get()
-				.uri(DOKUMENTTYPE_INFO_URI_DOKUMENTTYPEID, dokumenttypeId)
+				.uri(dokumenttypeId)
 				.retrieve()
 				.bodyToMono(DokumenttypeInfoTo.class)
 				.map(DokmetConsumer::getSpraakInfos)

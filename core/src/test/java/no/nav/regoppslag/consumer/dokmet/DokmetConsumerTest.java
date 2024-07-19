@@ -14,14 +14,12 @@ import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,6 +49,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest(
 		webEnvironment = RANDOM_PORT
 )
+@EnableConfigurationProperties({
+		RegoppslagProperties.class
+})
+@EnableRetry
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 @AutoConfigureWebClient
@@ -59,14 +61,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		WebClientAutoConfiguration.class,
 		WebClientConfig.class,
 		RestConsumerConfig.class,
-		DokmetConsumerTest.Config.class,
 		AzureTestConfig.class})
 public class DokmetConsumerTest {
 
 	private static final String DOKDUMENTYPE_ID = "I000003";
 	private static final String LANG1 = "nb";
 	private static final String LANG2 = "no";
-	public static final String DOKUMENTINFO_URL_REGEX = DokmetConsumer.DOKUMENTTYPE_INFO_URI + ".*";
+	public static final String DOKUMENTINFO_URL_REGEX = "/rest/dokumenttypeinfo/.*";
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -138,21 +139,6 @@ public class DokmetConsumerTest {
 		dokumentProduksjonsInfo.getSpraakInfos().addAll(list);
 		dokumentTypeInfoTo.setDokumentProduksjonsInfo(dokumentProduksjonsInfo);
 		return dokumentTypeInfoTo;
-	}
-
-	@EnableRetry
-	@Configuration
-	public static class Config {
-
-		@Bean
-		public RegoppslagProperties regoppslagProperties(@Value("${wiremock.server.port}") String wiremockPort) {
-			RegoppslagProperties regoppslagProperties = new RegoppslagProperties();
-			RegoppslagProperties.Endpoint dokmet = new RegoppslagProperties.Endpoint();
-			dokmet.setUrl("http://localhost:" + wiremockPort);
-
-			regoppslagProperties.getEndpoints().setDokmet(dokmet);
-			return regoppslagProperties;
-		}
 	}
 
 }

@@ -2,7 +2,6 @@ package no.nav.regoppslag.itest;
 
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
-import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.dokmet.DokmetConsumerTest;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
@@ -372,7 +371,7 @@ public class Treg001PDLIT extends AbstractIT {
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
-		verify(getRequestedFor(urlEqualTo(DokmetConsumer.DOKUMENTTYPE_INFO_URI + DOKUMENTTYPEID)));
+		verify(getRequestedFor(urlEqualTo("/rest/dokumenttypeinfo/" + DOKUMENTTYPEID)));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
@@ -387,7 +386,7 @@ public class Treg001PDLIT extends AbstractIT {
 		HttpServerErrorException e = assertThrows(HttpServerErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
-		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo(DokmetConsumer.DOKUMENTTYPE_INFO_URI + DOKUMENTTYPEID)));
+		verify(new CountMatchingStrategy(GREATER_THAN_OR_EQUAL, 3), getRequestedFor(urlEqualTo("/rest/dokumenttypeinfo/" + DOKUMENTTYPEID)));
 		assertThat(e.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
 	}
 
