@@ -43,7 +43,7 @@ public class DokmetConsumer {
 	@Retryable(retryFor = RegOppslagTechnicalException.class, exceptionExpression = "isRetryable()", backoff = @Backoff(delay = 200))
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		return webClient.get()
-				.uri(dokumenttypeId)
+				.uri("/" + dokumenttypeId)
 				.retrieve()
 				.bodyToMono(DokumenttypeInfoTo.class)
 				.map(DokmetConsumer::getSpraakInfos)
