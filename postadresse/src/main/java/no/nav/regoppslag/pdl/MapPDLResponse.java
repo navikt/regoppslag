@@ -63,6 +63,7 @@ public class MapPDLResponse {
 
 	// UKJENT_ADRESSE_REASON_CODE brukes til å sjekke feilmeldinger i andre applikasjoner, så innholdet i UKJENT_ADRESSE_REASON_CODE må ikke endres!
 	public static final String UKJENT_ADRESSE_REASON_CODE = "ukjent_adresse";
+	public static final String UGRADERT = "ugradert";
 	public static final String FORTROLIG = "fortrolig";
 	public static final String STRENGT_FORTROLIG = "strengt_fortrolig";
 	public static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
@@ -304,6 +305,7 @@ public class MapPDLResponse {
 					case STRENGT_FORTROLIG_UTLAND -> STRENGT_FORTROLIG_UTLAND;
 					case STRENGT_FORTROLIG -> STRENGT_FORTROLIG;
 					case FORTROLIG -> FORTROLIG;
+					case UGRADERT -> UGRADERT;
 				})
 				.collect(Collectors.toSet());
 	}
