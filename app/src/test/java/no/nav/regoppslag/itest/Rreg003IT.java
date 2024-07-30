@@ -548,6 +548,25 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldReturnPostadresseWithNoAdressebeskyttelseFilterAndPdlResponseIsUgradert() {
+		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_ugradert.json");
+
+		Set<String> gradering = Set.of();
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), PostadresseResponse.class);
+		assertThat(response.getStatusCode()).isEqualTo(OK);
+
+		Adresse actualAdresse = response.getBody().getAdresse();
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Finnesveien 27");
+		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 7320");
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");
+		assertThat(actualAdresse.getPoststed()).isEqualTo("FANNREM");
+		assertThat(actualAdresse.getLand()).isEqualTo("NORGE");
+		assertThat(actualAdresse.getLandkode()).isEqualTo("NO");
+	}
+
+	@Test
 	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
 
@@ -558,7 +577,6 @@ public class Rreg003IT extends AbstractIT {
 
 	@Test
 	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligUtlandGradering() {
-
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_TYPE), PostadresseResponse.class);
