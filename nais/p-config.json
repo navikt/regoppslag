@@ -76,6 +76,11 @@
 			"app": "dokprod",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "saas-proxy",
+			"namespace": "teamcrm",
+			"cluster": "prod-gcp"
 		}
 	]
 }
