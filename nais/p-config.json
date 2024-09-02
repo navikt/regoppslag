@@ -81,6 +81,11 @@
 			"app": "saas-proxy",
 			"namespace": "teamcrm",
 			"cluster": "prod-gcp"
+		},
+		{
+			"app": "brev-administrasjon",
+			"namespace": "isa",
+			"cluster": "prod-gcp"
 		}
 	]
 }
