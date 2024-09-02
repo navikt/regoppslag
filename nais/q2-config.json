@@ -37,6 +37,11 @@
 			"cluster": "dev-fss"
 		},
 		{
+			"app": "veilarbperson",
+			"namespace": "obo",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "veilarbvedtaksstotte",
 			"namespace": "pto",
 			"cluster": "dev-fss"

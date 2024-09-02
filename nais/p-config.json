@@ -38,6 +38,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "veilarbperson",
+			"namespace": "obo",
+			"cluster": "prod-gcp"
+		},
+		{
 			"app": "veilarbvedtaksstotte",
 			"namespace": "pto",
 			"cluster": "prod-fss"
