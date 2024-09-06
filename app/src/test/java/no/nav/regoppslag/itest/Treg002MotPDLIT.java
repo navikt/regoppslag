@@ -67,7 +67,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -539,12 +538,12 @@ public class Treg002MotPDLIT extends AbstractIT {
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(ident, type), HentMottakerOgAdresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
-		assertTrue(e.getMessage().contains(feilmelding));
+		assertThat(e.getMessage()).contains(feilmelding);
 	}
 
 	private static Stream<Arguments> shouldReturnBadRequestForInvalidInput() {
 		return Stream.of(
-				Arguments.of(PERSON_IDENT, "FESDASd", "Mottakertype var FESDASd. Det må være PERSON eller ORGANISASJON."),
+				Arguments.of(PERSON_IDENT, "FESDASd", "Mottakertype var FESDASd. Mottakertype må være PERSON eller ORGANISASJON."),
 				Arguments.of(null, TYPE_PERSON, "Identifikator kan ikke være null"),
 				Arguments.of(ORGANISASJONNUMMER + "abc", TYPE_PERSON, "Identifikator kan kun bestå av tall"),
 				Arguments.of(PERSON_IDENT, null, "Mottakertype kan ikke være null")

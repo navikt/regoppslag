@@ -4,6 +4,7 @@ import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class UtenlandskAdresseUtil {
@@ -19,12 +20,13 @@ public class UtenlandskAdresseUtil {
 		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
 	}
 
-	/**
-	 * regex fjernes ekstra mellomrom for komma hvis adresse2 er null eller tomt.
-	 */
 	public static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
-		return format("%s %s, %s", adresse1, adresse2, adresse3).strip().replaceAll("\\s*,",",");
+		if (isBlank(adresse2)) {
+			return format("%s, %s", adresse1, adresse3).strip();
+		}
+		return format("%s %s, %s", adresse1, adresse2, adresse3).strip();
 	}
+
 	public static String joinAdresseUtenKomma(String adresse1, String adresse2, String adresse3) {
 		return join(" ", adresse1, adresse2, adresse3).strip();
 	}
