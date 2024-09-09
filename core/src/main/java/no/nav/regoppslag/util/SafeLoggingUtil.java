@@ -10,6 +10,9 @@ public final class SafeLoggingUtil {
 	}
 
 	public static String removeUnsafeChars(String input) {
+		if (input == null) {
+			return null;
+		}
 		return EVERYTHING_EXCEPT_SAFE_CHARS_REGEX.matcher(input).replaceAll("_");
 	}
 }
