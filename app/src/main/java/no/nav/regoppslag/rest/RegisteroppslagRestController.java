@@ -67,8 +67,8 @@ public class RegisteroppslagRestController {
 	public @ResponseBody
 	KompletterBrevdataResponse kompletterBrevdata(@RequestBody KompletterBrevdataRequest requestBody) throws RegOppslagSecurityException {
 		try {
+			log.info("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId={}", removeUnsafeChars(requestBody.getDokumentTypeId()));
 			validateKompletterBrevdataRequest(requestBody);
-			log.info("TREG001 Har mottatt kall om å komplettere brevdata. DokumenttypeId={}", requestBody.getDokumentTypeId());
 			KompletterBrevdataResponse response = kompletterBrevdataService.hentBrevdataFraRegistre(requestBody);
 			log.info("TREG001 Er ferdig med å komplettere brevdata. DokumenttypeId={}", requestBody.getDokumentTypeId());
 			return response;
@@ -111,8 +111,8 @@ public class RegisteroppslagRestController {
 	public @ResponseBody
 	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
 		try {
+			log.info("TREG002 Henter mottaker og addresse. MottakerType={}", removeUnsafeChars(requestBody.getType()));
 			validateHentMottakerOgAdresseRequest(requestBody);
-			log.info("TREG002 Henter mottaker og addresse. MottakerType={}", requestBody.getType());
 			HentMottakerOgAdresseResponse response = hentMottakerOgAdresseService.hentMottakerOgAdresseInfo(requestBody);
 			log.info("TREG002 Har hentet mottaker og adresse. MottakerType={}", requestBody.getType());
 			return response;
