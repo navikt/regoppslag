@@ -18,14 +18,10 @@ import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 import static java.lang.String.format;
-import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.ORGANISASJON;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG002;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -38,9 +34,7 @@ public class HentMottakerOgAdresseService {
 	private final EregConsumer eregConsumer;
 	private final OrganisasjonEregMapper organisasjonEregMapper;
 
-	private static final String UGYLDIG_INPUT = "Ugyldig input";
-	private static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
-	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+	public static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
 	public HentMottakerOgAdresseService(AdresseMapper adresseMapper,
 										PdlGraphQLConsumer pdlGraphQLConsumer,
@@ -56,7 +50,6 @@ public class HentMottakerOgAdresseService {
 
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagSecurityException {
 		try {
-			validateInput(request);
 			return PERSON.name().equals(request.getType()) ? hentMottakerOgAdresseForPerson(request) : hentMottakerOgAdresseForOrg(request);
 		} catch (Exception e) {
 			logAndRethrowException(e);
@@ -86,27 +79,6 @@ public class HentMottakerOgAdresseService {
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(mapAdresseTilTreg002Adresse(adresseMapper.map(mottakerTo)))
 				.build();
-	}
-
-	private void validateInput(HentMottakerOgAdresseRequest request) {
-		if (request == null) {
-			throw new RegoppslagIllegalArgumentException("Request body er tom. " + UGYLDIG_INPUT, BAD_REQUEST);
-		}
-
-		if (request.getIdentifikator() == null) {
-			throw new RegoppslagIllegalArgumentException("Identifikator kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
-		}
-
-		if (!NUMBER_PATTERN.matcher(request.getIdentifikator()).matches()) {
-			throw new RegoppslagIllegalArgumentException("Identifikator kan kun bestå av tall. " + UGYLDIG_INPUT, BAD_REQUEST);
-		}
-
-		if (request.getType() == null) {
-			throw new RegoppslagIllegalArgumentException("Mottakertype kan ikke være null. " + UGYLDIG_INPUT, BAD_REQUEST);
-		} else if (!(PERSON.name().equals(request.getType()) || ORGANISASJON.name().equals(request.getType()))) {
-			throw new RegoppslagIllegalArgumentException(format("Mottakertype var %s. Det må være PERSON eller ORGANISASJON.",
-					request.getType()) + UGYLDIG_INPUT, BAD_REQUEST);
-		}
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
