@@ -47,6 +47,11 @@
 			"cluster": "dev-fss"
 		},
 		{
+			"app": "veilarbvedtaksstotte",
+			"namespace": "obo",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "etterlatte-proxy",
 			"namespace": "etterlatte",
 			"cluster": "dev-fss"
