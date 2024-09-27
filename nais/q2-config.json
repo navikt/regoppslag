@@ -33,11 +33,6 @@
 		},
 		{
 			"app": "veilarbperson",
-			"namespace": "pto",
-			"cluster": "dev-fss"
-		},
-		{
-			"app": "veilarbperson",
 			"namespace": "obo",
 			"cluster": "dev-gcp"
 		},
