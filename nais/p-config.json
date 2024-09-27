@@ -34,11 +34,6 @@
 		},
 		{
 			"app": "veilarbperson",
-			"namespace": "pto",
-			"cluster": "prod-fss"
-		},
-		{
-			"app": "veilarbperson",
 			"namespace": "obo",
 			"cluster": "prod-gcp"
 		},
