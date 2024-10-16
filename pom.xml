@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.3</version>
+		<version>3.3.4</version>
 	</parent>
 
 	<properties>
@@ -28,19 +28,19 @@
 
 		<resilience4j.version>2.2.0</resilience4j.version>
 		<rxjava.version>3.1.9</rxjava.version>
-		<microsoft-graph.version>6.15.0</microsoft-graph.version>
-		<azure-identity.version>1.13.2</azure-identity.version>
+		<microsoft-graph.version>6.18.0</microsoft-graph.version>
+		<azure-identity.version>1.14.0</azure-identity.version>
 		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-		<token-support.version>5.0.1</token-support.version>
+		<token-support.version>5.0.5</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
-		<dokmet-api.version>2024.08.26-16.26-337dd52</dokmet-api.version>
+		<dokmet-api.version>2024.10.11-07.28-570b0a3</dokmet-api.version>
 		<brevdata-felles.version>29-af3d66d</brevdata-felles.version>
 
 		<!-- Test -->
-		<spring-cloud-contract-wiremock.version>4.1.2</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
