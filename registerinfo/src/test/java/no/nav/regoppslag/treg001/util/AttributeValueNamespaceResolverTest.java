@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AttributeValueNamespaceResolverTest {
 
-	AttributeValueNamespaceResolver resolver = new AttributeValueNamespaceResolver();
+	private final AttributeValueNamespaceResolver resolver = new AttributeValueNamespaceResolver();
 
-	String MOTTAKER_XPATH_EXPRESSION = "/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']";
+	private final String MOTTAKER_XPATH_EXPRESSION = "/*[local-name()='brevdata']/*[local-name()='NAVFelles']//*[local-name()='mottaker']";
 
 	@Test
 	public void shouldResolveEnhet() throws Exception {

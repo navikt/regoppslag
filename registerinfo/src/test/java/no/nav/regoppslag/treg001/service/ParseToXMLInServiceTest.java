@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 
 public class ParseToXMLInServiceTest {
 
-	ElementEnricher elementEnricher = mock(ElementEnricher.class);
+	private final ElementEnricher elementEnricher = mock(ElementEnricher.class);
 
 	private final KompletterBrevdataService kompletterBrevdataService = new KompletterBrevdataService(elementEnricher);
 

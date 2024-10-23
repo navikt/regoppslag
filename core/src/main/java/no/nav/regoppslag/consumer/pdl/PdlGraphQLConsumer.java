@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -164,7 +165,12 @@ public class PdlGraphQLConsumer {
 			if (pdlNotFound.isPresent()) {
 				throw new RegOppslagIkkeFunnetException("Fant ikke person i PDL. " + pdlNotFound.get(), NOT_FOUND);
 			}
-			log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", errors);
+
+			var feilmeldinger = errors.stream()
+					.map(PDLError::getMessage)
+					.collect(Collectors.joining(", "));
+
+			log.warn("Kunne ikke hente person fra Pdl. Feilmeldinger={}", feilmeldinger);
 			throw new PdlFunctionalException("Kunne ikke hente person fra Pdl " + errors, null);
 		}
 	}

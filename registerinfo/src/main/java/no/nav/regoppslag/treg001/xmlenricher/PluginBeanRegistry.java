@@ -21,7 +21,7 @@ public class PluginBeanRegistry implements ElementEnricherPluginRegistry {
 	}
 
 	@Override
-	public void registerPlugin(String xpathExpression, Class<? extends ElementEnricherPlugin> plugin) throws DuplicatedElementSupportException {
+	public void registerPlugin(String xpathExpression, Class<? extends ElementEnricherPlugin> plugin) {
 		pluginMap.put(xpathExpression, plugin);
 	}
 

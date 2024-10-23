@@ -38,13 +38,11 @@ public class TestUtil {
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		Document xmlDocument = builder.parse(fileIS);
-		return xmlDocument;
+		return builder.parse(fileIS);
 	}
 
 	public static Node findSingleNode(XPathExpression xpathExpression, Node xmlDocument) throws XPathExpressionException {
-		Node node = (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
-		return node;
+		return (Node) xpathExpression.evaluate(xmlDocument, XPathConstants.NODE);
 	}
 
 	public static Document stringToDocument(String xml) throws ParserConfigurationException, IOException, SAXException {

@@ -72,7 +72,7 @@ public class HentMottakerOgAdresseService {
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForOrg(HentMottakerOgAdresseRequest request) {
 		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdentifikator());
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdentifikator(), organisasjon, SERVICE_CODE_TREG002);
+		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdentifikator(), organisasjon);
 
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())

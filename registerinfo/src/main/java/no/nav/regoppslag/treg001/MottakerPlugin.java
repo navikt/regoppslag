@@ -2,8 +2,8 @@ package no.nav.regoppslag.treg001;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.Mottaker;
-import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
+import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -53,7 +54,7 @@ public class MottakerPlugin extends JaxbHelper<Mottaker> implements ElementEnric
 			Document newNode = convertObjectToDocument(newMottaker);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info("Mottaker er beriket med data. dokumentTypeId={}", dokumenttypeId);
+			log.info("Mottaker er beriket med data. dokumentTypeId={}", removeUnsafeChars(dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {

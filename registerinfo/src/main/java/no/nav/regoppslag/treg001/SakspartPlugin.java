@@ -6,8 +6,8 @@ import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
-import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
+import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
@@ -25,6 +25,7 @@ import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
 import static no.nav.regoppslag.treg001.MottakerPlugin.FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -58,7 +59,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 				throw new RegoppslagIllegalArgumentException("Feil i SakspartPlugin, dokumentTypeId kan ikke være tom", BAD_REQUEST);
 			}
 			Sakspart sakspart = unmarshal(content);
-			log.info("Henter sakspart info. dokumentTypeId={}", dokumenttypeId);
+			log.info("Henter sakspart info. dokumentTypeId={}", removeUnsafeChars(dokumenttypeId));
 
 			//Skal elementet berikes?
 			if (sakspart.isBerik()) {
@@ -77,7 +78,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 			Document newNode = convertObjectToDocument(sakspart);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info("Sakspart er beriket med data. dokumentTypeId={}", dokumenttypeId);
+			log.info("Sakspart er beriket med data. dokumentTypeId={}", removeUnsafeChars(dokumenttypeId));
 
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 		} catch (ParserConfigurationException | MarshallerException e) {

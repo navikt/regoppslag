@@ -14,8 +14,9 @@ import java.util.stream.Stream;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.EN;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NB;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode.NN;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -35,28 +36,29 @@ public class SpraakKodeMapper {
 		}
 
 		final String spraakKodeValue = mottakerSpraakKode.toUpperCase();
+
 		//Dersom malen inneholder mottakers prefererte språk, ingen endring
 		if (malInneholderSpraak(spraakInfoMal, spraakKodeValue)) {
 			return mapToSpraakKode(spraakKodeValue);
 		} else {
 			//Malen finnes ikke på mottakers prefererte språk
 			if (mottakerHarIkkeSkandinaviskSpraak(spraakKodeValue) && malInneholderSpraak(spraakInfoMal, "EN")) {
-				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Språket er ikke skandinavisk. Setter derfor språket til engelsk.", spraakKodeValue);
+				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Språket er ikke skandinavisk. Setter derfor språket til engelsk.", removeUnsafeChars(spraakKodeValue));
 				return EN;
 			} else if (malInneholderSpraak(spraakInfoMal, "NB")) {
-				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til bokmål.", spraakKodeValue);
+				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til bokmål.", removeUnsafeChars(spraakKodeValue));
 				//Fallback til bokmål hvis bokmål finnes
 				return NB;
 			} else if (malInneholderSpraak(spraakInfoMal, "NN")) {
-				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til nynorsk.", spraakKodeValue);
+				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til nynorsk.", removeUnsafeChars(spraakKodeValue));
 				//Malen finnes på nynorsk
 				return NN;
 			} else if (malInneholderSpraak(spraakInfoMal, "EN")) {
-				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til engelsk.", spraakKodeValue);
+				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til engelsk.", removeUnsafeChars(spraakKodeValue));
 				//Malen finnes på engelsk
 				return EN;
 			} else {
-				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til bokmål.", spraakKodeValue);
+				log.info("Malet inneholder ikke mottakerens prefererte språk {}. Setter språket til bokmål.", removeUnsafeChars(spraakKodeValue));
 				//når alt annet feiler
 				return NB;
 			}

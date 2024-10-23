@@ -56,7 +56,7 @@ public class AzureTokenConsumer {
 		// Caches på #token.subject som er "sub" claim i JWT. Skal være trygt å cache på denne key på tvers av app/scopes
 		// https://learn.microsoft.com/en-us/azure/active-directory/develop/access-tokens#payload-claims
 		// This value can be used to perform authorization checks, such as when the token is used to access a resource, and can be used as a key in database tables.
-		return getAzureToken(scope, token.getTokenAsString());
+		return getAzureToken(scope, token.getEncodedToken());
 	}
 
 	private String getAzureToken(String scope, String token) {
