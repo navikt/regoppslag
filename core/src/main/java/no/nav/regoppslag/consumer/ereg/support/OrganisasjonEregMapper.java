@@ -25,6 +25,7 @@ import static no.nav.regoppslag.consumer.map.OrganisasjonPostadresseMapper.mapPo
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETFORRETNINGSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.ENHETPOSTADRESSE;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
@@ -45,7 +46,7 @@ public class OrganisasjonEregMapper {
 		return mapOrganisasjonNavn(wsOrganisasjon);
 	}
 
-	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon, String serviceCode) {
+	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon) {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
@@ -56,7 +57,7 @@ public class OrganisasjonEregMapper {
 		try {
 			postadresse = mapAdresse(orgNummer, orgDet);
 		} catch (RegOppslagFunctionalException e) {
-			log.info("Mapping av adresse feilet for orgnummer: {}", wsOrganisasjon.getOrganisasjonsnummer());
+			log.info("Mapping av adresse feilet for orgnummer: {}", removeUnsafeChars(wsOrganisasjon.getOrganisasjonsnummer()));
 			throw e;
 		}
 

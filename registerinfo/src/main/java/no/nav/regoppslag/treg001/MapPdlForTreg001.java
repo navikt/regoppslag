@@ -30,6 +30,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG001;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -77,7 +78,7 @@ public class MapPdlForTreg001 {
 				mottaker.setSpraakkode(spraakkode);
 			} else {
 				Organisasjon organisasjon = eregConsumer.hentOrganisasjon(mottaker.getId());
-				MottakerTo mottakerTo = organisasjonEregMapper.map(mottaker.getId(), organisasjon, SERVICE_CODE_TREG001);
+				MottakerTo mottakerTo = organisasjonEregMapper.map(mottaker.getId(), organisasjon);
 				mottaker.setId(mottaker.getId());
 				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());
@@ -122,12 +123,12 @@ public class MapPdlForTreg001 {
 	}
 
 	private Spraakkode getSpraakkode(SpraakKodeMapper spraakKodeMapper, Mottaker mottaker, String dokumenttypeId, String spraak) {
-		log.info("Henter språkinfo for mottaker. dokumentTypeId={}", dokumenttypeId);
+		log.info("Henter språkinfo for mottaker. dokumentTypeId={}", removeUnsafeChars(dokumenttypeId));
 		//Sjekker språket på malen opp mot mottakers preferanser
 		List<SpraakInfoTo> sprakinfos = dokmetConsumer.hentDokumenttypeInfoSpraak(dokumenttypeId);
 
 		if (sprakinfos == null || sprakinfos.isEmpty()) {
-			log.warn("Finner ikke språkinfo i DOKMET for dokumenttypeid={}.", dokumenttypeId);
+			log.warn("Finner ikke språkinfo i DOKMET for dokumenttypeid={}.", removeUnsafeChars(dokumenttypeId));
 		}
 
 		return spraakKodeMapper.getSpraakKode(mottaker, spraak, sprakinfos);

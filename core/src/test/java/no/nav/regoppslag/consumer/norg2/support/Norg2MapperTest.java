@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 
 public class Norg2MapperTest {
 
-	private PostnummerService postnummerService;
 	private Norg2Mapper norg2Mapper;
 	private static final String NAV_ENHET_ID = "123";
 	private static final String NAV_ENHET_NAVN = "NAV Husnes";
@@ -32,7 +31,7 @@ public class Norg2MapperTest {
 
 	@BeforeEach
 	public void initPostnummer() throws Exception {
-		postnummerService = new PostnummerService();
+		PostnummerService postnummerService = new PostnummerService();
 		norg2Mapper = new Norg2Mapper(postnummerService);
 	}
 
@@ -60,7 +59,7 @@ public class Norg2MapperTest {
 	@Test
 	public void shouldMapPostboksadresseNavEnhet() {
 		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
-		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithPostboksadresse(NAV_ENHET_NAVN), postadresse);
+		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithPostboksadresse(), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -99,7 +98,7 @@ public class Norg2MapperTest {
 		return enhet;
 	}
 
-	private EnhetKontaktinformasjon createEnhetWithPostboksadresse(String enhetNavn) {
+	private EnhetKontaktinformasjon createEnhetWithPostboksadresse() {
 		return EnhetKontaktinformasjon.builder()
 				.postadresse(Adresse.builder()
 						.type(POSTBOKSADRESSE)

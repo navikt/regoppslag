@@ -19,7 +19,7 @@ import static no.nav.regoppslag.util.TestDataUtil.USA_POSTKODE;
 
 class MapPostkodeStedAndOmraadeByLandServiceTest {
 
-	private MapPostkodeBystedAndOmraadeByLand mapPostkodeStedAndOmraadeByLand = new MapPostkodeStedAndOmraadeByLandService();
+	private final MapPostkodeBystedAndOmraadeByLand mapPostkodeStedAndOmraadeByLand = new MapPostkodeStedAndOmraadeByLandService();
 
 	@Test
 	void shouldGetUsaAdresselinje3FromPostkodeStedAndOmraad() {

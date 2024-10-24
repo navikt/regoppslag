@@ -7,6 +7,7 @@ import static com.neovisionaries.i18n.CountryCode.XK;
 import static no.nav.regoppslag.domain.DomainConstants.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.domain.DomainConstants.UNKNOWN_LANDKODE;
 import static no.nav.regoppslag.service.LandkodeService.finnLandkodeAlpha2FraAlpha3;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -23,7 +24,7 @@ public class MapPDLUtils {
 		String alpha2Landkode = KOSOVO_LANDKODE_NAV_REGISTRENE.equalsIgnoreCase(alpha3Landkode) ? XK.name() : finnLandkodeAlpha2FraAlpha3(alpha3Landkode);
 
 		if (alpha2Landkode == null) {
-			log.info("Mottaker har ingen gyldig landkode registert. alpha3Landkode={}. Setter landkode={}.", alpha3Landkode, UNKNOWN_LANDKODE);
+			log.info("Mottaker har ingen gyldig landkode registert. alpha3Landkode={}. Setter landkode={}.", removeUnsafeChars(alpha3Landkode), UNKNOWN_LANDKODE);
 			return UNKNOWN_LANDKODE;
 		}
 

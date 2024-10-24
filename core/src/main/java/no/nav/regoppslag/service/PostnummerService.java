@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -13,6 +12,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 
 /**
  * Kilde: https://www.bring.no/tjenester/adressetjenester/postnummer
@@ -32,7 +33,7 @@ public class PostnummerService {
 	}
 
 	void init() throws IOException {
-		try (InputStream in = getClass().getResourceAsStream(FILENAME);
+		try (InputStream in = PostnummerService.class.getResourceAsStream(FILENAME);
 			 BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 
 			String line;
@@ -59,7 +60,7 @@ public class PostnummerService {
 
 	public String finnPoststed(String postnr) {
 		if (postalCodeTable.get(postnr) == null) {
-			log.warn("Finner ikke poststed for postnummer={}. Returnerer postnummer som poststed. Postnummer kan være utgått eller nytt. Sjekk om ny postnummerregister.txt må lastes ned eller om postnummer er gammelt og har fått en endring. Se https://www.bring.no/tjenester/adressetjenester/postnummer", postnr);
+			log.warn("Finner ikke poststed for postnummer={}. Returnerer postnummer som poststed. Postnummer kan være utgått eller nytt. Sjekk om ny postnummerregister.txt må lastes ned eller om postnummer er gammelt og har fått en endring. Se https://www.bring.no/tjenester/adressetjenester/postnummer", removeUnsafeChars(postnr));
 			return postnr;
 		} else {
 			return postalCodeTable.get(postnr).getPoststed();

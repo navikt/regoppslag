@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.exceptions.UndeliverableException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -49,6 +50,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 public class ElementEnricher {
 
+	@Setter
 	private ElementEnricherPluginRegistry registry;
 	private final AttributeValueNamespaceResolver attributeValueNamespaceResolver;
 
@@ -73,10 +75,6 @@ public class ElementEnricher {
 			}
 			log.warn("Klarte ikke fullføre flow, forstår ikke hva som er galt", e);
 		});
-	}
-
-	public void setRegistry(ElementEnricherPluginRegistry registry) {
-		this.registry = registry;
 	}
 
 	private static Node findSingleNode(String xpathExpression, Document document) throws XPathExpressionException {
@@ -156,25 +154,20 @@ public class ElementEnricher {
 	}
 
 	private void handleException(Throwable e) throws RegOppslagSecurityException {
-		if (e instanceof UkjentAdressePersonErDoedException err) {
-			throw err;
-		} else if (e instanceof RegOppslagIngenTilgangException err) {
-			throw err;
-		} else if (e instanceof RegOppslagFunctionalException err) {
-			if (NOT_FOUND.equals(err.getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
+		switch (e) {
+			case UkjentAdressePersonErDoedException err -> throw err;
+			case RegOppslagIngenTilgangException err -> throw err;
+			case RegOppslagFunctionalException err -> {
+				if (NOT_FOUND.equals(err.getHttpStatusCode())) {
+					throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
+				}
+				throw new RegoppslagIllegalArgumentException(err.getMessage(), err, err.getHttpStatusCode());
 			}
-			throw new RegoppslagIllegalArgumentException(err.getMessage(), err, err.getHttpStatusCode());
-		} else if (e instanceof UkjentAdresseException exception) {
-			throw exception;
-		} else if (e instanceof FeilGrunnetHoeytVolumWorkaroundException ex) {
-			throw ex;
-		} else if (e instanceof RegOppslagSecurityException err) {
-			throw err;
-		} else if (e instanceof RegOppslagTechnicalException err) {
-			throw err;
-		} else {
-			throw new RegOppslagTechnicalException(e);
+			case UkjentAdresseException exception -> throw exception;
+			case FeilGrunnetHoeytVolumWorkaroundException ex -> throw ex;
+			case RegOppslagSecurityException err -> throw err;
+			case RegOppslagTechnicalException err -> throw err;
+			case null, default -> throw new RegOppslagTechnicalException(e);
 		}
 	}
 

@@ -85,7 +85,7 @@ public class PostadresseService {
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
 		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
 
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon, SERVICE_CODE_RREG003);
+		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo))
@@ -93,27 +93,34 @@ public class PostadresseService {
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof UkjentAdressePersonErDoedException err) {
-			log.info("RREG003: {}", e.getMessage());
-			throw err;
-		} else if (e instanceof UkjentAdresseException err) {
-			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			throw err;
-		} else if (e instanceof RegOppslagSecurityException err) {
-			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			throw err;
-		} else if (e instanceof RegOppslagIngenTilgangException err) {
-			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			throw err;
-		} else if (e instanceof RegOppslagFunctionalException err) {
-			log.warn(RREG003_FUNK_FEIL, e.getMessage());
-			if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
+		switch (e) {
+			case UkjentAdressePersonErDoedException err -> {
+				log.info("RREG003: {}", e.getMessage());
+				throw err;
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, ((RegOppslagFunctionalException) e).getHttpStatusCode());
-		} else {
-			log.error("RREG003 Teknisk feil: {}", e.getMessage(), e);
-			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
+			case UkjentAdresseException err -> {
+				log.warn(RREG003_FUNK_FEIL, e.getMessage());
+				throw err;
+			}
+			case RegOppslagSecurityException err -> {
+				log.warn(RREG003_FUNK_FEIL, e.getMessage());
+				throw err;
+			}
+			case RegOppslagIngenTilgangException err -> {
+				log.warn(RREG003_FUNK_FEIL, e.getMessage());
+				throw err;
+			}
+			case RegOppslagFunctionalException err -> {
+				log.warn(RREG003_FUNK_FEIL, e.getMessage());
+				if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
+					throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
+				}
+				throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, ((RegOppslagFunctionalException) e).getHttpStatusCode());
+			}
+			case null, default -> {
+				log.error("RREG003 Teknisk feil: {}", e.getMessage(), e);
+				throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
+			}
 		}
 	}
 }

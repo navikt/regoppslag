@@ -10,6 +10,7 @@ import static com.neovisionaries.i18n.CountryCode.UNDEFINED;
 import static com.neovisionaries.i18n.CountryCode.findByName;
 import static com.neovisionaries.i18n.CountryCode.getByAlpha3Code;
 import static com.neovisionaries.i18n.CountryCode.getByCode;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -34,7 +35,7 @@ public class LandkodeService {
 		}
 
 		if (getByCode(landkode) == null || getByCode(landkode).equals(UNDEFINED)) {
-			log.warn("Finner ikke land for landkode={}. Sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon", landkode);
+			log.warn("Finner ikke land for landkode={}. Sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon", removeUnsafeChars(landkode));
 			return null;
 		}
 
@@ -54,7 +55,7 @@ public class LandkodeService {
 			landnavn = NORWAY;
 		}
 
-		if (findByName(landnavn).size() == 0) {
+		if (findByName(landnavn).isEmpty()) {
 			return null;
 		}
 

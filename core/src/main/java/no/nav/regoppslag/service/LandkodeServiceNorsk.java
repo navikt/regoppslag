@@ -24,7 +24,7 @@ public class LandkodeServiceNorsk {
 	}
 
 	void init() throws IOException {
-		try (InputStream in = getClass().getResourceAsStream(FILENAME);
+		try (InputStream in = LandkodeServiceNorsk.class.getResourceAsStream(FILENAME);
 			 BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 
 			String line;

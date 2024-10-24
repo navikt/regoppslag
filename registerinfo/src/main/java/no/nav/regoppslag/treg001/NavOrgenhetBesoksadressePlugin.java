@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTYPEID;
+import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -56,7 +57,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 		try {
 			Besoksadresse adresse = unmarshal(content);
 
-			log.info("Henter NavOrgenhet info. DokumentTypeId={}, EnhetsId={}", dokumenttypeId, adresse.getEnhetsId());
+			log.info("Henter NavOrgenhet info. DokumentTypeId={}, EnhetsId={}", removeUnsafeChars(dokumenttypeId), adresse.getEnhetsId());
 
 			//Skal elementet berikes?
 			if (adresse.isBerik()) {
@@ -71,7 +72,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 			Document newNode = convertObjectToDocument(adresse);
 			Element documentElement = newNode.getDocumentElement();
 
-			log.info("NavOrgenhet er beriket med data. DokumentTypeId={}, EnhetsId={}", dokumenttypeId, adresse.getEnhetsId());
+			log.info("NavOrgenhet er beriket med data. DokumentTypeId={}, EnhetsId={}", removeUnsafeChars(dokumenttypeId), adresse.getEnhetsId());
 			return newNode.renameNode(documentElement, content.getNamespaceURI(), content.getLocalName());
 
 		} catch (ParserConfigurationException | MarshallerException e) {
