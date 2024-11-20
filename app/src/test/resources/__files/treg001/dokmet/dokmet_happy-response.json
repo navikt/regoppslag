@@ -1,103 +1,95 @@
 {
-  "dokumenttypeId" : "DOKPROD_SYSTEST_ANYP",
-  "dokumentTittel" : "Innkalling til informasjonsm?te",
-  "dokumentType" : "U",
-  "dokumentKategori" : "B",
-  "sensitivt" : true,
-  "tema" : null,
-  "behandlingstema" : null,
-  "artifaktId" : null,
-  "dokumentProduksjonsInfo" : {
-    "vedlegg" : false,
-    "eksternVedlegg" : false,
-    "ikkeRedigerbarMalId" : "MF_000001",
-    "redigerbarMalId" : null,
-    "malLogikkFil" : "Arena",
-    "malXsdReferanse" : "arenabrev/Allow_Any_All.xsd",
-    "spraakInfos" : [
+  "dokumenttypeId": "000001",
+  "dokumentTittel": "Innkalling til informasjonsmøte",
+  "dokumentType": "U",
+  "dokumentKategori": "B",
+  "sensitivt": true,
+  "utledRegisterInfo": false,
+  "tema": null,
+  "arkivSystem": "JOARK",
+  "dokumentProduksjonsInfo": {
+    "vedlegg": false,
+    "eksternVedlegg": false,
+    "ikkeRedigerbarMalId": "MF_000001",
+    "redigerbarMalId": null,
+    "malLogikkFil": "Arena",
+    "malXsdReferanse": "arenabrev/arena_000001.xsd",
+    "spraakInfos": [
       {
         "spraaklag": "NB",
         "changeStamp": {
           "opprettetAv": "srvdokkat",
-          "opprettetDato": [
-            2018,
-            7,
-            3,
-            12,
-            4,
-            42,
-            602000000
-          ],
+          "opprettetDato": "2024-11-18T15:19:12.833522",
           "endretAv": null,
           "endretDato": null
         }
-      },{
-      "spraaklag": "EN",
-      "changeStamp": {
-        "opprettetAv": "srvdokkat",
-        "opprettetDato": [
-          2018,
-          7,
-          3,
-          12,
-          4,
-          42,
-          602000000
-        ],
-        "endretAv": null,
-        "endretDato": null
-      }
-    },
+      },
+      {
+        "spraaklag": "EN",
+        "changeStamp": {
+          "opprettetAv": "srvdokkat",
+          "opprettetDato": "2024-11-18T15:19:12.833522",
+          "endretAv": null,
+          "endretDato": null
+        }
+      },
       {
         "spraaklag": "NN",
         "changeStamp": {
           "opprettetAv": "srvdokkat",
-          "opprettetDato": [
-            2018,
-            7,
-            3,
-            12,
-            4,
-            42,
-            602000000
-          ],
+          "opprettetDato": "2024-11-18T15:19:12.833522",
           "endretAv": null,
           "endretDato": null
         }
-      }],
-    "distribusjonInfo" : {
-      "predefinertDistKanal" : "VED_DITT_NAV_OGSA_PRINT",
-      "portoklasse" : "A",
-      "sikkerhetsnivaa" : 4,
-      "distribusjonVarsels" : [ {
-        "varseltypeId" : "DittNAV_000002",
-        "varselForDistribusjonKanal" : "DITT_NAV",
-        "changeStamp" : {
-          "opprettetAv" : "SrvDokPros",
-          "opprettetDato" : [ 2018, 3, 22, 17, 20, 40, 515000000 ],
-          "endretAv" : null,
-          "endretDato" : null
+      }
+    ],
+    "distribusjonInfo": {
+      "predefinertDistKanal": null,
+      "portoklasse": "A",
+      "sikkerhetsnivaa": 4,
+      "tosidigPrint": true,
+      "sentralPrintDokumentType": "NAV_STANDARD",
+      "konvoluttvinduType": "X",
+      "distribusjonVarsels": [
+        {
+          "varseltypeId": "DittNAV_000001",
+          "varselForDistribusjonKanal": "DITT_NAV",
+          "changeStamp": {
+            "opprettetAv": "srvdokkat",
+            "opprettetDato": "2024-11-18T15:19:12.833522",
+            "endretAv": null,
+            "endretDato": null
+          }
+        },
+        {
+          "varseltypeId": "SDP_000007",
+          "varselForDistribusjonKanal": "SDP",
+          "changeStamp": {
+            "opprettetAv": "srvdokkat",
+            "opprettetDato": "2024-11-18T15:19:12.835547",
+            "endretAv": null,
+            "endretDato": null
+          }
         }
-      } ],
-      "changeStamp" : {
-        "opprettetAv" : "SrvDokPros",
-        "opprettetDato" : [ 2018, 3, 22, 17, 20, 40, 511000000 ],
-        "endretAv" : null,
-        "endretDato" : null
+      ],
+      "changeStamp": {
+        "opprettetAv": "srvdokkat",
+        "opprettetDato": "2024-11-18T15:19:12.831485",
+        "endretAv": "srvdokkat",
+        "endretDato": "2024-11-18T15:19:12.836198"
       }
     },
-    "changeStamp" : {
-      "opprettetAv" : "SrvDokPros",
-      "opprettetDato" : [ 2018, 1, 18, 9, 14, 23, 428000000 ],
-      "endretAv" : "SrvDokPros",
-      "endretDato" : [ 2018, 3, 22, 17, 20, 40, 515000000 ]
+    "changeStamp": {
+      "opprettetAv": "srvdokkat",
+      "opprettetDato": "2016-11-28T09:28:32.49",
+      "endretAv": "srvdokkat",
+      "endretDato": "2024-11-18T15:19:12.836103"
     }
   },
-  "dokumentMottakInfo" : null,
-  "changeStamp" : {
-    "opprettetAv" : "SrvDokPros",
-    "opprettetDato" : [ 2018, 1, 18, 9, 14, 23, 418000000 ],
-    "endretAv" : null,
-    "endretDato" : null
+  "changeStamp": {
+    "opprettetAv": "srvdokkat",
+    "opprettetDato": "2016-11-28T09:28:32.49",
+    "endretAv": "srvdokkat",
+    "endretDato": "2017-02-01T15:18:26.494"
   }
 }
