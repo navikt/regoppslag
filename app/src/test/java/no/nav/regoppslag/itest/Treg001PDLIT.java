@@ -2,7 +2,6 @@ package no.nav.regoppslag.itest;
 
 
 import com.github.tomakehurst.wiremock.client.CountMatchingStrategy;
-import no.nav.regoppslag.consumer.dokmet.DokmetConsumerTest;
 import no.nav.regoppslag.treg001.KompletterBrevdataRequest;
 import no.nav.regoppslag.treg001.KompletterBrevdataResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,11 +46,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class Treg001PDLIT extends AbstractIT {
 
 	private static final String DOKUMENTTYPEID = "123";
+	private static final String NAV_IDENT = "Z991006";
 	private String token;
 
 	@BeforeEach
 	public void runBefore() {
-		stubMsGraphGetUser("Z991006");
+		stubMsGraphGetUser();
 		stubDokmetResponse();
 		stubAzureToken();
 		this.token = token("subject1");
@@ -247,7 +247,7 @@ public class Treg001PDLIT extends AbstractIT {
 		HttpClientErrorException ex = assertThrows(HttpClientErrorException.class, () -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_mangler_mottaker_request.xml"), KompletterBrevdataResponse.class));
 
 		assertThat(ex.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(ex.getResponseHeaders().get(NAV_REASON_CODE).contains(FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE));
+		assertThat(ex.getResponseHeaders().get(NAV_REASON_CODE)).contains(FEIL_GRUNNET_HOEYT_VOLUM_REASON_CODE);
 	}
 
 	@Test
@@ -264,7 +264,7 @@ public class Treg001PDLIT extends AbstractIT {
 		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(e.getResponseBodyAsString()).contains("Fant ikke bostedsadresse for personen i PDL");
-		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE).get(0)).isEqualTo(UKJENT_ADRESSE_REASON_CODE);
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE).getFirst()).isEqualTo(UKJENT_ADRESSE_REASON_CODE);
 	}
 
 	@Test
@@ -416,10 +416,19 @@ public class Treg001PDLIT extends AbstractIT {
 		return new HttpEntity<>(kompletterBrevdataRequest, headers);
 	}
 
-	protected void stubDokmetResponse() {
+	private static void stubDokmetResponse() {
 		stubFor(get(urlPathMatching(DOKUMENTINFO_URL_REGEX)).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withBodyFile("treg001/dokmet/dokmet_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak
 	}
+
+	private static void stubMsGraphGetUser() {
+		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + NAV_IDENT + "%27&$select=givenName,surname")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("msgraph/msgraph-users.json")));
+	}
+
 }

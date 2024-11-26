@@ -82,24 +82,30 @@ public class HentMottakerOgAdresseService {
 	}
 
 	private void logAndRethrowException(Exception e) throws RegOppslagSecurityException {
-		if (e instanceof UkjentAdressePersonErDoedException) {
-			log.info("TREG002: {}", e.getMessage());
-			throw (UkjentAdressePersonErDoedException) e;
-		} else if (e instanceof RegOppslagSecurityException) {
-			log.warn(TREG002_FUNK_FEIL, e.getMessage());
-			throw (RegOppslagSecurityException) e;
-		} else if (e instanceof RegOppslagFunctionalException funErr) {
-			log.warn(TREG002_FUNK_FEIL, funErr.getMessage());
-			if (NOT_FOUND.equals(funErr.getHttpStatusCode())) {
-				throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
+		switch (e) {
+			case UkjentAdressePersonErDoedException ukjentAdressePersonErDoedException -> {
+				log.info("TREG002: {}", e.getMessage());
+				throw ukjentAdressePersonErDoedException;
 			}
-			throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
-		} else if (e instanceof UkjentAdresseException err) {
-			log.warn(TREG002_FUNK_FEIL, err.getMessage());
-			throw err;
-		} else {
-			log.error("TREG002 Teknisk feil: {}", e.getMessage(), e);
-			throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
+			case RegOppslagSecurityException regOppslagSecurityException -> {
+				log.warn(TREG002_FUNK_FEIL, e.getMessage());
+				throw regOppslagSecurityException;
+			}
+			case RegOppslagFunctionalException funErr -> {
+				log.warn(TREG002_FUNK_FEIL, funErr.getMessage());
+				if (NOT_FOUND.equals(funErr.getHttpStatusCode())) {
+					throw new RegOppslagIkkeFunnetException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
+				}
+				throw new RegoppslagIllegalArgumentException(e.getLocalizedMessage(), e, funErr.getHttpStatusCode());
+			}
+			case UkjentAdresseException err -> {
+				log.warn(TREG002_FUNK_FEIL, err.getMessage());
+				throw err;
+			}
+			case null, default -> {
+				log.error("TREG002 Teknisk feil: {}", e.getMessage(), e);
+				throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
+			}
 		}
 	}
 }

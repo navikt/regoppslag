@@ -1,9 +1,6 @@
 package no.nav.regoppslag.treg001.xmlenricher;
 
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.treg001.xmlenricher.exceptions.InvalidElementException;
-import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingKeyValueException;
-import no.nav.regoppslag.treg001.xmlenricher.exceptions.RegistryServiceFunctionalException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 

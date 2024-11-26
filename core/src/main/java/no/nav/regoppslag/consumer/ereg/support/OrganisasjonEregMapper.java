@@ -32,7 +32,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class OrganisasjonEregMapper {
 
-	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE_NORGE = "NO";
 	private static final String LAND_NORGE = "Norge";
 

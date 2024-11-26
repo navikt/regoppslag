@@ -2,7 +2,6 @@ package no.nav.regoppslag.config.security;
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

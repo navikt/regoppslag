@@ -10,6 +10,8 @@ import no.nav.regoppslag.consumer.norg2.to.Stedsadresse;
 import no.nav.regoppslag.service.PostnummerService;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -59,8 +61,8 @@ public class Norg2Mapper {
 			return norskPostadresse;
 		} else {
 			Adresse postadresse = kontaktinformasjon.getPostadresse();
-			norskPostadresse.setAdresselinje1(ofNullable("Postboks " + postadresse.getPostboksnummer()).orElse("") + " " +
-					ofNullable(postadresse.getPostboksanlegg()).orElse(""));
+			norskPostadresse.setAdresselinje1(Optional.of("Postboks " + postadresse.getPostboksnummer()).orElse("") + " " +
+											  ofNullable(postadresse.getPostboksanlegg()).orElse(""));
 			norskPostadresse.setPostnummer(postadresse.getPostnummer());
 			norskPostadresse.setPoststed(isNotBlank(postadresse.getPoststed()) ? postadresse.getPoststed() :
 					postnummerService.finnPoststed(postadresse.getPostnummer()));

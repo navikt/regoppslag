@@ -53,7 +53,7 @@ public class NavOrgenhetNavnPluginTest {
 
 		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
 		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
-		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet());
 	}
 
 	@Test
@@ -133,9 +133,9 @@ public class NavOrgenhetNavnPluginTest {
 	}
 
 
-	private EnhetNavn createEnhet(String navEnhetNavn) {
+	private EnhetNavn createEnhet() {
 		return EnhetNavn.builder()
-				.navn(navEnhetNavn)
+				.navn(NAV_ENHET_NAVN)
 				.build();
 	}
 }

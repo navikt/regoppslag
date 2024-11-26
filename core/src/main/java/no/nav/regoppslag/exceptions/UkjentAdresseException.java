@@ -7,9 +7,9 @@ import org.springframework.web.server.ResponseStatusException;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@Getter
 public class UkjentAdresseException extends ResponseStatusException {
 
-	@Getter
 	private final String reasonCode;
 
 	public UkjentAdresseException(String message, String reasonCode) {

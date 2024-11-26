@@ -39,15 +39,15 @@ public class Norg2MapperTest {
 	public void shouldMapNavEnhetNavn() {
 		NavEnhet enhet = new NavEnhet();
 		enhet.setEnhetsId(NAV_ENHET_ID);
-		norg2Mapper.mapEnhetNavn(createEnhetNavn(NAV_ENHET_NAVN), enhet);
+		norg2Mapper.mapEnhetNavn(createEnhetNavn(), enhet);
 		assertThat(enhet.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(enhet.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
 
 	@Test
 	public void shouldMapStedadresseNavEnhet() {
-		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
-		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithBesoksadresse(), postadresse);
+		Postadresse postadresse = createPostadresse();
+		norg2Mapper.mapPostadresse(createEnhetNavn(), createEnhetWithBesoksadresse(), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -58,8 +58,8 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapPostboksadresseNavEnhet() {
-		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
-		norg2Mapper.mapPostadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithPostboksadresse(), postadresse);
+		Postadresse postadresse = createPostadresse();
+		norg2Mapper.mapPostadresse(createEnhetNavn(), createEnhetWithPostboksadresse(), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 
@@ -70,8 +70,8 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapBesokAdresseNavEnhet() {
-		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
-		norg2Mapper.mapBesokadresse(createEnhetNavn(NAV_ENHET_NAVN), createEnhetWithBesoksadresse(), postadresse);
+		Postadresse postadresse = createPostadresse();
+		norg2Mapper.mapBesokadresse(createEnhetNavn(), createEnhetWithBesoksadresse(), postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -81,10 +81,10 @@ public class Norg2MapperTest {
 
 	@Test
 	public void shouldMapWhenBesokAdresseIsNull() {
-		Postadresse postadresse = createPostadresse(NAV_ENHET_ID);
+		Postadresse postadresse = createPostadresse();
 		EnhetKontaktinformasjon enhetWithBesoksadresse = createEnhetWithBesoksadresse();
 		enhetWithBesoksadresse.setBesoeksadresse(null);
-		norg2Mapper.mapBesokadresse(createEnhetNavn(NAV_ENHET_NAVN), enhetWithBesoksadresse, postadresse);
+		norg2Mapper.mapBesokadresse(createEnhetNavn(), enhetWithBesoksadresse, postadresse);
 		assertThat(postadresse.getEnhetsId(), is(NAV_ENHET_ID));
 
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is(GATENAVN + " " + HUSNR + HUSBOKSTAV));
@@ -92,9 +92,9 @@ public class Norg2MapperTest {
 		assertThat(postadresse.getAdresse().getPoststed(), is(POSTSTED));
 	}
 
-	private Postadresse createPostadresse(String enhetId) {
+	private Postadresse createPostadresse() {
 		Postadresse enhet = new Postadresse();
-		enhet.setEnhetsId(enhetId);
+		enhet.setEnhetsId(NAV_ENHET_ID);
 		return enhet;
 	}
 
@@ -109,10 +109,10 @@ public class Norg2MapperTest {
 				.build();
 	}
 
-	private EnhetNavn createEnhetNavn(String enhetNavn) {
+	private EnhetNavn createEnhetNavn() {
 		return EnhetNavn.builder()
 				.enhetNr(NAV_ENHET_ID)
-				.navn(enhetNavn)
+				.navn(NAV_ENHET_NAVN)
 				.build();
 	}
 

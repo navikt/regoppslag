@@ -8,7 +8,6 @@ import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -90,8 +89,7 @@ public class KompletterBrevdataServiceTest {
 	 */
 	@Test
 	public void shouldHandleTransformerException() throws XPathExpressionException, MissingPluginException, RegOppslagSecurityException {
-		Document document = null;
-		when(elementEnricher.process(any(), anyString())).thenReturn(document);
+		when(elementEnricher.process(any(), anyString())).thenReturn(null);
 
 		assertThrows(RegOppslagFunctionalException.class,
 				() -> kompletterBrevdataService.hentBrevdataFraRegistre(illegalRequest), "org.xml.sax.SAXParseException");

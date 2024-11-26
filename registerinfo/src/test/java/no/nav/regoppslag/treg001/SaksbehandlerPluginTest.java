@@ -2,7 +2,6 @@ package no.nav.regoppslag.treg001;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.azure.MsGraphConsumer;
-import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +68,7 @@ public class SaksbehandlerPluginTest {
 
 		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
 
-		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
+		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(navAnsatt.getNavn(), is("Test Testesen"));
@@ -90,7 +89,7 @@ public class SaksbehandlerPluginTest {
 
 		Node processed = saksbehandlerPlugin.processElement(node, valueMap);
 
-		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<NavAnsatt>(NavAnsatt.class);
+		JaxbHelper<NavAnsatt> mottakerJaxbHelper = new JaxbHelper<>(NavAnsatt.class);
 		NavAnsatt navAnsatt = mottakerJaxbHelper.unmarshal(processed);
 
 		assertThat(navAnsatt.getNavn(), is("Ikke Berik"));
@@ -110,12 +109,7 @@ public class SaksbehandlerPluginTest {
 
 		@Bean
 		public SaksbehandlerPlugin saksbehandlerPlugin() {
-			return new SaksbehandlerPlugin();
-		}
-
-		@Bean
-		SaksbehandlerMapper saksbehandlerMapper() {
-			return new SaksbehandlerMapper();
+			return new SaksbehandlerPlugin(msGraphConsumer());
 		}
 	}
 }

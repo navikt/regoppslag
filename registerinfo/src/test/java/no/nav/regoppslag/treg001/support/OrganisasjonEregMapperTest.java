@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.LocalDate;
 
 import static no.nav.regoppslag.util.TestDataUtil.ADRESSELINJE1;
@@ -53,7 +52,6 @@ public class OrganisasjonEregMapperTest {
 	private static final String ORGID = "999999999";
 	private static final String POSTSTED = "HUSNES";
 	private static final String LAND = "Norge";
-	private static final String SERVICECODE = "SERVICECODE";
 
 	private OrganisasjonEregMapper mapper;
 
@@ -106,8 +104,8 @@ public class OrganisasjonEregMapperTest {
 	public void shouldThrowWhenMissingPoststed() {
 		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", 10000L);
-		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPoststed(null);
-		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
+		org.getOrganisasjonDetaljer().getPostadresser().getFirst().setPoststed(null);
+		org.getOrganisasjonDetaljer().getPostadresser().getFirst().setPostnummer(null);
 		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> mapper.map(ORGID, org), "Ingen gyldige adresser funnet");
 		assertEquals(NOT_FOUND, e.getHttpStatusCode());
@@ -257,7 +255,7 @@ public class OrganisasjonEregMapperTest {
 	public void shouldMapPersonPostadresseUtenPostnr() {
 		Organisasjon org = createOrganisasjon(ORGNAVN);
 		settPostAdresse(org, "POSTADRESSE", VALID_SECONDS);
-		org.getOrganisasjonDetaljer().getPostadresser().get(0).setPostnummer(null);
+		org.getOrganisasjonDetaljer().getPostadresser().getFirst().setPostnummer(null);
 		MottakerTo mottakerTo = mapper.map(ORGID, org);
 
 		Mottaker mottaker = mottakerTo.getMottaker();

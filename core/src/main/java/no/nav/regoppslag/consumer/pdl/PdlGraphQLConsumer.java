@@ -5,7 +5,7 @@ import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.config.properties.RegoppslagProperties.Oauth2SecuredEndpoint;
 import no.nav.regoppslag.consumer.AzureFlowInterceptor;
 import no.nav.regoppslag.consumer.azure.AzureTokenConsumer;
-import no.nav.regoppslag.consumer.pdl.map.MapHentNavnResponse;
+import no.nav.regoppslag.consumer.pdl.map.HentNavnMapper;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.PDLError;
 import no.nav.regoppslag.consumer.pdl.to.PDLHentNavnResponse;
@@ -16,7 +16,6 @@ import no.nav.regoppslag.exceptions.PdlHentPersonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.RequestEntity;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCUtil.getCallId;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -57,7 +56,6 @@ public class PdlGraphQLConsumer {
 	private static final String PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED = "unauthorized";
 
 	private final RestTemplate restTemplate;
-	private final MapHentNavnResponse mapHentNavnResponse;
 	private final Oauth2SecuredEndpoint pdl;
 
 	@Autowired
@@ -66,11 +64,10 @@ public class PdlGraphQLConsumer {
 							  RegoppslagProperties regoppslagProperties) {
 		this.pdl = regoppslagProperties.getEndpoints().getPdl();
 		this.restTemplate = restTemplateBuilder
-				.setConnectTimeout(Duration.ofSeconds(5L))
-				.setReadTimeout(Duration.ofSeconds(15L))
+				.connectTimeout(Duration.ofSeconds(5L))
+				.readTimeout(Duration.ofSeconds(15L))
 				.additionalInterceptors(new AzureFlowInterceptor(azureTokenConsumer, pdl.getScope()))
 				.build();
-		this.mapHentNavnResponse = new MapHentNavnResponse();
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
@@ -102,7 +99,7 @@ public class PdlGraphQLConsumer {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);
 			handterPdlFunksjonellFeil(response);
-			return mapHentNavnResponse.mapNavn(response);
+			return HentNavnMapper.mapNavn(response);
 		} catch (HttpClientErrorException e) {
 			throw new PdlFunctionalException("Kunne ikke hente person fra pdl.", e, e.getStatusCode());
 		} catch (HttpServerErrorException e) {
@@ -115,7 +112,7 @@ public class PdlGraphQLConsumer {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);
 			handterPdlFunksjonellFeil(response);
-			return Optional.ofNullable(mapHentNavnResponse.mapNavnForDoedsbo(response));
+			return Optional.ofNullable(HentNavnMapper.mapNavnForDoedsbo(response));
 		} catch (HttpClientErrorException e) {
 			return Optional.empty();
 		} catch (HttpServerErrorException e) {
@@ -124,12 +121,12 @@ public class PdlGraphQLConsumer {
 	}
 
 	private RequestEntity<PDLRequest> createRequestEntity(String aktoerId, String query, String behandlingsnummer) {
-		final UriComponents uri = UriComponentsBuilder.fromHttpUrl(pdl.getUrl()).build();
+		final UriComponents uri = UriComponentsBuilder.fromUriString(pdl.getUrl()).build();
 		return RequestEntity.post(uri.toUri())
 				.accept(APPLICATION_JSON)
 				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.header(HEADER_PDL_BEHANDLINGSNUMMER, behandlingsnummer)
-				.header(NAV_CALL_ID, MDC.get(CALL_ID))
+				.header(NAV_CALL_ID, getCallId())
 				.body(mapRequest(aktoerId, query));
 	}
 
@@ -145,7 +142,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	private void handterPdlFunksjonellFeil(PDLHentNavnResponse response) {
-		List<PDLError> errors = response.getErrors();
+		List<PDLError> errors = response.errors();
 		handterPdlFunksjonellFeil(errors);
 	}
 

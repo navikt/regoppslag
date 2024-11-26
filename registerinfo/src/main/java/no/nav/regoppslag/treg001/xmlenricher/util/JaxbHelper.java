@@ -1,5 +1,12 @@
 package no.nav.regoppslag.treg001.xmlenricher.util;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlType;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
@@ -9,13 +16,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.XMLConstants;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.annotation.XmlSchema;
-import jakarta.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -127,6 +127,7 @@ public class JaxbHelper<T> {
 		for (Class clazz : validClasses) {
 			if (clazz.isInstance(payLoad)) {
 				validClass = true;
+				break;
 			}
 		}
 		return validClass;

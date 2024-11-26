@@ -70,10 +70,10 @@ public class MsGraphConsumer {
 			throw new RegOppslagIkkeFunnetException(format("Microsoft Entra finner ikke NAV ansatt med navIdent=%s", navIdent), NOT_FOUND);
 		}
 
-		return fulltNavn(users);
+		return fulltNavn(users.getFirst());
 	}
 
-	private static String fulltNavn(List<User> users) {
-		return users.get(0).getGivenName() + " " + users.get(0).getSurname();
+	private static String fulltNavn(User user) {
+		return user.getGivenName() + " " + user.getSurname();
 	}
 }

@@ -123,35 +123,6 @@ public class HentPerson {
 		private String kilde;
 	}
 
-
-	@Getter
-	@Setter
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class TilrettelagtKommunikasjon {
-		private Tegnspraaktolk tegnspraaktolk;
-		private Talespraaktolk talespraaktolk;
-	}
-
-	@Getter
-	@Setter
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Tegnspraaktolk {
-		private String spraak;
-	}
-
-	@Getter
-	@Setter
-	@Builder
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Talespraaktolk {
-		private String spraak;
-	}
-
 	public String getFulltnavn() {
 		return getNavn().stream()
 				.filter(Objects::nonNull)
