@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.regoppslag.consumer.dokmet.DokmetConsumerTest.DOKUMENTINFO_URL_REGEX;
 import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.KOMPLETTER_BREVDATA_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
@@ -364,7 +365,7 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldReturnInternalServerErrorWhenNotFoundFromDokmet() {
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(NOT_FOUND.value())));
+		stubFor(get(urlPathMatching(DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(NOT_FOUND.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
@@ -379,7 +380,7 @@ public class Treg001PDLIT extends AbstractIT {
 	public void shouldReturnInternalServerErrorIfTechnicalExceptionFromDokmet() {
 		postPdlGraphql(OK.value(), "pdl/BosattVegadresse.json");
 		postPdlDigdir(OK.value(), "dkif/dkif-happy.json");
-		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
+		stubFor(get(urlPathMatching(DOKUMENTINFO_URL_REGEX)).willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		stubGetEnhetNavn(OK.value(), "norg2/hentEnhet_happy.json");
 		stubGetEnhetKontaktInfo(OK.value(), "norg2/hentEnhetKontaktInfo_happy.json");
 
@@ -416,7 +417,7 @@ public class Treg001PDLIT extends AbstractIT {
 	}
 
 	protected void stubDokmetResponse() {
-		stubFor(get(urlPathMatching(DokmetConsumerTest.DOKUMENTINFO_URL_REGEX)).willReturn(aResponse()
+		stubFor(get(urlPathMatching(DOKUMENTINFO_URL_REGEX)).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withBodyFile("treg001/dokmet/dokmet_happy-response.json"))); // Brukes til hentDokumenttypeinfo for Spraak
