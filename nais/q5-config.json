@@ -5,7 +5,7 @@
 	"REGOPPSLAG_ENDPOINTS_EREG_URL": "https://ereg-services-q5.dev.intern.nav.no/v2/organisasjon/",
 	"REGOPPSLAG_ENDPOINTS_PDL_URL": "https://pdl-api-q0.dev.intern.nav.no/graphql",
 	"REGOPPSLAG_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api-q0/.default",
-	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "https://dokmet.dev.intern.nav.no/rest/dokumenttypeinfo",
+	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "https://dokmet-q5.dev.intern.nav.no/rest/dokumenttypeinfo",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.intern.dev.nav.no",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE": "api://dev-gcp.team-rocket.digdir-krr-proxy/.default",
 	"APP_NAME": "regoppslag-q5",
