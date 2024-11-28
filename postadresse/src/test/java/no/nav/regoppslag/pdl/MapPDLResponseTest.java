@@ -580,6 +580,24 @@ public class MapPDLResponseTest {
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
+	@Test
+	public void shouldValidateKontaktadresseForInnlandAddresseWithVegadresseAndThrowOnInvalid() {
+		Vegadresse adresse = createVegadresse();
+		adresse.setPostnummer(null);
+		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
+				.vegadresse(adresse)
+				.type(POSTADRESSE_INNLAND)
+				.build();
+		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
+		HentPerson hentPerson = createHentePersonBuilder()
+				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
+				.kontaktadresse(singletonList(kontaktadresse))
+				.build();
+
+		var a = assertThrows(RegoppslagIllegalArgumentException.class, () -> mapPDLResponse.mapHentPerson(hentPerson, SERVICE_CODE_TREG002));
+
+		assertEquals("Validering av feltet postnummer feilet pga. manglende data i PDL", a.getMessage());
+	}
 
 	static Stream<Arguments> shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse() {
 		return Stream.of(
