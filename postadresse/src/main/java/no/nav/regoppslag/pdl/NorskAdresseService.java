@@ -31,6 +31,7 @@ public class NorskAdresseService {
 
 	private static final String LANDKODE_NORGE = "NO";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
+	private static final String ERROR_MELDING_PDL = "Validering av feltet %s feilet pga. manglende data i PDL";
 	private static final String CARE_OF = "C/O ";
 	private static final String POSTBOKS = "Postboks ";
 	private static final String POSTNUMMER = "postnummer";
@@ -58,8 +59,8 @@ public class NorskAdresseService {
 
 		PostadresseToBuilder builder = PostadresseTo.builder()
 				.adresseType(POSTADRESSE_INNLAND)
-				.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-				.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING, "poststed")))
+				.postnummer(requireNonNull(vegadresse.getPostnummer(), format(ERROR_MELDING_PDL, POSTNUMMER)))
+				.poststed(requireNonNull(postnummerService.finnPoststed(vegadresse.getPostnummer()), format(ERROR_MELDING_PDL, "poststed")))
 				.landkode(LANDKODE_NORGE);
 
 		if (isBlank(coAdressenavnWithCoPrefix)) {
