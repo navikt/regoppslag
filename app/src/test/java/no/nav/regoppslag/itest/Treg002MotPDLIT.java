@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -83,7 +83,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 	private static final String TYPE_PERSON = "PERSON";
 	private static final String TYPE_ORGANISASJON = "ORGANISASJON";
 
-	@MockBean
+	@MockitoBean
 	private Clock mockClock;
 
 	@BeforeEach

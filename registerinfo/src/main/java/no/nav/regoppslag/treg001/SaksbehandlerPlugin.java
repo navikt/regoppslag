@@ -3,14 +3,12 @@ package no.nav.regoppslag.treg001;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.brevdata.felles.v1.navfelles.NavAnsatt;
 import no.nav.regoppslag.consumer.azure.MsGraphConsumer;
-import no.nav.regoppslag.consumer.ldap.support.SaksbehandlerMapper;
 import no.nav.regoppslag.exceptions.MarshallerException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricherPlugin;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,15 +28,12 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 	public static final String ELEMENT_LOCALNAME = "navAnsatt";
 	public static final String PLUGIN_NAME = "SaksbehandlerPlugin";
 
-	public SaksbehandlerPlugin() {
+	private final MsGraphConsumer msGraphConsumer;
+
+	public SaksbehandlerPlugin(MsGraphConsumer msGraphConsumer) {
 		super(NavAnsatt.class);
+		this.msGraphConsumer = msGraphConsumer;
 	}
-
-	@Autowired
-	private MsGraphConsumer msGraphConsumer;
-
-	@Autowired
-	private SaksbehandlerMapper saksbehandlerMapper;
 
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) {
@@ -53,7 +48,7 @@ public class SaksbehandlerPlugin extends JaxbHelper<NavAnsatt> implements Elemen
 			if (navAnsatt.isBerik()) {
 				validateSaksbehandler(navAnsatt);
 				String saksbehandlerNavn = msGraphConsumer.hentFulltNavn(navAnsatt.getAnsattId());
-				navAnsatt = saksbehandlerMapper.map(saksbehandlerNavn, navAnsatt);
+				navAnsatt.setNavn(saksbehandlerNavn);
 			}
 
 			Document newNode = convertObjectToDocument(navAnsatt);

@@ -1,11 +1,10 @@
 package no.nav.regoppslag.consumer.digdirkrr;
 
-import lombok.Builder;
-
 import java.util.List;
 
-@Builder
-public class PostPersonerRequest {
+public record PostPersonerRequest(List<String> personidenter) {
 
-	public List<String> personidenter;
+	public PostPersonerRequest(String personident) {
+		this(List.of(personident));
+	}
 }

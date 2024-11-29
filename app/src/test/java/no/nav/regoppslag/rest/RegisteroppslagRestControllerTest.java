@@ -38,7 +38,7 @@ public class RegisteroppslagRestControllerTest {
 	@Test
 	public void shouldGetKomplettBrevdata() throws RegOppslagSecurityException {
 		var request = createKompletterBrevdataRequest();
-		var response = createKompletterBrevdataResponse(BREVDATA);
+		var response = createKompletterBrevdataResponse();
 		when(kompletterBrevdataService.hentBrevdataFraRegistre(request)).thenReturn(response);
 
 		KompletterBrevdataResponse actualResponse = registeroppslagRestController.kompletterBrevdata(request);
@@ -74,9 +74,9 @@ public class RegisteroppslagRestControllerTest {
 				.build();
 	}
 
-	private static KompletterBrevdataResponse createKompletterBrevdataResponse(String brevdata) {
+	private static KompletterBrevdataResponse createKompletterBrevdataResponse() {
 		return KompletterBrevdataResponse.builder()
-				.brevdata(brevdata)
+				.brevdata(BREVDATA)
 				.build();
 	}
 

@@ -1,7 +1,6 @@
 package no.nav.regoppslag.treg001.xmlenricher;
 
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import no.nav.regoppslag.treg001.xmlenricher.exceptions.DuplicatedElementSupportException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

@@ -6,7 +6,6 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,12 +19,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCUtil.getCallId;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -41,8 +38,8 @@ public class EregConsumer {
 						RegoppslagProperties regoppslagProperties) {
 		this.eregUrl = regoppslagProperties.getEndpoints().getEreg().getUrl();
 		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(20))
-				.setConnectTimeout(Duration.ofSeconds(5))
+				.readTimeout(Duration.ofSeconds(20))
+				.connectTimeout(Duration.ofSeconds(5))
 				.build();
 	}
 
@@ -55,7 +52,7 @@ public class EregConsumer {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(NAV_CALL_ID, getCallId());
 
-		var uri = UriComponentsBuilder.fromHttpUrl(eregUrl)
+		var uri = UriComponentsBuilder.fromUriString(eregUrl)
 				.path(organisasjonsnummer)
 				.build()
 				.toUri();
@@ -73,12 +70,4 @@ public class EregConsumer {
 		}
 	}
 
-	private String getCallId() {
-		String callId = MDC.get(CALL_ID);
-		if (isBlank(callId)) {
-			return UUID.randomUUID().toString();
-		} else {
-			return callId;
-		}
-	}
 }

@@ -60,7 +60,7 @@ public class LandkodeService {
 		}
 
 		List<CountryCode> countryCodeList = findByName(landnavn);
-		return countryCodeList.get(0).getAlpha2();
+		return countryCodeList.getFirst().getAlpha2();
 	}
 
 	public static String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {

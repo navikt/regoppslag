@@ -647,12 +647,6 @@ public class PDLResponseUtil {
 		return kontaktAdresse;
 	}
 
-	public Kontaktadresse kontaktadresse() {
-		return Kontaktadresse.builder()
-				.type(UTENLANDSK_BYSTED)
-				.build();
-	}
-
 	public static Vegadresse createVegadresse() {
 		return Vegadresse.builder()
 				.matrikkelId(MATRIKKEL_ID)

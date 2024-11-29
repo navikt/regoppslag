@@ -88,7 +88,7 @@ public class AzureTokenConsumer {
 	}
 
 	private void handleError(Throwable error) {
-		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			throw new AzureTokenException(
 					String.format("Klarte ikke hente token fra Azure. Feilet med status=%s, feilmelding=%s, body=%s",
 							response.getStatusCode(),

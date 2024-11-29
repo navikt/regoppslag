@@ -7,7 +7,6 @@ import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,11 +18,9 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.UUID;
 
 import static java.lang.String.format;
-import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
+import static no.nav.regoppslag.util.MDCUtil.getCallId;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -32,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class DigitalKontaktinformasjon {
 
-	static final String HEADER_NAV_PERSONIDENTER = "Nav-Personidenter";
+	private static final String HEADER_NAV_PERSONIDENTER = "Nav-Personidenter";
 	private final RestTemplate restTemplate;
 	private final AzureTokenConsumer azureTokenConsumer;
 	private final Oauth2SecuredEndpoint digdirkrrproxy;
@@ -43,8 +40,8 @@ public class DigitalKontaktinformasjon {
 		this.digdirkrrproxy = regoppslagProperties.getEndpoints().getDigdirkrrproxy();
 		this.azureTokenConsumer = azureTokenConsumer;
 		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(20))
-				.setConnectTimeout(Duration.ofSeconds(5))
+				.readTimeout(Duration.ofSeconds(20))
+				.connectTimeout(Duration.ofSeconds(5))
 				.build();
 	}
 
@@ -60,11 +57,11 @@ public class DigitalKontaktinformasjon {
 		headers.add(HEADER_NAV_PERSONIDENTER, fnrTrimmed);
 
 		try {
-			PostPersonerRequest postPersonRequest = PostPersonerRequest.builder().personidenter(List.of(fnrTrimmed)).build();
+			PostPersonerRequest postPersonRequest = new PostPersonerRequest(fnrTrimmed);
 			HttpEntity<String> request = new HttpEntity(postPersonRequest, headers);
 			DkifResponse response = restTemplate.postForEntity(digdirkrrproxy.getUrl() + "/rest/v1/personer?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
 
-			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.getKontaktinfo().get(fnrTrimmed)) : null;
+			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.kontaktinfo().get(fnrTrimmed)) : null;
 			return isBlank(spraak) ? null : spraak.toUpperCase();
 
 		} catch (HttpClientErrorException e) {
@@ -75,14 +72,14 @@ public class DigitalKontaktinformasjon {
 	}
 
 	private boolean isValidRespons(DkifResponse response, String fnr) {
-		return response != null && response.getKontaktinfo() != null && response.getKontaktinfo().get(fnr) != null;
+		return response != null && response.kontaktinfo() != null && response.kontaktinfo().get(fnr) != null;
 	}
 
 	private String mapSpraak(DkifResponse.DigitalKontaktinfo digitalKontaktinfo) {
 		if (digitalKontaktinfo == null) {
 			return null;
 		}
-		return digitalKontaktinfo.getSpraak();
+		return digitalKontaktinfo.spraak();
 	}
 
 	private HttpHeaders createHeaders() {
@@ -92,9 +89,5 @@ public class DigitalKontaktinformasjon {
 		headers.setBearerAuth(clientCredentialToken);
 		headers.add(NAV_CALL_ID, getCallId());
 		return headers;
-	}
-
-	private String getCallId() {
-		return isBlank(MDC.get(CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(CALL_ID);
 	}
 }

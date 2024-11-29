@@ -83,13 +83,4 @@ public abstract class AbstractIT {
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("azure/token_response_dummy.json")));
 	}
-
-	protected static void stubMsGraphGetUser(String navIdent) {
-		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=givenName,surname")
-				.willReturn(aResponse()
-						.withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("msgraph/msgraph-users.json")));
-	}
-
 }

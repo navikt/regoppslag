@@ -79,10 +79,10 @@ public class KompletterBrevdataService {
 			//Hindre at RegOppslagTechnicalException ikke catcher og ikke logg fordi retryInterceptor logger feilen
 			throw e;
 		} catch (ParserConfigurationException | IOException | TransformerConfigurationException | MissingPluginException e) {
-			log.error("Teknisk feil ved parsing av brevdata: " + e.getMessage(), e);
+			log.error("Teknisk feil ved parsing av brevdata: {}", e.getMessage(), e);
 			throw new RegOppslagTechnicalException(e);
 		} catch (SAXException | XPathExpressionException | TransformerException e) {
-			log.warn("Feil ved parsing av brevdata: " + e.getMessage(), e);
+			log.warn("Feil ved parsing av brevdata: {}", e.getMessage(), e);
 			throw new RegOppslagParsingException("Feil ved parsing av brevdata. " + e.getMessage(), e, BAD_REQUEST);
 		} catch (UkjentAdressePersonErDoedException e) {
 			log.info("TREG001: {}", e.getMessage());
@@ -102,11 +102,11 @@ public class KompletterBrevdataService {
 			log.warn("TREG001: {}", e.getMessage());
 			throw e;
 		} catch (RegOppslagSecurityException e) {
-			log.warn("TREG001 Sikkerhetsfeil: " + e.getMessage());
+			log.warn("TREG001 Sikkerhetsfeil: {}", e.getMessage());
 			throw new RegOppslagSecurityException(format("Sikkerhetsfeil: dokumenttypeId=%s feilmelding=%s", request.getDokumentTypeId(), e
 					.getMessage()), e.getShortDescription());
 		} catch (RegOppslagIngenTilgangException e) {
-			log.warn("TREG001 Ingen tilgang til ressurs: " + e.getMessage());
+			log.warn("TREG001 Ingen tilgang til ressurs: {}", e.getMessage());
 			throw e;
 		}
 	}

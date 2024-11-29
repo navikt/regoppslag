@@ -44,6 +44,7 @@ import static no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys.DOKUMENTTY
 import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
+import static no.nav.regoppslag.util.MDCUtil.getCallId;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
@@ -90,7 +91,7 @@ public class ElementEnricher {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final String consumerId = MDC.get(CONSUMER_ID);
 		final String userId = MDC.get(USER_ID);
-		final String callId = MDC.get(CALL_ID);
+		final String callId = getCallId();
 
 		List<Payload> processingList = new ArrayList<>();
 		Set<String> supportedElementsXpathExpressions = registry.getSupportedElements();
@@ -131,7 +132,7 @@ public class ElementEnricher {
 				);
 
 		if (!unhandledError.isEmpty()) {
-			handleException(unhandledError.get(0));
+			handleException(unhandledError.getFirst());
 		}
 
 		aggregateList.forEach(element -> aggregate(document, element));

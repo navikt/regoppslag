@@ -55,7 +55,7 @@ public class NavOrgenhetPluginTest {
 		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper);
 		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper);
 
-		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet(NAV_ENHET_NAVN));
+		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet());
 		when(norgConsumer.hentEnhetKontaktinformasjon(anyString())).thenReturn(EnhetKontaktinformasjon.builder().build());
 	}
 
@@ -72,7 +72,7 @@ public class NavOrgenhetPluginTest {
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
@@ -91,7 +91,7 @@ public class NavOrgenhetPluginTest {
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke berik"));
@@ -111,7 +111,7 @@ public class NavOrgenhetPluginTest {
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
@@ -130,7 +130,7 @@ public class NavOrgenhetPluginTest {
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgPostadressePlugin.processElement(node, valueMap);
 
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket returadresse"));
@@ -149,7 +149,7 @@ public class NavOrgenhetPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is(NAV_ENHET_NAVN));
 	}
@@ -166,15 +166,15 @@ public class NavOrgenhetPluginTest {
 
 		Node node = findSingleNode(xPathExpression, document);
 		Node processed = norgBesoksadressePlugin.processElement(node, valueMap);
-		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<Postadresse>(Postadresse.class);
+		JaxbHelper<Postadresse> enhetJaxbHelper = new JaxbHelper<>(Postadresse.class);
 		Postadresse postadresse = enhetJaxbHelper.unmarshal(processed);
 		assertThat(postadresse.getEnhetsNavn(), is("Ikke beriket besøksadresse"));
 		assertThat(postadresse.getAdresse().getAdresselinje1(), is("ikkeberiket besøksadresse linje1"));
 	}
 
-	private EnhetNavn createEnhet(String navEnhetNavn) {
+	private EnhetNavn createEnhet() {
 		return EnhetNavn.builder()
-				.navn(navEnhetNavn)
+				.navn(NAV_ENHET_NAVN)
 				.build();
 	}
 }

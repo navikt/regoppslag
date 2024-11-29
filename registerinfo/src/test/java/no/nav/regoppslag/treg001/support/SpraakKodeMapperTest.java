@@ -198,10 +198,7 @@ public class SpraakKodeMapperTest {
 
 	@Test
 	public void spraakIkkesatt() throws IngenGyldigEnumVerdiForSpraakKodeException {
-		Mottaker mottaker = new Person();
-		List<SpraakInfoTo> list = null;
-
-		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(mottaker, null, list);
+		Spraakkode spraakkode = spraakKodeMapper.getSpraakKode(new Person(), null, null);
 
 		assertThat(spraakkode, is(NB));
 	}

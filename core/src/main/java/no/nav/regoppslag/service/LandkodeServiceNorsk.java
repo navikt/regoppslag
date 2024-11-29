@@ -41,7 +41,7 @@ public class LandkodeServiceNorsk {
 
 	public String finnLand(String landKode) {
 		if (landkodeTable.get(landKode) == null) {
-			log.warn("Finner ikke landsnavn for landskode: " + landKode + ", sjekk om ny landkoderISO2.txt må lastes ned.");
+			log.warn("Finner ikke landsnavn for landskode: {}, sjekk om ny landkoderISO2.txt må lastes ned.", landKode);
 			return null;
 		} else {
 			return landkodeTable.get(landKode);

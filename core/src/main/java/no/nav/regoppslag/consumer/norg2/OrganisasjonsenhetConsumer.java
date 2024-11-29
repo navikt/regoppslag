@@ -59,7 +59,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	private void handleError(Throwable error) {
-		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			throw new Norg2FunctionalException(format("Kall mot norg2 feilet funksjonelt med status=%s, feilmelding=%s", response.getStatusCode(), response.getMessage()), error, response.getStatusCode());
 		} else {
 			throw new Norg2TechnicalException(format("Kall mot norg2 feilet feilet teknisk med feilmelding=%s", error.getMessage()), error);

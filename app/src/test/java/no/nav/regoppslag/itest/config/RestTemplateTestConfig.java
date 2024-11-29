@@ -19,8 +19,8 @@ public class RestTemplateTestConfig {
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setReadTimeout(TIMEOUT)
-				.setConnectTimeout(TIMEOUT)
+				.readTimeout(TIMEOUT)
+				.connectTimeout(TIMEOUT)
 				.build();
 	}
 	

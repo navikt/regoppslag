@@ -3,13 +3,11 @@ package no.nav.regoppslag.consumer.pdl.to;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Data
 @Builder
@@ -47,8 +45,7 @@ public class KontaktinformasjonForDoedsbo {
 
 		public String getFulltnavn() {
 			return Stream.of(getFornavn(), getMellomnavn(), getEtternavn())
-					.map(navn -> isBlank(navn) ? null : navn)
-					.filter(Objects::nonNull)
+					.filter(StringUtils::isNotBlank)
 					.collect(Collectors.joining(" "))
 					.trim();
 		}

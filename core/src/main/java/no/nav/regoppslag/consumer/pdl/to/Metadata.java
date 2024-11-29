@@ -32,6 +32,6 @@ public class Metadata {
 		}
 		return endringer.stream()
 				.sorted(comparing(Endring::getRegistrert).reversed()).toList()
-				.get(0).getRegistrert();
+				.getFirst().getRegistrert();
 	}
 }
