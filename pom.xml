@@ -26,21 +26,21 @@
 		<java.version>21</java.version>
 		<argLine>-Dfile.encoding=UTF8</argLine>
 
-		<resilience4j.version>2.2.0</resilience4j.version>
+		<resilience4j.version>2.3.0</resilience4j.version>
 		<rxjava.version>3.1.9</rxjava.version>
-		<microsoft-graph.version>6.22.0</microsoft-graph.version>
-		<azure-identity.version>1.14.2</azure-identity.version>
-		<springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
+		<microsoft-graph.version>6.25.1</microsoft-graph.version>
+		<azure-identity.version>1.15.0</azure-identity.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.8.3</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-		<token-support.version>5.0.13</token-support.version>
+		<token-support.version>5.0.14</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
-		<dokmet-api.version>2024.11.18-12.31-2a6bf20</dokmet-api.version>
-		<brevdata-felles.version>29-af3d66d</brevdata-felles.version>
+		<dokmet-api.version>2025.01.03-14.56-fd64327</dokmet-api.version>
+		<brevdata-felles.version>33-f7132fc</brevdata-felles.version>
 
 		<!-- Test -->
-		<spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
