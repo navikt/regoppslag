@@ -70,11 +70,11 @@ spec:
   accessPolicy:
     inbound:
       rules:
-    {{#each AZURE_IAC_RULES}}
+      {{#each ACCESS_POLICY_INBOUND_RULES}}
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-    {{/each}}
+      {{/each}}
   observability:
     autoInstrumentation:
       enabled: true
