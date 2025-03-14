@@ -25,6 +25,8 @@ spec:
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment.name={{ ENVIRONMENT }}"
   image: {{ image }}
   ingresses:
         {{#each INGRESSES}}
@@ -61,7 +63,6 @@ spec:
     application:
       enabled: true
       allowAllUsers: true
-{{#if AZURE_IAC_RULES}}
       claims:
         extra:
           - "NAVident"
@@ -69,9 +70,14 @@ spec:
   accessPolicy:
     inbound:
       rules:
-      {{#each AZURE_IAC_RULES}}
+    {{#each AZURE_IAC_RULES}}
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-      {{/each}}
-{{/if}}
+    {{/each}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "elastic-apm"
