@@ -9,6 +9,7 @@
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.intern.nav.no",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE": "api://prod-gcp.team-rocket.digdir-krr-proxy/.default",
 	"APP_NAME": "regoppslag",
+	"ENVIRONMENT": "p",
 	"MIN_REPLICAS": 2,
 	"MAX_REPLICAS": 4,
 	"INGRESSES": [
