@@ -92,6 +92,11 @@
 			"app": "brev-administrasjon",
 			"namespace": "isa",
 			"cluster": "prod-gcp"
+		},
+		{
+			"app": "pensjon-pen",
+			"namespace": "pensjondeployer",
+			"cluster": "prod-fss"
 		}
 	]
 }
