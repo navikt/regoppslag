@@ -20,6 +20,11 @@
 			"app": "dokprod-q5",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "pensjon-pen-q5",
+			"namespace": "pensjon-q5",
+			"cluster": "dev-fss"
 		}
 	]
 }
