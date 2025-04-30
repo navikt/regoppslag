@@ -54,7 +54,7 @@ spec:
     limits:
       memory: 1024Mi
     requests:
-      cpu: 250m
+      cpu: 20m
       memory: 512Mi
   vault:
     enabled: true
