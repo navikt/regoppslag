@@ -19,7 +19,6 @@
 			</throwableConverter>
 		</encoder>
 	</appender>
-	<appender name="noop" class="ch.qos.logback.core.helpers.NOPAppender"/>
 
 	<root level="WARN">
 		<appender-ref ref="stdout_json"/>
