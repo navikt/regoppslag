@@ -46,7 +46,7 @@ public class DigitalKontaktinformasjon {
 	}
 
 	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public String hentSpraak(final String personidentifikator, final boolean inkluderSikkerDigitalPost) throws DigitalKontaktinformasjonFunctionalException {
+	public String hentSpraak(final String personidentifikator) throws DigitalKontaktinformasjonFunctionalException {
 		HttpHeaders headers = createHeaders();
 
 		if (isBlank(personidentifikator)) {
@@ -59,7 +59,7 @@ public class DigitalKontaktinformasjon {
 		try {
 			PostPersonerRequest postPersonRequest = new PostPersonerRequest(fnrTrimmed);
 			HttpEntity<String> request = new HttpEntity(postPersonRequest, headers);
-			DkifResponse response = restTemplate.postForEntity(digdirkrrproxy.getUrl() + "/rest/v1/personer?inkluderSikkerDigitalPost=" + inkluderSikkerDigitalPost, request, DkifResponse.class).getBody();
+			DkifResponse response = restTemplate.postForEntity(digdirkrrproxy.getUrl() + "/rest/v1/personer?inkluderSikkerDigitalPost=false", request, DkifResponse.class).getBody();
 
 			String spraak = isValidRespons(response, fnrTrimmed) ? mapSpraak(response.kontaktinfo().get(fnrTrimmed)) : null;
 			return isBlank(spraak) ? null : spraak.toUpperCase();

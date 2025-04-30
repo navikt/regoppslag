@@ -77,7 +77,7 @@ public class AzureTokenConsumer {
 				.body(BodyInserters.fromFormData(formData))
 				.retrieve()
 				.bodyToMono(String.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 
 		try {
@@ -87,7 +87,7 @@ public class AzureTokenConsumer {
 		}
 	}
 
-	private void handleError(Throwable error) {
+	private Throwable mapError(Throwable error) {
 		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			throw new AzureTokenException(
 					String.format("Klarte ikke hente token fra Azure. Feilet med status=%s, feilmelding=%s, body=%s",

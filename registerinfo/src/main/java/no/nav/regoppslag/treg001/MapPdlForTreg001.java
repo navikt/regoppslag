@@ -74,7 +74,7 @@ public class MapPdlForTreg001 {
 				mottaker.setKortNavn(isBlank(mottakerFraPdl.getKortNavn()) ? mottakerFraPdl.getNavn() : mottakerFraPdl.getKortNavn());
 				mottaker.setNavn(mottakerFraPdl.getNavn());
 				mottaker.setMottakeradresse(mottakerFraPdl.getMottakeradresse());
-				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId(), false));
+				Spraakkode spraakkode = getSpraakkode(spraakKodeMapper, mottaker, dokumenttypeId, digitalKontaktinformasjon.hentSpraak(mottaker.getId()));
 				mottaker.setSpraakkode(spraakkode);
 			} else {
 				Organisasjon organisasjon = eregConsumer.hentOrganisasjon(mottaker.getId());

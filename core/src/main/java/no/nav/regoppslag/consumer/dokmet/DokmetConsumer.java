@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
@@ -47,7 +46,7 @@ public class DokmetConsumer {
 				.retrieve()
 				.bodyToMono(DokumenttypeInfoTo.class)
 				.map(DokmetConsumer::getSpraakInfos)
-				.doOnError(createErrorHandler(dokumenttypeId))
+				.onErrorMap(error -> mapError(error, dokumenttypeId))
 				.block();
 	}
 
@@ -59,22 +58,22 @@ public class DokmetConsumer {
 		}
 	}
 
-	private Consumer<Throwable> createErrorHandler(String dokumenttypeId) {
-		return error -> {
-			if (error instanceof WebClientResponseException responseException) {
-				if (responseException.getStatusCode() == NOT_FOUND) {
-					//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
-					throw new RegOppslagTechnicalException(
-							format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ",
-									responseException.getStatusCode(), dokumenttypeId),
-							responseException, false);
-				} else {
-					throw new RegOppslagTechnicalException(
-							format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s",
-									responseException.getStatusCode(), dokumenttypeId, responseException.getMessage()),
-							responseException);
-				}
+	private Throwable mapError(Throwable error, String dokumenttypeId) {
+		if (error instanceof WebClientResponseException responseException) {
+			if (responseException.getStatusCode() == NOT_FOUND) {
+				//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
+				return new RegOppslagTechnicalException(
+						format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ",
+								responseException.getStatusCode(), dokumenttypeId),
+						responseException, false);
+			} else {
+				return new RegOppslagTechnicalException(
+						format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s",
+								responseException.getStatusCode(), dokumenttypeId, responseException.getMessage()),
+						responseException);
 			}
-		};
+		}
+		return new RegOppslagTechnicalException(format("TKAT020 feilet teknisk for dokumenttypeId=%s. Feilmelding=%s",
+				dokumenttypeId, error.getMessage()), error);
 	}
 }

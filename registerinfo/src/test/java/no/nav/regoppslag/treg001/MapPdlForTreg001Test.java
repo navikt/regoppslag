@@ -50,7 +50,6 @@ import static no.nav.regoppslag.util.TestDataUtil.HUSNR;
 import static no.nav.regoppslag.util.TestDataUtil.POSTNR;
 import static no.nav.regoppslag.util.TestDataUtil.settPostAdresse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -88,7 +87,7 @@ class MapPdlForTreg001Test {
 	@Test
 	public void shouldMapTreg001MottakerAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonWithBostedsadresse());
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("NB");
 		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		NorskPostadresse adresse = (NorskPostadresse) mottaker.getMottakeradresse();
@@ -105,7 +104,7 @@ class MapPdlForTreg001Test {
 	@Test
 	public void shouldMapUtenlandskAdresseFraPdl() {
 		when(pdlGraphQLConsumer.hentPerson(PERSON_IDENT)).thenReturn(createPdlHentPersonUtenlandskAdresse());
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("EN");
 		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(CreateStubs.createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 		Mottaker mottaker = pdlForTreg001.getMottakerFraPdl(createPersonMottaker(), DOKUMENTTYPEID);
 		UtenlandskPostadresse adresse = (UtenlandskPostadresse) mottaker.getMottakeradresse();
