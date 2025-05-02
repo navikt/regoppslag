@@ -6,7 +6,7 @@
 	"REGOPPSLAG_ENDPOINTS_PDL_URL": "http://pdl-api.pdl.svc.nais.local/graphql",
 	"REGOPPSLAG_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",
 	"REGOPPSLAG_ENDPOINTS_DOKMET_URL": "http://dokmet.teamdokumenthandtering.svc.nais.local/rest/dokumenttypeinfo",
-	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "http://digdir-krr-proxy.team-rocket.svc.nais.local",
+	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_URL": "https://digdir-krr-proxy.intern.dev.nav.no",
 	"REGOPPSLAG_ENDPOINTS_DIGDIRKRRPROXY_SCOPE": "api://dev-gcp.team-rocket.digdir-krr-proxy/.default",
 	"APP_NAME": "regoppslag",
 	"ENVIRONMENT": "q2",
