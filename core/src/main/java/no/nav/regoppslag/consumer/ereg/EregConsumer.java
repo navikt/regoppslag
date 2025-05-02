@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Service
 public class EregConsumer {
 
-	private static final Pattern ORGNUMMER_PATTERN = Pattern.compile("^\\d{9}$");
+	private static final Pattern ORGNUMMER_PATTERN = Pattern.compile("^[0-9]{9}$");
 	private final RestTemplate restTemplate;
 	private final String eregUrl;
 

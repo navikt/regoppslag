@@ -42,7 +42,7 @@ public class OrganisasjonsenhetConsumer {
 				.uri("/{enhetNr}", enhetNr)
 				.retrieve()
 				.bodyToMono(EnhetNavn.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 	}
 
@@ -54,15 +54,17 @@ public class OrganisasjonsenhetConsumer {
 				.uri("/{enhetNr}/kontaktinformasjon", enhetNr)
 				.retrieve()
 				.bodyToMono(EnhetKontaktinformasjon.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 	}
 
-	private void handleError(Throwable error) {
+	private Throwable mapError(Throwable error) {
 		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
-			throw new Norg2FunctionalException(format("Kall mot norg2 feilet funksjonelt med status=%s, feilmelding=%s", response.getStatusCode(), response.getMessage()), error, response.getStatusCode());
+			return new Norg2FunctionalException(format("Kall mot norg2 feilet funksjonelt med status=%s, feilmelding=%s",
+					response.getStatusCode(), response.getMessage()), error, response.getStatusCode());
 		} else {
-			throw new Norg2TechnicalException(format("Kall mot norg2 feilet feilet teknisk med feilmelding=%s", error.getMessage()), error);
+			return new Norg2TechnicalException(format("Kall mot norg2 feilet feilet teknisk med feilmelding=%s",
+					error.getMessage()), error);
 		}
 	}
 }

@@ -61,7 +61,6 @@ import static no.nav.regoppslag.util.TestUtil.findSingleNode;
 import static no.nav.regoppslag.util.TestUtil.loadDocument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -147,7 +146,7 @@ public class MottakerPluginTest {
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("EN");
 		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN", "NN")));
 
 		File xmlFile = new File(BREVDATA1);
@@ -171,7 +170,7 @@ public class MottakerPluginTest {
 		HentPerson hentPerson = createPdlHentPerson(createPersonNavn());
 
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(hentPerson);
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("EN");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("EN");
 		when(dokmetConsumer.hentDokumenttypeInfoSpraak(anyString())).thenReturn(createTkatResponse(Arrays.asList(SPRAAK_NB, "EN")));
 
 		File xmlFile = new File(BREVDATA_MOTTAKER_SPRAAKKODE_EN);
@@ -215,7 +214,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldMapMottakerPluginPersonFraPdl() throws Exception {
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(createPdlHentPersonWithBostedsadresse());
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("NB");
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
@@ -241,7 +240,7 @@ public class MottakerPluginTest {
 	@Test
 	public void shouldMapUtenlandskAdresseFraPdl() throws Exception {
 		when(pdlGraphQLConsumer.hentPerson(anyString())).thenReturn(createPdlHentPersonUtenlandskAdresse());
-		when(digitalKontaktinformasjon.hentSpraak(anyString(), anyBoolean())).thenReturn("NB");
+		when(digitalKontaktinformasjon.hentSpraak(anyString())).thenReturn("NB");
 		File xmlFile = new File(BREVDATA1);
 		Document document = loadDocument(xmlFile);
 
