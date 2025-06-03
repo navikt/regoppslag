@@ -8,9 +8,13 @@ on:
 jobs:
   automerge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: read
     steps:
       - name: Automerge Dependabot PRs
-        uses: navikt/automerge-dependabot@v1
+        uses: navikt/automerge-dependabot@main
         with:
           token: ${{ github.token }}
-          minimum-age-of-pr: '5'
+          minimum-age-of-pr: '0'
