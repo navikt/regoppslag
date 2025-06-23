@@ -77,7 +77,7 @@ public class PostadresseService {
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
-			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO. Navn:{}, adresse{}",
+			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
 					pdlMottakerInfo.getNavn(),
 					pdlMottakerInfo.getPostadresse());
 		}
