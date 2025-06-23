@@ -75,10 +75,10 @@ spec:
           namespace: {{namespace}}
           cluster: {{cluster}}
     {{/each}}
-  outbound:
-    rules:
-      - application: logging
-        namespace: nais-system
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
   observability:
     autoInstrumentation:
       enabled: true
