@@ -12,6 +12,8 @@ import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.consumer.pdl.to.PostadresseTo;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.service.PostnummerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -39,6 +41,7 @@ public class DoedsboAdresseService {
 	private static final String ON_BEHALF_OF = "v/ ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String POSTNUMMER = "postnummer";
+	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	private final PostnummerService postnummerService;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
@@ -75,12 +78,15 @@ public class DoedsboAdresseService {
 
 		if (nonNull(kontaktinformasjonForDoedsbo.getAdvokatSomKontakt())) {
 			AdvokatSomKontakt advokatSomKontakt = kontaktinformasjonForDoedsbo.getAdvokatSomKontakt();
+			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO med advokat som kontakt");
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(advokatSomKontakt.getPersonnavn(), advokatSomKontakt.getOrganisasjonsnavn()));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getPersonSomKontakt())) {
 			PersonSomKontakt personSomKontakt = kontaktinformasjonForDoedsbo.getPersonSomKontakt();
+			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO med person som kontakt");
 			return mapMidlertidigPostboksadresse(kontaktAdresse, getPersonSomKontaktNavn(personSomKontakt));
 		} else if (nonNull(kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt()) && nonNull(kontaktAdresse)) {
 			OrganisasjonSomKontakt organisasjonSomKontakt = kontaktinformasjonForDoedsbo.getOrganisasjonSomKontakt();
+			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO med organisasjon som kontakt");
 			return mapOrganisasjonSomKontaktAdresse(kontaktAdresse, getAdvokatOrOrgKontaktNavn(organisasjonSomKontakt.getKontaktperson(), organisasjonSomKontakt.getOrganisasjonsnavn()));
 		}
 		return null;

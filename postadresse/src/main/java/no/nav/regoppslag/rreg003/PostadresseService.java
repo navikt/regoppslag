@@ -6,6 +6,7 @@ import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -16,10 +17,13 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
 import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateInput;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
@@ -34,6 +38,7 @@ public class PostadresseService {
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
 	private final OrganisasjonEregMapper organisasjonEregMapper;
+	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
 
@@ -71,6 +76,11 @@ public class PostadresseService {
 		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
+		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
+			secureLog.info("noen har hentet KONTAKTINFORMASJONFORDØDSBO. Navn:{}, adresse{}",
+					pdlMottakerInfo.getNavn(),
+					pdlMottakerInfo.getPostadresse());
+		}
 
 		if (validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)) {
 			return null;
