@@ -67,7 +67,7 @@ public class HentMottakerOgAdresseService {
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002);
 		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
-			secureLog.info("Hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
+			secureLog.info("TREG002: Hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
 					pdlMottakerInfo.getNavn(),
 					pdlMottakerInfo.getPostadresse());
 		}
