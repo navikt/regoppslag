@@ -16,10 +16,13 @@ import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.pdl.MapPDLResponse;
 import no.nav.regoppslag.rreg003.AdresseMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 import static no.nav.dok.brevdata.felles.v1.simpletypes.AktoerType.PERSON;
+import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
 import static no.nav.regoppslag.treg002.Treg002AdresseMapper.mapAdresseTilTreg002Adresse;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_TREG002;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -33,6 +36,7 @@ public class HentMottakerOgAdresseService {
 	private final MapPDLResponse mapPDLResponse;
 	private final EregConsumer eregConsumer;
 	private final OrganisasjonEregMapper organisasjonEregMapper;
+	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	public static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
 
@@ -62,6 +66,11 @@ public class HentMottakerOgAdresseService {
 		var person = pdlGraphQLConsumer.hentPerson(request.getIdentifikator());
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(person, SERVICE_CODE_TREG002);
+		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
+			secureLog.info("TREG002: Hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
+					pdlMottakerInfo.getNavn(),
+					pdlMottakerInfo.getPostadresse());
+		}
 
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())
