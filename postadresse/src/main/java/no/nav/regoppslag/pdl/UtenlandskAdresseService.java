@@ -54,10 +54,18 @@ public class UtenlandskAdresseService {
 	static PostadresseToBuilder mapUtenlandskAdresse(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		String coAdressenavnWithCoPrefix = prependWithCareOfIfMissing(coAdressenavn);
 
+		String adresseLinje1 = mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavnWithCoPrefix);
+		String adresseLinje2 = mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavnWithCoPrefix);
+
+		if (isBlank(adresseLinje1) && isNotBlank(adresseLinje2)) {
+			adresseLinje1 = adresseLinje2;
+			adresseLinje2 = null;
+		}
+
 		return PostadresseTo.builder()
 				.adresseType(POSTADRESSE_UTLAND)
-				.adresselinje1(mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavnWithCoPrefix))
-				.adresselinje2(mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavnWithCoPrefix))
+				.adresselinje1(adresseLinje1)
+				.adresselinje2(adresseLinje2)
 				.adresselinje3(mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavnWithCoPrefix))
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}

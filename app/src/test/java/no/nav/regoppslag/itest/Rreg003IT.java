@@ -363,6 +363,30 @@ public class Rreg003IT extends AbstractIT {
 		assertThat(actualAdresse.getLand()).isEqualTo("STORBRITANNIA");
 	}
 
+
+	/*
+	 * Dersom den prioriterte adressen fra PDL ikke innholder grunnlaget for adrsselinje1,
+	 * skal adresselinje2 flyttes til adresselinje1.
+	 */
+	@Test
+	void shouldGetUtenlandskAdresseUtenGrunnlagForAdresselinje1() {
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_bostedsadressse_uten_adressenavnnummer.json");
+		PostadresseResponse reponse = hentPostadresse();
+
+		assertThat(reponse.getNavn()).isEqualTo("BJARNE BETJENT");
+
+		Adresse actualAdresse = reponse.getAdresse();
+		assertThat(actualAdresse.getType()).isEqualTo(UTENLANDSKPOSTADRESSE);
+		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(BOSTEDSADRESSE);
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("82-550 KLECZEWO");
+		assertThat(actualAdresse.getAdresselinje2()).isNull();
+		assertThat(actualAdresse.getAdresselinje3()).isNull();
+		assertThat(actualAdresse.getPostnummer()).isNull();
+		assertThat(actualAdresse.getPoststed()).isNull();
+		assertThat(actualAdresse.getLandkode()).isEqualTo("PL");
+		assertThat(actualAdresse.getLand()).isEqualTo("POLEN");
+	}
+
 	@Test
 	void shouldGetUtenlandskAdresseMedUsaLandkode() {
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_usa_landkode.json");

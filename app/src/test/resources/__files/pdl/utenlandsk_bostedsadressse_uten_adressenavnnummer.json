@@ -1,0 +1,105 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BJARNE BETJENT"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2023-09-18T09:36:01",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "KLECZEWO 7/3",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "82-550",
+            "bySted": "PRABUTY",
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2023-09-18T09:36:01",
+            "gyldighetstidspunkt": "2023-09-18T09:36:01",
+            "opphoerstidspunkt": null,
+            "kilde": "skatteetaten",
+            "aarsak": "Tildele d-nummer",
+            "sekvens": null
+          },
+          "metadata": {
+            "opplysningsId": "3f122e62-ebb0-4fa7-b449-000000000000",
+            "master": "FREG",
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "27068916459",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": "2025-03-21T00:00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": null,
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "82-550",
+            "bySted": "KLECZEWO",
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "3f122e62-ebb0-4fa7-b449-000000000000",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2025-03-21T06:35:54",
+                "registrertAv": "eux-adresse-oppdatering",
+                "systemkilde": "eux-adresse-oppdatering",
+                "kilde": "Social Insurance Institution Branch Office in Gdansk Allowances Section (Polen)",
+                "hendelseId": "3f122e62-ebb0-4fa7-b449-000000000000"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}
