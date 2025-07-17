@@ -11,11 +11,15 @@ import java.util.Optional;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
 import static no.nav.regoppslag.util.PDLResponseUtil.BYGNING_ETASJE_LEILIGHET_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.BYSTED_BVH;
+import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_POLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_USA;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_BVH;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_BYSTED;
+import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTKODE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -52,6 +56,27 @@ class UtenlandskAdresseServiceTest {
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
 		assertEquals(KONTAKTADRESSE, response.getAdressekilde());
+	}
+
+	@Test
+	void shouldMoveAdresselinje2ToAdresselinje1IfAdresselinje1IsBlank() {
+		UtenlandskAdresse adresse = UtenlandskAdresse.builder()
+				.adressenavnNummer(null)
+				.bygningEtasjeLeilighet(null)
+				.postboksNummerNavn(null)
+				.postkode(UTENLANDSK_POSTKODE)
+				.bySted(UTENLANDSK_BYSTED)
+				.regionDistriktOmraade("")
+				.landkode(LANDKODE_POLAND)
+				.build();
+
+		PostadresseTo mottakerInfo = mapUtenlandskAdresse(adresse, null).build();
+
+		assertThat(mottakerInfo).isNotNull();
+
+		assertThat(mottakerInfo.getAdresselinje1()).isEqualTo(UTENLANDSK_POSTKODE + " " + UTENLANDSK_BYSTED);
+		assertThat(mottakerInfo.getAdresselinje2()).isNull();
+		assertThat(mottakerInfo.getAdresselinje3()).isNull();
 	}
 
 }
