@@ -37,7 +37,7 @@
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>2025.06.30-07.30-22496f8</dokmet-api.version>
-		<brevdata-felles.version>33-f7132fc</brevdata-felles.version>
+		<brevdata-felles.version>41-d282678</brevdata-felles.version>
 
 		<!-- Test -->
 		<spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
