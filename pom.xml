@@ -36,7 +36,7 @@
 		<token-support.version>5.0.25</token-support.version>
 
 		<!-- Interne NAV-avhengigheter -->
-		<dokmet-api.version>2025.01.03-14.56-fd64327</dokmet-api.version>
+		<dokmet-api.version>2025.06.30-07.30-22496f8</dokmet-api.version>
 		<brevdata-felles.version>33-f7132fc</brevdata-felles.version>
 
 		<!-- Test -->
