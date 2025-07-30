@@ -12,9 +12,6 @@ Mer informasjon om hvordan appen fungerer finner du på [Confluence-siden for re
 Distribusjon av tjenesten er gjort av dok-workflows (GHA):
 [Reusable dok-workflows repo](https://github.com/navikt/dok-workflows)
 
-## Kjøre prosjektet lokalt
-For å kjøre opp applikasjonen lokal, bruk profile `nais` og systemvariabler hentet fra vault: [System variabler](https://vault.adeo.no/ui/vault/secrets/secret/list/dokument/regoppslag/) 
-
 ## Cache
 Denne applikasjonen bruker Redis cache som er avhengig av en ekstern cache server som den kan koble seg til. 
 Når applikasjonen kjøres lokalt vil det istedenfor settes opp cache som kjører lokalt på applikasjonen. Konfigurasjon av denne cachen ligger i `LokalCacheConfig` klassen og vil bare kjøres når Activeprofiles settes `local`.
