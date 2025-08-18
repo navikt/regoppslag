@@ -29,6 +29,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "dokdistfordeling",
+			"namespace": "teamdokumenthandtering",
+			"cluster": "prod-fss"
+		},
+		{
 			"app": "salesforce",
 			"namespace": "teamcrm",
 			"cluster": "prod-external"
