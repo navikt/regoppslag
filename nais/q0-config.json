@@ -13,7 +13,8 @@
 	"MIN_REPLICAS": 1,
 	"MAX_REPLICAS": 2,
 	"INGRESSES": [
-		"https://regoppslag-q0.dev.intern.nav.no"
+		"https://regoppslag-q0.dev.intern.nav.no",
+		"https://regoppslag-q0.intern.dev.nav.no"
 	],
 	"AZURE_IAC_RULES": [
 		{
