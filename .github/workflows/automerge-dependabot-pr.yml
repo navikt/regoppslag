@@ -1,0 +1,16 @@
+name: Automerge Dependabot PRs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * MON-FRI'  # Kjør hver arbeidsdag kl 07:00 UTC
+
+jobs:
+  automerge:
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: read
+      id-token: write
+    uses: navikt/dok-workflows/.github/workflows/automerge-dependabot-pr.yml@main
+    secrets: inherit
