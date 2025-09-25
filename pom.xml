@@ -28,7 +28,7 @@
 
 		<resilience4j.version>2.3.0</resilience4j.version>
 		<rxjava.version>3.1.11</rxjava.version>
-		<microsoft-graph.version>6.52.0</microsoft-graph.version>
+		<microsoft-graph.version>6.53.0</microsoft-graph.version>
 		<azure-identity.version>1.18.0</azure-identity.version>
 		<springdoc-openapi-starter-webmvc-ui.version>2.8.13</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
