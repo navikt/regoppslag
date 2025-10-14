@@ -108,6 +108,11 @@
 			"app": "pensjon-pen-q2",
 			"namespace": "pensjon-q2",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "brev",
+			"namespace": "aap",
+			"cluster": "dev-gcp"
 		}
 	]
 }

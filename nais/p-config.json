@@ -102,6 +102,11 @@
 			"app": "pensjon-pen",
 			"namespace": "pensjondeployer",
 			"cluster": "prod-fss"
+		},
+		{
+			"app": "brev",
+			"namespace": "aap",
+			"cluster": "prod-gcp"
 		}
 	]
 }
