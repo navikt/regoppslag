@@ -10,4 +10,6 @@ COPY --from=builder --chown=1069:1069 /build/extracted/dependencies/ ./
 COPY --from=builder --chown=1069:1069 /build/extracted/application/ ./
 
 ENV TZ="Europe/Oslo"
-CMD ["-Dspring.profiles.active=nais", "-XX:MaxRAMPercentage=75", "--add-opens", "java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED", "-server", "-cp", ".", "org.springframework.boot.loader.launch.JarLauncher"]
+CMD ["-Dspring.profiles.active=nais", "-XX:MaxRAMPercentage=75", \
+        "--add-opens", "java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED", \
+        "-server", "-cp", ".", "org.springframework.boot.loader.launch.JarLauncher"]
