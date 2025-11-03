@@ -7,6 +7,13 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
+    - name: JAVA_TRUSTSTORE_OPTIONS
+      value: "-Djavax.net.ssl.trustStore=$(NAV_TRUSTSTORE_PATH)
+              -Djavax.net.ssl.trustStorePassword=$(NAV_TRUSTSTORE_PASSWORD)"
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MaxRAMPercentage=75
+              --add-opens java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED
+              $(JAVA_PROXY_OPTIONS) $(JAVA_TRUSTSTORE_OPTIONS)"
     - name: REGOPPSLAG_ENDPOINTS_NORG2_URL
       value: {{ REGOPPSLAG_ENDPOINTS_NORG2_URL }}
     - name: REGOPPSLAG_ENDPOINTS_EREG_URL
