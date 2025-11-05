@@ -38,7 +38,7 @@ public class DoedsboAdresseService {
 	private static final String ALPHA2_NORGE_LANDKODE = "NO";
 	private static final String ALPHA3_NORGE_LANDKODE = "NOR";
 	private static final String ERROR_MELDING = "Feltet %s kan ikke være null eller tomt";
-	private static final String ON_BEHALF_OF = "v/ ";
+	private static final String CARE_OF = "C/O ";
 	private static final String MOTTAKER_DOED = "Person er død og har ingen registrerte kontaktsopplysninger for dødsbo";
 	private static final String POSTNUMMER = "postnummer";
 	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
@@ -54,7 +54,7 @@ public class DoedsboAdresseService {
 	PdlMottakerInfo mapFoerDoedsbo(HentPerson hentPerson) {
 		return PdlMottakerInfo.builder()
 				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
-				.navn(hentPerson.getFulltnavn())
+				.navn(hentPerson.getFulltnavn() + " DOEDSBO")
 				.kortNavn(hentPerson.getForkortetNavn())
 				.doedsdato(hentPerson.getDoedsdato().orElse(null))
 				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson)))
@@ -98,7 +98,7 @@ public class DoedsboAdresseService {
 			return PostadresseTo.builder()
 					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : ON_BEHALF_OF + fulltnavn)
+					.adresselinje1(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje1()) : CARE_OF + fulltnavn)
 					.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
 					.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
@@ -119,7 +119,7 @@ public class DoedsboAdresseService {
 			return PostadresseTo.builder()
 					.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 					.adresseType(POSTADRESSE_INNLAND)
-					.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
+					.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : CARE_OF + navn)
 					.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
 					.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
 					.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
@@ -139,7 +139,7 @@ public class DoedsboAdresseService {
 		return PostadresseTo.builder()
 				.adressekilde(KONTAKTINFORMASJONFORDØDSBO)
 				.adresseType(POSTADRESSE_UTLAND)
-				.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : ON_BEHALF_OF + navn)
+				.adresselinje1(isBlank(navn) ? adresse.getAdresselinje1() : CARE_OF + navn)
 				.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : concatenateAdresse(adresse.getAdresselinje1(), adresse.getAdresselinje2()))
 				.adresselinje3(adresse.getPostnummer() + " " + adresse.getPoststedsnavn())
 				.landkode(getAlpha2Landkode(adresse.getLandkode()))
