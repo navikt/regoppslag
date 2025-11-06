@@ -54,7 +54,7 @@ public class DoedsboAdresseService {
 	PdlMottakerInfo mapFoerDoedsbo(HentPerson hentPerson) {
 		return PdlMottakerInfo.builder()
 				.identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
-				.navn(hentPerson.getFulltnavn() + " DOEDSBO")
+				.navn(hentPerson.getFulltnavn() + " DØDSBO")
 				.kortNavn(hentPerson.getForkortetNavn())
 				.doedsdato(hentPerson.getDoedsdato().orElse(null))
 				.postadresse(mapKontaktinformasjonForDoedsbo(getKontaktForDoedsbo(hentPerson)))
