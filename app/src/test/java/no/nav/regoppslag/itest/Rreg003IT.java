@@ -450,7 +450,7 @@ public class Rreg003IT extends AbstractIT {
 
 		PostadresseResponse response = hentPostadresse();
 
-		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl DOEDSBO");
+		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl DØDSBO");
 
 		Adresse actualAdresse = response.getAdresse();
 		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
@@ -469,7 +469,7 @@ public class Rreg003IT extends AbstractIT {
 
 		PostadresseResponse response = hentPostadresse();
 
-		assertThat(response.getNavn()).isEqualTo("GUL MÅPENDE KAKE DOEDSBO");
+		assertThat(response.getNavn()).isEqualTo("GUL MÅPENDE KAKE DØDSBO");
 
 		Adresse actualAdresse = response.getAdresse();
 		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
