@@ -450,11 +450,11 @@ public class Rreg003IT extends AbstractIT {
 
 		PostadresseResponse response = hentPostadresse();
 
-		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl");
+		assertThat(response.getNavn()).isEqualTo("TORIA AB Pdl DØDSBO");
 
 		Adresse actualAdresse = response.getAdresse();
 		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
-		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("v/ TORIA AB Pdl");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O TORIA AB Pdl");
 		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Tysklandsveien 89");
 		assertThat(actualAdresse.getAdresselinje3()).isEqualTo("12345 Berlin");
 		assertThat(actualAdresse.getPostnummer()).isNull();
@@ -469,11 +469,11 @@ public class Rreg003IT extends AbstractIT {
 
 		PostadresseResponse response = hentPostadresse();
 
-		assertThat(response.getNavn()).isEqualTo("GUL MÅPENDE KAKE");
+		assertThat(response.getNavn()).isEqualTo("GUL MÅPENDE KAKE DØDSBO");
 
 		Adresse actualAdresse = response.getAdresse();
 		assertThat(actualAdresse.getAdresseKilde()).isEqualTo(KONTAKTINFORMASJONFORDØDSBO);
-		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("v/ Herr Andersen");
+		assertThat(actualAdresse.getAdresselinje1()).isEqualTo("C/O Herr Andersen");
 		assertThat(actualAdresse.getAdresselinje2()).isEqualTo("Postboks 15");
 		assertThat(actualAdresse.getAdresselinje3()).isNull();
 		assertThat(actualAdresse.getPostnummer()).isEqualTo("7320");

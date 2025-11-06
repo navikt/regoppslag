@@ -30,7 +30,7 @@
 		<rxjava.version>3.1.12</rxjava.version>
 		<microsoft-graph.version>6.55.0</microsoft-graph.version>
 		<azure-identity.version>1.18.1</azure-identity.version>
-		<springdoc-openapi-starter-webmvc-ui.version>2.8.13</springdoc-openapi-starter-webmvc-ui.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.8.14</springdoc-openapi-starter-webmvc-ui.version>
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 		<token-support.version>5.0.30</token-support.version>
