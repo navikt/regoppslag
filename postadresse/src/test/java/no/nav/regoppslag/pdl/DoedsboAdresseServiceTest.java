@@ -24,15 +24,16 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.util.PDLResponseUtil.ADRESSENAVN_1;
+import static no.nav.regoppslag.util.PDLResponseUtil.COADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.CO_ORGANISASJON_NAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.DOEDSDATO;
 import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN;
+import static no.nav.regoppslag.util.PDLResponseUtil.FULLT_NAVN_DOEDSBO;
 import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_NORGE;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_POSTSTED;
-import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.createDoedsfall;
 import static no.nav.regoppslag.util.PDLResponseUtil.createFolkeregisterpersonstatus;
 import static no.nav.regoppslag.util.PDLResponseUtil.createHentePersonBuilder;
@@ -74,8 +75,8 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
 
 		assertEquals(DOEDSDATO, mottakerInfo.getDoedsdato());
-		assertEquals(FULLT_NAVN, mottakerInfo.getNavn());
-		assertEquals(V_ADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
+		assertEquals(FULLT_NAVN_DOEDSBO, mottakerInfo.getNavn());
+		assertEquals(COADRESSENAVN, mottakerInfo.getPostadresse().getAdresselinje1());
 		assertEquals(ADRESSENAVN_1, mottakerInfo.getPostadresse().getAdresselinje2());
 		assertEquals(POSTADRESSE_INNLAND, mottakerInfo.getPostadresse().getAdresseType());
 		assertEquals(POSTNUMMER, mottakerInfo.getPostadresse().getPostnummer());
@@ -96,7 +97,8 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(FULLT_NAVN_DOEDSBO, mottakerInfo.getNavn());
+		assertEquals(COADRESSENAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -118,7 +120,7 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(COADRESSENAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -143,7 +145,7 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals("v/ " + FULLT_NAVN, response.getAdresselinje1());
+		assertEquals("C/O " + FULLT_NAVN, response.getAdresselinje1());
 		assertEquals(kontaktinformasjon.getAdresse().getAdresselinje1(), response.getAdresselinje2());
 		assertNull(response.getAdresselinje3());
 		assertEquals(POSTADRESSE_INNLAND, response.getAdresseType());
@@ -211,7 +213,7 @@ class DoedsboAdresseServiceTest {
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();
 
-		assertEquals(V_ADRESSENAVN, response.getAdresselinje1());
+		assertEquals(COADRESSENAVN, response.getAdresselinje1());
 		assertEquals(ADRESSENAVN_1, response.getAdresselinje2());
 		assertEquals(UTENLANDSK_POSTNUMMER + " " + UTENLANDSK_POSTSTED, response.getAdresselinje3());
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());

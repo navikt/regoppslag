@@ -59,7 +59,6 @@ import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE1;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE2;
 import static no.nav.regoppslag.util.PDLResponseUtil.UTENLANDSK_ADRESSELINJE3;
-import static no.nav.regoppslag.util.PDLResponseUtil.V_ADRESSENAVN;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphql;
 import static no.nav.regoppslag.util.PDLResponseUtil.postPdlGraphqlWithErrorResponse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -275,7 +274,7 @@ public class Treg002MotPDLIT extends AbstractIT {
 
 		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(PERSON_IDENT, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
 
-		assertPersonAdresseWithV(response);
+		assertPersonAdresseDoedsbo(response);
 		verify(1, postRequestedFor(urlMatching("/graphql")));
 	}
 
@@ -568,8 +567,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(POSTSTED, response.getAdresse().getPoststed());
 	}
 
-	private void assertPersonAdresseWithV(HentMottakerOgAdresseResponse response) {
-		assertEquals(V_ADRESSENAVN, response.getAdresse().getAdresselinje1());
+	private void assertPersonAdresseDoedsbo(HentMottakerOgAdresseResponse response) {
+		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
 		assertEquals(ADRESSELINJE_POSTBOKS, response.getAdresse().getAdresselinje2());
 		assertNull(response.getAdresse().getAdresselinje3());
 		assertEquals(LANDKODE_NORGE, response.getAdresse().getLandkode());

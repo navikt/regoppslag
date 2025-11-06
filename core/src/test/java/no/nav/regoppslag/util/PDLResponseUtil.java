@@ -65,6 +65,7 @@ public class PDLResponseUtil {
 	public static final LocalDate DOEDSDATO = LocalDate.now();
 	public static final String KORT_NAVN = "GYNGEHEST ÅPENHJERTIG";
 	public static final String FULLT_NAVN = "GYNGEHEST A. ÅPENHJERTIG";
+	public static final String FULLT_NAVN_DOEDSBO = "GYNGEHEST A. ÅPENHJERTIG DØDSBO";
 	public static final String FULLT_NAVN2 = "AREMARK TESTFAMILIEN";
 	public static final String FORNAVN = "GYNGEHEST";
 	public static final String MELLOMNAVN = "A.";
@@ -110,7 +111,7 @@ public class PDLResponseUtil {
 	public static final LocalDate ATTESTUTSTEDELSEDATO = LocalDate.now().plusMonths(6);
 	public static final String COADRESSENAVN = "C/O Herr Andersen";
 	public static final String V_ADRESSENAVN = "v/ Herr Andersen";
-	public static final String CO_ORGANISASJON_NAVN = "v/ Fred Advokat AS";
+	public static final String CO_ORGANISASJON_NAVN = "C/O Fred Advokat AS";
 
 	public static final String POSTSTED_OSLO = "OSLO";
 	public static final String ADRESSELINJE_POSTBOKS = "Postboks 15";
