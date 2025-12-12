@@ -105,6 +105,11 @@
 			"cluster": "dev-gcp"
 		},
 		{
+			"app": "saas-proxy",
+			"namespace": "platforce",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "pensjon-pen-q2",
 			"namespace": "pensjon-q2",
 			"cluster": "dev-fss"
