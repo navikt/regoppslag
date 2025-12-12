@@ -94,6 +94,11 @@
 			"cluster": "prod-gcp"
 		},
 		{
+			"app": "saas-proxy",
+			"namespace": "platforce",
+			"cluster": "prod-gcp"
+		},
+		{
 			"app": "brev-administrasjon",
 			"namespace": "isa",
 			"cluster": "prod-gcp"
