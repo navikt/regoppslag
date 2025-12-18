@@ -95,6 +95,21 @@
 			"cluster": "dev-gcp"
 		},
 		{
+			"app": "kabal-api-neon",
+			"namespace": "klage",
+			"cluster": "dev-gcp"
+		},
+		{
+			"app": "kabal-api-argon",
+			"namespace": "klage",
+			"cluster": "dev-gcp"
+		},
+		{
+			"app": "kabal-api-e2e",
+			"namespace": "klage",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "dokprod",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "dev-fss"
