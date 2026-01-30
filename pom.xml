@@ -37,7 +37,7 @@
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>2025.06.30-07.30-22496f8</dokmet-api.version>
-		<brevdata-felles.version>41-d282678</brevdata-felles.version>
+		<dok-brevdata-felles.version>41-d282678</dok-brevdata-felles.version>
 
 		<!-- Test -->
 		<spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
@@ -71,7 +71,7 @@
 			<dependency>
 				<groupId>no.nav.dok.metaforcemal</groupId>
 				<artifactId>dok-brevdata-felles</artifactId>
-				<version>${brevdata-felles.version}</version>
+				<version>${dok-brevdata-felles.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
