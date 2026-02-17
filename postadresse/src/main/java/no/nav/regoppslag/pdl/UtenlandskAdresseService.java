@@ -80,6 +80,8 @@ public class UtenlandskAdresseService {
 				return coAdressenavn + ", " + postboksOrAdressenavnNummer;
 			} else if (isNotBlank(postkodeAndByStedAndOmraade) && isNotBlank(postboksOrAdressenavnNummer)) {
 				return coAdressenavn;
+			} else if (isBlank(bygningEtasjeLeilighet)){
+				return coAdressenavn;
 			}
 		} else if (isBlank(coAdressenavn) && isNotBlank(postboksOrAdressenavnNummer)) {
 			return postboksOrAdressenavnNummer;

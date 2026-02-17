@@ -53,6 +53,7 @@ import static no.nav.regoppslag.util.PDLResponseUtil.LANDKODE_US;
 import static no.nav.regoppslag.util.PDLResponseUtil.LAND_UTENLANDSK;
 import static no.nav.regoppslag.util.PDLResponseUtil.ORGANISASJONNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.PERSON_IDENT;
+import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_AND_BYSTED;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTKODE_BVH;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTNUMMER;
 import static no.nav.regoppslag.util.PDLResponseUtil.POSTSTED;
@@ -139,6 +140,24 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE1, response.getAdresse().getAdresselinje2());
 		assertEquals(CONAVN_UTENLANDSK_ADRESSELINJE2, response.getAdresse().getAdresselinje3());
+		assertNull(response.getAdresse().getPostnummer());
+		assertNull(response.getAdresse().getPoststed());
+
+		verify(1, postRequestedFor(urlMatching("/graphql")));
+	}
+
+	@Test
+	public void shouldMapUtenlandskAdresseWithCoAdressenavnOgLiteAnnet() {
+		postPdlGraphql(OK.value(), "pdl/UtenlandskadresseWithCoAdressenavnOgLiteAnnet.json");
+
+		HentMottakerOgAdresseResponse response = restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + HENT_MOTTAKEROGADRESSE_URI_PATH, createRequest(D_NUMMER, TYPE_PERSON), HentMottakerOgAdresseResponse.class);
+
+		assertEquals(D_NUMMER, response.getIdentifikator());
+		assertEquals(FULLT_NAVN, response.getNavn());
+		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
+		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
+		assertNull(response.getAdresse().getAdresselinje2());
+		assertEquals(POSTKODE_AND_BYSTED, response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
 
