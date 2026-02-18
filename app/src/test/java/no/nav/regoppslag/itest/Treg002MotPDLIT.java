@@ -156,8 +156,8 @@ public class Treg002MotPDLIT extends AbstractIT {
 		assertEquals(FULLT_NAVN, response.getNavn());
 		assertEquals(LANDKODE_POLAND, response.getAdresse().getLandkode());
 		assertEquals(COADRESSENAVN, response.getAdresse().getAdresselinje1());
-		assertNull(response.getAdresse().getAdresselinje2());
-		assertEquals(POSTKODE_AND_BYSTED, response.getAdresse().getAdresselinje3());
+		assertEquals(POSTKODE_AND_BYSTED, response.getAdresse().getAdresselinje2());
+		assertNull(response.getAdresse().getAdresselinje3());
 		assertNull(response.getAdresse().getPostnummer());
 		assertNull(response.getAdresse().getPoststed());
 

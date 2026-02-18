@@ -56,17 +56,23 @@ public class UtenlandskAdresseService {
 
 		String adresseLinje1 = mapUtenlandskAdresselinje1(utenlandskAdresse, coAdressenavnWithCoPrefix);
 		String adresseLinje2 = mapUtenlandskAdresselinje2(utenlandskAdresse, coAdressenavnWithCoPrefix);
+		String adresseLinje3 = mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavnWithCoPrefix);
 
 		if (isBlank(adresseLinje1) && isNotBlank(adresseLinje2)) {
 			adresseLinje1 = adresseLinje2;
 			adresseLinje2 = null;
 		}
 
+		if (isBlank(adresseLinje2) && isNotBlank(adresseLinje3)) {
+			adresseLinje2 = adresseLinje3;
+			adresseLinje3 = null;
+		}
+
 		return PostadresseTo.builder()
 				.adresseType(POSTADRESSE_UTLAND)
 				.adresselinje1(adresseLinje1)
 				.adresselinje2(adresseLinje2)
-				.adresselinje3(mapUtenlandskAdresselinje3(utenlandskAdresse, coAdressenavnWithCoPrefix))
+				.adresselinje3(adresseLinje3)
 				.landkode(requireNonNull(getAlpha2Landkode(utenlandskAdresse.getLandkode()), format(ERROR_UTENLANDSKADRESSE, "landkode")));
 	}
 
@@ -112,7 +118,7 @@ public class UtenlandskAdresseService {
 
 	private static String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
 		String postboksOrAdressenavnNummer = getPostboksOrAdressenavnNummer(utenlandskAdresse);
-		final String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
+		String postkodeAndByStedAndOmraade = mapUtenlandskPostkodeAndByStedAndOmraade(utenlandskAdresse);
 		String bygningEtasjeLeilighet = mapBygningEtasjeLeilighet(utenlandskAdresse);
 
 		if (isNotBlank(coAdressenavn)) {
