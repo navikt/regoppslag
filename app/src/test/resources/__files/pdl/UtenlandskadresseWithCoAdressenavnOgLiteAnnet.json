@@ -1,0 +1,71 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2022-05-25T00:00",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": "C/O Herr Andersen",
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "SE-12345",
+            "bySted": "Haworth",
+            "regionDistriktOmraade": "",
+            "landkode": "POL"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "18caec17-3e30-44fe-b80f-985826f44de8",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-05-25T15:58:27",
+                "registrertAv": "O114633",
+                "systemkilde": "pdl-web",
+                "kilde": "Bruker selv"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "0102030405",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "KILDE_DSF"
+          }
+        }
+      ]
+    }
+  }
+}
