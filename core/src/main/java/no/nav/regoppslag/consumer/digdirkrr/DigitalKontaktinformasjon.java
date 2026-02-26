@@ -7,7 +7,7 @@ import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonFunctionalException
 import no.nav.regoppslag.exceptions.DigitalKontaktinformasjonTechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;

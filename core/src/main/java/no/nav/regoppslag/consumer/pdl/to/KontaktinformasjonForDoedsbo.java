@@ -1,7 +1,9 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,6 +13,7 @@ import java.util.stream.Stream;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class KontaktinformasjonForDoedsbo {
 
 	private Skifteform skifteform;
@@ -28,6 +31,7 @@ public class KontaktinformasjonForDoedsbo {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class PersonSomKontakt {
 		private LocalDate foedselsdato;
 		private Personnavn personnavn;
@@ -35,6 +39,9 @@ public class KontaktinformasjonForDoedsbo {
 	}
 
 	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Personnavn {
 		@ToString.Exclude
 		private String fornavn;
@@ -53,6 +60,7 @@ public class KontaktinformasjonForDoedsbo {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class AdvokatSomKontakt {
 		private Personnavn personnavn;
 		private String organisasjonsnavn;
@@ -61,6 +69,7 @@ public class KontaktinformasjonForDoedsbo {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class OrganisasjonSomKontakt {
 		private Personnavn kontaktperson;
 		private String organisasjonsnavn;
@@ -68,6 +77,9 @@ public class KontaktinformasjonForDoedsbo {
 	}
 
 	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class KontaktAdresse {
 		private String adresselinje1;
 		private String adresselinje2;

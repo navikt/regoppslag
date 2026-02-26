@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Vegadresse {
 	private Long matrikkelId;
 	private String husnummer;

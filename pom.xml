@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.7</version>
+		<version>4.0.2</version>
 	</parent>
 
 	<properties>
@@ -34,13 +34,14 @@
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<token-support.version>5.0.30</token-support.version>
+		<spring-retry.version>2.0.12</spring-retry.version>
 
 		<!-- Interne NAV-avhengigheter -->
-		<dokmet-api.version>2025.06.30-07.30-22496f8</dokmet-api.version>
+		<dokmet-api.version>2026.03.06-15.57-843724e</dokmet-api.version>
 		<dok-brevdata-felles.version>41-d282678</dok-brevdata-felles.version>
 
 		<!-- Test -->
-		<spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
+		<wiremock-spring-boot.version>4.0.9</wiremock-spring-boot.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
@@ -113,6 +114,11 @@
 				<artifactId>azure-identity</artifactId>
 				<version>${azure-identity.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.retry</groupId>
+				<artifactId>spring-retry</artifactId>
+				<version>${spring-retry.version}</version>
+			</dependency>
 
 			<!-- Test dependencies -->
 			<dependency>
@@ -122,9 +128,9 @@
 				<type>test-jar</type>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-contract-wiremock</artifactId>
-				<version>${spring-cloud-contract-wiremock.version}</version>
+				<groupId>org.wiremock.integrations</groupId>
+				<artifactId>wiremock-spring-boot</artifactId>
+				<version>${wiremock-spring-boot.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

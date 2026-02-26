@@ -4,7 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import wiremock.com.google.common.io.Resources;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,24 +14,19 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 public class TestUtil {
-	
+
 	public static String classpathToString(String path){
-		return resourceUrlToString(Resources.getResource(path));
-	}
-	
-	public static String resourceUrlToString(URL url) {
-		try {
-			return Resources.toString(url, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not convert url to String" + url);
+		try (InputStream resourceAsStream = TestUtil.class.getClassLoader().getResourceAsStream(path)) {
+			return new String(resourceAsStream.readAllBytes());
+		}  catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static Document loadDocument(File xmlFile) throws IOException, ParserConfigurationException, SAXException {
 		FileInputStream fileIS = new FileInputStream(xmlFile);
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

@@ -1,7 +1,5 @@
 package no.nav.regoppslag.consumer.azure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -13,6 +11,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import static no.nav.regoppslag.config.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_TOKEN;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -27,15 +27,15 @@ public class AzureTokenConsumer {
 	static final String CLIENT_CREDENTIALS = "client_credentials";
 
 	private final AzureProperties azureProperties;
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 	private final WebClient webClient;
 
 	@Autowired
 	public AzureTokenConsumer(AzureProperties azureProperties,
-							  ObjectMapper objectMapper,
+							  JsonMapper jsonMapper,
 							  WebClient webClient) {
 		this.azureProperties = azureProperties;
-		this.objectMapper = objectMapper;
+		this.jsonMapper = jsonMapper;
 		this.webClient = webClient.mutate()
 				.defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
 				.baseUrl(azureProperties.openidConfigTokenEndpoint())
@@ -81,8 +81,8 @@ public class AzureTokenConsumer {
 				.block();
 
 		try {
-			return objectMapper.readValue(responseJson, TokenResponse.class).accessToken();
-		} catch (JsonProcessingException | ClassCastException e) {
+			return jsonMapper.readValue(responseJson, TokenResponse.class).accessToken();
+		} catch (JacksonException | ClassCastException e) {
 			throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
 		}
 	}
