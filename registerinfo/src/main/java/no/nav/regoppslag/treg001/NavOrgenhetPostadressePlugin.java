@@ -33,17 +33,14 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 	public static final String PLUGIN_NAME = "NavOrgenhetPostadressePlugin";
 
 	private OrganisasjonsenhetConsumer norg2Consumer;
-	private Norg2Mapper norg2Mapper;
 
 	public NavOrgenhetPostadressePlugin() {
 		super(Postadresse.class);
 	}
 
 	@Autowired
-	public NavOrgenhetPostadressePlugin(OrganisasjonsenhetConsumer norg2Consumer,
-										Norg2Mapper norg2Mapper) {
+	public NavOrgenhetPostadressePlugin(OrganisasjonsenhetConsumer norg2Consumer) {
 		super(Postadresse.class);
-		this.norg2Mapper = norg2Mapper;
 		this.norg2Consumer = norg2Consumer;
 	}
 
@@ -61,7 +58,7 @@ public class NavOrgenhetPostadressePlugin extends JaxbHelper<Postadresse> implem
 
 				EnhetNavn enhetNavn = norg2Consumer.hentEnhetNavn(adresse.getEnhetsId());
 				EnhetKontaktinformasjon kontaktinformasjon = norg2Consumer.hentEnhetKontaktinformasjon(adresse.getEnhetsId());
-				norg2Mapper.mapPostadresse(enhetNavn, kontaktinformasjon, adresse);
+				Norg2Mapper.mapPostadresse(enhetNavn, kontaktinformasjon, adresse);
 			}
 
 			Document newNode = convertObjectToDocument(adresse);

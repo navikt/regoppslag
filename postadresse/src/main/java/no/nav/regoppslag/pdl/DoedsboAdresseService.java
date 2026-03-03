@@ -43,11 +43,9 @@ public class DoedsboAdresseService {
 	private static final String POSTNUMMER = "postnummer";
 	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
-	private final PostnummerService postnummerService;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
-	public DoedsboAdresseService(PostnummerService postnummerService, PdlGraphQLConsumer pdlGraphQLConsumer) {
-		this.postnummerService = postnummerService;
+	public DoedsboAdresseService(PdlGraphQLConsumer pdlGraphQLConsumer) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 	}
 
@@ -102,7 +100,7 @@ public class DoedsboAdresseService {
 					.adresselinje2(isBlank(fulltnavn) ? getAdresselinje(kontaktAdresse.getAdresselinje2()) : getAdresselinje(kontaktAdresse.getAdresselinje1()))
 					.adresselinje3(isBlank(fulltnavn) ? null : getAdresselinje(kontaktAdresse.getAdresselinje2()))
 					.postnummer(requireNonNull(kontaktAdresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? postnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
+					.poststed(requireNonNull(isBlank(kontaktAdresse.getPoststedsnavn()) ? PostnummerService.finnPoststed(kontaktAdresse.getPostnummer()) : kontaktAdresse.getPoststedsnavn(), format(ERROR_MELDING, "poststed")))
 					.landkode(ALPHA2_NORGE_LANDKODE)
 					.build();
 		}
@@ -123,7 +121,7 @@ public class DoedsboAdresseService {
 					.adresselinje2(isBlank(navn) ? adresse.getAdresselinje2() : adresse.getAdresselinje1())
 					.adresselinje3(isBlank(navn) ? null : adresse.getAdresselinje2())
 					.postnummer(requireNonNull(adresse.getPostnummer(), format(ERROR_MELDING, POSTNUMMER)))
-					.poststed(isBlank(adresse.getPoststedsnavn()) ? postnummerService.finnPoststed(adresse.getPostnummer()) : adresse.getPoststedsnavn())
+					.poststed(isBlank(adresse.getPoststedsnavn()) ? PostnummerService.finnPoststed(adresse.getPostnummer()) : adresse.getPoststedsnavn())
 					.landkode(ALPHA2_NORGE_LANDKODE)
 					.build();
 		}

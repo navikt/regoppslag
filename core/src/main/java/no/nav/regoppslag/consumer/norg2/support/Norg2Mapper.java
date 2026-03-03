@@ -17,19 +17,12 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@Component
 public class Norg2Mapper {
 
 	public static final String POSTBOKSADRESSE = "postboksadresse";
 	public static final String STEDSADRESSE = "stedsadresse";
 
-	private final PostnummerService postnummerService;
-
-	public Norg2Mapper(PostnummerService postnummerService) {
-		this.postnummerService = postnummerService;
-	}
-
-	public void mapPostadresse(EnhetNavn organisasjonsenhetNavn,
+	public static void mapPostadresse(EnhetNavn organisasjonsenhetNavn,
 							   EnhetKontaktinformasjon kontaktinformasjon, AdresseEnhet adresseEnhet) {
 		if (nonNull(organisasjonsenhetNavn)) {
 			adresseEnhet.setEnhetsNavn(organisasjonsenhetNavn.getNavn());
@@ -44,7 +37,7 @@ public class Norg2Mapper {
 		}
 	}
 
-	private NorskPostadresse mapEnhetKontaktinformasjon(EnhetKontaktinformasjon kontaktinformasjon) {
+	private static NorskPostadresse mapEnhetKontaktinformasjon(EnhetKontaktinformasjon kontaktinformasjon) {
 		NorskPostadresse norskPostadresse = new NorskPostadresse();
 		if (isNull(kontaktinformasjon.getPostadresse())) {
 			return null;
@@ -57,7 +50,7 @@ public class Norg2Mapper {
 					ofNullable(stedsadresse.getHusbokstav()).orElse(""));
 			norskPostadresse.setPostnummer(stedsadresse.getPostnummer());
 			norskPostadresse.setPoststed(isNotBlank(stedsadresse.getPoststed()) ? stedsadresse.getPoststed() :
-					postnummerService.finnPoststed(stedsadresse.getPostnummer()));
+					PostnummerService.finnPoststed(stedsadresse.getPostnummer()));
 			return norskPostadresse;
 		} else {
 			Adresse postadresse = kontaktinformasjon.getPostadresse();
@@ -65,12 +58,12 @@ public class Norg2Mapper {
 											  ofNullable(postadresse.getPostboksanlegg()).orElse(""));
 			norskPostadresse.setPostnummer(postadresse.getPostnummer());
 			norskPostadresse.setPoststed(isNotBlank(postadresse.getPoststed()) ? postadresse.getPoststed() :
-					postnummerService.finnPoststed(postadresse.getPostnummer()));
+					PostnummerService.finnPoststed(postadresse.getPostnummer()));
 			return norskPostadresse;
 		}
 	}
 
-	public void mapBesokadresse(EnhetNavn organisasjonsenhetNavn, EnhetKontaktinformasjon kontaktinformasjon, AdresseEnhet adresseEnhet) {
+	public static void mapBesokadresse(EnhetNavn organisasjonsenhetNavn, EnhetKontaktinformasjon kontaktinformasjon, AdresseEnhet adresseEnhet) {
 		if (nonNull(organisasjonsenhetNavn)) {
 			adresseEnhet.setEnhetsNavn(organisasjonsenhetNavn.getNavn());
 		}
@@ -84,7 +77,7 @@ public class Norg2Mapper {
 		}
 	}
 
-	private NorskPostadresse mapEnhetBesokadresse(Stedsadresse besoeksadresse, Adresse adresse) {
+	private static NorskPostadresse mapEnhetBesokadresse(Stedsadresse besoeksadresse, Adresse adresse) {
 		NorskPostadresse postadresse = new NorskPostadresse();
 
 		if (nonNull(adresse) && STEDSADRESSE.equals(adresse.getType())) {
@@ -97,17 +90,17 @@ public class Norg2Mapper {
 		return null;
 	}
 
-	private NorskPostadresse getNorskPostadresse(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav, String postnummer, String poststed) {
+	private static NorskPostadresse getNorskPostadresse(NorskPostadresse postadresse, String gatenavn, String husnummer, String husbokstav, String postnummer, String poststed) {
 		postadresse.setAdresselinje1(ofNullable(gatenavn)
 				.orElse("") + " " + ofNullable(husnummer).orElse("") + ofNullable(husbokstav).orElse(""));
 		if (isNotBlank(postnummer)) {
 			postadresse.setPostnummer(postnummer);
-			postadresse.setPoststed(isNotBlank(poststed) ? poststed : postnummerService.finnPoststed(postnummer));
+			postadresse.setPoststed(isNotBlank(poststed) ? poststed : PostnummerService.finnPoststed(postnummer));
 		}
 		return postadresse;
 	}
 
-	public void mapEnhetNavn(EnhetNavn rsEnhetNavn, NavEnhet navEnhet) {
+	public static void mapEnhetNavn(EnhetNavn rsEnhetNavn, NavEnhet navEnhet) {
 		if (rsEnhetNavn != null) {
 			navEnhet.setEnhetsNavn(rsEnhetNavn.getNavn());
 		}

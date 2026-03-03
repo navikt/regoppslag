@@ -25,18 +25,15 @@ public class PostnummerService {
 
 	private static final String FILENAME = "/kodeverk/postnummerregister.txt";
 
-	private final Map<String, PostData> postalCodeTable;
+	private static final Map<String, PostData> postalCodeTable = new HashMap<>();
 
-	public PostnummerService() {
-		postalCodeTable = new HashMap<>();
-		try {
-			init();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	static {
+		init();
 	}
 
-	void init() throws IOException {
+	private PostnummerService() {}
+
+	private static void init() {
 		try (InputStream in = PostnummerService.class.getResourceAsStream(FILENAME);
 			 BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 
@@ -49,6 +46,8 @@ public class PostnummerService {
 				PostData data = new PostData(postArray[0], postArray[1]);
 				postalCodeTable.put(data.getPostnummer(), data);
 			}
+		} catch (IOException e) {
+			throw new RuntimeException("Klarte ikke bygge postnummer-oversikt!", e);
 		} finally {
 			log.info("Har importert postnummer kodeverk fra fil={}, antall={}", FILENAME, postalCodeTable.size());
 		}
@@ -62,7 +61,7 @@ public class PostnummerService {
 		private String poststed;
 	}
 
-	public String finnPoststed(String postnr) {
+	public static String finnPoststed(String postnr) {
 		if (postalCodeTable.get(postnr) == null) {
 			log.warn("Finner ikke poststed for postnummer={}. Returnerer postnummer som poststed. Postnummer kan være utgått eller nytt. Sjekk om ny postnummerregister.txt må lastes ned eller om postnummer er gammelt og har fått en endring. Se https://www.bring.no/tjenester/adressetjenester/postnummer", removeUnsafeChars(postnr));
 			return postnr;

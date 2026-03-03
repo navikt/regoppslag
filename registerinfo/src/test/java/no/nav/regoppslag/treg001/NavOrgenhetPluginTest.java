@@ -2,10 +2,8 @@ package no.nav.regoppslag.treg001;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.Postadresse;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
-import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.consumer.norg2.to.EnhetKontaktinformasjon;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,11 +47,9 @@ public class NavOrgenhetPluginTest {
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
-		PostnummerService postnummerService = new PostnummerService();
 
-		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer, norg2Mapper);
-		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer, norg2Mapper);
+		norgPostadressePlugin = new NavOrgenhetPostadressePlugin(norgConsumer);
+		norgBesoksadressePlugin = new NavOrgenhetBesoksadressePlugin(norgConsumer);
 
 		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet());
 		when(norgConsumer.hentEnhetKontaktinformasjon(anyString())).thenReturn(EnhetKontaktinformasjon.builder().build());

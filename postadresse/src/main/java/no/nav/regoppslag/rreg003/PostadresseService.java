@@ -38,7 +38,6 @@ public class PostadresseService {
 	private final AdresseMapper adresseMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
-	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
@@ -46,13 +45,11 @@ public class PostadresseService {
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,
-							  EregConsumer eregConsumer,
-							  OrganisasjonEregMapper organisasjonEregMapper) {
+							  EregConsumer eregConsumer) {
 		this.adresseMapper = adresseMapper;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.eregConsumer = eregConsumer;
-		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public PostadresseResponse postadresseInfo(PostadresseRequest request, String behandlingsnummer) throws RegOppslagSecurityException {
@@ -96,7 +93,7 @@ public class PostadresseService {
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
 		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
 
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon);
+		MottakerTo mottakerTo = OrganisasjonEregMapper.map(request.getIdent(), organisasjon);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo))

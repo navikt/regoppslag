@@ -7,11 +7,9 @@ import no.nav.regoppslag.consumer.ereg.support.Gyldighetsperiode;
 import no.nav.regoppslag.consumer.ereg.support.Navn;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonDetaljer;
-import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
@@ -65,14 +63,12 @@ public class SakspartPluginTest {
 	public void setUp() throws RegOppslagSecurityException, IOException {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		eregConsumer = mock(EregConsumer.class);
-		PostnummerService postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(postnummerService);
-		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, eregConsumer, organisasjonEregMapper);
+		sakspartPlugin = new SakspartPlugin(pdlGraphQLConsumer, eregConsumer);
 		when(eregConsumer.hentOrganisasjon(anyString())).thenReturn(createOrganisasjon(ORGNAVN));
 	}
 

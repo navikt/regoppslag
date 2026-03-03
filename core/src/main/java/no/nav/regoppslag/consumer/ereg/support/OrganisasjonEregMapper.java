@@ -28,24 +28,17 @@ import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@Component
 @Slf4j
 public class OrganisasjonEregMapper {
 
 	public static final String LANDKODE_NORGE = "NO";
 	private static final String LAND_NORGE = "Norge";
 
-	private final PostnummerService postnummerService;
-
-	public OrganisasjonEregMapper(PostnummerService postnummerService) {
-		this.postnummerService = postnummerService;
-	}
-
-	public String getSakspartNavn(Organisasjon wsOrganisasjon) {
+	public static String getSakspartNavn(Organisasjon wsOrganisasjon) {
 		return mapOrganisasjonNavn(wsOrganisasjon);
 	}
 
-	public MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon) {
+	public static MottakerTo map(String orgNummer, Organisasjon wsOrganisasjon) {
 		Mottaker mottaker = new no.nav.dok.brevdata.felles.v1.navfelles.Organisasjon();
 
 		OrganisasjonDetaljer orgDet = wsOrganisasjon.getOrganisasjonDetaljer();
@@ -75,7 +68,7 @@ public class OrganisasjonEregMapper {
 				.build();
 	}
 
-	private no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
+	private static no.nav.regoppslag.consumer.map.Postadresse mapAdresse(String orgNummer, OrganisasjonDetaljer orgDet) {
 		if (orgDet.getOpphoersdato() != null && LocalDate.now().isAfter(orgDet.getOpphoersdato())) {
 			String message = format("Organisasjon har opphørt, opphørsdato=%s, orgnr=%s", ISO_LOCAL_DATE.format(orgDet.getOpphoersdato()), orgNummer);
 			throw new RegOppslagIkkeFunnetException(message, NOT_FOUND);
@@ -87,19 +80,19 @@ public class OrganisasjonEregMapper {
 		return mapPostadresse(activeAddress);
 	}
 
-	private String getSpraakKodeAsString(OrganisasjonDetaljer orgDet) {
+	private static String getSpraakKodeAsString(OrganisasjonDetaljer orgDet) {
 		return orgDet.getMaalform();
 	}
 
-	private String mapOrganisasjonNavn(Organisasjon wsOrganisasjon) {
+	private static String mapOrganisasjonNavn(Organisasjon wsOrganisasjon) {
 		return wsOrganisasjon.getNavn().getSammensattnavn();
 	}
 
-	private AdresseKildeCode mapAdresseKilde(OrganisasjonDetaljer orgDet) {
-		return orgDet.getPostadresser() == null || orgDet.getPostadresser().stream().noneMatch(this::isValidPostAdresse) ? ENHETFORRETNINGSADRESSE : ENHETPOSTADRESSE;
+	private static AdresseKildeCode mapAdresseKilde(OrganisasjonDetaljer orgDet) {
+		return orgDet.getPostadresser() == null || orgDet.getPostadresser().stream().noneMatch(OrganisasjonEregMapper::isValidPostAdresse) ? ENHETFORRETNINGSADRESSE : ENHETPOSTADRESSE;
 	}
 
-	private boolean isValidGyldighetsAndBruksPeriode(Gyldighetsperiode gyldighetsperiode, Bruksperiode bruksperiode) {
+	private static boolean isValidGyldighetsAndBruksPeriode(Gyldighetsperiode gyldighetsperiode, Bruksperiode bruksperiode) {
 		final LocalDateTime nowTime = LocalDateTime.now();
 		final LocalDate nowDate = LocalDate.now();
 
@@ -109,7 +102,7 @@ public class OrganisasjonEregMapper {
 	}
 
 	// Adresse skal overstyre forretningsadresse dersom den finnes
-	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectActiveAddress(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> postadresse, List<no.nav.regoppslag.consumer.ereg.support.Postadresse> forretningsadresse) {
+	private static Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectActiveAddress(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> postadresse, List<no.nav.regoppslag.consumer.ereg.support.Postadresse> forretningsadresse) {
 		// Stream.of er basert på array så rekkefølgen er ordered, gyldige postadresse vil bli funnet før forretningsadresse
 		return Stream.of(selectGyldigPostAdresse(postadresse), selectGyldigPostAdresse(forretningsadresse))
 				.filter(Optional::isPresent)
@@ -117,14 +110,14 @@ public class OrganisasjonEregMapper {
 				.findFirst();
 	}
 
-	private Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectGyldigPostAdresse(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> adresser) {
+	private static Optional<no.nav.regoppslag.consumer.ereg.support.Postadresse> selectGyldigPostAdresse(List<no.nav.regoppslag.consumer.ereg.support.Postadresse> adresser) {
 		if (adresser == null) {
 			return Optional.empty();
 		}
-		return adresser.stream().filter(this::isValidPostAdresse).findAny();
+		return adresser.stream().filter(OrganisasjonEregMapper::isValidPostAdresse).findAny();
 	}
 
-	private boolean isValidPostAdresse(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
+	private static boolean isValidPostAdresse(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
 		boolean isValidGeografiskAdresse = isValidGyldighetsAndBruksPeriode(adresse.getGyldighetsperiode(), adresse.getBruksperiode()) && landkodeIsNotNull(adresse);
 		if (isValidGeografiskAdresse && landkodeIsNorge(adresse)) {
 			isValidGeografiskAdresse = containsPostnummer(adresse);
@@ -132,25 +125,25 @@ public class OrganisasjonEregMapper {
 		return isValidGeografiskAdresse;
 	}
 
-	private boolean landkodeIsNorge(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
+	private static boolean landkodeIsNorge(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
 		return adresse.getLandkode().equals(LANDKODE_NORGE);
 	}
 
-	private boolean landkodeIsNotNull(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
+	private static boolean landkodeIsNotNull(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
 		return adresse.getLandkode() != null;
 	}
 
-	private boolean containsPostnummer(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
+	private static boolean containsPostnummer(no.nav.regoppslag.consumer.ereg.support.Postadresse adresse) {
 		return (adresse.getPostnummer() != null || adresse.getPoststed() != null);
 	}
 
-	private no.nav.regoppslag.consumer.map.Postadresse mapPostadresse(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
+	private static no.nav.regoppslag.consumer.map.Postadresse mapPostadresse(no.nav.regoppslag.consumer.ereg.support.Postadresse eregAdresse) {
 		no.nav.regoppslag.consumer.map.Postadresse postadresse = Postadresse.builder().build();
 
 		if (eregAdresse.getLandkode().equals(LANDKODE_NORGE)) {
 			postadresse.setPostnummer(eregAdresse.getPostnummer());
 			if (eregAdresse.getPostnummer() != null) {
-				postadresse.setPoststed(postnummerService.finnPoststed(eregAdresse.getPostnummer()));
+				postadresse.setPoststed(PostnummerService.finnPoststed(eregAdresse.getPostnummer()));
 			}
 		} else {
 			postadresse.setPostnummer(eregAdresse.getPostnummer());

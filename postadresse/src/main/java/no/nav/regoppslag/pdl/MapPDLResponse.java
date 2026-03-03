@@ -69,13 +69,11 @@ public class MapPDLResponse {
 	public static final String STRENGT_FORTROLIG_UTLAND = "strengt_fortrolig_utland";
 
 	private final DoedsboAdresseService doedsboAdresseService;
-	private final NorskAdresseService norskAdresseService;
 	private final Clock clock;
 
 	public MapPDLResponse(DoedsboAdresseService doedsboAdresseService,
-						  NorskAdresseService norskAdresseService, Clock clock) {
+						  Clock clock) {
 		this.doedsboAdresseService = doedsboAdresseService;
-		this.norskAdresseService = norskAdresseService;
 		this.clock = clock;
 	}
 
@@ -238,7 +236,7 @@ public class MapPDLResponse {
 
 	private Optional<PostadresseTo> mapPostadresseFraKontaktadresse(Kontaktadresse kontaktadresse) {
 		if (POSTADRESSE_INNLAND.equalsIgnoreCase(kontaktadresse.getType())) {
-			return norskAdresseService.mapNorskPostadresse(kontaktadresse);
+			return NorskAdresseService.mapNorskPostadresse(kontaktadresse);
 		} else if (POSTADRESSE_UTLAND.equalsIgnoreCase(kontaktadresse.getType())) {
 			return mapUtenlandskPostadresse(kontaktadresse);
 		}
@@ -277,11 +275,11 @@ public class MapPDLResponse {
 													String serviceCode,
 													AdresseKildeCode adresseKilde) {
 		if (nonNull(vegadresse)) {
-			return Optional.of(norskAdresseService.mapVegadresse(vegadresse, coAdressenavn).adressekilde(adresseKilde).build());
+			return Optional.of(NorskAdresseService.mapVegadresse(vegadresse, coAdressenavn).adressekilde(adresseKilde).build());
 		} else if (nonNull(utenlandskAdresse)) {
 			return Optional.of(mapUtenlandskAdresse(utenlandskAdresse, coAdressenavn).adressekilde(adresseKilde).build());
 		} else if (nonNull(matrikkeladresse)) {
-			return Optional.of(norskAdresseService.mapMatrikkeladresse(matrikkeladresse, adresseKilde));
+			return Optional.of(NorskAdresseService.mapMatrikkeladresse(matrikkeladresse, adresseKilde));
 		} else if (nonNull(ukjentBosted)) {
 			throw new UkjentAdresseException(serviceCode + ": Kunne ikke mappe postadresse for UkjentBosted mottaker", UKJENT_ADRESSE_REASON_CODE);
 		}
