@@ -34,7 +34,6 @@
 		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<token-support.version>5.0.30</token-support.version>
-		<spring-retry.version>2.0.12</spring-retry.version>
 
 		<!-- Interne NAV-avhengigheter -->
 		<dokmet-api.version>2026.03.06-15.57-843724e</dokmet-api.version>
@@ -113,11 +112,6 @@
 				<groupId>com.azure</groupId>
 				<artifactId>azure-identity</artifactId>
 				<version>${azure-identity.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.retry</groupId>
-				<artifactId>spring-retry</artifactId>
-				<version>${spring-retry.version}</version>
 			</dependency>
 
 			<!-- Test dependencies -->

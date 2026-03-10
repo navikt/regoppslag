@@ -5,10 +5,10 @@ import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.NavHeadersExchangeFilterFunction;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_DOKMET_SPRAAKINFO;
 import static no.nav.regoppslag.util.NavHeaders.NAV_CALLID;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -39,7 +40,7 @@ public class DokmetConsumer {
 	}
 
 	@Cacheable(value = HENT_DOKMET_SPRAAKINFO, key = "#dokumenttypeId")
-	@Retryable(retryFor = RegOppslagTechnicalException.class, exceptionExpression = "isRetryable()", backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 2, delay = 200)
 	public List<SpraakInfoTo> hentDokumenttypeInfoSpraak(final String dokumenttypeId) throws RegOppslagTechnicalException {
 		return webClient.get()
 				.uri("/" + dokumenttypeId)
@@ -61,11 +62,12 @@ public class DokmetConsumer {
 	private Throwable mapError(Throwable error, String dokumenttypeId) {
 		if (error instanceof WebClientResponseException responseException) {
 			if (responseException.getStatusCode() == NOT_FOUND) {
-				//Kaster teknisk feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på vår side som må fikses.
-				return new RegOppslagTechnicalException(
+				// Kaster funksjonell feil fordi manglende dokumenttypeId på prod databasen betyr at det er noe feil på
+				// vår side som må fikses, og retry ikke gir mening.
+				return new RegOppslagFunctionalException(
 						format("TKAT020 feilet med statusKode=%s. Fant ingen dokumenttypeInfo med dokumenttypeId=%s. ",
 								responseException.getStatusCode(), dokumenttypeId),
-						responseException, false);
+						responseException, INTERNAL_SERVER_ERROR);
 			} else {
 				return new RegOppslagTechnicalException(
 						format("TKAT020 feilet teknisk med statusKode=%s for dokumenttypeId=%s. Feilmelding=%s",

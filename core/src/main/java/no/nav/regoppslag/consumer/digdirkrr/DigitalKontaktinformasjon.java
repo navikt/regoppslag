@@ -10,8 +10,7 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -45,7 +44,7 @@ public class DigitalKontaktinformasjon {
 				.build();
 	}
 
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public String hentSpraak(final String personidentifikator) throws DigitalKontaktinformasjonFunctionalException {
 		HttpHeaders headers = createHeaders();
 

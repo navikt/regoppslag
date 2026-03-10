@@ -1,10 +1,10 @@
 package no.nav.regoppslag.consumer.azure;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -42,14 +42,14 @@ public class AzureTokenConsumer {
 				.build();
 	}
 
-	@Retry(name = AZURE_TOKEN_INSTANCE)
+	@Retryable(maxRetries = 2, delay = 500)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
 	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_TOKEN)
 	public String getClientCredentialToken(String scope) {
 		return getAzureToken(scope, null);
 	}
 
-	@Retry(name = AZURE_TOKEN_INSTANCE)
+	@Retryable(maxRetries = 2, delay = 500)
 	@CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
 	//@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN, key = "#token.subject")
 	public String getOnBehalfOfToken(String scope, JwtToken token) {

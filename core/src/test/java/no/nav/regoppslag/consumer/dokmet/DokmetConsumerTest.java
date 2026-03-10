@@ -9,6 +9,7 @@ import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webclient.test.autoconfigure.AutoConfigureWebClient;
-import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -35,6 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +54,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @EnableConfigurationProperties({
 		RegoppslagProperties.class
 })
-@EnableRetry
+@EnableResilientMethods
 @EnableWireMock
 @ActiveProfiles("itest")
 @AutoConfigureWebClient
@@ -95,12 +97,13 @@ public class DokmetConsumerTest {
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
+	public void shouldThrowFunctionalExceptionWhenNotFoundAndNotRetry() {
 		stubFor(get(urlMatching(DOKUMENTINFO_URL_REGEX))
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())));
-		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 		assertThat(e.getMessage(), containsString("TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
+		assertThat(e.getHttpStatusCode(), equalTo(INTERNAL_SERVER_ERROR));
 		verify(1, getRequestedFor(urlMatching(DOKUMENTINFO_URL_REGEX)));
 	}
 

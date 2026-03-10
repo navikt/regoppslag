@@ -11,8 +11,7 @@ import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -49,7 +48,7 @@ public class MsGraphConsumer {
 	}
 
 	@Cacheable(value = HENT_NAV_ANSATT_NAVN, key = "#navIdent")
-	@Retryable(retryFor = ApiException.class, noRetryFor = RegOppslagFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = ApiException.class, excludes = RegOppslagFunctionalException.class, maxRetries = 4, delay = 200)
 	public String hentFulltNavn(String navIdent) {
 
 		if (!NAVIDENT_PATTERN.matcher(navIdent).matches()) {

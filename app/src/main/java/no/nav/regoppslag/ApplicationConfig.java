@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableConfigurationProperties({
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 		RestConsumerConfig.class,
 		WebClientConfig.class
 })
-@EnableRetry
+@EnableResilientMethods
 @Configuration
 @EnableAutoConfiguration
 @EnableWebMvc
