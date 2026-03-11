@@ -2,11 +2,11 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class Endring {

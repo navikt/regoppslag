@@ -2,53 +2,51 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class KontaktinformasjonForDoedsbo {
 
-	private Skifteform skifteform;
-	private LocalDate attestutstedelsesdato;
-	private PersonSomKontakt personSomKontakt;
-	private AdvokatSomKontakt advokatSomKontakt;
-	private OrganisasjonSomKontakt organisasjonSomKontakt;
-	private KontaktAdresse adresse;
-	private Metadata metadata;
+	Skifteform skifteform;
+	LocalDate attestutstedelsesdato;
+	PersonSomKontakt personSomKontakt;
+	AdvokatSomKontakt advokatSomKontakt;
+	OrganisasjonSomKontakt organisasjonSomKontakt;
+	KontaktAdresse adresse;
+	Metadata metadata;
 
 	public enum Skifteform {
 		OFFENTLIG,
 		ANNET
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class PersonSomKontakt {
-		private LocalDate foedselsdato;
-		private Personnavn personnavn;
-		private String identifikasjonsnummer;
+		LocalDate foedselsdato;
+		Personnavn personnavn;
+		String identifikasjonsnummer;
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class Personnavn {
 		@ToString.Exclude
-		private String fornavn;
+		String fornavn;
 		@ToString.Exclude
-		private String mellomnavn;
+		String mellomnavn;
 		@ToString.Exclude
-		private String etternavn;
+		String etternavn;
 
 		public String getFulltnavn() {
 			return Stream.of(getFornavn(), getMellomnavn(), getEtternavn())
@@ -58,33 +56,32 @@ public class KontaktinformasjonForDoedsbo {
 		}
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class AdvokatSomKontakt {
-		private Personnavn personnavn;
-		private String organisasjonsnavn;
-		private String organisasjonsnummer;
+		Personnavn personnavn;
+		String organisasjonsnavn;
+		String organisasjonsnummer;
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class OrganisasjonSomKontakt {
-		private Personnavn kontaktperson;
-		private String organisasjonsnavn;
-		private String organisasjonsnummer;
+		Personnavn kontaktperson;
+		String organisasjonsnavn;
+		String organisasjonsnummer;
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class KontaktAdresse {
-		private String adresselinje1;
-		private String adresselinje2;
-		private String poststedsnavn;
-		private String postnummer;
-		private String landkode;
+		String adresselinje1;
+		String adresselinje2;
+		String poststedsnavn;
+		String postnummer;
+		String landkode;
 	}
 }

@@ -10,6 +10,7 @@ import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.Metadata;
 import no.nav.regoppslag.consumer.pdl.to.Oppholdsadresse;
 import no.nav.regoppslag.consumer.pdl.to.PDLConstant;
+import no.nav.regoppslag.consumer.pdl.to.PersonNavn;
 import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
@@ -556,12 +557,16 @@ public class PDLResponseUtil {
 	}
 
 	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithPerson() {
+		return createKontaktinformasjonForDoedsboWithPerson(createNavnForPersonSomKontakt());
+	}
+
+	public static KontaktinformasjonForDoedsbo createKontaktinformasjonForDoedsboWithPerson(KontaktinformasjonForDoedsbo.Personnavn personnavn) {
 		return KontaktinformasjonForDoedsbo.builder()
 				.attestutstedelsesdato(ATTESTUTSTEDELSEDATO)
 				.skifteform(ANNET)
 				.adresse(createPersonKontaktAdresse())
 				.personSomKontakt(KontaktinformasjonForDoedsbo.PersonSomKontakt.builder()
-						.personnavn(createNavnForPersonSomKontakt())
+						.personnavn(personnavn)
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.build())
 				.build();
@@ -594,58 +599,58 @@ public class PDLResponseUtil {
 	}
 
 	public static KontaktinformasjonForDoedsbo.Personnavn createNavnForOrganisasjonSomKontakt() {
-		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
-		personnavn.setFornavn(ORGANISASJONNAVN);
-		return personnavn;
+		return KontaktinformasjonForDoedsbo.Personnavn.builder()
+				.fornavn(ORGANISASJONNAVN)
+				.build();
 	}
 
 
 	public static KontaktinformasjonForDoedsbo.Personnavn createNavnForPersonSomKontakt() {
-		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
-		personnavn.setFornavn(PERSON_FORNAVN);
-		personnavn.setMellomnavn(null);
-		personnavn.setEtternavn(PERSON_MELLOMNAVN);
-		return personnavn;
+		return KontaktinformasjonForDoedsbo.Personnavn.builder()
+				.fornavn(PERSON_FORNAVN)
+				.mellomnavn(null)
+				.etternavn(PERSON_MELLOMNAVN)
+				.build();
 	}
 
 	public static KontaktinformasjonForDoedsbo.KontaktAdresse createPersonKontaktAdresse() {
-		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
-		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
-		kontaktAdresse.setPostnummer(POSTNUMMER);
-		kontaktAdresse.setPoststedsnavn(POSTSTED);
-		return kontaktAdresse;
+		return KontaktinformasjonForDoedsbo.KontaktAdresse.builder()
+				.adresselinje1(ADRESSENAVN_1)
+				.postnummer(POSTNUMMER)
+				.poststedsnavn(POSTSTED)
+				.build();
 	}
 
 	public static KontaktinformasjonForDoedsbo.KontaktAdresse createPersonKontaktAdresseUtenPoststed() {
-		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
-		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
-		kontaktAdresse.setPostnummer(POSTNUMMER);
-		return kontaktAdresse;
+		return KontaktinformasjonForDoedsbo.KontaktAdresse.builder()
+				.adresselinje1(ADRESSENAVN_1)
+				.postnummer(POSTNUMMER)
+				.build();
 	}
 
 	private static KontaktinformasjonForDoedsbo.Personnavn createKontaktPersonnavn() {
-		KontaktinformasjonForDoedsbo.Personnavn personnavn = new KontaktinformasjonForDoedsbo.Personnavn();
-		personnavn.setFornavn(ADVOKAT_FORNAVN);
-		personnavn.setMellomnavn(ADVOKAT_MELLOMNAVN);
-		personnavn.setMellomnavn(ADVOKAT_ETTERNAVN);
-		return personnavn;
+		return KontaktinformasjonForDoedsbo.Personnavn.builder()
+				.fornavn(ADVOKAT_FORNAVN)
+				.mellomnavn(ADVOKAT_MELLOMNAVN)
+				.etternavn(ADVOKAT_ETTERNAVN)
+				.build();
 	}
 
 	private static KontaktinformasjonForDoedsbo.KontaktAdresse createDoedsboKontaktAdresseForUtenland() {
-		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
-		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
-		kontaktAdresse.setPostnummer(UTENLANDSK_POSTNUMMER);
-		kontaktAdresse.setPoststedsnavn(UTENLANDSK_POSTSTED);
-		kontaktAdresse.setLandkode(ALPHA3_LANDKODE_TYSKLAND);
-		return kontaktAdresse;
+		return KontaktinformasjonForDoedsbo.KontaktAdresse.builder()
+				.adresselinje1(ADRESSENAVN_1)
+				.postnummer(UTENLANDSK_POSTNUMMER)
+				.poststedsnavn(UTENLANDSK_POSTSTED)
+				.landkode(ALPHA3_LANDKODE_TYSKLAND)
+				.build();
 	}
 
 	private static KontaktinformasjonForDoedsbo.KontaktAdresse createAdvokatKontaktAdresse() {
-		KontaktinformasjonForDoedsbo.KontaktAdresse kontaktAdresse = new KontaktinformasjonForDoedsbo.KontaktAdresse();
-		kontaktAdresse.setAdresselinje1(ADRESSENAVN_1);
-		kontaktAdresse.setPostnummer(POSTNUMMER);
-		kontaktAdresse.setPoststedsnavn(POSTSTED);
-		return kontaktAdresse;
+		return KontaktinformasjonForDoedsbo.KontaktAdresse.builder()
+				.adresselinje1(ADRESSENAVN_1)
+				.postnummer(POSTNUMMER)
+				.poststedsnavn(POSTSTED)
+				.build();
 	}
 
 	public static Vegadresse createVegadresse() {

@@ -2,23 +2,23 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class Bostedsadresse implements GyldigKilde {
-	private LocalDate angittFlyttedato;
-	private LocalDateTime gyldigFraOgMed;
-	private LocalDateTime gyldigTilOgMed;
-	private String coAdressenavn;
-	private Vegadresse vegadresse;
-	private Matrikkeladresse matrikkeladresse;
-	private UtenlandskAdresse utenlandskAdresse;
-	private UkjentBosted ukjentBosted;
-	private Metadata metadata;
+	LocalDate angittFlyttedato;
+	LocalDateTime gyldigFraOgMed;
+	LocalDateTime gyldigTilOgMed;
+	String coAdressenavn;
+	Vegadresse vegadresse;
+	Matrikkeladresse matrikkeladresse;
+	UtenlandskAdresse utenlandskAdresse;
+	UkjentBosted ukjentBosted;
+	Metadata metadata;
 
 }

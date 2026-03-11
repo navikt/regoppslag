@@ -5,20 +5,19 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
 public class PDLHentPersonResponse {
 
-	private List<PDLError> errors;
-	private PDLHentPerson data;
+	List<PDLError> errors;
+	PDLHentPerson data;
 
-	@Setter
-	@Getter
+	@Value
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class PDLHentPerson {
-		private HentPerson hentPerson;
+		HentPerson hentPerson;
 	}
 }

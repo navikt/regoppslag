@@ -82,10 +82,11 @@ public class DokmetConsumerTest {
 
 	@Test
 	public void shouldHentSpraakinfo() throws JsonProcessingException {
+		String body = jsonMapper.writeValueAsString(defaultResponse(LANG1, LANG2));
 		stubFor(get(urlMatching(DOKUMENTINFO_URL_REGEX))
 				.willReturn(aResponse()
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBody(jsonMapper.writeValueAsString(defaultResponse(LANG1, LANG2)))
+						.withBody(body)
 				));
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);

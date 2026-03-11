@@ -132,8 +132,7 @@ class DoedsboAdresseServiceTest {
 
 	@Test
 	public void shouldMapKontaktinformasjonForDoedsboSomHenteKontaktFraPDL() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithPerson();
-		kontaktinformasjon.getPersonSomKontakt().setPersonnavn(null);
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithPerson(null);
 		HentPerson hentPerson = createHentePersonBuilder()
 				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
@@ -225,14 +224,13 @@ class DoedsboAdresseServiceTest {
 
 	@Test
 	public void shouldMapKontaktinformasjonForDoedsboWithKontaktPersonNull() {
-		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(createNavnForOrganisasjonSomKontakt()), createPersonKontaktAdresse());
+		KontaktinformasjonForDoedsbo kontaktinformasjon = createKontaktinformasjonForDoedsboWithOrganisasjon(organisasjonSomKontakt(null), createPersonKontaktAdresse());
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.doedsfall(singletonList(createDoedsfall(DOEDSDATO)))
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
 				.kontaktinformasjonForDoedsbo(singletonList(kontaktinformasjon))
 				.build();
-		kontaktinformasjon.getOrganisasjonSomKontakt().setKontaktperson(null);
 
 		PdlMottakerInfo mottakerInfo = doedsboAdresseService.mapFoerDoedsbo(hentPerson);
 		PostadresseTo response = mottakerInfo.getPostadresse();

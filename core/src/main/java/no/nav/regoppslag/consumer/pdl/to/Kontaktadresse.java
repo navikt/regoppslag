@@ -2,25 +2,25 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class Kontaktadresse implements GyldigKilde {
 
-	private LocalDateTime gyldigFraOgMed;
-	private LocalDateTime gyldigTilOgMed;
-	private String type;
-	private String coAdressenavn;
-	private PostadresseIFrittFormat postadresseIFrittFormat;
-	private Vegadresse vegadresse;
-	private UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
-	private Postboksadresse postboksadresse;
-	private UtenlandskAdresse utenlandskAdresse;
-	private Metadata metadata;
+	LocalDateTime gyldigFraOgMed;
+	LocalDateTime gyldigTilOgMed;
+	String type;
+	String coAdressenavn;
+	PostadresseIFrittFormat postadresseIFrittFormat;
+	Vegadresse vegadresse;
+	UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
+	Postboksadresse postboksadresse;
+	UtenlandskAdresse utenlandskAdresse;
+	Metadata metadata;
 
 	@Override
 	public boolean isGyldigFregKilde(LocalDateTime atTime) {
@@ -35,34 +35,34 @@ public class Kontaktadresse implements GyldigKilde {
 		return gyldigFraOgMed.isBefore(LocalDateTime.now()) && metadata.isKildeFreg() && isNotExpired(atTime);
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class PostadresseIFrittFormat {
-		private String adresselinje1;
-		private String adresselinje2;
-		private String adresselinje3;
-		private String postnummer;
+		String adresselinje1;
+		String adresselinje2;
+		String adresselinje3;
+		String postnummer;
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class UtenlandskAdresseIFrittFormat {
-		private String adresselinje1;
-		private String adresselinje2;
-		private String adresselinje3;
-		private String postkode;
-		private String byEllerStedsnavn;
-		private String landkode;
+		String adresselinje1;
+		String adresselinje2;
+		String adresselinje3;
+		String postkode;
+		String byEllerStedsnavn;
+		String landkode;
 	}
 
-	@Data
+	@Value
 	@Builder
 	@AllArgsConstructor
 	public static class Postboksadresse {
-		private String postbokseier;
-		private String postboks;
-		private String postnummer;
+		String postbokseier;
+		String postboks;
+		String postnummer;
 	}
 }

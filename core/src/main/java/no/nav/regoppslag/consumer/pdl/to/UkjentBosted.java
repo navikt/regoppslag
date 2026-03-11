@@ -2,13 +2,11 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class UkjentBosted {
-    private String bostedskommune;
+    String bostedskommune;
 }

@@ -2,7 +2,7 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,13 +12,13 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.FREG;
 import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class Metadata {
-	private String opplysningsId;
-	private String master;
-	private List<Endring> endringer;
+	String opplysningsId;
+	String master;
+	List<Endring> endringer;
 
 	public boolean isKildePdl() {
 		return PDL.name().equalsIgnoreCase(master);
