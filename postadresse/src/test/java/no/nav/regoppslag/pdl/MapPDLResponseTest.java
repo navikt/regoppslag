@@ -16,7 +16,6 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -576,11 +575,21 @@ public class MapPDLResponseTest {
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
-	@Disabled
+
 	@Test
 	public void shouldValidateKontaktadresseForInnlandAddresseWithVegadresseAndThrowOnInvalid() {
-		Vegadresse adresse = createVegadresse();
-		// adresse.setPostnummer(null);
+		Vegadresse adresse = Vegadresse.builder()
+			.matrikkelId(PDLResponseUtil.MATRIKKEL_ID)
+			.husnummer(PDLResponseUtil.HUSNUMMER)
+			.husbokstav(null)
+			.bruksenhetsnummer(null)
+			.adressenavn(PDLResponseUtil.ADRESSENAVN)
+			.kommunenummer(PDLResponseUtil.KOMMUNENUMMER)
+			.bydelsnummer(null)
+			.tilleggsnavn(null)
+			.postnummer(null)
+			.build();
+
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
 				.type(POSTADRESSE_INNLAND)

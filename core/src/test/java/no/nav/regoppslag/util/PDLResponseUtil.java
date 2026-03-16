@@ -10,7 +10,6 @@ import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.Metadata;
 import no.nav.regoppslag.consumer.pdl.to.Oppholdsadresse;
 import no.nav.regoppslag.consumer.pdl.to.PDLConstant;
-import no.nav.regoppslag.consumer.pdl.to.PersonNavn;
 import no.nav.regoppslag.consumer.pdl.to.UkjentBosted;
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
