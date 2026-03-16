@@ -2,24 +2,24 @@ package no.nav.regoppslag.consumer.pdl.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Data
+@Value
 @Builder
 @AllArgsConstructor
 public class Vegadresse {
-	private Long matrikkelId;
-	private String husnummer;
-	private String husbokstav;
-	private String bruksenhetsnummer;
-	private String adressenavn;
-	private String kommunenummer;
-	private String bydelsnummer;
-	private String tilleggsnavn;
-	private String postnummer;
+	Long matrikkelId;
+	String husnummer;
+	String husbokstav;
+	String bruksenhetsnummer;
+	String adressenavn;
+	String kommunenummer;
+	String bydelsnummer;
+	String tilleggsnavn;
+	String postnummer;
 
 	public String mapAdresselinjeFromVegadresse() {
 		return Stream.of(getAdressenavn(), " ", getHusnummer(), getHusbokstav())

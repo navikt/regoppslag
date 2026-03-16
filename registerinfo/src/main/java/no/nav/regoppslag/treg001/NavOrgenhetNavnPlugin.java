@@ -31,19 +31,16 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 	public static final String PLUGIN_NAME = "NavOrgenhetNavnPlugin";
 
 	private final OrganisasjonsenhetConsumer norg2Consumer;
-	private final Norg2Mapper norg2Mapper;
 
-	public NavOrgenhetNavnPlugin(OrganisasjonsenhetConsumer norg2Consumer,
-								 Norg2Mapper norg2Mapper) {
+	public NavOrgenhetNavnPlugin(OrganisasjonsenhetConsumer norg2Consumer) {
 		super(NavEnhet.class);
 		this.norg2Consumer = norg2Consumer;
-		this.norg2Mapper = norg2Mapper;
 	}
-	
+
 	@Override
 	public Node processElement(Node content, Map<String, Object> valueMap) {
 		validateElementType(content);
-		
+
 		try {
 			NavEnhet navEnhet = unmarshal(content);
 
@@ -53,7 +50,7 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			if (navEnhet.isBerik()) {
 				validateEnhet(navEnhet);
 				EnhetNavn rsEnhetNavn = norg2Consumer.hentEnhetNavn(navEnhet.getEnhetsId());
-				norg2Mapper.mapEnhetNavn(rsEnhetNavn, navEnhet);
+				Norg2Mapper.mapEnhetNavn(rsEnhetNavn, navEnhet);
 			} else {
 				log.info("TREG001 NavOrgEnhetPlugin: element-berik={}. Hopper over beriking av element={} med enhetsId={}.", navEnhet.isBerik(), content.getLocalName(), navEnhet.getEnhetsId());
 				return content;
@@ -71,13 +68,13 @@ public class NavOrgenhetNavnPlugin extends JaxbHelper<NavEnhet> implements Eleme
 			clearSecurityContext();
 		}
 	}
-	
+
 	private void validateEnhet(NavEnhet navEnhet)  {
 		if (isEmpty(navEnhet.getEnhetsId())) {
 			throw new RegoppslagIllegalArgumentException(format("Feil i %s med feilmelding=EnhetdId mangler.", PLUGIN_NAME), BAD_REQUEST);
 		}
 	}
-	
+
 	private void validateElementType(Node element)  {
 		if (!(ELEMENT_LOCALNAME.equals(element.getLocalName()) || ELEMENT_LOCALNAME_BEHANDLENDEENHET.equals(element.getLocalName()))) {
 			throw new RegoppslagIllegalArgumentException("Unexpected element. Expected " + ELEMENT_LOCALNAME + ". Found " + element.getLocalName(), BAD_REQUEST);

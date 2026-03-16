@@ -36,17 +36,14 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 	private static final String ELEMENT_LOCALNAME = "sakspart";
 
 	private final EregConsumer eregConsumer;
-	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	public SakspartPlugin(PdlGraphQLConsumer pdlGraphQLConsumer,
-						  EregConsumer eregConsumer,
-						  OrganisasjonEregMapper organisasjonEregMapper) {
+						  EregConsumer eregConsumer) {
 		super(Sakspart.class);
 
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.eregConsumer = eregConsumer;
-		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	@Override
@@ -71,7 +68,7 @@ public class SakspartPlugin extends JaxbHelper<Sakspart> implements ElementEnric
 
 				} else {
 					Organisasjon organisasjon = eregConsumer.hentOrganisasjon(sakspart.getId());
-					sakspart.setNavn(organisasjonEregMapper.getSakspartNavn(organisasjon));
+					sakspart.setNavn(OrganisasjonEregMapper.getSakspartNavn(organisasjon));
 				}
 			}
 

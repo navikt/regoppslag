@@ -35,7 +35,6 @@ public class HentMottakerOgAdresseService {
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
 	private final EregConsumer eregConsumer;
-	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	public static final String TREG002_FUNK_FEIL = "TREG002 Funksjonell feil: {}";
@@ -43,13 +42,11 @@ public class HentMottakerOgAdresseService {
 	public HentMottakerOgAdresseService(AdresseMapper adresseMapper,
 										PdlGraphQLConsumer pdlGraphQLConsumer,
 										MapPDLResponse mapPDLResponse,
-										EregConsumer eregConsumer,
-										OrganisasjonEregMapper organisasjonEregMapper) {
+										EregConsumer eregConsumer) {
 		this.adresseMapper = adresseMapper;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.eregConsumer = eregConsumer;
-		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public HentMottakerOgAdresseResponse hentMottakerOgAdresseInfo(HentMottakerOgAdresseRequest request) throws RegOppslagSecurityException {
@@ -81,7 +78,7 @@ public class HentMottakerOgAdresseService {
 
 	private HentMottakerOgAdresseResponse hentMottakerOgAdresseForOrg(HentMottakerOgAdresseRequest request) {
 		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdentifikator());
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdentifikator(), organisasjon);
+		MottakerTo mottakerTo = OrganisasjonEregMapper.map(request.getIdentifikator(), organisasjon);
 
 		return HentMottakerOgAdresseResponse.builder()
 				.identifikator(request.getIdentifikator())

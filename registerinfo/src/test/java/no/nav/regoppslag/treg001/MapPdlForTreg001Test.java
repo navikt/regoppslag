@@ -8,12 +8,9 @@ import no.nav.dok.brevdata.felles.v1.simpletypes.Spraakkode;
 import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
-import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
-import no.nav.regoppslag.pdl.NorskAdresseService;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.util.CreateStubs;
 import no.nav.regoppslag.util.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,15 +70,13 @@ class MapPdlForTreg001Test {
 
 	@BeforeEach
 	public void setUp() throws IOException {
-		PostnummerService postnummerService = new PostnummerService();
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(pdlGraphQLConsumer), Clock.system(OSLO_ZONE));
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		dokmetConsumer = mock(DokmetConsumer.class);
 		eregConsumer = mock(EregConsumer.class);
 
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
-		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		pdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer);
 	}
 
 	@Test

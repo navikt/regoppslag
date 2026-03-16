@@ -14,7 +14,6 @@ import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 import no.nav.regoppslag.consumer.pdl.to.Vegadresse;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 import no.nav.regoppslag.exceptions.UkjentAdresseException;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -107,14 +104,12 @@ public class MapPDLResponseTest {
 	private MapPDLResponse mapPDLResponse;
 	private DoedsboAdresseService doedsboAdresseService;
 
-	private final PostnummerService postnummerService = new PostnummerService();
-
 	@BeforeEach
 	public void setUp() {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 
-		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer));
-		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
+		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(pdlGraphQLConsumer));
+		mapPDLResponse = new MapPDLResponse(doedsboAdresseService, Clock.system(OSLO_ZONE));
 	}
 
 	@Test
@@ -580,10 +575,21 @@ public class MapPDLResponseTest {
 		assertEquals(vegadresse.getPostnummer(), response.getPostnummer());
 		assertEquals(POSTSTED, response.getPoststed());
 	}
+
 	@Test
 	public void shouldValidateKontaktadresseForInnlandAddresseWithVegadresseAndThrowOnInvalid() {
-		Vegadresse adresse = createVegadresse();
-		adresse.setPostnummer(null);
+		Vegadresse adresse = Vegadresse.builder()
+			.matrikkelId(PDLResponseUtil.MATRIKKEL_ID)
+			.husnummer(PDLResponseUtil.HUSNUMMER)
+			.husbokstav(null)
+			.bruksenhetsnummer(null)
+			.adressenavn(PDLResponseUtil.ADRESSENAVN)
+			.kommunenummer(PDLResponseUtil.KOMMUNENUMMER)
+			.bydelsnummer(null)
+			.tilleggsnavn(null)
+			.postnummer(null)
+			.build();
+
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
 				.type(POSTADRESSE_INNLAND)

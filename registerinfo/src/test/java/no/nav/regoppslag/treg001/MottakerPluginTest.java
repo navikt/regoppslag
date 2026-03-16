@@ -7,7 +7,6 @@ import no.nav.regoppslag.consumer.digdirkrr.DigitalKontaktinformasjon;
 import no.nav.regoppslag.consumer.dokmet.DokmetConsumer;
 import no.nav.regoppslag.consumer.ereg.EregConsumer;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
-import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson.PersonNavn;
@@ -15,8 +14,6 @@ import no.nav.regoppslag.exceptions.FeilGrunnetHoeytVolumWorkaroundException;
 import no.nav.regoppslag.exceptions.RegOppslagSecurityException;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
-import no.nav.regoppslag.pdl.NorskAdresseService;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.support.SpraakKodeMapper;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
@@ -92,8 +89,6 @@ public class MottakerPluginTest {
 	private PdlGraphQLConsumer pdlGraphQLConsumer;
 
 	@InjectMocks
-	private PostnummerService postnummerService;
-	@InjectMocks
 	private MapPdlForTreg001 mapPdlForTreg001;
 
 
@@ -105,16 +100,14 @@ public class MottakerPluginTest {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		digitalKontaktinformasjon = mock(DigitalKontaktinformasjon.class);
 		dokmetConsumer = mock(DokmetConsumer.class);
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
-		postnummerService = new PostnummerService();
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(pdlGraphQLConsumer), Clock.system(OSLO_ZONE));
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 		valueMap.put(ValueMapKeys.MAALFORM.name(), new SpraakKodeMapper());
 
 		eregConsumer = mock(EregConsumer.class);
-		OrganisasjonEregMapper organisasjonEregMapper = new OrganisasjonEregMapper(new PostnummerService());
-		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer, organisasjonEregMapper);
+		mapPdlForTreg001 = new MapPdlForTreg001(pdlGraphQLConsumer, mapPDLResponse, dokmetConsumer, digitalKontaktinformasjon, eregConsumer);
 		mottakerPlugin = new MottakerPlugin(mapPdlForTreg001);
 	}
 

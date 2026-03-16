@@ -45,22 +45,19 @@ public class MapPdlForTreg001 {
 	private final DigitalKontaktinformasjon digitalKontaktinformasjon;
 	private final SpraakKodeMapper spraakKodeMapper;
 	private final EregConsumer eregConsumer;
-	private final OrganisasjonEregMapper organisasjonEregMapper;
 
 	private static final String LAND_NORGE = "Norge";
 
 	public MapPdlForTreg001(PdlGraphQLConsumer pdlGraphQLConsumer, MapPDLResponse mapPDLResponse,
 							DokmetConsumer dokmetConsumer,
 							DigitalKontaktinformasjon digitalKontaktinformasjon,
-							EregConsumer eregConsumer,
-							OrganisasjonEregMapper organisasjonEregMapper) {
+							EregConsumer eregConsumer) {
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.dokmetConsumer = dokmetConsumer;
 		this.digitalKontaktinformasjon = digitalKontaktinformasjon;
 		this.spraakKodeMapper = new SpraakKodeMapper();
 		this.eregConsumer = eregConsumer;
-		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public Mottaker getMottakerFraPdl(Mottaker mottaker, String dokumenttypeId) {
@@ -78,7 +75,7 @@ public class MapPdlForTreg001 {
 				mottaker.setSpraakkode(spraakkode);
 			} else {
 				Organisasjon organisasjon = eregConsumer.hentOrganisasjon(mottaker.getId());
-				MottakerTo mottakerTo = organisasjonEregMapper.map(mottaker.getId(), organisasjon);
+				MottakerTo mottakerTo = OrganisasjonEregMapper.map(mottaker.getId(), organisasjon);
 				mottaker.setId(mottaker.getId());
 				mottaker.setMottakeradresse(mottakerTo.getMottaker().getMottakeradresse());
 				mottaker.setKortNavn(mottakerTo.getMottaker().getKortNavn());

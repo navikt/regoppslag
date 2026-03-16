@@ -6,6 +6,7 @@ import no.nav.regoppslag.consumer.ereg.MottakerTo;
 import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
+import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
@@ -37,7 +38,6 @@ public class PostadresseService {
 	private final AdresseMapper adresseMapper;
 	private final PdlGraphQLConsumer pdlGraphQLConsumer;
 	private final MapPDLResponse mapPDLResponse;
-	private final OrganisasjonEregMapper organisasjonEregMapper;
 	private static final Logger secureLog = LoggerFactory.getLogger("secureLog");
 
 	private static final String RREG003_FUNK_FEIL = "RREG003 Funksjonell feil: {}";
@@ -45,13 +45,11 @@ public class PostadresseService {
 	public PostadresseService(AdresseMapper adresseMapper,
 							  PdlGraphQLConsumer pdlGraphQLConsumer,
 							  MapPDLResponse mapPDLResponse,
-							  EregConsumer eregConsumer,
-							  OrganisasjonEregMapper organisasjonEregMapper) {
+							  EregConsumer eregConsumer) {
 		this.adresseMapper = adresseMapper;
 		this.pdlGraphQLConsumer = pdlGraphQLConsumer;
 		this.mapPDLResponse = mapPDLResponse;
 		this.eregConsumer = eregConsumer;
-		this.organisasjonEregMapper = organisasjonEregMapper;
 	}
 
 	public PostadresseResponse postadresseInfo(PostadresseRequest request, String behandlingsnummer) throws RegOppslagSecurityException {
@@ -73,7 +71,7 @@ public class PostadresseService {
 
 	private PostadresseResponse postadresseForPerson(PostadresseRequest request, String input_behandlingsnummer) {
 		String behandlingsnummer = input_behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : input_behandlingsnummer;
-		var personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
+		HentPerson personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
@@ -95,7 +93,7 @@ public class PostadresseService {
 	private PostadresseResponse postadresseForOrg(PostadresseRequest request) {
 		Organisasjon organisasjon = eregConsumer.hentOrganisasjon(request.getIdent());
 
-		MottakerTo mottakerTo = organisasjonEregMapper.map(request.getIdent(), organisasjon);
+		MottakerTo mottakerTo = OrganisasjonEregMapper.map(request.getIdent(), organisasjon);
 		return PostadresseResponse.builder()
 				.navn(mottakerTo.getMottaker().getNavn())
 				.adresse(adresseMapper.map(mottakerTo))

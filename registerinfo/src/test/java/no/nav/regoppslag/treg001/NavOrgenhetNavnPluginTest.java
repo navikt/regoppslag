@@ -2,9 +2,7 @@ package no.nav.regoppslag.treg001;
 
 import no.nav.dok.brevdata.felles.v1.navfelles.NavEnhet;
 import no.nav.regoppslag.consumer.norg2.OrganisasjonsenhetConsumer;
-import no.nav.regoppslag.consumer.norg2.support.Norg2Mapper;
 import no.nav.regoppslag.consumer.norg2.to.EnhetNavn;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.treg001.xmlenricher.util.JaxbHelper;
 import no.nav.regoppslag.treg001.xmlenricher.util.ValueMapKeys;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,13 +44,11 @@ public class NavOrgenhetNavnPluginTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		OrganisasjonsenhetConsumer norgConsumer = Mockito.mock(OrganisasjonsenhetConsumer.class);
-		PostnummerService postnummerService = new PostnummerService();
 		valueMap = new HashMap<>();
 		valueMap.put(ValueMapKeys.DOKUMENTTYPEID.name(), DOKUMENTTYPEID);
 		valueMap.put(ValueMapKeys.PREFIXMAPPER.name(), null);
 
-		Norg2Mapper norg2Mapper = new Norg2Mapper(postnummerService);
-		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer, norg2Mapper);
+		norgPlugin = new NavOrgenhetNavnPlugin(norgConsumer);
 		when(norgConsumer.hentEnhetNavn(anyString())).thenReturn(createEnhet());
 	}
 

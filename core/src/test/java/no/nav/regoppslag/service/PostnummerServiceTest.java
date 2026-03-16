@@ -9,30 +9,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostnummerServiceTest {
 
-	private PostnummerService postnummerService;
-
 	@BeforeEach
 	public void setUp() throws IOException {
-		postnummerService = new PostnummerService();
 	}
 
 	@Test
 	public void shouldFinnPoststed() {
-		String poststed = postnummerService.finnPoststed("1400");
+		String poststed = PostnummerService.finnPoststed("1400");
 
 		assertThat(poststed).isEqualTo("SKI");
 	}
 
 	@Test
 	public void shouldReturnNullWhenNullPostnummer() {
-		String poststed = postnummerService.finnPoststed(null);
+		String poststed = PostnummerService.finnPoststed(null);
 
 		assertThat(poststed).isNull();
 	}
 
 	@Test
 	public void shouldReturnPostnummerWhenUkjentPostnummer() {
-		String poststed = postnummerService.finnPoststed("111111");
+		String poststed = PostnummerService.finnPoststed("111111");
 
 		assertThat(poststed).isEqualTo("111111");
 	}

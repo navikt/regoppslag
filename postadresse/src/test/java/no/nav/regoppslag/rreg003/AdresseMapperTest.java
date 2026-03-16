@@ -7,15 +7,12 @@ import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.pdl.DoedsboAdresseService;
 import no.nav.regoppslag.pdl.MapPDLResponse;
-import no.nav.regoppslag.pdl.NorskAdresseService;
 import no.nav.regoppslag.service.LandkodeServiceNorsk;
-import no.nav.regoppslag.service.PostnummerService;
 import no.nav.regoppslag.util.PDLResponseUtil;
 import no.nav.regoppslag.util.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -60,14 +57,12 @@ public class AdresseMapperTest {
 
 	private MapPDLResponse mapPDLResponse;
 	private AdresseMapper adresseMapper;
-	@InjectMocks
-	private PostnummerService postnummerService;
 
 	@BeforeEach
 	public void setUp() throws IOException {
 		PdlGraphQLConsumer pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 		LandkodeServiceNorsk landkodeServiceNorsk = new LandkodeServiceNorsk();
-		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(postnummerService, pdlGraphQLConsumer), new NorskAdresseService(postnummerService), Clock.system(OSLO_ZONE));
+		mapPDLResponse = new MapPDLResponse(new DoedsboAdresseService(pdlGraphQLConsumer), Clock.system(OSLO_ZONE));
 		adresseMapper = new AdresseMapper(landkodeServiceNorsk);
 	}
 

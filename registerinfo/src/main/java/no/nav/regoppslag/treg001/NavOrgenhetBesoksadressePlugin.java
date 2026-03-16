@@ -34,18 +34,15 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 	public static final String PLUGIN_NAME = "NavOrgenhetBesoksadressePlugin";
 
 	private OrganisasjonsenhetConsumer norg2Consumer;
-	private Norg2Mapper norg2Mapper;
 
 	public NavOrgenhetBesoksadressePlugin() {
 		super(Besoksadresse.class);
 	}
 
 	@Autowired
-	public NavOrgenhetBesoksadressePlugin(OrganisasjonsenhetConsumer norg2Consumer,
-										  Norg2Mapper norg2Mapper) {
+	public NavOrgenhetBesoksadressePlugin(OrganisasjonsenhetConsumer norg2Consumer) {
 		super(Besoksadresse.class);
 		this.norg2Consumer = norg2Consumer;
-		this.norg2Mapper = norg2Mapper;
 	}
 
 	@Override
@@ -66,7 +63,7 @@ public class NavOrgenhetBesoksadressePlugin extends JaxbHelper<Besoksadresse> im
 				EnhetNavn enhetNavn = norg2Consumer.hentEnhetNavn(adresse.getEnhetsId());
 				EnhetKontaktinformasjon kontaktinformasjon = norg2Consumer.hentEnhetKontaktinformasjon(adresse.getEnhetsId());
 
-				norg2Mapper.mapBesokadresse(enhetNavn, kontaktinformasjon, adresse);
+				Norg2Mapper.mapBesokadresse(enhetNavn, kontaktinformasjon, adresse);
 			}
 
 			Document newNode = convertObjectToDocument(adresse);

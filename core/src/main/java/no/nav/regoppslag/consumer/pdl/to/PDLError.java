@@ -1,23 +1,23 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class PDLError {
-	private String message;
-	private ErrorExtensions extensions;
+	String message;
+	ErrorExtensions extensions;
 
-	@Data
+	@Value
 	public static class ErrorExtensions {
-		private String code;
-		private ErrorDetails details;
-		private String classification;
+		String code;
+		ErrorDetails details;
+		String classification;
 	}
 
-	@Data
+	@Value
 	public static class ErrorDetails {
-		private String type;
-		private String cause;
-		private String policy;
+		String type;
+		String cause;
+		String policy;
 	}
 }
