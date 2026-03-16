@@ -8,8 +8,7 @@ import no.nav.regoppslag.exceptions.Norg2FunctionalException;
 import no.nav.regoppslag.exceptions.Norg2TechnicalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -35,7 +34,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_NAVN, key = "#enhetNr")
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public EnhetNavn hentEnhetNavn(String enhetNr) {
 
 		return webClient.get()
@@ -47,7 +46,7 @@ public class OrganisasjonsenhetConsumer {
 	}
 
 	@Cacheable(value = HENT_ENHET_KONTAKTINFO, key = "#enhetNr")
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public EnhetKontaktinformasjon hentEnhetKontaktinformasjon(String enhetNr) {
 
 		return webClient.get()

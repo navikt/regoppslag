@@ -6,12 +6,11 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -43,7 +42,7 @@ public class EregConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = HttpServerErrorException.class, noRetryFor = {HttpClientErrorException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = HttpServerErrorException.class, excludes = HttpClientErrorException.class, maxRetries = 4, delay = 200)
 	public Organisasjon hentOrganisasjon(String organisasjonsnummer) {
 		if (organisasjonsnummer == null || !ORGNUMMER_PATTERN.matcher(organisasjonsnummer).matches()) {
 			throw new RegOppslagFunctionalException("Kan ikke slå opp i ereg. organisasjonsnummer='" + organisasjonsnummer + "' er ikke 9 siffer", BAD_REQUEST);

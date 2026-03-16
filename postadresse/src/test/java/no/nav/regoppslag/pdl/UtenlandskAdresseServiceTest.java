@@ -38,10 +38,10 @@ class UtenlandskAdresseServiceTest {
 				.landkode(LANDKODE_USA)
 				.build();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
-				.UtenlandskAdresse(adresse)
+				.utenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 
 		Optional<PostadresseTo> mottakerInfo = mapUtenlandskPostadresse(kontaktadresse);
 		assertThat(mottakerInfo).isPresent();

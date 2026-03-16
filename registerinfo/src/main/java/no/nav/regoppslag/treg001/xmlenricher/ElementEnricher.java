@@ -45,6 +45,7 @@ import static no.nav.regoppslag.util.MDCConstants.CALL_ID;
 import static no.nav.regoppslag.util.MDCConstants.CONSUMER_ID;
 import static no.nav.regoppslag.util.MDCConstants.USER_ID;
 import static no.nav.regoppslag.util.MDCUtil.getCallId;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
@@ -161,6 +162,9 @@ public class ElementEnricher {
 			case RegOppslagFunctionalException err -> {
 				if (NOT_FOUND.equals(err.getHttpStatusCode())) {
 					throw new RegOppslagIkkeFunnetException(err.getLocalizedMessage(), err, err.getHttpStatusCode());
+				}
+				if (INTERNAL_SERVER_ERROR.equals(err.getHttpStatusCode())) {
+					throw err;
 				}
 				throw new RegoppslagIllegalArgumentException(err.getMessage(), err, err.getHttpStatusCode());
 			}

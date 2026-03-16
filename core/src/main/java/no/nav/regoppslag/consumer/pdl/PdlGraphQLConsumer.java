@@ -17,10 +17,9 @@ import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.RequestEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -70,12 +69,12 @@ public class PdlGraphQLConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public HentPerson hentPerson(final String aktoerId) {
 		return hentPerson(aktoerId, ARKIVPLEIE_BEHANDLINGSNUMMER);
 	}
 
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public HentPerson hentPerson(final String aktoerId, String behandlingsnummer) {
 		try {
 			RequestEntity<PDLRequest> requestEntity = createRequestEntity(aktoerId, hentPersonQuery, behandlingsnummer);
@@ -94,7 +93,7 @@ public class PdlGraphQLConsumer {
 		return requireNonNull(restTemplate.exchange(requestEntity, PDLHentNavnResponse.class).getBody());
 	}
 
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public String hentNavn(final String aktoerId) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);
@@ -107,7 +106,7 @@ public class PdlGraphQLConsumer {
 		}
 	}
 
-	@Retryable(retryFor = RegOppslagTechnicalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(includes = RegOppslagTechnicalException.class, maxRetries = 4, delay = 200)
 	public Optional<String> hentDoedsBoKontaktPersonnavn(final String aktoerId) {
 		try {
 			final PDLHentNavnResponse response = hentPersonnavn(aktoerId);

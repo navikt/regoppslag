@@ -23,6 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -106,8 +107,7 @@ public class MapPDLResponseTest {
 	private MapPDLResponse mapPDLResponse;
 	private DoedsboAdresseService doedsboAdresseService;
 
-	@InjectMocks
-	private PostnummerService postnummerService;
+	private final PostnummerService postnummerService = new PostnummerService();
 
 	@BeforeEach
 	public void setUp() {
@@ -185,8 +185,8 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
 				.kontaktadresse(singletonList(kontaktadresse))
@@ -244,8 +244,8 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
@@ -273,8 +273,8 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(createMetadata(PDL.name()))
 				.build();
-		kontaktadresse.setMetadata(createMetadata(PDL.name()));
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
@@ -302,8 +302,8 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(createMetadata(PDL.name()))
 				.build();
-		kontaktadresse.setMetadata(createMetadata(PDL.name()));
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
@@ -333,8 +333,8 @@ public class MapPDLResponseTest {
 				.gyldigTilOgMed(GYLDIG_TIL_MED_DATO)
 				.postboksadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(createMetadata(FREG.name()))
 				.build();
-		kontaktadresse.setMetadata(createMetadata(FREG.name()));
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
@@ -360,10 +360,10 @@ public class MapPDLResponseTest {
 	public void shouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
-				.UtenlandskAdresse(adresse)
+				.utenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_MIDLERTIDIG)))
@@ -389,10 +389,10 @@ public class MapPDLResponseTest {
 	public void shouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
-				.UtenlandskAdresse(adresse)
+				.utenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_MIDLERTIDIG)))
@@ -417,7 +417,7 @@ public class MapPDLResponseTest {
 	public void shouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(null);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
-				.UtenlandskAdresse(adresse)
+				.utenlandskAdresse(adresse)
 				.type(POSTADRESSE_UTLAND)
 				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
@@ -587,8 +587,8 @@ public class MapPDLResponseTest {
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
 				.type(POSTADRESSE_INNLAND)
+				.metadata(Metadata.builder().master(PDL.name()).build())
 				.build();
-		kontaktadresse.setMetadata(Metadata.builder().master(PDL.name()).build());
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_BOSATT)))
 				.kontaktadresse(singletonList(kontaktadresse))

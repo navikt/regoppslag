@@ -27,9 +27,13 @@ public class PostnummerService {
 
 	private final Map<String, PostData> postalCodeTable;
 
-	public PostnummerService() throws IOException {
+	public PostnummerService() {
 		postalCodeTable = new HashMap<>();
-		init();
+		try {
+			init();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	void init() throws IOException {

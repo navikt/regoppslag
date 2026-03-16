@@ -13,8 +13,7 @@ import no.nav.regoppslag.exceptions.UkjentAdressePersonErDoedException;
 import no.nav.regoppslag.treg001.xmlenricher.ElementEnricher;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MarshallerTechnicalException;
 import no.nav.regoppslag.treg001.xmlenricher.exceptions.MissingPluginException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -66,7 +65,7 @@ public class KompletterBrevdataService {
 		return writer.toString();
 	}
 
-	@Retryable(retryFor = MarshallerTechnicalException.class, backoff = @Backoff(delay = 500, multiplier = 3))
+	@Retryable(includes = MarshallerTechnicalException.class, maxRetries = 2, delay = 500, multiplier = 3)
 	public KompletterBrevdataResponse hentBrevdataFraRegistre(KompletterBrevdataRequest request) throws RegOppslagSecurityException {
 
 		try {

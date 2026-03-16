@@ -34,7 +34,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_BOSATT;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
@@ -514,7 +514,7 @@ public class PDLResponseUtil {
 				.kontaktadresse(singletonList(Kontaktadresse.builder()
 						.type(POSTADRESSE_UTLAND)
 						.metadata(Metadata.builder().master(PDL.name()).build())
-						.UtenlandskAdresse(createUtenlandskAdresseWithName()).build()))
+						.utenlandskAdresse(createUtenlandskAdresseWithName()).build()))
 				.folkeregisteridentifikator(singletonList(HentPerson.Folkeregisteridentifikator.builder()
 						.identifikasjonsnummer(IDENTIFIKASJONSNUMMER)
 						.type(IDENTTYPE_FNR)

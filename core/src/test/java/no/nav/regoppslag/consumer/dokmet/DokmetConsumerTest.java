@@ -1,7 +1,6 @@
 package no.nav.regoppslag.consumer.dokmet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokmet.api.tkat020.DokumentProduksjonsInfoTo;
 import no.nav.dokmet.api.tkat020.DokumenttypeInfoTo;
 import no.nav.dokmet.api.tkat020.SpraakInfoTo;
@@ -10,20 +9,22 @@ import no.nav.regoppslag.config.WebClientConfig;
 import no.nav.regoppslag.config.properties.RegoppslagProperties;
 import no.nav.regoppslag.consumer.azure.AzureProperties;
 import no.nav.regoppslag.consumer.azure.AzureTestConfig;
+import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagTechnicalException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webclient.test.autoconfigure.AutoConfigureWebClient;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.wiremock.spring.EnableWireMock;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,8 +54,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @EnableConfigurationProperties({
 		RegoppslagProperties.class
 })
-@EnableRetry
-@AutoConfigureWireMock(port = 0)
+@EnableResilientMethods
+@EnableWireMock
 @ActiveProfiles("itest")
 @AutoConfigureWebClient
 @ExtendWith(SpringExtension.class)
@@ -70,7 +72,7 @@ public class DokmetConsumerTest {
 	public static final String DOKUMENTINFO_URL_REGEX = "/rest/dokumenttypeinfo/.*";
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	private JsonMapper jsonMapper;
 
 	@Autowired
 	private DokmetConsumer tkatConsumer;
@@ -83,23 +85,25 @@ public class DokmetConsumerTest {
 		stubFor(get(urlMatching(DOKUMENTINFO_URL_REGEX))
 				.willReturn(aResponse()
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBody(objectMapper.writeValueAsString(defaultResponse(LANG1, LANG2)))
+						.withBody(jsonMapper.writeValueAsString(defaultResponse(LANG1, LANG2)))
 				));
 
 		List<SpraakInfoTo> sprakinfos = tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID);
 
+		verify(1, getRequestedFor(urlMatching(DOKUMENTINFO_URL_REGEX)));
 		assertThat(sprakinfos, hasSize(2));
 		assertEquals(LANG1, sprakinfos.get(0).getSpraaklag());
 		assertEquals(LANG2, sprakinfos.get(1).getSpraaklag());
 	}
 
 	@Test
-	public void shouldThrowTechnicalExceptionWhenNotFoundAndOnlyRetryOnce() {
+	public void shouldThrowFunctionalExceptionWhenNotFoundAndNotRetry() {
 		stubFor(get(urlMatching(DOKUMENTINFO_URL_REGEX))
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())));
-		RegOppslagTechnicalException e = assertThrows(RegOppslagTechnicalException.class,
+		RegOppslagFunctionalException e = assertThrows(RegOppslagFunctionalException.class,
 				() -> tkatConsumer.hentDokumenttypeInfoSpraak(DOKDUMENTYPE_ID), "Ugyldig input");
 		assertThat(e.getMessage(), containsString("TKAT020 feilet med statusKode=404 NOT_FOUND. Fant ingen dokumenttypeInfo med dokumenttypeId=I000003."));
+		assertThat(e.getHttpStatusCode(), equalTo(INTERNAL_SERVER_ERROR));
 		verify(1, getRequestedFor(urlMatching(DOKUMENTINFO_URL_REGEX)));
 	}
 

@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Kontaktadresse implements GyldigKilde {
 
 	private LocalDateTime gyldigFraOgMed;
@@ -17,7 +19,7 @@ public class Kontaktadresse implements GyldigKilde {
 	private Vegadresse vegadresse;
 	private UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat;
 	private Postboksadresse postboksadresse;
-	private UtenlandskAdresse UtenlandskAdresse;
+	private UtenlandskAdresse utenlandskAdresse;
 	private Metadata metadata;
 
 	@Override
@@ -35,6 +37,7 @@ public class Kontaktadresse implements GyldigKilde {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class PostadresseIFrittFormat {
 		private String adresselinje1;
 		private String adresselinje2;
@@ -44,6 +47,7 @@ public class Kontaktadresse implements GyldigKilde {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class UtenlandskAdresseIFrittFormat {
 		private String adresselinje1;
 		private String adresselinje2;
@@ -55,6 +59,7 @@ public class Kontaktadresse implements GyldigKilde {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static class Postboksadresse {
 		private String postbokseier;
 		private String postboks;

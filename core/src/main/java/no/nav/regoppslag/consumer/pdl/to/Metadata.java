@@ -1,5 +1,6 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import static no.nav.regoppslag.consumer.pdl.to.InformasjonKilde.PDL;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Metadata {
 	private String opplysningsId;
 	private String master;
