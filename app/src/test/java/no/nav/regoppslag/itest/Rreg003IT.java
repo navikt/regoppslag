@@ -34,7 +34,7 @@ import static no.nav.regoppslag.pdl.MapPDLResponse.UKJENT_ADRESSE_REASON_CODE;
 import static no.nav.regoppslag.rest.PostAdresseController.BEHANDLINGSNUMMER_HEADER;
 import static no.nav.regoppslag.rest.PostAdresseController.POSTADRESSE_URI_PATH;
 import static no.nav.regoppslag.rest.RegisteroppslagRestController.REST;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.ADRESSEBESKYTTELSE_TYPE;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.ADRESSEBESKYTTELSE_GYLDIGE_VERDIER;
 import static no.nav.regoppslag.rreg003.PostadresseType.NORSKPOSTADRESSE;
 import static no.nav.regoppslag.rreg003.PostadresseType.UTENLANDSKPOSTADRESSE;
 import static no.nav.regoppslag.util.NavHeaders.NAV_REASON_CODE;
@@ -596,7 +596,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_TYPE), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_GYLDIGE_VERDIER), PostadresseResponse.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 	}
@@ -605,7 +605,7 @@ public class Rreg003IT extends AbstractIT {
 	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligUtlandGradering() {
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
 
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_TYPE), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_GYLDIGE_VERDIER), PostadresseResponse.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 	}
@@ -620,21 +620,21 @@ public class Rreg003IT extends AbstractIT {
 				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(e.getMessage()).contains("Fikk ugyldig filtrerAdressebeskyttelse=[Strengt]");
+		assertThat(e.getMessage()).contains("Ugyldig input med feilmelding=FiltrerAdressebeskyttelse kan kun ha verdiene=[strengt_fortrolig, fortrolig, strengt_fortrolig_utland]. Ugyldige verdier mottatt=[Strengt])");
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFilterAdressebeskyttelseErOverThreeInput() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
-		Set<String> gradering = new HashSet<>(ADRESSEBESKYTTELSE_TYPE);
+		Set<String> gradering = new HashSet<>(ADRESSEBESKYTTELSE_GYLDIGE_VERDIER);
 		gradering.add("ugradert");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 				restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, gradering), Object.class));
 
 		assertThat(e.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(e.getMessage()).contains("Fikk ugyldig filtrerAdressebeskyttelse=[ugradert]");
+		assertThat(e.getMessage()).contains("Ugyldig input med feilmelding=FiltrerAdressebeskyttelse kan kun ha verdiene=[strengt_fortrolig, fortrolig, strengt_fortrolig_utland]. Ugyldige verdier mottatt=[ugradert]");
 	}
 
 	@Test
