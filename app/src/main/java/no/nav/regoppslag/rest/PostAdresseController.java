@@ -54,7 +54,7 @@ public class PostAdresseController {
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.", content = @Content)
 	})
-	@Parameter(in = HEADER, name = BEHANDLINGSNUMMER_HEADER, description = "Custom header for å kalle PDL med annet hjemmel enn arkivpleie. Må være på formatet Stor forbokstav etterfulgt av tre siffer, eks B123")
+	@Parameter(in = HEADER, name = BEHANDLINGSNUMMER_HEADER, description = "Custom header for å kalle PDL med annet hjemmel enn arkivpleie. Støtter enkelt behandlingsnummer eller en komma-separert liste. Hvert behandlingsnummer må være på formatet Stor forbokstav etterfulgt av tre siffer, eks B123")
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(@RequestBody PostadresseRequest requestBody, @RequestHeader(value = BEHANDLINGSNUMMER_HEADER, required = false) String behandlingsnummer) throws RegOppslagSecurityException {
 		try {

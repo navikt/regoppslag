@@ -113,6 +113,23 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
+	public void shouldReturnOkForCommaSeparatedBehandlingsnummerListe() {
+		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", "B123,A456");
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, "B123,A456"), PostadresseResponse.class);
+
+		assertEquals(OK, response.getStatusCode());
+	}
+
+	@Test
+	public void shouldReturnBadRequestForInvalidBehandlingsnummerInCommaSeparatedListe() {
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, "B123,invalid"), PostadresseResponse.class));
+
+		assertEquals(BAD_REQUEST, e.getStatusCode());
+		assertThat(e.getMessage()).contains("Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123");
+	}
+
+	@Test
 	public void shouldGetPersonMedNorskPostadresse() {
 		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
 

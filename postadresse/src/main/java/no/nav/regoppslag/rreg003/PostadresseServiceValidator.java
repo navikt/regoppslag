@@ -41,7 +41,7 @@ public class PostadresseServiceValidator {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
 		}
 
-		if (!isEmpty(behandlingsnummer) && !BEHANDLINGSNUMMER_PATTERN.matcher(behandlingsnummer).matches()) {
+		if (!isEmpty(behandlingsnummer) && !isValidBehandlingsnummerListe(behandlingsnummer)) {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123 ", BAD_REQUEST);
 		}
 
@@ -73,5 +73,15 @@ public class PostadresseServiceValidator {
 
 	public static boolean isValidAdressebeskyttelseGradering(PostadresseRequest request) {
 		return ADRESSEBESKYTTELSE_TYPE.containsAll(request.getFiltrerAdressebeskyttelse());
+	}
+
+	public static boolean isValidBehandlingsnummerListe(String behandlingsnummer) {
+		String[] parts = behandlingsnummer.split(",");
+		for (String part : parts) {
+			if (!BEHANDLINGSNUMMER_PATTERN.matcher(part.trim()).matches()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
