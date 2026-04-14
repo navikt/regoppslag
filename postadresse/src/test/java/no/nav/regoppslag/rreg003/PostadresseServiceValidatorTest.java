@@ -76,18 +76,18 @@ class PostadresseServiceValidatorTest {
 	}
 
 	@Test
-	void isValidBehandlingsnummerListeShouldReturnTrueForSingle() {
-		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerListe("B123")).isTrue();
+	void isValidBehandlingsnummerListShouldReturnTrueForSingle() {
+		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerList("B123")).isTrue();
 	}
 
 	@Test
-	void isValidBehandlingsnummerListeShouldReturnTrueForCommaSeparated() {
-		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerListe("B123,A456")).isTrue();
+	void isValidBehandlingsnummerListShouldReturnTrueForCommaSeparated() {
+		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerList("B123,A456")).isTrue();
 	}
 
 	@Test
-	void isValidBehandlingsnummerListeShouldReturnFalseForInvalidElement() {
-		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerListe("B123,invalid")).isFalse();
+	void isValidBehandlingsnummerListShouldReturnFalseForInvalidElement() {
+		assertThat(PostadresseServiceValidator.isValidBehandlingsnummerList("B123,invalid")).isFalse();
 	}
 
 	@Test
