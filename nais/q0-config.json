@@ -28,6 +28,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "azure-token-generator",
+			"namespace": "nais",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "dokprod-q0",
 			"namespace": "teamdokumenthandtering",
 			"cluster": "dev-fss"

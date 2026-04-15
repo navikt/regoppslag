@@ -66,6 +66,7 @@ public class Rreg003IT extends AbstractIT {
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER = "b123";
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS = "BB13";
 	private static final String INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS = "BB123";
+	private static final String INVALID_BEHANDLINGSNUMMER_COMMA_SEPARATED_WITH_INVALID = "B123,invalid";
 	private static final String ORG_IDENT = "889640782";
 
 	@Test
@@ -95,16 +96,17 @@ public class Rreg003IT extends AbstractIT {
 				Arguments.of(null, null, "Ident kan ikke være null"),
 				Arguments.of(INVALID_IDENT_TOO_SHORT, null, "Ident må ha lengde på 9, 11 eller 13 siffer"),
 				Arguments.of(INVALID_IDENT_NOT_NUMERIC, null, "Ident kan kun bestå av tall"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_LONG, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_SHORT, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123"),
-				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS, "Behandlingsnummer må bestå av en stor bokstav og tre etterfølgende siffer. Eks B123")
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_LONG, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_TOO_SHORT, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_SMALL_FIRST_LETTER, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_BAD_FORMAT_TWO_LETTERS_THREE_NUMBERS, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer"),
+				Arguments.of(VALID_IDENT, INVALID_BEHANDLINGSNUMMER_COMMA_SEPARATED_WITH_INVALID, "Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer")
 		);
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = {"B123", "null"}, nullValues = {"null"})
+	@CsvSource(value = {"B123", "'B123, B456'", "'B123,B456'", "'A999,Z001,B315'", "null"}, nullValues = {"null"})
 	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
