@@ -73,6 +73,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "azure-token-generator",
+			"namespace": "nais",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "kabal-api",
 			"namespace": "klage",
 			"cluster": "dev-gcp"

@@ -75,6 +75,11 @@
 			"cluster": "prod-fss"
 		},
 		{
+			"app": "azure-token-generator",
+			"namespace": "nais",
+			"cluster": "dev-gcp"
+		},
+		{
 			"app": "brev-administrasjon-q2",
 			"namespace": "isa",
 			"cluster": "dev-gcp"
