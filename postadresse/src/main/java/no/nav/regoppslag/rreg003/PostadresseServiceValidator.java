@@ -23,8 +23,21 @@ public class PostadresseServiceValidator {
 	public static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 	public static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("^[A-Z]\\d{3}$");
 
-	public static void validateInput(PostadresseRequest request, String behandlingsnummer) {
+	public static void validateBehandlingsnummer(String behandlingsnummer) {
+		if (isEmpty(behandlingsnummer)) {
+			return;
+		}
 
+		for (String entry : behandlingsnummer.split(",", -1)) {
+			String trimmed = entry.trim();
+			if (!BEHANDLINGSNUMMER_PATTERN.matcher(trimmed).matches()) {
+				throw new RegoppslagIllegalArgumentException(
+						UGYLDIG_INPUT + " Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.", BAD_REQUEST);
+			}
+		}
+	}
+
+	public static void validateInput(PostadresseRequest request) {
 		if (request == null) {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Request body er tom.", BAD_REQUEST);
 		}
@@ -41,48 +54,35 @@ public class PostadresseServiceValidator {
 			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
 		}
 
-		validateBehandlingsnummer(behandlingsnummer);
-
 		if (!isEmpty(request.getFiltrerAdressebeskyttelse()) && validateAdressebeskyttelseInput(request)) {
-			throw new RegoppslagIllegalArgumentException(getInvalidFilterAdressebeskyttelseInput(request), BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + getInvalidFilterAdressebeskyttelseInput(request), BAD_REQUEST);
 		}
-	}
-
-	public static boolean validateFiltrerAdressebeskyttelse(PostadresseRequest postadresseRequest, PdlMottakerInfo pdlMottakerInfo) {
-		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isEmpty(pdlMottakerInfo.getAdressebeskyttelseType())) {
-			return false;
-		}
-		Set<String> adressebeskyttelse = postadresseRequest.getFiltrerAdressebeskyttelse();
-		return pdlMottakerInfo.getAdressebeskyttelseType().stream()
-				.anyMatch(adressebeskyttelse::contains);
 	}
 
 	private static boolean validateAdressebeskyttelseInput(PostadresseRequest request) {
 		return request.getFiltrerAdressebeskyttelse().size() > 3 || !isValidAdressebeskyttelseGradering(request);
 	}
 
-	public static String getInvalidFilterAdressebeskyttelseInput(PostadresseRequest request) {
+	private static String getInvalidFilterAdressebeskyttelseInput(PostadresseRequest request) {
 		String invalidInput = request.getFiltrerAdressebeskyttelse().stream()
 				.filter(beskyttelse -> !ADRESSEBESKYTTELSE_TYPE.contains(beskyttelse))
 				.collect(Collectors.joining(","));
 
-		return format("filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[%s]", ADRESSEBESKYTTELSE_TYPE, invalidInput);
+		return format(" filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[%s]", ADRESSEBESKYTTELSE_TYPE, invalidInput);
 	}
 
-	public static boolean isValidAdressebeskyttelseGradering(PostadresseRequest request) {
+	private static boolean isValidAdressebeskyttelseGradering(PostadresseRequest request) {
 		return ADRESSEBESKYTTELSE_TYPE.containsAll(request.getFiltrerAdressebeskyttelse());
 	}
 
-	static void validateBehandlingsnummer(String behandlingsnummer) {
-		if (isEmpty(behandlingsnummer)) {
-			return;
+	public static boolean validateFiltrerAdressebeskyttelse(PostadresseRequest postadresseRequest, PdlMottakerInfo pdlMottakerInfo) {
+		if (isEmpty(postadresseRequest.getFiltrerAdressebeskyttelse()) || isEmpty(pdlMottakerInfo.getAdressebeskyttelseType())) {
+			return false;
 		}
-		for (String entry : behandlingsnummer.split(",", -1)) {
-			String trimmed = entry.trim();
-			if (!BEHANDLINGSNUMMER_PATTERN.matcher(trimmed).matches()) {
-				throw new RegoppslagIllegalArgumentException(
-						UGYLDIG_INPUT + " Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.", BAD_REQUEST);
-			}
-		}
+
+		Set<String> adressebeskyttelse = postadresseRequest.getFiltrerAdressebeskyttelse();
+		return pdlMottakerInfo.getAdressebeskyttelseType().stream()
+				.anyMatch(adressebeskyttelse::contains);
 	}
+
 }

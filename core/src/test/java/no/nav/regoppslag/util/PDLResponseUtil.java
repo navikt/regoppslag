@@ -739,6 +739,14 @@ public class PDLResponseUtil {
 				.withBodyFile(filePath)));
 	}
 
+	public static void postPdlGraphqlWithoutCustomBehandlingsnummer(int status, String filePath) {
+		stubFor(post("/graphql").willReturn(aResponse()
+				.withStatus(status)
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withBodyFile(filePath)));
+	}
+
 	public static void postPdlDigdir(int status, String filePath) {
 		stubFor(post("/digdir/rest/v1/personer?inkluderSikkerDigitalPost=false").willReturn(aResponse()
 				.withStatus(status)
