@@ -53,7 +53,7 @@ class PostadresseServiceValidatorTest {
 	void skalAvviseUgyldigBehandlingsnummer(String behandlingsnummer) {
 		assertThatThrownBy(() -> validateBehandlingsnummer(behandlingsnummer))
 				.isInstanceOf(RegoppslagIllegalArgumentException.class)
-				.hasMessage("Ugyldig input Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
+				.hasMessage("Ugyldig input med feilmelding=Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
 	}
 
 	@ParameterizedTest
@@ -61,7 +61,7 @@ class PostadresseServiceValidatorTest {
 	void skalAvviseKommaseparertListeMedUgyldigBehandlingsnummer(String behandlingsnummer) {
 		assertThatThrownBy(() -> validateBehandlingsnummer(behandlingsnummer))
 				.isInstanceOf(RegoppslagIllegalArgumentException.class)
-				.hasMessage("Ugyldig input Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
+				.hasMessage("Ugyldig input med feilmelding=Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
 	}
 
 	@Test
@@ -83,7 +83,7 @@ class PostadresseServiceValidatorTest {
 	void skalKasteExceptionHvisRequestErNull() {
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(null))
-				.withMessage("Ugyldig input Request body er tom.");
+				.withMessage("Ugyldig input med feilmelding=Request body er tom.");
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class PostadresseServiceValidatorTest {
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input Ident kan ikke være null.");
+				.withMessage("Ugyldig input med feilmelding=Ident kan ikke være null.");
 	}
 
 	@ParameterizedTest
@@ -102,7 +102,7 @@ class PostadresseServiceValidatorTest {
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input Ident kan kun bestå av tall.");
+				.withMessage("Ugyldig input med feilmelding=Ident kan kun bestå av tall.");
 	}
 
 	@Test
@@ -111,7 +111,7 @@ class PostadresseServiceValidatorTest {
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input Ident må ha lengde på 9, 11 eller 13 siffer.");
+				.withMessage("Ugyldig input med feilmelding=Ident må ha lengde på 9, 11 eller 13 siffer.");
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class PostadresseServiceValidatorTest {
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[EKSTRA_VERDI]".formatted(ADRESSEBESKYTTELSE_TYPE));
+				.withMessage("Ugyldig input med feilmelding=filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[EKSTRA_VERDI]".formatted(ADRESSEBESKYTTELSE_TYPE));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class PostadresseServiceValidatorTest {
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
 				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[STRENGT_FORTROLIG_INNLAND]".formatted(ADRESSEBESKYTTELSE_TYPE));
+				.withMessage("Ugyldig input med feilmelding=filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[STRENGT_FORTROLIG_INNLAND]".formatted(ADRESSEBESKYTTELSE_TYPE));
 	}
 
 	@ParameterizedTest

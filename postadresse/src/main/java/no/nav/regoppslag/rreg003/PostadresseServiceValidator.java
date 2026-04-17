@@ -19,9 +19,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class PostadresseServiceValidator {
 
 	public static final Set<String> ADRESSEBESKYTTELSE_TYPE = Set.of(FORTROLIG, STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
-	public static final String UGYLDIG_INPUT = "Ugyldig input";
 	public static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 	public static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("^[A-Z]\\d{3}$");
+
+	public static final String UGYLDIG_INPUT = "Ugyldig input med feilmelding=%s";
 
 	public static void validateBehandlingsnummer(String behandlingsnummer) {
 		if (isEmpty(behandlingsnummer)) {
@@ -31,31 +32,30 @@ public class PostadresseServiceValidator {
 		for (String entry : behandlingsnummer.split(",", -1)) {
 			String trimmed = entry.trim();
 			if (!BEHANDLINGSNUMMER_PATTERN.matcher(trimmed).matches()) {
-				throw new RegoppslagIllegalArgumentException(
-						UGYLDIG_INPUT + " Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.", BAD_REQUEST);
+				throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted("Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123."), BAD_REQUEST);
 			}
 		}
 	}
 
 	public static void validateInput(PostadresseRequest request) {
 		if (request == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Request body er tom.", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted("Request body er tom."), BAD_REQUEST);
 		}
 
 		if (request.getIdent() == null) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan ikke være null.", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted("Ident kan ikke være null."), BAD_REQUEST);
 		}
 
 		if (!NUMBER_PATTERN.matcher(request.getIdent()).matches()) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident kan kun bestå av tall.", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted("Ident kan kun bestå av tall."), BAD_REQUEST);
 		}
 
 		if (!asList(9, 11, 13).contains(request.getIdent().length())) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + " Ident må ha lengde på 9, 11 eller 13 siffer.", BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted("Ident må ha lengde på 9, 11 eller 13 siffer."), BAD_REQUEST);
 		}
 
 		if (!isEmpty(request.getFiltrerAdressebeskyttelse()) && validateAdressebeskyttelseInput(request)) {
-			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT + getInvalidFilterAdressebeskyttelseInput(request), BAD_REQUEST);
+			throw new RegoppslagIllegalArgumentException(UGYLDIG_INPUT.formatted(getInvalidFilterAdressebeskyttelseInput(request)), BAD_REQUEST);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class PostadresseServiceValidator {
 				.filter(beskyttelse -> !ADRESSEBESKYTTELSE_TYPE.contains(beskyttelse))
 				.collect(Collectors.joining(","));
 
-		return format(" filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[%s]", ADRESSEBESKYTTELSE_TYPE, invalidInput);
+		return format("filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[%s]", ADRESSEBESKYTTELSE_TYPE, invalidInput);
 	}
 
 	private static boolean isValidAdressebeskyttelseGradering(PostadresseRequest request) {
