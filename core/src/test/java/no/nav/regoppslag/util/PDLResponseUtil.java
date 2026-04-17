@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -731,20 +732,13 @@ public class PDLResponseUtil {
 	}
 
 	public static void postPdlGraphqlWithCustomBehandlingsnummer(int status, String filePath, String behandlingsnummer) {
-		stubFor(post("/graphql").willReturn(aResponse()
-				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withHeader(BEHANDLINGSNUMMER, behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : behandlingsnummer)
-				.withHeader("Connection", "close")
-				.withBodyFile(filePath)));
-	}
-
-	public static void postPdlGraphqlWithoutCustomBehandlingsnummer(int status, String filePath) {
-		stubFor(post("/graphql").willReturn(aResponse()
-				.withStatus(status)
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withHeader("Connection", "close")
-				.withBodyFile(filePath)));
+		stubFor(post("/graphql")
+				.withHeader(BEHANDLINGSNUMMER, equalTo(behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : behandlingsnummer))
+				.willReturn(aResponse()
+						.withStatus(status)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
+						.withBodyFile(filePath)));
 	}
 
 	public static void postPdlDigdir(int status, String filePath) {
