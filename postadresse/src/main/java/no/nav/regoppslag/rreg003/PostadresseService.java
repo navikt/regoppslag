@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateBehandlingsnummer;
 import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
 import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateInput;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
@@ -54,7 +55,8 @@ public class PostadresseService {
 
 	public PostadresseResponse postadresseInfo(PostadresseRequest request, String behandlingsnummer) throws RegOppslagSecurityException {
 		try {
-			validateInput(request, behandlingsnummer);
+			validateBehandlingsnummer(behandlingsnummer);
+			validateInput(request);
 
 			if (request.getIdent().length() == 9) { //organisasjon har alltid ident lengde 9
 				return postadresseForOrg(request);

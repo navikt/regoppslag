@@ -6,8 +6,8 @@ import no.nav.regoppslag.rreg003.PostadresseResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +85,7 @@ public class Rreg003IT extends AbstractIT {
 	@MethodSource
 	public void shouldReturnBadRequestForInvalidInput(String ident, String behandlingsnummer, String feilmelding) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(ident, behandlingsnummer), PostadresseResponse.class));
+				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummerHeader(ident, behandlingsnummer), PostadresseResponse.class));
 
 		assertEquals(BAD_REQUEST, e.getStatusCode());
 		assertThat(e.getMessage()).contains(feilmelding);
@@ -105,11 +105,21 @@ public class Rreg003IT extends AbstractIT {
 		);
 	}
 
+	@Test
+	public void shouldReturnOkForBehandlingsnummerHeaderNotPresent() {
+		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", null);
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithoutBehandlingsnummerHeader(VALID_IDENT), PostadresseResponse.class);
+
+		assertEquals(OK, response.getStatusCode());
+	}
+
 	@ParameterizedTest
-	@CsvSource(value = {"B123", "'B123, B456'", "'B123,B456'", "'A999,Z001,B315'", "null"}, nullValues = {"null"})
+	@ValueSource(strings = {"B123", "B123, B456", "B123,B456", "A999,Z001,B315"})
 	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummer(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
+
+		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummerHeader(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
 
 		assertEquals(OK, response.getStatusCode());
 	}
@@ -687,10 +697,18 @@ public class Rreg003IT extends AbstractIT {
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
-	public HttpEntity<PostadresseRequest> createRequestWithBehandlingsnummer(String ident, String behandlingsnummer) {
+	public HttpEntity<PostadresseRequest> createRequestWithBehandlingsnummerHeader(String ident, String behandlingsnummer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token("Rreg003IT"));
 		headers.set(BEHANDLINGSNUMMER_HEADER, behandlingsnummer);
+		PostadresseRequest postadresseRequest = createPostadresseRequest(ident);
+
+		return new HttpEntity<>(postadresseRequest, headers);
+	}
+
+	public HttpEntity<PostadresseRequest> createRequestWithoutBehandlingsnummerHeader(String ident) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token("Rreg003IT"));
 		PostadresseRequest postadresseRequest = createPostadresseRequest(ident);
 
 		return new HttpEntity<>(postadresseRequest, headers);
