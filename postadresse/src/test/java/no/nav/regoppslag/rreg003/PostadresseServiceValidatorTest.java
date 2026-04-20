@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Set;
@@ -16,10 +17,10 @@ import static java.util.Collections.emptySet;
 import static no.nav.regoppslag.pdl.MapPDLResponse.FORTROLIG;
 import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG;
 import static no.nav.regoppslag.pdl.MapPDLResponse.STRENGT_FORTROLIG_UTLAND;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.ADRESSEBESKYTTELSE_TYPE;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateBehandlingsnummer;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateInput;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.ADRESSEBESKYTTELSE_GYLDIGE_VERDIER;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.personHarAdressebeskyttelse;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validerBehandlingsnummer;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validerRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -33,25 +34,25 @@ class PostadresseServiceValidatorTest {
 	@ParameterizedTest
 	@NullAndEmptySource
 	void skalGodtaNullOgTomtBehandlingsnummer(String behandlingsnummer) {
-		assertThatNoException().isThrownBy(() -> validateBehandlingsnummer(behandlingsnummer));
+		assertThatNoException().isThrownBy(() -> validerBehandlingsnummer(behandlingsnummer));
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {"B123", "Z001"})
 	void skalGodtaGyldigBehandlingsnummer(String behandlingsnummer) {
-		assertThatNoException().isThrownBy(() -> validateBehandlingsnummer(behandlingsnummer));
+		assertThatNoException().isThrownBy(() -> validerBehandlingsnummer(behandlingsnummer));
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {"B123,B456", "B123, B456", "B123,B456,C789"})
 	void skalGodtaGyldigKommaseparertBehandlingsnummer(String behandlingsnummer) {
-		assertThatNoException().isThrownBy(() -> validateBehandlingsnummer(behandlingsnummer));
+		assertThatNoException().isThrownBy(() -> validerBehandlingsnummer(behandlingsnummer));
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {"B1234", "B12", "b123", "BB13", "BB123", "123B"})
 	void skalAvviseUgyldigBehandlingsnummer(String behandlingsnummer) {
-		assertThatThrownBy(() -> validateBehandlingsnummer(behandlingsnummer))
+		assertThatThrownBy(() -> validerBehandlingsnummer(behandlingsnummer))
 				.isInstanceOf(RegoppslagIllegalArgumentException.class)
 				.hasMessage("Ugyldig input med feilmelding=Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
 	}
@@ -59,30 +60,32 @@ class PostadresseServiceValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"B123,a999", "a999,B123", "B123,,B456", ",B123", "B123,"})
 	void skalAvviseKommaseparertListeMedUgyldigBehandlingsnummer(String behandlingsnummer) {
-		assertThatThrownBy(() -> validateBehandlingsnummer(behandlingsnummer))
+		assertThatThrownBy(() -> validerBehandlingsnummer(behandlingsnummer))
 				.isInstanceOf(RegoppslagIllegalArgumentException.class)
 				.hasMessage("Ugyldig input med feilmelding=Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. F.eks. B123.");
 	}
 
-	@Test
-	void skalGodtaGyldigRequest() {
+	@ParameterizedTest
+	@MethodSource
+	@NullSource
+	void skalGodtaRequestMedEllerUtenFiltreradressebeskyttelse(Set<String> filtrerAdressebeskyttelse) {
 		var request = lagPostadresseRequest(IDENT_ORGNR);
+		request.setFiltrerAdressebeskyttelse(filtrerAdressebeskyttelse);
 
-		assertThatNoException().isThrownBy(() -> validateInput(request));
+		assertThatNoException().isThrownBy(() -> validerRequest(request));
 	}
 
-	@Test
-	void skalGodtaGyldigRequestMedFiltrerAdressebeskyttelse() {
-		var request = lagPostadresseRequest(IDENT_ORGNR);
-		request.setFiltrerAdressebeskyttelse(Set.of(FORTROLIG, STRENGT_FORTROLIG));
-
-		assertThatNoException().isThrownBy(() -> validateInput(request));
+	private static Stream<Arguments> skalGodtaRequestMedEllerUtenFiltreradressebeskyttelse() {
+		return Stream.of(
+				Arguments.of(emptySet()),
+				Arguments.of(Set.of(FORTROLIG, STRENGT_FORTROLIG))
+		);
 	}
 
 	@Test
 	void skalKasteExceptionHvisRequestErNull() {
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(null))
+				.isThrownBy(() -> validerRequest(null))
 				.withMessage("Ugyldig input med feilmelding=Request body er tom.");
 	}
 
@@ -91,7 +94,7 @@ class PostadresseServiceValidatorTest {
 		var request = lagPostadresseRequest(null);
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(request))
+				.isThrownBy(() -> validerRequest(request))
 				.withMessage("Ugyldig input med feilmelding=Ident kan ikke være null.");
 	}
 
@@ -101,7 +104,7 @@ class PostadresseServiceValidatorTest {
 		var request = lagPostadresseRequest(ident);
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(request))
+				.isThrownBy(() -> validerRequest(request))
 				.withMessage("Ugyldig input med feilmelding=Ident kan kun bestå av tall.");
 	}
 
@@ -110,7 +113,7 @@ class PostadresseServiceValidatorTest {
 		var request = lagPostadresseRequest("12345678");
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(request))
+				.isThrownBy(() -> validerRequest(request))
 				.withMessage("Ugyldig input med feilmelding=Ident må ha lengde på 9, 11 eller 13 siffer.");
 	}
 
@@ -122,8 +125,8 @@ class PostadresseServiceValidatorTest {
 				.build();
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input med feilmelding=filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[EKSTRA_VERDI]".formatted(ADRESSEBESKYTTELSE_TYPE));
+				.isThrownBy(() -> validerRequest(request))
+				.withMessage("Ugyldig input med feilmelding=FiltrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[EKSTRA_VERDI]".formatted(ADRESSEBESKYTTELSE_GYLDIGE_VERDIER));
 	}
 
 	@Test
@@ -134,8 +137,8 @@ class PostadresseServiceValidatorTest {
 				.build();
 
 		assertThatExceptionOfType(RegoppslagIllegalArgumentException.class)
-				.isThrownBy(() -> validateInput(request))
-				.withMessage("Ugyldig input med feilmelding=filtrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[STRENGT_FORTROLIG_INNLAND]".formatted(ADRESSEBESKYTTELSE_TYPE));
+				.isThrownBy(() -> validerRequest(request))
+				.withMessage("Ugyldig input med feilmelding=FiltrerAdressebeskyttelse må inneholde en eller flere av %s. Fikk ugyldig filtrerAdressebeskyttelse=[STRENGT_FORTROLIG_INNLAND]".formatted(ADRESSEBESKYTTELSE_GYLDIGE_VERDIER));
 	}
 
 	@ParameterizedTest
@@ -149,7 +152,7 @@ class PostadresseServiceValidatorTest {
 				.adressebeskyttelseType(adressebeskyttelseFraPdl)
 				.build();
 
-		assertThat(validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)).isFalse();
+		assertThat(personHarAdressebeskyttelse(request, pdlMottakerInfo)).isFalse();
 	}
 
 	private static Stream<Arguments> skalReturnereFalseHvisAdressebeskyttelseFraInputEllerPdlErTomEllerNull() {
@@ -171,7 +174,7 @@ class PostadresseServiceValidatorTest {
 				.adressebeskyttelseType(Set.of(STRENGT_FORTROLIG))
 				.build();
 
-		assertThat(validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)).isFalse();
+		assertThat(personHarAdressebeskyttelse(request, pdlMottakerInfo)).isFalse();
 	}
 
 	@ParameterizedTest
@@ -185,7 +188,7 @@ class PostadresseServiceValidatorTest {
 				.adressebeskyttelseType(adressebeskyttelseFraPdl)
 				.build();
 
-		assertThat(validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)).isTrue();
+		assertThat(personHarAdressebeskyttelse(request, pdlMottakerInfo)).isTrue();
 	}
 
 	private static Stream<Arguments> skalReturnereTrueNaarAdressebeskyttelseFraInputOgPdlMatcher() {

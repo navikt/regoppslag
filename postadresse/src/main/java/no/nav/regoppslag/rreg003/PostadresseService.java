@@ -7,7 +7,6 @@ import no.nav.regoppslag.consumer.ereg.support.Organisasjon;
 import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
-import no.nav.regoppslag.consumer.pdl.to.KontaktinformasjonForDoedsbo;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
@@ -25,9 +24,9 @@ import org.springframework.stereotype.Component;
 import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateBehandlingsnummer;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateFiltrerAdressebeskyttelse;
-import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validateInput;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.personHarAdressebeskyttelse;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validerBehandlingsnummer;
+import static no.nav.regoppslag.rreg003.PostadresseServiceValidator.validerRequest;
 import static no.nav.regoppslag.util.DomainConstants.SERVICE_CODE_RREG003;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -55,8 +54,8 @@ public class PostadresseService {
 
 	public PostadresseResponse postadresseInfo(PostadresseRequest request, String behandlingsnummer) throws RegOppslagSecurityException {
 		try {
-			validateBehandlingsnummer(behandlingsnummer);
-			validateInput(request);
+			validerBehandlingsnummer(behandlingsnummer);
+			validerRequest(request);
 
 			if (request.getIdent().length() == 9) { //organisasjon har alltid ident lengde 9
 				return postadresseForOrg(request);
@@ -71,18 +70,18 @@ public class PostadresseService {
 		return null;
 	}
 
-	private PostadresseResponse postadresseForPerson(PostadresseRequest request, String input_behandlingsnummer) {
-		String behandlingsnummer = input_behandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : input_behandlingsnummer;
+	private PostadresseResponse postadresseForPerson(PostadresseRequest request, String inputBehandlingsnummer) {
+		String behandlingsnummer = inputBehandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : inputBehandlingsnummer;
 		HentPerson personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
-		if(KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())){
+		if (KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())) {
 			secureLog.info("RREG003: Hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
 					pdlMottakerInfo.getNavn(),
 					pdlMottakerInfo.getPostadresse());
 		}
 
-		if (validateFiltrerAdressebeskyttelse(request, pdlMottakerInfo)) {
+		if (personHarAdressebeskyttelse(request, pdlMottakerInfo)) {
 			return null;
 		}
 
