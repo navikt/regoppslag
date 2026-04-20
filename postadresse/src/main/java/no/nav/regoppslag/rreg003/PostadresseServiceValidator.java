@@ -22,7 +22,7 @@ public class PostadresseServiceValidator {
 	public static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 	public static final Pattern BEHANDLINGSNUMMER_PATTERN = Pattern.compile("^[A-Z]\\d{3}$");
 
-	public static final String UGYLDIG_INPUT = "Ugyldig input med feilmelding=%s";
+	public static final String UGYLDIG_INPUT = "Ugyldig input, feilmelding=%s";
 
 	public static void validerBehandlingsnummer(String behandlingsnummer) {
 		if (isEmpty(behandlingsnummer)) {
