@@ -133,6 +133,11 @@
 			"app": "brev",
 			"namespace": "aap",
 			"cluster": "dev-gcp"
+		},
+		{
+			"app": "tiltaksgjennomforing-api",
+			"namespace": "arbeidsgiver",
+			"cluster": "dev-fss"
 		}
 	]
 }
