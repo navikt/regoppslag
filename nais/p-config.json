@@ -111,7 +111,7 @@
 		{
 			"app": "tiltaksgjennomforing-api",
 			"namespace": "arbeidsgiver",
-			"cluster": "prod-gcp"
+			"cluster": "prod-fss"
 		}
 	]
 }
