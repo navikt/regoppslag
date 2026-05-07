@@ -41,6 +41,11 @@
 			"app": "pensjon-pen-q0",
 			"namespace": "pensjon-q0",
 			"cluster": "dev-fss"
+		},
+		{
+			"app": "tiltaksgjennomforing-api",
+			"namespace": "arbeidsgiver",
+			"cluster": "dev-fss"
 		}
 	]
 }

@@ -107,6 +107,11 @@
 			"app": "brev",
 			"namespace": "aap",
 			"cluster": "prod-gcp"
+		},
+		{
+			"app": "tiltaksgjennomforing-api",
+			"namespace": "arbeidsgiver",
+			"cluster": "prod-gcp"
 		}
 	]
 }
