@@ -110,6 +110,7 @@ public class RegisteroppslagRestController {
 					content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = HentMottakerOgAdresseResponse.class))),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det er feil i inputverdiene", content = @Content),
 			@ApiResponse(responseCode = "401", description = "Manglende eller ugyldig token", content = @Content),
+			@ApiResponse(responseCode = "403", description = "Manglende tilgang til å se data om person", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
