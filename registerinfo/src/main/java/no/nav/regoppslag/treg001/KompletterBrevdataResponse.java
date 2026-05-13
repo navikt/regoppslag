@@ -12,6 +12,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Respons med brevdata beriket med registerdata")
 public class KompletterBrevdataResponse {
 
 	@Schema(description = "Brevdata påført data fra berikerplugins")

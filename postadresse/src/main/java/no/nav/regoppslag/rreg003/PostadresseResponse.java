@@ -12,10 +12,12 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Respons med postadresse for person eller organisasjon")
 public class PostadresseResponse {
 
 	@Schema(example = "ARBEIDS- OG VELFERDSETATEN", description = "Navn på personen/organisasjonen")
 	private String navn;
 
+	@Schema(description = "Postadresse for mottaker")
 	private Adresse adresse;
 }

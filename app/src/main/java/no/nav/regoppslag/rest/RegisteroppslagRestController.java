@@ -2,6 +2,7 @@ package no.nav.regoppslag.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,11 +57,12 @@ public class RegisteroppslagRestController {
 		this.hentMottakerOgAdresseService = hentMottakerOgAdresseService;
 	}
 
-	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo)
+	@Operation(summary = "TREG001", description = "Denne tjenesten tar brevdata i XML format som input og beriker elementene med data fra registere ved å benytte Berikerplugins.<br/><br/>" + jwtTokenInfo, operationId = "kompletterBrevdata")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "200", description = "Brevdata beriket med registerdata",
+					content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = KompletterBrevdataResponse.class))),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det er feil i inputverdiene", content = @Content),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Manglende eller ugyldig token", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = KOMPLETTER_BREVDATA_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -99,18 +101,18 @@ public class RegisteroppslagRestController {
 		}
 	}
 
-	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
+	@Operation(summary = "TREG002", description = "Dette er en domenetjeneste som kan brukes for å hente mottakernavn og adresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo, operationId = "hentMottakerOgAdresse")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "200", description = "Mottaker og adresse funnet",
+					content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = HentMottakerOgAdresseResponse.class))),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det er feil i inputverdiene", content = @Content),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til PersonV3", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Manglende eller ugyldig token", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Bruker har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Teknisk feil", content = @Content)
 	})
 	@PostMapping(value = HENT_MOTTAKEROGADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
+	public @ResponseBody HentMottakerOgAdresseResponse hentMottakerOgAdresse(@RequestBody HentMottakerOgAdresseRequest requestBody) throws RegOppslagSecurityException {
 		try {
 			String mottakerType = removeUnsafeChars(requestBody.getType());
 			log.info("TREG002 Henter mottaker og addresse. MottakerType={}", mottakerType);

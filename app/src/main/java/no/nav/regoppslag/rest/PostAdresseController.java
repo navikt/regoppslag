@@ -3,6 +3,7 @@ package no.nav.regoppslag.rest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,18 +44,19 @@ public class PostAdresseController {
 		this.postadresseService = postadresseService;
 	}
 
-	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo)
+	@Operation(summary = "RREG003", description = "Dette er en domenetjeneste som kan brukes for å hente postadresse slik at konsumenter kun trenger å sende inn mottakerId.<br/><br/>" + jwtTokenInfo, operationId = "postadresse")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "200", description = "Postadresse funnet",
+					content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = PostadresseResponse.class))),
 			@ApiResponse(responseCode = "204", description = "Adresse til adressebeskyttet bruker er filtrert bort.", content = @Content),
 			@ApiResponse(responseCode = "400", description = "Ugyldig input. Denne feilen vil returneres hvis det feil i input verdiene.", content = @Content),
-			@ApiResponse(responseCode = "401", description = "Ingen tilgang til postadresse tjenesten.", content = @Content),
-			@ApiResponse(responseCode = "403", description = "Tilgang til å hente postadresse avvist", content = @Content),
+			@ApiResponse(responseCode = "401", description = "Manglende eller ugyldig token.", content = @Content),
+			@ApiResponse(responseCode = "403", description = "Tilgang til å hente postadresse avvist.", content = @Content),
 			@ApiResponse(responseCode = "404", description = "Person / organisasjon har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "410", description = "Person er død og har ukjent adresse.", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Intern teknisk feil i postadresse tjenesten.", content = @Content)
 	})
-	@Parameter(in = HEADER, name = BEHANDLINGSNUMMER_HEADER,
+	@Parameter(in = HEADER, name = BEHANDLINGSNUMMER_HEADER, example = "B123",
 			description = "Custom header for å kalle PDL med annet hjemmel enn arkivpleie. Støtter ett enkelt behandlingsnummer, eller en kommaseparert liste av behandlingsnummer. Hvert behandlingsnummer må bestå av én stor bokstav med tre etterfølgende siffer. Gyldige eksempler er `B123` eller `B123,B456`")
 	@PostMapping(value = POSTADRESSE_URI_PATH, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<PostadresseResponse> postadresse(@RequestBody PostadresseRequest requestBody, @RequestHeader(value = BEHANDLINGSNUMMER_HEADER, required = false) String behandlingsnummer) throws RegOppslagSecurityException {

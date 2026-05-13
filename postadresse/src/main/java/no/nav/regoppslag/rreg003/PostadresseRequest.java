@@ -17,6 +17,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 @Setter
 @NoArgsConstructor
+@Schema(description = "Request for å hente postadresse basert på identifikator")
 public class PostadresseRequest {
 
 	@Schema(example = "889640782", description = "Fnr eller org nr som brukes som oppslagsnøkkel mot PDL eller Ereg.", requiredMode = REQUIRED)

@@ -14,6 +14,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 @Setter
 @NoArgsConstructor
+@Schema(description = "Request for å hente mottaker og adresse basert på identifikator")
 public class HentMottakerOgAdresseRequest {
 	
 	@Schema(example = "889640782", description = "Fnr eller org nr som brukes som oppslagsnøkkel mot TPS_WS eller Ereg.", requiredMode = REQUIRED)
