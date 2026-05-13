@@ -15,6 +15,6 @@ import lombok.Setter;
 @Schema(description = "Respons med brevdata beriket med registerdata")
 public class KompletterBrevdataResponse {
 
-	@Schema(description = "Brevdata påført data fra berikerplugins")
+	@Schema(description = "Brevdata påført data fra berikerplugins", example = "<ns:brevdata>...</ns:brevdata>")
 	private String brevdata;
 }
