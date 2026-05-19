@@ -1,0 +1,80 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BETJENT BJARNE"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2026-03-10T00:00:00",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": null,
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": null,
+            "bySted": null,
+            "regionDistriktOmraade": "",
+            "landkode": "SWE"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2026-05-05T07:00:00",
+            "gyldighetstidspunkt": "2026-03-10T00:00:00",
+            "opphoerstidspunkt": null,
+            "kilde": "folkeregistermyndigheten",
+            "aarsak": "Utflytting",
+            "sekvens": null
+          },
+          "metadata": {
+            "opplysningsId": "11111111-2222-3333-4444-555555555555",
+            "master": "FREG",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2026-05-05T07:00:00",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "folkeregistermyndigheten",
+                "hendelseId": "11111111-2222-3333-4444-555555555555"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "FREG"
+          }
+        }
+      ]
+    }
+  }
+}

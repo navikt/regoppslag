@@ -1,0 +1,157 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "navn": [
+        {
+          "fornavn": "BJARNE",
+          "mellomnavn": null,
+          "etternavn": "BETJENT",
+          "forkortetNavn": "BETJENT BJARNE"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-08-13T00:00:00",
+          "gyldigTilOgMed": null,
+          "type": "Utland",
+          "coAdressenavn": null,
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "Liseberggatan 1",
+            "adresselinje2": "321 56 GÖTEBORG",
+            "adresselinje3": "SVERIGE",
+            "postkode": null,
+            "byEllerStedsnavn": null,
+            "landkode": "SWE"
+          },
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2020-08-27T08:56:27",
+            "gyldighetstidspunkt": "2020-08-13T00:00:00",
+            "opphoerstidspunkt": null,
+            "kilde": "",
+            "aarsak": "Utvandring",
+            "sekvens": null
+          },
+          "metadata": {
+            "opplysningsId": "11111111-2222-3333-4444-555555555555",
+            "master": "Freg",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2020-08-27T08:56:51",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "FREG",
+                "hendelseId": "11111111-2222-3333-4444-555555555555"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2020-12-20T08:25:56",
+                "registrertAv": "Folkeregisteret",
+                "systemkilde": "FREG",
+                "kilde": "FREG",
+                "hendelseId": "11111111-2222-3333-4444-555555555555"
+              }
+            ],
+            "historisk": false
+          }
+        },
+        {
+          "gyldigFraOgMed": "2026-05-04T00:00:00",
+          "gyldigTilOgMed": "2031-05-04T23:59:59",
+          "type": "Utland",
+          "coAdressenavn": "C/O Emil",
+          "postboksadresse": null,
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "Lønneberget",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "967 123",
+            "bySted": "Katthult",
+            "regionDistriktOmraade": "",
+            "landkode": "SWE"
+          },
+          "utenlandskAdresseIFrittFormat": null,
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "11111111-2222-3333-4444-555555555555",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2026-05-04T13:23:25",
+                "registrertAv": "Z100000",
+                "systemkilde": "pdl-web",
+                "kilde": "Katthult överförmyndarnämnd, SVERIGE",
+                "hendelseId": "11111111-2222-3333-4444-555555555555"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "oppholdsadresse": [],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "11111111111",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": null,
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "",
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "ukjentBosted": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "Sverigegata 1",
+            "bygningEtasjeLeilighet": "",
+            "postboksNummerNavn": null,
+            "postkode": "123 45",
+            "bySted": "Stockholm",
+            "regionDistriktOmraade": "",
+            "landkode": "SWE"
+          },
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "11111111-2222-3333-4444-555555555555",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2026-05-04T13:21:53",
+                "registrertAv": "Z100000",
+                "systemkilde": "pdl-web",
+                "kilde": "Stockholms överförmyndarnämnd, SVERIGE",
+                "hendelseId": "11111111-2222-3333-4444-555555555555"
+              }
+            ],
+            "historisk": false
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "utflyttet",
+          "forenkletStatus": "ikkeBosatt",
+          "folkeregistermetadata": {
+            "kilde": "FREG"
+          }
+        }
+      ]
+    }
+  }
+}
