@@ -40,7 +40,7 @@
 		<dok-brevdata-felles.version>41-d282678</dok-brevdata-felles.version>
 
 		<!-- Test -->
-		<wiremock-spring-boot.version>4.0.9</wiremock-spring-boot.version>
+		<wiremock-spring-boot.version>4.2.1</wiremock-spring-boot.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
