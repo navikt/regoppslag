@@ -100,12 +100,7 @@
 			"cluster": "dev-gcp"
 		},
 		{
-			"app": "kabal-api-neon",
-			"namespace": "klage",
-			"cluster": "dev-gcp"
-		},
-		{
-			"app": "kabal-api-argon",
+			"app": "klage-lookup",
 			"namespace": "klage",
 			"cluster": "dev-gcp"
 		},
