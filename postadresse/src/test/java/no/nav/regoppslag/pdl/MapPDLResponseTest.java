@@ -96,7 +96,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(SpringExtension.class)
-public class MapPDLResponseTest {
+class MapPDLResponseTest {
 
 	private static final String POSTBOKS = "postboks 73";
 
@@ -105,7 +105,7 @@ public class MapPDLResponseTest {
 	private DoedsboAdresseService doedsboAdresseService;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		pdlGraphQLConsumer = mock(PdlGraphQLConsumer.class);
 
 		doedsboAdresseService = Mockito.spy(new DoedsboAdresseService(pdlGraphQLConsumer));
@@ -113,7 +113,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldDelegateToDoedsboserviceWhenPersonIsDead() {
+	void shouldDelegateToDoedsboserviceWhenPersonIsDead() {
 		List<KontaktinformasjonForDoedsbo> kontaktinformasjon = singletonList(createKontaktinformasjonForDoedsbo());
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon));
 		mapPDLResponse.mapHentPerson(createPdlHentPersonWithPersonDoedOgAdvokatSomKontakt(kontaktinformasjon), SERVICE_CODE_TREG002);
@@ -122,7 +122,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapMidlertidigKontaktWithVegadresse() {
+	void shouldMapMidlertidigKontaktWithVegadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithVegadresse(), SERVICE_CODE_TREG002);
 
@@ -140,7 +140,7 @@ public class MapPDLResponseTest {
 
 	@SneakyThrows
 	@Test
-	public void shouldMapMidlertidigKontaktWithOppholdsadresse() {
+	void shouldMapMidlertidigKontaktWithOppholdsadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithOppholdsadresse(), SERVICE_CODE_TREG002);
 
@@ -158,7 +158,7 @@ public class MapPDLResponseTest {
 
 	@SneakyThrows
 	@Test
-	public void shouldMapMidlertidigKontaktWithBostedsadresse() {
+	void shouldMapMidlertidigKontaktWithBostedsadresse() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(createPdlHentPersonWithBostedsadresse(), SERVICE_CODE_TREG002);
 
@@ -175,7 +175,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithVegadresse() throws RegoppslagIllegalArgumentException {
+	void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithVegadresse() throws RegoppslagIllegalArgumentException {
 		Vegadresse adresse = createVegadresse();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
@@ -204,7 +204,7 @@ public class MapPDLResponseTest {
 
 
 	@Test
-	public void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithPostadresseIFrittFormatAndCoAdressenavn() throws RegoppslagIllegalArgumentException {
+	void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithPostadresseIFrittFormatAndCoAdressenavn() throws RegoppslagIllegalArgumentException {
 		Kontaktadresse.PostadresseIFrittFormat adresse = PDLResponseUtil.createPostadresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
@@ -234,7 +234,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithPostadresseIFrittFormat() throws RegoppslagIllegalArgumentException {
+	void ShouldMapAndValidateKontaktadresseForInnlandAddresseWithPostadresseIFrittFormat() throws RegoppslagIllegalArgumentException {
 		Kontaktadresse.PostadresseIFrittFormat adresse = PDLResponseUtil.createPostadresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postadresseIFrittFormat(adresse)
@@ -263,7 +263,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapInnlandKontaktadresseWithPostboksAdresseAndPDLAsSource() throws RegoppslagIllegalArgumentException {
+	void shouldMapInnlandKontaktadresseWithPostboksAdresseAndPDLAsSource() throws RegoppslagIllegalArgumentException {
 		Kontaktadresse.Postboksadresse adresse = createPostboksadresse("73");
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
@@ -292,7 +292,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapPostboksAdresseWhichStartsWithPostboks() throws RegoppslagIllegalArgumentException {
+	void shouldMapPostboksAdresseWhichStartsWithPostboks() throws RegoppslagIllegalArgumentException {
 		Kontaktadresse.Postboksadresse adresse = createPostboksadresse(POSTBOKS);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.postboksadresse(adresse)
@@ -321,7 +321,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapInnlandKontaktadresseWithPostboksAdresseAndFREGAsSource() {
+	void shouldMapInnlandKontaktadresseWithPostboksAdresseAndFREGAsSource() {
 		Kontaktadresse.Postboksadresse adresse = createPostboksadresse("73");
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.gyldigFraOgMed(GYLDIG_FRA_MED_DATO)
@@ -352,7 +352,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
+	void shouldMapKontaktadresseForUtlandWithUtlandsAddresse() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(CANADA_ALPHA3_LANDKODE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.utenlandskAdresse(adresse)
@@ -381,7 +381,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
+	void shouldMapKontaktadresseForUtlandWithKosovoAlpha3Landkode() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(KOSOVO_LANDKODE_NAV_REGISTRENE);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.utenlandskAdresse(adresse)
@@ -409,7 +409,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
+	void shouldThrowExceptionWhenLandKodeUtlandsAddresseIsNull() {
 		UtenlandskAdresse adresse = createUtenlandskAdresse(null);
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.utenlandskAdresse(adresse)
@@ -429,7 +429,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapKontaktadresseForUtlandWithUtenlandskAdresseIFrittFormat() {
+	void shouldMapKontaktadresseForUtlandWithUtenlandskAdresseIFrittFormat() {
 		Kontaktadresse.UtenlandskAdresseIFrittFormat adresse = createUtenlandskAdresseIFrittFormat();
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.gyldigFraOgMed(GYLDIG_FRA_MED_DATO)
@@ -460,7 +460,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
+	void shouldThrowUkjentAdresseExceptionWhenNoAddess() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPersonWithVegadresse());
 
 		assertThrows(UkjentAdresseException.class,
@@ -468,7 +468,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionWhenPersonnavnIsNull() {
+	void shouldThrowFunctionalExceptionWhenPersonnavnIsNull() {
 		when(pdlGraphQLConsumer.hentPerson(anyString(), anyString())).thenReturn(createPdlHentPerson(null));
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
 				mapPDLResponse.mapHentPerson(createPdlHentPerson(null), SERVICE_CODE_TREG002));
@@ -477,7 +477,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionWhenFornavnIsNull() {
+	void shouldThrowFunctionalExceptionWhenFornavnIsNull() {
 		HentPerson.PersonNavn personNavn = createPersonnavn();
 		personNavn.setFornavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
@@ -487,7 +487,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionWhenEtternavnIsNull() {
+	void shouldThrowFunctionalExceptionWhenEtternavnIsNull() {
 		HentPerson.PersonNavn personNavn = createPersonnavn();
 		personNavn.setEtternavn(null);
 		RegoppslagIllegalArgumentException e = assertThrows(RegoppslagIllegalArgumentException.class, () ->
@@ -497,7 +497,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionForUkjentBostedMottaker() {
+	void shouldThrowFunctionalExceptionForUkjentBostedMottaker() {
 		HentPerson hentPerson = createBostedsadresseWithUkjentBosted();
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
@@ -508,7 +508,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionForUkjentBostedMedStatusUtflyttet() {
+	void shouldThrowFunctionalExceptionForUkjentBostedMedStatusUtflyttet() {
 		HentPerson hentPerson = createPdlHentPersonStatusUtflyttet();
 
 		UkjentAdresseException e = assertThrows(UkjentAdresseException.class, () ->
@@ -519,7 +519,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldmapVegadresseWhenCoAdressenavnIsSett() {
+	void shouldmapVegadresseWhenCoAdressenavnIsSett() {
 		Vegadresse vegadresse = createVegadresse();
 
 		HentPerson hentPerson = createHentePersonBuilder()
@@ -549,7 +549,7 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldMapVegadresseWhenCoAdressenavnIsNull() {
+	void shouldMapVegadresseWhenCoAdressenavnIsNull() {
 		Vegadresse vegadresse = createVegadresse();
 		HentPerson hentPerson = createHentePersonBuilder()
 				.folkeregisterpersonstatus(singletonList(createFolkeregisterpersonstatus(PERSONSTATUS_DOED)))
@@ -577,18 +577,18 @@ public class MapPDLResponseTest {
 	}
 
 	@Test
-	public void shouldValidateKontaktadresseForInnlandAddresseWithVegadresseAndThrowOnInvalid() {
+	void shouldValidateKontaktadresseForInnlandAddresseWithVegadresseAndThrowOnInvalid() {
 		Vegadresse adresse = Vegadresse.builder()
-			.matrikkelId(PDLResponseUtil.MATRIKKEL_ID)
-			.husnummer(PDLResponseUtil.HUSNUMMER)
-			.husbokstav(null)
-			.bruksenhetsnummer(null)
-			.adressenavn(PDLResponseUtil.ADRESSENAVN)
-			.kommunenummer(PDLResponseUtil.KOMMUNENUMMER)
-			.bydelsnummer(null)
-			.tilleggsnavn(null)
-			.postnummer(null)
-			.build();
+				.matrikkelId(PDLResponseUtil.MATRIKKEL_ID)
+				.husnummer(PDLResponseUtil.HUSNUMMER)
+				.husbokstav(null)
+				.bruksenhetsnummer(null)
+				.adressenavn(PDLResponseUtil.ADRESSENAVN)
+				.kommunenummer(PDLResponseUtil.KOMMUNENUMMER)
+				.bydelsnummer(null)
+				.tilleggsnavn(null)
+				.postnummer(null)
+				.build();
 
 		Kontaktadresse kontaktadresse = Kontaktadresse.builder()
 				.vegadresse(adresse)
@@ -644,7 +644,7 @@ public class MapPDLResponseTest {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
+	void shouldMapBostedsadresseIfNewerThanKontaktadresseElseKontaktadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();
@@ -691,7 +691,7 @@ public class MapPDLResponseTest {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
+	void shouldMapBostedsadresseIfNewerThanOppholdsadresseElseOppholdsadresse(HentPerson hentPerson, AdresseKildeCode adresseKilde) {
 		PdlMottakerInfo mottakerInfo = mapPDLResponse.mapHentPerson(hentPerson, null);
 
 		PostadresseTo response = mottakerInfo.getPostadresse();

@@ -56,7 +56,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class Rreg003IT extends AbstractIT {
+class Rreg003IT extends AbstractIT {
 
 	private static final String VALID_IDENT = "01020304051";
 	private static final String INVALID_IDENT_TOO_SHORT = "123";
@@ -70,7 +70,7 @@ public class Rreg003IT extends AbstractIT {
 	private static final String ORG_IDENT = "889640782";
 
 	@Test
-	public void shouldThrowUnauthorizedWithoutValidToken() {
+	void shouldThrowUnauthorizedWithoutValidToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth("Bearer combustible potato");
 		PostadresseRequest postadresseRequest = createPostadresseRequest(VALID_IDENT);
@@ -83,7 +83,7 @@ public class Rreg003IT extends AbstractIT {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldReturnBadRequestForInvalidInput(String ident, String behandlingsnummer, String feilmelding) {
+	void shouldReturnBadRequestForInvalidInput(String ident, String behandlingsnummer, String feilmelding) {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummerHeader(ident, behandlingsnummer), PostadresseResponse.class));
 
@@ -106,7 +106,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnOkForBehandlingsnummerHeaderNotPresent() {
+	void shouldReturnOkForBehandlingsnummerHeaderNotPresent() {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", null);
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithoutBehandlingsnummerHeader(VALID_IDENT), PostadresseResponse.class);
@@ -116,7 +116,7 @@ public class Rreg003IT extends AbstractIT {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"B123", "B123, B456", "B123,B456", "A999,Z001,B315"})
-	public void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
+	void shouldReturnOkForValidBehandlingsnummer(String behandlingsnummer) {
 		postPdlGraphqlWithCustomBehandlingsnummer(OK.value(), "pdl/postbokskontaktadresse.json", behandlingsnummer);
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestWithBehandlingsnummerHeader(VALID_IDENT, behandlingsnummer), PostadresseResponse.class);
@@ -125,7 +125,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetPersonMedNorskPostadresse() {
+	void shouldGetPersonMedNorskPostadresse() {
 		postPdlGraphql(OK.value(), "pdl/postbokskontaktadresse.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -143,7 +143,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldMapAndGetKomplettBrevdataForBostedsadresseWithNullGyldigFraOgMed() {
+	void shouldMapAndGetKomplettBrevdataForBostedsadresseWithNullGyldigFraOgMed() {
 		postPdlGraphql(OK.value(), "pdl/bosattadresse_with_null_gyldigFraOgMed.json");
 		PostadresseResponse reponse = hentPostadresse();
 
@@ -162,7 +162,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldChooseKontaktadresseOverBostedsadresseDespiteNewerGyldigFraOgMed() {
+	void shouldChooseKontaktadresseOverBostedsadresseDespiteNewerGyldigFraOgMed() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_registrert_foer_bostedsadresse.json");
 		PostadresseResponse reponse = hentPostadresse();
 
@@ -181,7 +181,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldChooseNorskBostedsadresseWhenKontaktadresseHasExpired() {
+	void shouldChooseNorskBostedsadresseWhenKontaktadresseHasExpired() {
 		postPdlGraphql(OK.value(), "pdl/norsk_bosattadresse_kontaktadresse_gyldigTilOgMed_passert.json");
 		PostadresseResponse reponse = hentPostadresse();
 
@@ -227,7 +227,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
+	void shouldSettSinglePostboksStringAsPrefixFromPDLAdresseWhichStartsWithPostboks() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_postboks_prefix.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -245,7 +245,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowUkjentAdresseExceptionWhenPostboksAdresseIsNull() {
+	void shouldThrowUkjentAdresseExceptionWhenPostboksAdresseIsNull() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadresse_with_null_postboks.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, this::hentPostadresse);
@@ -255,7 +255,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetPersonMedNorskPostadresseOgCoAdresseUtenPrefix() {
+	void shouldGetPersonMedNorskPostadresseOgCoAdresseUtenPrefix() {
 		postPdlGraphql(OK.value(), "pdl/kontaktadressemedcoadresseutenco.json");
 
 		PostadresseResponse reponse = hentPostadresse();
@@ -347,13 +347,17 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	private PostadresseResponse hentPostadresse() {
-		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT), PostadresseResponse.class);
+		ResponseEntity<PostadresseResponse> response = hentPostadresseResponse();
 
 		assertEquals(OK, response.getStatusCode());
 		PostadresseResponse postadresseResponse = response.getBody();
 		assertNotNull(postadresseResponse);
 
 		return postadresseResponse;
+	}
+
+	private ResponseEntity<PostadresseResponse> hentPostadresseResponse() {
+		return restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequest(VALID_IDENT), PostadresseResponse.class);
 	}
 
 	@Test
@@ -438,7 +442,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetPersonMedUtenlandskPostadresse() {
+	void shouldGetPersonMedUtenlandskPostadresse() {
 		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse.json");
 
 		PostadresseResponse response = hentPostadresse();
@@ -457,7 +461,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetUtenlandskPostadresseForDoedsbo() {
+	void shouldGetUtenlandskPostadresseForDoedsbo() {
 		postPdlGraphql(OK.value(), "pdl/pdl_utenlandsk_doedsbo_adresse.json");
 
 		PostadresseResponse response = hentPostadresse();
@@ -476,7 +480,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetNorskPostadresseForDoedsbo() {
+	void shouldGetNorskPostadresseForDoedsbo() {
 		postPdlGraphql(OK.value(), "pdl/doedperson.json");
 
 		PostadresseResponse response = hentPostadresse();
@@ -495,7 +499,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenDoedPersonUtenKontaktinformasjon() {
+	void shouldThrowWhenDoedPersonUtenKontaktinformasjon() {
 		postPdlGraphql(OK.value(), "pdl/doedpersonutenadresse.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
@@ -505,7 +509,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenPersonFinnesIkke() {
+	void shouldThrowWhenPersonFinnesIkke() {
 		postPdlGraphql(OK.value(), "pdl/ukjentbosted.json");
 
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class,
@@ -515,7 +519,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetOrganisasjonWithNorskPostadresse() {
+	void shouldGetOrganisasjonWithNorskPostadresse() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -535,7 +539,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldGetOrganisasjonWithUtenlandskPostadresse() {
+	void shouldGetOrganisasjonWithUtenlandskPostadresse() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT).willReturn(aResponse()
 				.withStatus(OK.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -555,7 +559,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonFortroligGradering() {
+	void shouldThrowExceptionWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
 		Set<String> gradering = of(FORTROLIG, STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
@@ -565,7 +569,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnPostadresseResponseWhenFilterAdressebeskyttelseAndPdlResponseDoNotHaveInCommon() {
+	void shouldReturnPostadresseResponseWhenFilterAdressebeskyttelseAndPdlResponseDoNotHaveInCommon() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
 		Set<String> gradering = Set.of(STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
@@ -584,7 +588,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnPostadresseWithNoAdressebeskyttelseFilterAndPdlResponseIsUgradert() {
+	void shouldReturnPostadresseWithNoAdressebeskyttelseFilterAndPdlResponseIsUgradert() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_ugradert.json");
 
 		Set<String> gradering = Set.of();
@@ -603,7 +607,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligGradering() {
+	void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligGradering() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_strengt_fortrolig.json");
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_GYLDIGE_VERDIER), PostadresseResponse.class);
@@ -612,7 +616,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligUtlandGradering() {
+	void shouldReturnNoContentWhenFilterAdressebeskyttelseAndPdlResponseHaveInCommonStrengtFortroligUtlandGradering() {
 		postPdlGraphql(OK.value(), "pdl/utenlandskadresse_med_gradering.json");
 
 		ResponseEntity<PostadresseResponse> response = restTemplate.exchange(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, POST, createRequestMedFilterAdressebeskyttelse(VALID_IDENT, ADRESSEBESKYTTELSE_GYLDIGE_VERDIER), PostadresseResponse.class);
@@ -621,7 +625,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseInputErInvalid() {
+	void shouldThrowExceptionWhenFilterAdressebeskyttelseInputErInvalid() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
 		Set<String> gradering = of("Strengt", STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND);
@@ -634,7 +638,18 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFilterAdressebeskyttelseErOverThreeInput() {
+	void shouldThrowExceptionWhenInKontaktadresseErBlankOrNull() {
+		postPdlGraphql(OK.value(), "pdl/utenlandsk_kontaktadresse_blanke_data.json");
+
+		HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, this::hentPostadresseResponse);
+
+		assertThat(exception.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(exception.getMessage()).contains("Fant ikke adresse");
+
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFilterAdressebeskyttelseErOverThreeInput() {
 		postPdlGraphql(OK.value(), "pdl/adresse_with_adressebeskyttelse_fortrolig.json");
 
 		Set<String> gradering = new HashSet<>(ADRESSEBESKYTTELSE_GYLDIGE_VERDIER);
@@ -648,7 +663,7 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowWhenOrganisasjonIkkeFinnes() {
+	void shouldThrowWhenOrganisasjonIkkeFinnes() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse()
 						.withStatus(NOT_FOUND.value())
@@ -662,13 +677,13 @@ public class Rreg003IT extends AbstractIT {
 	}
 
 	@Test
-	public void shouldThrowBadRequestWhenOrganisasjonIkke() {
+	void shouldThrowBadRequestWhenOrganisasjonIkke() {
 		assertThrows(HttpClientErrorException.BadRequest.class,
 				() -> restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + POSTADRESSE_URI_PATH, createRequest("999999999a"), PostadresseResponse.class));
 	}
 
 	@Test
-	public void shouldThrowWhenTekniskFeilFraEreg() {
+	void shouldThrowWhenTekniskFeilFraEreg() {
 		stubFor(get("/v1/organisasjon/" + ORG_IDENT)
 				.willReturn(aResponse()
 						.withStatus(INTERNAL_SERVER_ERROR.value())

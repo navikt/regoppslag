@@ -113,7 +113,7 @@ public class UtenlandskAdresseService {
 			}
 		}
 
-		return postkodeAndByStedAndOmraade;
+		return isNotBlank(postkodeAndByStedAndOmraade) ? postkodeAndByStedAndOmraade : null;
 	}
 
 	private static String mapUtenlandskAdresselinje3(UtenlandskAdresse utenlandskAdresse, String coAdressenavn) {
@@ -131,7 +131,7 @@ public class UtenlandskAdresseService {
 			return null;
 		}
 
-		return postkodeAndByStedAndOmraade;
+		return isNotBlank(postkodeAndByStedAndOmraade) ? postkodeAndByStedAndOmraade : null;
 	}
 
 	private static String mapUtenlandskPostkodeAndByStedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
