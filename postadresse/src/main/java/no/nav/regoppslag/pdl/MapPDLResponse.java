@@ -29,7 +29,6 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
-import static java.util.function.Predicate.not;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTADRESSE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.OPPHOLDSADRESSE;
@@ -38,7 +37,7 @@ import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskAdresse;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseService.mapUtenlandskPostadresse;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -88,17 +87,15 @@ public class MapPDLResponse {
 
 		// regel "6": Bruk bostedsadresse om denne er nyere enn de andre.
 		Bostedsadresse bostedsadresse = hentPerson.getBostedsadresse(now);
-		Optional<PdlMottakerInfo> bostedsadresseOptional = Optional.empty();
+		Optional<PdlMottakerInfo> bostedsadresseOptional = empty();
 		boolean erBostedsadresseGyldigOgTypeUtland = false;
 		LocalDateTime bostedsadresseGyldigFraOgMedOrSisteEndring = null;
 		if (nonNull(bostedsadresse)) {
 			bostedsadresseOptional = safeMapBostedsAdresse(hentPerson, serviceCode, bostedsadresse);
-			if (bostedsadresseOptional.isPresent()) {
-				if (bostedsadresse.getGyldigFraOgMedOrSisteEndring() != null) {
-					bostedsadresseGyldigFraOgMedOrSisteEndring = bostedsadresse.getGyldigFraOgMedOrSisteEndring();
-					erBostedsadresseGyldigOgTypeUtland = bostedsadresseOptional.get().getPostadresse().getAdresseType().equalsIgnoreCase("utland");
-					debugLog += generateDebugLog(BOSTEDSADRESSE.name(), bostedsadresse.getGyldigFraOgMed());
-				}
+			if (bostedsadresseOptional.isPresent() && (bostedsadresse.getGyldigFraOgMedOrSisteEndring() != null)) {
+				bostedsadresseGyldigFraOgMedOrSisteEndring = bostedsadresse.getGyldigFraOgMedOrSisteEndring();
+				erBostedsadresseGyldigOgTypeUtland = bostedsadresseOptional.get().getPostadresse().getAdresseType().equalsIgnoreCase("utland");
+				debugLog += generateDebugLog(BOSTEDSADRESSE.name(), bostedsadresse.getGyldigFraOgMed());
 			}
 		}
 
@@ -106,8 +103,8 @@ public class MapPDLResponse {
 		// prøver å bruke kontaktadresse - regel 1 og 2
 		if (kontaktadresseOptional.isPresent()) {
 			Kontaktadresse kontaktadresse = kontaktadresseOptional.get();
-			Optional<PdlMottakerInfo> mottakerFraKontaktAdresse = mapKontaktadresse(hentPerson, kontaktadresse);
-			if (mottakerFraKontaktAdresse.filter(not(MapPDLResponse::isInnlandAdresseTypeAndPostnummerNull)).isPresent()) {
+			Optional<PdlMottakerInfo> mottakerFraKontaktAdresse = safeMapKontaktadresse(hentPerson, kontaktadresse);
+			if (mottakerFraKontaktAdresse.filter(MapPDLResponse::erKontaktadresseKomplett).isPresent()) {
 				//Bruk bostedsadresse hvis denne er av nyere dato enn kontaktadresse
 				if (erBostedsadresseGyldigOgTypeUtland &&
 						kontaktadresse.getGyldigFraOgMedOrSisteEndring() != null &&
@@ -192,7 +189,7 @@ public class MapPDLResponse {
 						.max(Comparator.naturalOrder()));
 	}
 
-	private Optional<PdlMottakerInfo> mapKontaktadresse(HentPerson hentPerson, Kontaktadresse kontaktadresse) {
+	private Optional<PdlMottakerInfo> safeMapKontaktadresse(HentPerson hentPerson, Kontaktadresse kontaktadresse) {
 		return mapPostadresseFraKontaktadresse(kontaktadresse)
 				.map(postadresse -> PdlMottakerInfo.builder().identifikasjonsnummer(hentPerson.getIdentifikasjonsnummer())
 						.navn(hentPerson.getFulltnavn())
@@ -206,8 +203,8 @@ public class MapPDLResponse {
 	private Optional<PdlMottakerInfo> safeMapBostedsAdresse(HentPerson hentPerson, String serviceCode, Bostedsadresse bostedsadresse) {
 		try {
 			return mapBostedsadresse(hentPerson, serviceCode, bostedsadresse);
-		} catch (UkjentAdresseException e) {
-			return Optional.empty();
+		} catch (UkjentAdresseException _) {
+			return empty();
 		}
 	}
 
@@ -287,8 +284,18 @@ public class MapPDLResponse {
 		return empty();
 	}
 
-	private static boolean isInnlandAdresseTypeAndPostnummerNull(PdlMottakerInfo pdlMottakerInfo) {
-		return isBlank(pdlMottakerInfo.getPostadresse().getPostnummer()) && POSTADRESSE_INNLAND.equals(pdlMottakerInfo.getPostadresse().getAdresseType());
+	private static boolean erKontaktadresseKomplett(PdlMottakerInfo pdlMottakerInfo) {
+		return isInnlandAdresseTypeAndPostnummerNonNull(pdlMottakerInfo.getPostadresse()) ||
+				isUtenlandAdresseTypeAndAdresselinje1AndLandkodeNonNull(pdlMottakerInfo.getPostadresse());
+	}
+
+	private static boolean isInnlandAdresseTypeAndPostnummerNonNull(PostadresseTo postadresse) {
+		return POSTADRESSE_INNLAND.equalsIgnoreCase(postadresse.getAdresseType()) && isNotBlank(postadresse.getPostnummer());
+	}
+
+	private static boolean isUtenlandAdresseTypeAndAdresselinje1AndLandkodeNonNull(PostadresseTo postadresse) {
+		return POSTADRESSE_UTLAND.equalsIgnoreCase(postadresse.getAdresseType()) && (isNotBlank(postadresse.getAdresselinje1())
+				&& isNotBlank(postadresse.getLandkode()));
 	}
 
 	private Set<String> mapAdressebeskyttelse(HentPerson hentPerson) {
