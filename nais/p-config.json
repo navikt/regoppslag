@@ -58,6 +58,11 @@
 			"namespace": "etterlatte",
 			"cluster": "prod-gcp"
 		},
+        {
+          "app": "su-se-bakover",
+          "namespace": "supstonad",
+          "cluster": "prod-gcp"
+        },
 		{
 			"app": "yrkesskade-saksbehandling-backend",
 			"namespace": "yrkesskade",

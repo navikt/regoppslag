@@ -64,6 +64,11 @@
 			"namespace": "etterlatte",
 			"cluster": "dev-gcp"
 		},
+        {
+          "app": "su-se-bakover",
+          "namespace": "supstonad",
+          "cluster": "dev-gcp"
+        },
 		{
 			"app": "pensjon-persondata-q2",
 			"namespace": "pensjon-person",
