@@ -43,6 +43,7 @@ public class HentPerson {
 	private List<Folkeregisteridentifikator> folkeregisteridentifikator;
 	private List<KontaktinformasjonForDoedsbo> kontaktinformasjonForDoedsbo;
 	private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
+	private FalskIdentitet falskIdentitet;
 
 	@Getter
 	@Setter
@@ -51,6 +52,15 @@ public class HentPerson {
 	@NoArgsConstructor
 	public static class Adressebeskyttelse {
 		private Gradering gradering;
+	}
+
+	@Getter
+	@Setter
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class FalskIdentitet {
+		private Boolean erFalsk;
 	}
 
 	@Getter
