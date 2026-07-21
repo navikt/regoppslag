@@ -1,5 +1,6 @@
 package no.nav.regoppslag.itest;
 
+import no.nav.regoppslag.exceptions.FalskIdentitetException;
 import no.nav.regoppslag.rreg003.Adresse;
 import no.nav.regoppslag.rreg003.PostadresseRequest;
 import no.nav.regoppslag.rreg003.PostadresseResponse;
@@ -48,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -252,6 +254,31 @@ class Rreg003IT extends AbstractIT {
 
 		assertThat(e.getMessage()).contains("Fant ikke adresse for personen i PDL");
 		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(UKJENT_ADRESSE_REASON_CODE);
+	}
+
+	@Test
+	void shouldReturnConflictWhenIdentitetErFalsk() {
+		postPdlGraphql(OK.value(), "pdl/falsk_identitet.json");
+
+		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, this::hentPostadresse);
+
+		assertThat(e.getStatusCode()).isEqualTo(CONFLICT);
+		assertThat(e.getMessage()).contains(FalskIdentitetException.FALSK_IDENTITET_FEILMELDING);
+
+		assertThat(e.getResponseHeaders()).isNotNull();
+		assertThat(e.getResponseHeaders().containsHeader(NAV_REASON_CODE)).isTrue();
+		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE)).contains(FalskIdentitetException.FALSK_IDENTITET_REASON_CODE);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"pdl/falsk_identitet_false.json", "pdl/postbokskontaktadresse.json"})
+	void shouldReturnOkWhenFalskIdentitetErFalseOrNull(String pdlResponse) {
+		postPdlGraphql(OK.value(), pdlResponse);
+
+		PostadresseResponse response = hentPostadresse();
+
+		assertThat(response.getNavn()).isNotNull();
+		assertThat(response.getAdresse()).isNotNull();
 	}
 
 	@Test

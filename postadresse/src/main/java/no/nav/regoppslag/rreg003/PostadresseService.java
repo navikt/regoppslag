@@ -8,6 +8,7 @@ import no.nav.regoppslag.consumer.ereg.support.OrganisasjonEregMapper;
 import no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer;
 import no.nav.regoppslag.consumer.pdl.to.HentPerson;
 import no.nav.regoppslag.consumer.pdl.to.PdlMottakerInfo;
+import no.nav.regoppslag.exceptions.FalskIdentitetException;
 import no.nav.regoppslag.exceptions.RegOppslagFunctionalException;
 import no.nav.regoppslag.exceptions.RegOppslagIkkeFunnetException;
 import no.nav.regoppslag.exceptions.RegOppslagIngenTilgangException;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static no.nav.regoppslag.consumer.pdl.PdlGraphQLConsumer.ARKIVPLEIE_BEHANDLINGSNUMMER;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.KONTAKTINFORMASJONFORDØDSBO;
@@ -74,6 +76,8 @@ public class PostadresseService {
 		String behandlingsnummer = inputBehandlingsnummer == null ? ARKIVPLEIE_BEHANDLINGSNUMMER : inputBehandlingsnummer;
 		HentPerson personFraPdl = pdlGraphQLConsumer.hentPerson(request.getIdent(), behandlingsnummer);
 
+		avvisFalskIdentitet(personFraPdl);
+
 		PdlMottakerInfo pdlMottakerInfo = mapPDLResponse.mapHentPerson(personFraPdl, SERVICE_CODE_RREG003);
 		if (KONTAKTINFORMASJONFORDØDSBO.equals(pdlMottakerInfo.getPostadresse().getAdressekilde())) {
 			secureLog.info("RREG003: Hentet KONTAKTINFORMASJONFORDØDSBO. Navn: {}, adresse: {}",
@@ -119,6 +123,10 @@ public class PostadresseService {
 				log.warn(RREG003_FUNK_FEIL, e.getMessage());
 				throw err;
 			}
+			case FalskIdentitetException err -> {
+				log.warn(RREG003_FUNK_FEIL, e.getMessage());
+				throw err;
+			}
 			case RegOppslagFunctionalException err -> {
 				log.warn(RREG003_FUNK_FEIL, e.getMessage());
 				if (NOT_FOUND.equals(((RegOppslagFunctionalException) e).getHttpStatusCode())) {
@@ -130,6 +138,12 @@ public class PostadresseService {
 				log.error("RREG003 Teknisk feil: {}", e.getMessage(), e);
 				throw new RegOppslagTechnicalException(format("Teknisk feil: feilmelding=%s", e.getMessage()), e);
 			}
+		}
+	}
+
+	private void avvisFalskIdentitet(HentPerson hentPerson) {
+		if (hentPerson != null && hentPerson.getFalskIdentitet() != null && TRUE.equals(hentPerson.getFalskIdentitet().getErFalsk())) {
+			throw new FalskIdentitetException();
 		}
 	}
 }

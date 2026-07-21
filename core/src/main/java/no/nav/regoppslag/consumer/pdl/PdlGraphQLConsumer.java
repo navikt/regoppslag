@@ -214,6 +214,9 @@ public class PdlGraphQLConsumer {
 			        }
 			      }
 			    }
+			    falskIdentitet{
+			      erFalsk
+			    }
 			    kontaktadresse(historikk: false){
 			      gyldigFraOgMed
 			      gyldigTilOgMed

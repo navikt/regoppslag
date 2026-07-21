@@ -1,0 +1,82 @@
+{
+  "data": {
+    "hentPerson": {
+      "adressebeskyttelse": [],
+      "doedsfall": [],
+      "falskIdentitet": {
+        "erFalsk": true
+      },
+      "navn": [
+        {
+          "fornavn": "GYNGEHEST",
+          "mellomnavn": "A.",
+          "etternavn": "ÅPENHJERTIG",
+          "forkortetNavn": "GYNGEHEST ÅPENHJERTIG"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "gyldigFraOgMed": "2020-06-21T13:00",
+          "gyldigTilOgMed": null,
+          "type": "Innland",
+          "coAdressenavn": null,
+          "postboksadresse": {
+            "postbokseier": "Finnesveien 27",
+            "postboks": "7320",
+            "postnummer": "7320"
+          },
+          "vegadresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresse": null,
+          "utenlandskAdresseIFrittFormat": null,
+          "metadata": {
+            "opplysningsId": "c23094eb-2594-41f0-a08f-80419976ecbc",
+            "master": "Freg",
+            "historisk": false
+          }
+        }
+      ],
+      "kontaktinformasjonForDoedsbo": [],
+      "sikkerhetstiltak": [],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer": "01038401226",
+          "type": "FNR",
+          "status": "I_BRUK"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "angittFlyttedato": "1984-03-01",
+          "gyldigFraOgMed": "1984-03-01T00:00",
+          "gyldigTilOgMed": null,
+          "coAdressenavn": null,
+          "vegadresse": {
+            "matrikkelId": 275433480,
+            "husnummer": "45",
+            "husbokstav": null,
+            "bruksenhetsnummer": null,
+            "adressenavn": "Finnesveien",
+            "kommunenummer": "5432",
+            "bydelsnummer": null,
+            "tilleggsnavn": null,
+            "postnummer": "7320"
+          },
+          "utenlandskAdresse": null,
+          "ukjentBosted": null,
+          "metadata": {
+            "opplysningsId": "ac8a9aa4-15db-4213-bcff-dd8320ad824d",
+            "master": "FREG"
+          }
+        }
+      ],
+      "folkeregisterpersonstatus": [
+        {
+          "status": "bosatt",
+          "forenkletStatus": "bosattEtterFolkeregisterloven"
+        }
+      ],
+      "tilrettelagtKommunikasjon": []
+    }
+  }
+}
