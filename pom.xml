@@ -31,7 +31,6 @@
 		<microsoft-graph.version>6.65.0</microsoft-graph.version>
 		<azure-identity.version>1.18.4</azure-identity.version>
 		<springdoc-openapi-starter-webmvc-ui.version>3.0.3</springdoc-openapi-starter-webmvc-ui.version>
-		<nv-i18n.version>1.29</nv-i18n.version>
 		<logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 		<token-support.version>5.0.30</token-support.version>
 
@@ -92,11 +91,6 @@
 				<groupId>io.reactivex.rxjava3</groupId>
 				<artifactId>rxjava</artifactId>
 				<version>${rxjava.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.neovisionaries</groupId>
-				<artifactId>nv-i18n</artifactId>
-				<version>${nv-i18n.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.security</groupId>

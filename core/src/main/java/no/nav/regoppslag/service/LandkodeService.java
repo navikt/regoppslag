@@ -1,49 +1,62 @@
 package no.nav.regoppslag.service;
 
-import com.neovisionaries.i18n.CountryCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 
-import static com.neovisionaries.i18n.CountryCode.UNDEFINED;
-import static com.neovisionaries.i18n.CountryCode.findByName;
-import static com.neovisionaries.i18n.CountryCode.getByAlpha3Code;
-import static com.neovisionaries.i18n.CountryCode.getByCode;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static no.nav.regoppslag.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * Source: https://unstats.un.org/unsd/methodology/m49/
- */
-@Component
 @Slf4j
-public class LandkodeService {
+public final class LandkodeService {
 
 	private static final String KOSOVO = "Kosovo, Republic of";
-	private static final String KOSOVO_LANDKODE_NAV_REGISTRENE = "XXK";
+	private static final String KOSOVO_ALPHA2 = "XK";
+	private static final String KOSOVO_ALPHA3 = "XKX";
+	private static final String KOSOVO_LEGACY_ALPHA3 = "XXK";
 	private static final String NORGE = "Norge";
 	private static final String NORWAY = "Norway";
 
-	public static String finnLandnavn(String landkode) {
-		/*
-		 * I en periode lå Kosovo lagret på landkode XXK, men ble senere oppdatert til XKX.
-		 * Det er fremdeles rester av XXK rundt om som stopper opp.
-		 */
-		if (KOSOVO_LANDKODE_NAV_REGISTRENE.equalsIgnoreCase(landkode)) {
-			return KOSOVO;
-		}
+	private static final Map<String, Land> LAND_PER_ALPHA2;
+	private static final Map<String, Land> LAND_PER_ALPHA3;
+	private static final Map<String, Land> LAND_PER_NAVN;
 
-		if (getByCode(landkode) == null || getByCode(landkode).equals(UNDEFINED)) {
-			log.warn("Finner ikke land for landkode={}. Sjekk om com.neovisionaries:nv-i18n avhengigheten må oppgraderes til nyere versjon", removeUnsafeChars(landkode));
+	static {
+		LAND_PER_ALPHA2 = opprettLandPerAlpha2();
+		LAND_PER_ALPHA3 = LAND_PER_ALPHA2.values().stream()
+				.collect(toUnmodifiableMap(Land::alpha3, Function.identity()));
+		LAND_PER_NAVN = LAND_PER_ALPHA2.values().stream()
+				.collect(toUnmodifiableMap(land -> normalisertNavn(land.navn()), Function.identity()));
+	}
+
+	private LandkodeService() {
+	}
+
+	public static String finnLandnavn(String landkode) {
+		if (isBlank(landkode)) {
 			return null;
 		}
 
-		String landNavn = getByCode(landkode).getName();
-		if (NORWAY.equalsIgnoreCase(landNavn)) {
-			return NORGE;
+		String normalisertKode = normalisertKode(landkode);
+
+		if (erKosovoKode(normalisertKode)) {
+			return KOSOVO;
 		}
-		return landNavn;
+
+		Land land = normalisertKode.length() == 2
+				? LAND_PER_ALPHA2.get(normalisertKode)
+				: LAND_PER_ALPHA3.get(normalisertKode);
+
+		if (land == null) {
+			log.warn("Finner ikke land for landkode={}", removeUnsafeChars(landkode));
+			return null;
+		}
+
+		return NORWAY.equals(land.navn()) ? NORGE : land.navn();
 	}
 
 	public static String finnLandkode(String landnavn) {
@@ -51,16 +64,18 @@ public class LandkodeService {
 			return null;
 		}
 
-		if (landnavn.equalsIgnoreCase(NORGE)) {
-			landnavn = NORWAY;
+		String normalisertNavn = normalisertNavn(landnavn);
+
+		if (normalisertNavn(KOSOVO).equals(normalisertNavn)) {
+			return KOSOVO_ALPHA2;
 		}
 
-		if (findByName(landnavn).isEmpty()) {
-			return null;
+		if (normalisertNavn(NORGE).equals(normalisertNavn)) {
+			normalisertNavn = normalisertNavn(NORWAY);
 		}
 
-		List<CountryCode> countryCodeList = findByName(landnavn);
-		return countryCodeList.getFirst().getAlpha2();
+		Land land = LAND_PER_NAVN.get(normalisertNavn);
+		return land == null ? null : land.alpha2();
 	}
 
 	public static String finnLandkodeAlpha2FraAlpha3(String landkodeAlpha3) {
@@ -68,11 +83,41 @@ public class LandkodeService {
 			return null;
 		}
 
-		CountryCode countryCode = getByAlpha3Code(landkodeAlpha3);
-		if (countryCode == null) {
-			return null;
+		String normalisertKode = normalisertKode(landkodeAlpha3);
+
+		if (KOSOVO_ALPHA3.equals(normalisertKode) || KOSOVO_LEGACY_ALPHA3.equals(normalisertKode)) {
+			return KOSOVO_ALPHA2;
 		}
-		return countryCode.name();
+
+		Land land = LAND_PER_ALPHA3.get(normalisertKode);
+		return land == null ? null : land.alpha2();
 	}
 
+	private static Map<String, Land> opprettLandPerAlpha2() {
+		return Arrays.stream(Locale.getISOCountries())
+				.map(LandkodeService::opprettLand)
+				.collect(toUnmodifiableMap(Land::alpha2, Function.identity()));
+	}
+
+	private static Land opprettLand(String alpha2) {
+		Locale locale = Locale.of("", alpha2);
+		return new Land(alpha2, locale.getISO3Country(), locale.getDisplayCountry(Locale.ENGLISH));
+	}
+
+	private static boolean erKosovoKode(String kode) {
+		return KOSOVO_ALPHA2.equals(kode)
+			   || KOSOVO_ALPHA3.equals(kode)
+			   || KOSOVO_LEGACY_ALPHA3.equals(kode);
+	}
+
+	private static String normalisertKode(String kode) {
+		return kode.trim().toUpperCase(Locale.ROOT);
+	}
+
+	private static String normalisertNavn(String navn) {
+		return navn.trim().toLowerCase(Locale.ROOT);
+	}
+
+	private record Land(String alpha2, String alpha3, String navn) {
+	}
 }

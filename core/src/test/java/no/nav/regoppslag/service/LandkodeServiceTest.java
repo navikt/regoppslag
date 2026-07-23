@@ -1,68 +1,80 @@
 package no.nav.regoppslag.service;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.regoppslag.service.LandkodeService.finnLandkode;
+import static no.nav.regoppslag.service.LandkodeService.finnLandkodeAlpha2FraAlpha3;
 import static no.nav.regoppslag.service.LandkodeService.finnLandnavn;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
 public class LandkodeServiceTest {
 
-	private static final String NORGE = "Norge";
-	private static final String NO = "NO";
-	private static final String NOR = "NOR";
-	private static final String FINNES_IKKE = "FINNES IKKE";
-	private static final String KOSOVO = "Kosovo, Republic of";
-	private static final String KOSOVO_LANDKODE_FEIL = "XXK";
-	private static final String KOSOVO_LANDKODE_RIKTIG = "XKX";
-
-	@Test
-	public void skalFinneLandkode() {
-		String landKode = finnLandkode(NORGE);
-		assertThat(landKode, is(NO));
-	}
-
-	@Test
-	public void skalReturnereLandkodeNullForLandnavnNull() {
-		String landkode = finnLandkode(null);
-		assertNull(landkode);
-	}
-
 	@ParameterizedTest
-	@CsvSource(value = {
-			NO,
-			NOR,
+	@CsvSource({
+			"' Norge ', NO",
+			"Norway, NO",
+			"norway, NO",
+			"' Türkiye ', TR",
+			"'Kosovo, Republic of', XK"
 	})
-	public void skalFinneLandnavnFraAlpha2EllerAlpha3(String landkode) {
-		String landnavn = finnLandnavn(landkode);
-		assertThat(landnavn, is(NORGE));
+	void skalFinneAlpha2LandkodeFraLandnavn(String landnavn, String forventetLandkode) {
+		assertThat(finnLandkode(landnavn), is(forventetLandkode));
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = FINNES_IKKE)
+	@CsvSource({
+			"NO, Norge",
+			"NOR, Norge",
+			"TR, Türkiye",
+			"TUR, Türkiye",
+			"SE, Sweden",
+			"' se ', Sweden"
+	})
+	void skalFinneLandnavnFraAlpha2EllerAlpha3(String landkode, String forventetLandnavn) {
+		assertThat(finnLandnavn(landkode), is(forventetLandnavn));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"FINNES IKKE", "", " "})
 	@NullSource
-	public void skalReturnereLandnavnNullForUgyldigLandkode(String landkode) {
-		String landnavn = finnLandnavn(landkode);
-		assertNull(landnavn);
+	void skalReturnereLandnavnNullForUgyldigLandkode(String landkode) {
+		assertNull(finnLandnavn(landkode));
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {
-			KOSOVO_LANDKODE_FEIL,
-			KOSOVO_LANDKODE_RIKTIG
+	@NullSource
+	@ValueSource(strings = {"", "FINNES IKKE"})
+	void skalReturnereLandkodeNullForUgyldigLandnavn(String landnavn) {
+		assertNull(finnLandkode(landnavn));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"XK", "XKX", "XXK", "xkx"})
+	void skalFinneLandnavnForKosovo(String landkode) {
+		assertThat(finnLandnavn(landkode), is("Kosovo, Republic of"));
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"NOR, NO",
+			"TUR, TR",
+			"XKX, XK",
+			"XXK, XK",
+			"xkx, XK"
 	})
-	public void skalFinneLandnavnForKosovoFraNyOgGammelAlpha3Kode(String landkode) {
-		String landnavn = finnLandnavn(landkode);
-		assertThat(landnavn, is(KOSOVO));
+	void skalFinneAlpha2FraAlpha3(String alpha3, String forventetAlpha2) {
+		assertThat(finnLandkodeAlpha2FraAlpha3(alpha3), is(forventetAlpha2));
+	}
+
+	@ParameterizedTest
+	@NullSource
+	@ValueSource(strings = {"", "FINNES IKKE", "XK"})
+	void skalReturnereNullForUgyldigAlpha3(String alpha3) {
+		assertNull(finnLandkodeAlpha2FraAlpha3(alpha3));
 	}
 }
-
