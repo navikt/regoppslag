@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.neovisionaries.i18n.CountryCode.XK;
 import static java.util.Collections.singletonList;
 import static no.nav.regoppslag.config.TimeConfig.OSLO_ZONE;
 import static no.nav.regoppslag.consumer.pdl.to.AdresseKildeCode.BOSTEDSADRESSE;
@@ -403,7 +402,7 @@ class MapPDLResponseTest {
 		assertNull(response.getAdresselinje3());
 
 		assertEquals(POSTADRESSE_UTLAND, response.getAdresseType());
-		assertEquals(XK.name(), response.getLandkode());
+		assertEquals("XK", response.getLandkode());
 		assertNull(response.getPostnummer());
 		assertNull(response.getPoststed());
 	}
