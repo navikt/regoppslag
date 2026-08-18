@@ -2,11 +2,11 @@
 <ns:brevdata xmlns:ns="http://nav.no/dok/urbrev/000093" xmlns:something_else="http://www.w3.org/2001/XMLSchema-instance" xmlns:nav="http://nav.no/dok/brevdata/felles/v1/NAVFelles" xmlns:urfelles="http://nav.no/dok/urbrev/felles/ur_felles">
 	<ns:NAVFelles>
 		<urfelles:sakspart>
-			<nav:id>01073945646</nav:id>
+			<nav:id>11111111111</nav:id>
 			<nav:typeKode>PERSON</nav:typeKode>
 		</urfelles:sakspart>
 		<urfelles:mottaker something_else:type="nav:Person">
-			<nav:id>01073945646</nav:id>
+			<nav:id>11111111111</nav:id>
 			<nav:typeKode>PERSON</nav:typeKode>
 		</urfelles:mottaker>
 		<urfelles:behandlendeEnhet>

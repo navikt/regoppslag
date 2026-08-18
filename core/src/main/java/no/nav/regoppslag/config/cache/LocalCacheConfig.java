@@ -18,11 +18,7 @@ import static no.nav.regoppslag.config.cache.CacheConfig.HENT_PERSON_CACHE_EXPIR
 import static no.nav.regoppslag.config.cache.CacheConfig.STS_CACHE_EXPIRATION_TIME;
 import static no.nav.regoppslag.config.cache.CacheConfig.HENT_NAV_ANSATT_NAVN;
 
-/**
- * Cachemanager for bruk ved lokalt kjøring av applikasjonen.
- * Redis cache krever en Redis server som for å fungere. Redis serveren som kjører på nais er ikke eksponert ut og er derfor ikke mulig å aksessere lokalt.
- * For å slippe å starte opp Redis server lokalt så vil denne klassen configurere cachemanager som kan kjøre ved lokalt kjøring av applikasjonen.
- */
+/// Cachemanager for bruk ved lokalt kjøring av applikasjonen.
 @Profile("local")
 @Configuration
 @EnableCaching

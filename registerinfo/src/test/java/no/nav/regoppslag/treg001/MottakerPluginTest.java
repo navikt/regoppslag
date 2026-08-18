@@ -79,7 +79,7 @@ public class MottakerPluginTest {
 	private static final String ORGNAVN = "Orgnavn 1";
 	private static final String DOKUMENTTYPEID = "I000003";
 	private static final String SPRAAK_NB = "NB";
-	private static final String MOTTAKER_ID = "30085849677";
+	private static final String MOTTAKER_ID = "11111111111";
 
 	private EregConsumer eregConsumer;
 	private DokmetConsumer dokmetConsumer;
