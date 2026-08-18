@@ -5,7 +5,7 @@
 			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 			   xmlns:test="test">
 		<felles:spraakkode>NB</felles:spraakkode>
-		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:fagsaksnummer>12345</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
 		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
 		<felles:dokumentDato>2017-11-17</felles:dokumentDato>

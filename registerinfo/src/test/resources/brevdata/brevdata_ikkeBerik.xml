@@ -5,18 +5,18 @@
 			   xmlns:felles="http://nav.no/dok/brevdata/felles/v1/NAVFelles"
 			   xmlns:test="test">
 		<felles:spraakkode>NB</felles:spraakkode>
-		<felles:fagsaksnummer>30085849677</felles:fagsaksnummer>
+		<felles:fagsaksnummer>12345</felles:fagsaksnummer>
 		<felles:navnAvsenderEnhet>Pensjon Inc</felles:navnAvsenderEnhet>
 		<felles:automatiskBehandlet>true</felles:automatiskBehandlet>
 		<felles:dokumentDato>2017-11-17</felles:dokumentDato>
 		<test:sakspart xsi:type="felles:Person" felles:berik="false">
-			<felles:id>30085849677</felles:id>
+			<felles:id>11111111111</felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
 			<felles:navn>Ikke Berik</felles:navn>
 			<felles:diskresjonskode>true</felles:diskresjonskode>
 		</test:sakspart>
 		<test:mottaker xsi:type="felles:Person" felles:berik="false">
-			<felles:id>30085849677</felles:id>
+			<felles:id>11111111111</felles:id>
 			<felles:typeKode>PERSON</felles:typeKode>
 			<felles:navn>Ikke Berik</felles:navn>
 			<felles:kortNavn>Ikke Berik</felles:kortNavn>
