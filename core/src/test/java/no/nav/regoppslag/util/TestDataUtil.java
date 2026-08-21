@@ -31,12 +31,16 @@ public class TestDataUtil {
 	public static final String TUCSON_CITY = "Tucson";
 	public static final String USA_POSTKODE = "85705";
 	public static final String ADRESSE_NAVN_NUMMER = "799 E Dragram Suite 5A";
+	public static final String CO_ADRESSENAVN = "Recipient";
+	public static final String BYGNING_ETASJE_LEILIGHET = "Building A";
+	public static final String UTENLANDSK_POSTBOKS = "Postbox 1";
 	public static final String BYSTED_BERLIN = "Berlin";
 	public static final String BERLIN_REGION = "Berlin Region";
 	public static final String TYSKLAND_LANDKODE = "DEU";
 	public static final String SVENSK_LAND = "Sweden";
 	public static final String SVERIGE = "SVERIGE";
 	public static final String POSTNUMMER = "3000";
+	public static final String POSTNUMMER_OG_BYSTED_BERLIN = POSTNUMMER + " " + BYSTED_BERLIN;
 	public static final String POSTSTED = "HUSNES";
 	public static final String GATENAVN = "Gatenavn";
 	public static final int HUSNR = 13;
