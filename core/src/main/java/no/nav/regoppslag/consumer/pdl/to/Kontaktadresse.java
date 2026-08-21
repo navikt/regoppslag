@@ -6,6 +6,9 @@ import lombok.Value;
 
 import java.time.LocalDateTime;
 
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_INNLAND;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.POSTADRESSE_UTLAND;
+
 @Value
 @Builder
 @AllArgsConstructor
@@ -21,6 +24,14 @@ public class Kontaktadresse implements GyldigKilde {
 	Postboksadresse postboksadresse;
 	UtenlandskAdresse utenlandskAdresse;
 	Metadata metadata;
+
+	public boolean erInnland() {
+		return POSTADRESSE_INNLAND.equalsIgnoreCase(type);
+	}
+
+	public boolean erUtland() {
+		return POSTADRESSE_UTLAND.equalsIgnoreCase(type);
+	}
 
 	@Override
 	public boolean isGyldigFregKilde(LocalDateTime atTime) {

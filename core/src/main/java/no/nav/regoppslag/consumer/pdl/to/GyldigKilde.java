@@ -1,10 +1,23 @@
 package no.nav.regoppslag.consumer.pdl.to;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
 import static java.util.Objects.nonNull;
 
-public interface GyldigKilde extends Comparable<GyldigKilde> {
+public interface GyldigKilde {
+
+	/**
+	 * Sammenligner først på gyldigFraOgMed, eller dato for siste endring hvis gyldigFraOgMed mangler.
+	 * Objekter uten begge datoene sorteres før objekter som har en dato.
+	 */
+	Comparator<GyldigKilde> ETTER_GYLDIG_FRA_ELLER_SISTE_ENDRING = Comparator.comparing(
+			GyldigKilde::getGyldigFraOgMedOrSisteEndring,
+			nullsFirst(naturalOrder())
+	);
+
 	LocalDateTime getGyldigFraOgMed();
 	LocalDateTime getGyldigTilOgMed();
 
@@ -22,19 +35,6 @@ public interface GyldigKilde extends Comparable<GyldigKilde> {
 			return false;
 		}
 		return getMetadata().isKildeFreg() && isNotExpired(atTime);
-	}
-
-	@Override
-	default int compareTo(GyldigKilde o) {
-		if (getGyldigFraOgMedOrSisteEndring() == null && o.getGyldigFraOgMedOrSisteEndring() == null) {
-			return 0;
-		} else if (getGyldigFraOgMedOrSisteEndring() == null) { // gyldigFraOgMed == null er alltid før alle andre tidspunkter
-			return -1;
-		} else if (o.getGyldigFraOgMedOrSisteEndring() == null) {
-			return 1;
-		}
-
-		return getGyldigFraOgMedOrSisteEndring().compareTo(o.getGyldigFraOgMedOrSisteEndring());
 	}
 
 	default LocalDateTime getGyldigFraOgMedOrSisteEndring() {

@@ -8,9 +8,12 @@ import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.hasRegionDistriktOmraa
 import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.joinAdresseMedKomma;
 import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.joinAdresseUtenKomma;
 
-public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBystedAndOmraadeByLand {
-	@Override
-	public String mapUSAandKanadaPostkodeBystedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+final class UtenlandskPoststedFormatter {
+
+	private UtenlandskPoststedFormatter() {
+	}
+
+	static String formatUSAogKanadaPostkodeBystedOgOmraade(UtenlandskAdresse utenlandskAdresse) {
 
 		if (hasPostKode(utenlandskAdresse)) {
 			if (hasBySted(utenlandskAdresse) && hasRegionDistriktOmraade(utenlandskAdresse)) {
@@ -36,8 +39,7 @@ public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBysted
 		}
 	}
 
-	@Override
-	public String mapDefaultPostkodeBystedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+	static String formatPostkodeBystedOgOmraade(UtenlandskAdresse utenlandskAdresse) {
 		if (hasPostKode(utenlandskAdresse)) {
 			if (hasBySted(utenlandskAdresse) && hasRegionDistriktOmraade(utenlandskAdresse)) {
 				return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
