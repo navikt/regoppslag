@@ -2,6 +2,12 @@ package no.nav.regoppslag.pdl;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static no.nav.regoppslag.domain.DomainConstants.KOSOVO_LANDKODE_NAV_REGISTRENE;
 import static no.nav.regoppslag.domain.DomainConstants.UNKNOWN_LANDKODE;
@@ -11,9 +17,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
-public class MapPDLUtils {
+public class PDLAdresseUtil {
 
 	private static final String KOSOVO_ALPHA2 = "XK";
+	private static final int ANTALL_ADRESSELINJER = 3;
 
 	public static <T> T requireNonNull(T obj, String message) {
 		if (obj == null)
@@ -42,6 +49,23 @@ public class MapPDLUtils {
 		} else {
 			return String.join(" ", "C/O", coAdressenavn);
 		}
+	}
+
+	static List<String> normaliserAdresselinjer(String... potensielleAdresselinjer) {
+		return normaliserAdresselinjer(Arrays.asList(potensielleAdresselinjer));
+	}
+
+	static List<String> normaliserAdresselinjer(List<String> potensielleAdresselinjer) {
+		List<String> adresselinjer = potensielleAdresselinjer.stream()
+				.filter(StringUtils::isNotBlank)
+				.limit(ANTALL_ADRESSELINJER)
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		while (adresselinjer.size() < ANTALL_ADRESSELINJER) {
+			adresselinjer.add(null);
+		}
+
+		return adresselinjer;
 	}
 
 	private static boolean startsWithCareOfPrefix(String coAdressenavn) {

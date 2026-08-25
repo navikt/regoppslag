@@ -10,7 +10,6 @@ import no.nav.regoppslag.exceptions.RegoppslagIllegalArgumentException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +19,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_DOED;
+import static no.nav.regoppslag.consumer.pdl.to.PDLConstant.PERSONSTATUS_UTFLYTTET;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -136,7 +136,7 @@ public class HentPerson {
 	public String getFulltnavn() {
 		return getNavn().stream()
 				.filter(Objects::nonNull)
-				.max(GyldigKilde::compareTo)
+				.max(GyldigKilde.ETTER_GYLDIG_FRA_ELLER_SISTE_ENDRING)
 				.map(HentPerson::mapPersonnavn)
 				.orElseThrow(() -> new RegoppslagIllegalArgumentException(String.format(ERROR_MELDING, "Personnavn"), BAD_REQUEST));
 
@@ -192,15 +192,8 @@ public class HentPerson {
 				PERSONSTATUS_DOED.equals(this.getFolkeregisterstatus());
 	}
 
-	public Bostedsadresse getBostedsadresse(LocalDateTime now) {
-		if (bostedsadresse == null) {
-			return null;
-		}
-		return bostedsadresse.stream()
-				.filter(Objects::nonNull)
-				.filter(adresseKandidat -> adresseKandidat.isNotExpired(now))
-				.max(Comparator.naturalOrder())
-				.orElse(null);
+	public boolean erUtflyttet() {
+		return PERSONSTATUS_UTFLYTTET.equalsIgnoreCase(getFolkeregisterstatus());
 	}
 
 	public String getFolkeregistermetadataKilde() {

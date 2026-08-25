@@ -5,10 +5,10 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static java.lang.String.format;
-import static no.nav.regoppslag.pdl.MapPDLUtils.prependWithCareOfIfMissing;
+import static no.nav.regoppslag.pdl.PDLAdresseUtil.prependWithCareOfIfMissing;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MapPDLUtilsTest {
+class PDLAdresseUtilTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {

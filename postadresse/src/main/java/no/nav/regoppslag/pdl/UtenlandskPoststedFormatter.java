@@ -2,15 +2,17 @@ package no.nav.regoppslag.pdl;
 
 import no.nav.regoppslag.consumer.pdl.to.UtenlandskAdresse;
 
-import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.hasBySted;
-import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.hasPostKode;
-import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.hasRegionDistriktOmraade;
-import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.joinAdresseMedKomma;
-import static no.nav.regoppslag.pdl.UtenlandskAdresseUtil.joinAdresseUtenKomma;
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBystedAndOmraadeByLand {
-	@Override
-	public String mapUSAandKanadaPostkodeBystedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+final class UtenlandskPoststedFormatter {
+
+	private UtenlandskPoststedFormatter() {
+	}
+
+	static String formatUSAogKanadaPostkodeBystedOgOmraade(UtenlandskAdresse utenlandskAdresse) {
 
 		if (hasPostKode(utenlandskAdresse)) {
 			if (hasBySted(utenlandskAdresse) && hasRegionDistriktOmraade(utenlandskAdresse)) {
@@ -36,8 +38,7 @@ public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBysted
 		}
 	}
 
-	@Override
-	public String mapDefaultPostkodeBystedAndOmraade(UtenlandskAdresse utenlandskAdresse) {
+	static String formatPostkodeBystedOgOmraade(UtenlandskAdresse utenlandskAdresse) {
 		if (hasPostKode(utenlandskAdresse)) {
 			if (hasBySted(utenlandskAdresse) && hasRegionDistriktOmraade(utenlandskAdresse)) {
 				return joinAdresseMedKomma(utenlandskAdresse.getPostkode(), utenlandskAdresse.getBySted(), utenlandskAdresse.getRegionDistriktOmraade());
@@ -60,5 +61,28 @@ public class MapPostkodeStedAndOmraadeByLandService implements MapPostkodeBysted
 		} else {
 			return utenlandskAdresse.getRegionDistriktOmraade();
 		}
+	}
+
+	private static boolean hasPostKode(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getPostkode());
+	}
+
+	private static boolean hasBySted(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getBySted());
+	}
+
+	private static boolean hasRegionDistriktOmraade(UtenlandskAdresse utenlandskAdresse) {
+		return isNotBlank(utenlandskAdresse.getRegionDistriktOmraade());
+	}
+
+	private static String joinAdresseMedKomma(String adresse1, String adresse2, String adresse3) {
+		if (isBlank(adresse2)) {
+			return format("%s, %s", adresse1, adresse3).strip();
+		}
+		return format("%s %s, %s", adresse1, adresse2, adresse3).strip();
+	}
+
+	private static String joinAdresseUtenKomma(String adresse1, String adresse2, String adresse3) {
+		return join(" ", adresse1, adresse2, adresse3).strip();
 	}
 }
