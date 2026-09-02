@@ -29,7 +29,7 @@
 		<resilience4j.version>2.4.0</resilience4j.version>
 		<rxjava.version>3.1.12</rxjava.version>
 		<microsoft-graph.version>6.67.0</microsoft-graph.version>
-		<azure-identity.version>1.18.4</azure-identity.version>
+		<azure-identity.version>1.18.5</azure-identity.version>
 		<springdoc-openapi-starter-webmvc-ui.version>3.1.0</springdoc-openapi-starter-webmvc-ui.version>
 		<logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 		<token-support.version>5.0.30</token-support.version>
