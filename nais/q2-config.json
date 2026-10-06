@@ -139,5 +139,11 @@
 			"namespace": "arbeidsgiver",
 			"cluster": "dev-fss"
 		}
+		,
+		{
+			"app": "ccm-next",
+			"namespace": "teamccm",
+			"cluster": "dev-gcp"
+		}
 	]
 }
