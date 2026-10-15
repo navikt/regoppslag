@@ -261,10 +261,10 @@ public class Treg001PDLIT extends AbstractIT {
 						restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class),
 				"Should throw techical Exception");
 
-		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(e.getResponseBodyAsString()).contains("Fant ikke bostedsadresse for personen i PDL");
 		assertThat(e.getResponseHeaders().get(NAV_REASON_CODE).getFirst()).isEqualTo(UKJENT_ADRESSE_REASON_CODE);
+		verify(postRequestedFor(urlEqualTo("/graphql")));
 	}
 
 	@Test
@@ -303,8 +303,9 @@ public class Treg001PDLIT extends AbstractIT {
 		HttpClientErrorException e = assertThrows(HttpClientErrorException.class, () ->
 				restTemplate.postForObject(LOCAL_ENDPOINT_URL + REST + KOMPLETTER_BREVDATA_URI_PATH, createRequest("__files/treg001pdl/treg001_full_request.xml"), KompletterBrevdataResponse.class));
 
-		verify(postRequestedFor(urlEqualTo("/graphql")));
 		assertThat(e.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(e.getResponseBodyAsString()).contains("Fant ikke adresse for personen i PDL");
+		verify(postRequestedFor(urlEqualTo("/graphql")));
 	}
 
 	@Test
