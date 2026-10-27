@@ -1,6 +1,7 @@
 name: Build, deploy dev, draft main
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
