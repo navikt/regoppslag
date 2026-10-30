@@ -26,8 +26,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import javax.xml.XMLConstants;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -87,6 +89,22 @@ public class ElementEnricher {
 		return (Node) xPathExpression.evaluate(document, XPathConstants.NODE);
 	}
 
+	private static void copyInheritedNamespaces(Node original, Element isolated) {
+		for (Node ancestor = original.getParentNode(); ancestor != null; ancestor = ancestor.getParentNode()) {
+			NamedNodeMap attributes = ancestor.getAttributes();
+			if (attributes == null) {
+				continue;
+			}
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Node attribute = attributes.item(i);
+				if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI())
+						&& !isolated.hasAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, attribute.getLocalName())) {
+					isolated.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, attribute.getNodeName(), attribute.getNodeValue());
+				}
+			}
+		}
+	}
+
 	public Document process(Document document, String dokumentTypeId) throws XPathExpressionException, MissingPluginException, RegOppslagTechnicalException, RegOppslagFunctionalException, RegOppslagSecurityException {
 
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -100,8 +118,10 @@ public class ElementEnricher {
 			Node node = findSingleNode(xpathExpression, document);
 			attributeValueNamespaceResolver.resolveNamespace(document, node);
 			if (node != null) {
-				Node clonedNode = node.cloneNode(true);
-				processingList.add(new Payload(clonedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
+				Document isolatedDocument = document.getImplementation().createDocument(null, null, null);
+				Node isolatedNode = isolatedDocument.importNode(node, true);
+				copyInheritedNamespaces(node, (Element) isolatedNode);
+				processingList.add(new Payload(isolatedNode, registry.getOrCreateElementEnricherPlugin(xpathExpression), node));
 			}
 		}
 
